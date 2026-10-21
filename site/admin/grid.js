@@ -155,6 +155,14 @@ name: name || "Untitled site",
 w: 702,
 pad: 33,
 top: 48,
+mt: 96,
+mr: 33,
+mb: 96,
+ml: 33,
+mtM: 24,
+mrM: 20,
+mbM: 24,
+mlM: 20,
 cols: 12,
 colsM: 4,
 row: 8,
@@ -340,6 +348,18 @@ var d = siteDefaults(p.site && p.site.name);
 var s = p.site;
 if (!s.styles && s.fs) s.styles = stylesFrom(s.fs, s.lh, s.ms || s.fs, s.ml || s.lh, s.fsM || s.fs, s.lhM || s.lh, s.msM || s.ms || s.fs, s.mlM || s.ml || s.lh);
 if (s.showNum === undefined) s.showNum = false;
+if (s.mt === undefined) {
+var ot = s.top != null ? s.top : 48;
+var op = s.pad != null ? s.pad : 33;
+s.mt = ot * 2;
+s.mb = ot * 2;
+s.ml = op;
+s.mr = op;
+s.mtM = 24;
+s.mbM = 24;
+s.mlM = 20;
+s.mrM = 20;
+}
 Object.keys(d).forEach(function (k) {
 if (s[k] === undefined) s[k] = clone(d[k]);
 });
@@ -368,7 +388,7 @@ var pg = p.pages[id];
 if (!pg.layout) pg.layout = "master";
 pg.kind = pg.kind || "page";
 pg.stack = pg.stack || [];
-pg.pin = pg.pin || { place: "top", fixed: false, show: "all", pages: [] };
+pg.pin = Object.assign({ place: "top", fixed: false, show: "all", pages: [], h: "", hM: "", gap: "", gapM: "" }, pg.pin || {});
 });
 s.layout = fixLayout(s.layout);
 p.order.forEach(function (id) {
@@ -555,8 +575,12 @@ out.push("/* TOKENS */", R + " {",
 "--bd-sans: " + fontStack(s.sans) + ";",
 "--bd-mono: " + fontStack(s.mono, true) + ";",
 "--bd-w: " + (isSpread(s) ? "100%" : s.w + "px") + ";",
-"--bd-pad: " + s.pad + "px;",
-"--bd-top: " + s.top + "px;",
+"--bd-wt: " + s.mt + "px;",
+"--bd-wr: " + s.mr + "px;",
+"--bd-wb: " + s.mb + "px;",
+"--bd-wl: " + s.ml + "px;",
+"--bd-pad: " + s.ml + "px;",
+"--bd-top: " + Math.round(s.mt / 2) + "px;",
 "--bd-cols: " + s.cols + ";",
 "--bd-row: " + s.row + "px;",
 "--bd-gap: " + s.gap + "px;",
@@ -639,9 +663,9 @@ vertical-align: 0.75em;
 position: relative;
 width: var(--bd-w);
 max-width: 100%;
-min-height: calc(100vh - var(--bd-top) * 2);
-margin: var(--bd-top) auto;
-padding: var(--bd-top) var(--bd-pad);
+min-height: 100vh;
+margin: 0 auto;
+padding: var(--bd-wt) var(--bd-wr) var(--bd-wb) var(--bd-wl);
 background: var(--bd-panel);
 display: flex;
 flex-direction: column;
@@ -1230,8 +1254,14 @@ pointer-events: none;
 width: var(--bd-w);
 max-width: 100%;
 margin: 0 auto;
-padding: 16px var(--bd-pad);
+padding: 0 var(--bd-wr) 0 var(--bd-wl);
 pointer-events: auto;
+}
+.bd-pin.is-fixed.is-top > div {
+padding-top: var(--bd-wt);
+}
+.bd-pin.is-fixed.is-bottom > div {
+padding-bottom: var(--bd-wb);
 }
 .bd-pin.is-fixed.is-top {
 top: 0;
@@ -1255,7 +1285,11 @@ function mobileRules(s, R) {
 var t = sizeTokens(s, true);
 return [R + " {",
 "--bd-top: 0px;",
-"--bd-pad: 20px;",
+"--bd-wt: " + s.mtM + "px;",
+"--bd-wr: " + s.mrM + "px;",
+"--bd-wb: " + s.mbM + "px;",
+"--bd-wl: " + s.mlM + "px;",
+"--bd-pad: " + s.mlM + "px;",
 "--bd-cols: " + s.colsM + ";",
 "--bd-gap: " + s.gapM + "px;",
 "--bd-indent: " + s.indentM + "px;",
@@ -1277,8 +1311,6 @@ return [R + " {",
 `.bd-panel {
 width: 100%;
 min-height: 100vh;
-padding-top: 24px;
-padding-bottom: 24px;
 }
 .bd-num {
 margin-bottom: 18px;
@@ -2017,12 +2049,27 @@ var p = S.project.pages[id];
 if (!isMaster(p)) ensurePhone(p);
 });
 }
+function pinRules(phone) {
+var out = [];
+S.project.order.forEach(function (id) {
+var p = S.project.pages[id];
+if (p.kind !== "pin") return;
+var h = phone ? p.pin.hM : p.pin.h;
+var g = phone ? p.pin.gapM : p.pin.gap;
+var sel = ".bd-pin.bd-p-" + p.id;
+if (h !== "" && h != null && !isNaN(parseFloat(h))) out.push(sel + (p.pin.fixed ? " > div" : "") + " {\nheight: " + parseFloat(h) + "px;\n" + (p.pin.fixed ? "box-sizing: content-box;\n" : "") + "}");
+if (g !== "" && g != null && !isNaN(parseFloat(g))) out.push(".bd-panel > " + sel + " {\nmargin-" + (p.pin.place === "bottom" ? "top" : "bottom") + ": " + parseFloat(g) + "px;\n}");
+});
+return out.join("\n");
+}
 function exportCSS() {
 var s = S.project.site;
 var pages = S.project.order.map(function (id) { return S.project.pages[id]; });
 var out = [baseCSS(s, "export")];
 out.push("/* MASTER */\n" + masterRules(s, false) + "\n");
 out.push("/* COLUMNS */\n" + colRules(false) + "\n");
+var pr = pinRules(false);
+if (pr) out.push("/* HEADER + FOOTER */\n" + pr + "\n");
 pages.forEach(function (p) {
 var r = layoutRules(p, false);
 if (r) out.push("/* PAGE: " + (p.title || p.slug).toUpperCase().replace(/\*\//g, "") + " */\n" + r + "\n");
@@ -2030,6 +2077,8 @@ if (r) out.push("/* PAGE: " + (p.title || p.slug).toUpperCase().replace(/\*\//g,
 var cs = cssSplit(s.css);
 if (cs.desk.trim()) out.push("/* CUSTOM */\n" + cs.desk.trim() + "\n");
 var mob = [mobileRules(s, ":root"), "/* MASTER */\n" + masterRules(s, true), "/* COLUMNS */\n" + colRules(true)];
+var prm = pinRules(true);
+if (prm) mob.push("/* HEADER + FOOTER */\n" + prm);
 pages.forEach(function (p) {
 var r = layoutRules(p, true);
 if (r) mob.push("/* PAGE: " + (p.title || p.slug).toUpperCase().replace(/\*\//g, "") + " */\n" + r);
@@ -2679,7 +2728,9 @@ field("Panel", '<input type="color" class="bd-ed-input" data-bind="site.colors.p
 field("Ink", '<input type="color" class="bd-ed-input" data-bind="site.colors.ink" value="' + esc(s.colors.ink) + '">'),
 field("Rule", '<input type="color" class="bd-ed-input" data-bind="site.colors.rule" value="' + esc(s.colors.rule) + '">')) + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Page frame</span>'
-+ row(numIn("Width", "site.w", s.w, "int"), numIn("Side padding", "site.pad", s.pad, "int"), numIn("Top", "site.top", s.top, "int"))
++ row(numIn("Width", "site.w", s.w, "int"))
++ '<span class="bd-ed-label">Window margins</span>'
++ row(dpIn("Top", "site.mt", "site.mtM", s.mt, s.mtM, "int"), dpIn("Right", "site.mr", "site.mrM", s.mr, s.mrM, "int"), dpIn("Bottom", "site.mb", "site.mbM", s.mb, s.mbM, "int"), dpIn("Left", "site.ml", "site.mlM", s.ml, s.mlM, "int"))
 + row(dpIn("Paragraph indent", "site.indent", "site.indentM", s.indent, s.indentM, "int"))
 + '<div class="bd-ed-hint">Columns are set in the bar above the canvas.</div></div>';
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title", "site.header", s.header) + (s.header ? sw("Number above the title", "site.showNum", s.showNum) : "") + sw("Menu", "site.menu", s.menu) + sw("Arrows to next page", "site.pager", s.pager) + sw("Click images to zoom", "site.zoom", s.zoom)
@@ -2812,6 +2863,8 @@ var foot = pg.pin.place === "bottom";
 h += '<div class="bd-ed-sec"><span class="bd-ed-title">' + (foot ? "Footer" : "Header") + "</span>"
 + field("Name", input("page.title", pg.title))
 + field("Sits at", seg("page.pin.place", pg.pin.place, [["top", "Top · header"], ["bottom", "Bottom · footer"]]))
++ row(dpIn("Height", "page.pin.h", "page.pin.hM", pg.pin.h, pg.pin.hM, "blank"), dpIn(foot ? "Space above" : "Space below", "page.pin.gap", "page.pin.gapM", pg.pin.gap, pg.pin.gapM, "blank"))
++ '<div class="bd-ed-hint">Leave empty for automatic. Height is fixed whatever the content.</div>'
 + sw("Stays put while scrolling", "page.pin.fixed", pg.pin.fixed)
 + field("Shows on", seg("page.pin.show", pg.pin.show, [["all", "Every page"], ["pages", "Chosen pages"]]));
 if (pg.pin.show === "pages") {
@@ -3545,10 +3598,12 @@ var shown = [page].concat(relatedPages(page));
 shown.forEach(function (p) {
 if (phone && !isMaster(p) && p !== page && ensurePhone(p)) scheduleSave();
 });
-var layout = masterRules(s, false) + "\n" + colRules(false) + "\n" + shown.map(function (p) { return layoutRules(p, false); }).join("\n");
-if (phone) layout += "\n" + mobileRules(s, ".bd-site") + "\n" + masterRules(s, true) + "\n" + colRules(true) + "\n" + shown.map(function (p) { return layoutRules(p, true); }).join("\n");
+var layout = masterRules(s, false) + "\n" + colRules(false) + "\n" + pinRules(false) + "\n" + shown.map(function (p) { return layoutRules(p, false); }).join("\n");
+if (phone) layout += "\n" + mobileRules(s, ".bd-site") + "\n" + masterRules(s, true) + "\n" + colRules(true) + "\n" + pinRules(true) + "\n" + shown.map(function (p) { return layoutRules(p, true); }).join("\n");
 var sc = cssSplit(s.css);
 var pc = cssSplit(page.css);
+var pinH = page.kind === "pin" ? (phone && page.pin.hM !== "" && page.pin.hM != null ? page.pin.hM : page.pin.h) : "";
+if (pinH !== "" && pinH != null && !isNaN(parseFloat(pinH))) layout += "\n.bd-main {\nflex: none;\nheight: " + parseFloat(pinH) + "px;\nbox-shadow: 0 1px 0 #ff4d00;\n}";
 var css = baseCSS(s, "edit") + "\n" + (!isSpread(s) && isSpreadPage(page) ? ":host {\n--bd-w: 100%;\n}\n" : "") + layout + "\n" + sc.desk + "\n" + pc.desk + "\n" + (phone ? sc.mob + "\n" + pc.mob + "\n" : "") + (S.inspect ? INSPECT_CSS : S.preview ? "" : EDIT_CSS);
 shadow.innerHTML = "<style>" + css + '</style><div class="bd-site' + (phone ? " is-phone" : "") + (S.inspect ? " is-inspect" : S.preview ? "" : " is-editing") + '" data-bd-page="' + esc(page.slug) + '">' + pageHTML(page, "edit") + "</div>";
 var data = chromeData(page.slug);

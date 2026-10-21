@@ -26,11 +26,11 @@
   "fs": 23.5,
   "lh": 29.6,
   "ms": 16.5,
-  "ml": 22.2,
+  "ml": 80,
   "fsM": 18,
   "lhM": 23,
   "msM": 13,
-  "mlM": 17.5,
+  "mlM": 20,
   "header": false,
   "menu": false,
   "pager": false,
@@ -41,7 +41,7 @@
    }
   ],
   "externals": [],
-  "css": "/* HEADER */\n.bd-panel {\npadding-top: 80px;\n}\n.bd-panel > .bd-pin.is-top {\nmargin-bottom: 200px;\n}\n.sm-nav {\nfont-size: 13px;\nline-height: 19px;\n}\n.sm-nav .sm-logo {\ndisplay: block;\nmargin-bottom: 26px;\nfont-size: 13px;\n}\n.sm-nav a {\ndisplay: table;\nborder-bottom: 1px solid transparent;\n}\n.sm-nav a.is-current,\n.sm-nav a:hover {\nborder-bottom-color: currentColor;\n}\n\n/* TEXT */\n.bd-text a {\nborder-bottom: 1px solid currentColor;\n}\n.bd-site .sm-meta {\nfont-size: 11px;\nline-height: 16px;\n}\n.sm-meta a {\nborder-bottom: 0;\n}\n\n/* PULL QUOTE */\n.bd-site .sm-pull {\nmargin: 0;\npadding: 40px 46px;\nfont-size: 13px;\nline-height: 19px;\ntext-align: center;\nbox-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);\n}\n\n/* JOURNAL CARDS */\n.sm-card {\ndisplay: block;\nmin-height: 120px;\npadding: 18px;\nbackground: #eeeeee;\nborder-bottom: 0;\n}\n.sm-card-t {\ndisplay: block;\nfont-size: 15px;\nline-height: 22px;\n}\n.sm-card-m {\ndisplay: block;\nmargin-top: 12px;\nfont-size: 11px;\nline-height: 16px;\n}\n\n/* CONTRIBUTORS */\n.sm-who summary {\nlist-style: none;\ncursor: pointer;\n}\n.sm-who summary::-webkit-details-marker {\ndisplay: none;\n}\n.sm-who summary::before {\ncontent: \"+\";\ndisplay: inline-block;\nwidth: 27px;\n}\n.sm-who[open] summary::before {\ncontent: \"—\";\n}\n.sm-who ul {\nmargin-top: 18px;\npadding-left: 6px;\n}\n.sm-who li {\nline-height: 31px;\n}\n\n/* NEXT */\n.bd-site .sm-next {\npadding-top: 120px;\nfont-size: 11px;\ntext-align: center;\n}\n.sm-next a {\nborder-bottom: 0;\n}\n\n/* SHOP */\n.bd-site .sm-product {\nfont-size: 11px;\nline-height: 18px;\ntext-align: center;\n}\n\n/* MOBILE */\n@media (max-width: 760px) {\n.bd-panel {\npadding-top: 32px;\n}\n.bd-panel > .bd-pin.is-top {\nmargin-bottom: 64px;\n}\n.bd-site .sm-pull {\npadding: 28px 22px;\n}\n}",
+  "css": "/* HEADER */\n.sm-nav {\nfont-size: 13px;\nline-height: 19px;\n}\n.sm-nav .sm-logo {\ndisplay: block;\nmargin-bottom: 26px;\nfont-size: 13px;\n}\n.sm-nav a {\ndisplay: table;\nborder-bottom: 1px solid transparent;\n}\n.sm-nav a.is-current,\n.sm-nav a:hover {\nborder-bottom-color: currentColor;\n}\n\n/* TEXT */\n.bd-text a {\nborder-bottom: 1px solid currentColor;\n}\n.bd-site .sm-meta {\nfont-size: 11px;\nline-height: 16px;\n}\n.sm-meta a {\nborder-bottom: 0;\n}\n\n/* PULL QUOTE */\n.bd-site .sm-pull {\nmargin: 0;\npadding: 40px 46px;\nfont-size: 13px;\nline-height: 19px;\ntext-align: center;\nbox-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);\n}\n\n/* JOURNAL CARDS */\n.sm-card {\ndisplay: block;\nmin-height: 120px;\npadding: 18px;\nbackground: #eeeeee;\nborder-bottom: 0;\n}\n.sm-card-t {\ndisplay: block;\nfont-size: 15px;\nline-height: 22px;\n}\n.sm-card-m {\ndisplay: block;\nmargin-top: 12px;\nfont-size: 11px;\nline-height: 16px;\n}\n\n/* CONTRIBUTORS */\n.sm-who summary {\nlist-style: none;\ncursor: pointer;\n}\n.sm-who summary::-webkit-details-marker {\ndisplay: none;\n}\n.sm-who summary::before {\ncontent: \"+\";\ndisplay: inline-block;\nwidth: 27px;\n}\n.sm-who[open] summary::before {\ncontent: \"—\";\n}\n.sm-who ul {\nmargin-top: 18px;\npadding-left: 6px;\n}\n.sm-who li {\nline-height: 31px;\n}\n\n/* NEXT */\n.bd-site .sm-next {\npadding-top: 120px;\nfont-size: 11px;\ntext-align: center;\n}\n.sm-next a {\nborder-bottom: 0;\n}\n\n/* SHOP */\n.bd-site .sm-product {\nfont-size: 11px;\nline-height: 18px;\ntext-align: center;\n}\n\n/* MOBILE */\n@media (max-width: 760px) {\n.bd-site .sm-pull {\npadding: 28px 22px;\n}\n}",
   "head": "<script>\n/* NAV — UNDERLINE THE CURRENT PAGE */\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nvar here = location.pathname.replace(/\\/$/, \"\") || \"/\";\ndocument.querySelectorAll(\".sm-nav a\").forEach(function (a) {\nvar to = a.getAttribute(\"href\").replace(/\\/$/, \"\") || \"/\";\nif (to === here || (to !== \"/\" && here.indexOf(to + \"-\") === 0)) a.classList.add(\"is-current\");\n});\n});\n</script>",
   "showNum": false,
   "zoom": false,
@@ -237,7 +237,13 @@
    "colsM": 1,
    "gutter": 40,
    "gutterM": 24
-  }
+  },
+  "mt": 80,
+  "mr": 80,
+  "mb": 80,
+  "mtM": 32,
+  "mrM": 20,
+  "mbM": 32
  },
  "order": [
   "f0kgkfxt",
@@ -285,7 +291,11 @@
     "place": "top",
     "fixed": false,
     "show": "all",
-    "pages": []
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": 200,
+    "gapM": 64
    },
    "stack": [],
    "colset": {
@@ -494,7 +504,11 @@
     "place": "top",
     "fixed": false,
     "show": "all",
-    "pages": []
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
    },
    "colset": {
     "cols": 3,
@@ -870,7 +884,11 @@
     "place": "top",
     "fixed": false,
     "show": "all",
-    "pages": []
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
    }
   },
   "ipk7ns57": {
@@ -1205,7 +1223,11 @@
     "place": "top",
     "fixed": false,
     "show": "all",
-    "pages": []
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
    }
   },
   "k2b6e868": {
@@ -1549,7 +1571,11 @@
     "place": "top",
     "fixed": false,
     "show": "all",
-    "pages": []
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
    }
   },
   "ap7jj2t4": {
@@ -1792,7 +1818,11 @@
     "place": "top",
     "fixed": false,
     "show": "all",
-    "pages": []
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
    }
   },
   "1bp9xrs5": {
@@ -2085,7 +2115,11 @@
     "place": "top",
     "fixed": false,
     "show": "all",
-    "pages": []
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
    }
   },
   "b2lr3tkr": {
@@ -3505,7 +3539,11 @@
     "place": "top",
     "fixed": false,
     "show": "all",
-    "pages": []
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
    },
    "ownLayout": true,
    "colset": {
@@ -3608,7 +3646,11 @@
     "place": "top",
     "fixed": false,
     "show": "all",
-    "pages": []
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
    }
   },
   "nsye72w3": {
@@ -3699,7 +3741,11 @@
     "place": "top",
     "fixed": false,
     "show": "all",
-    "pages": []
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
    }
   }
  }
