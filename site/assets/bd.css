@@ -1,4 +1,4 @@
-/* PUBLISHED build */
+/* PUBLISHED mvid21vw */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1389,7 +1389,6 @@ text-align: center;
 border-bottom: 1px solid currentColor;
 }
 .bd-e-lb31qsc3 {
-background-color: #00c817;
 margin-bottom: 0;
 }
 
@@ -1717,5 +1716,6 @@ line-height: 18px;
 .bd-e-lb31qsc3 {
 max-width: 100%!Important;
 width: 100%important;
+background-color: transparent;
 }
 }

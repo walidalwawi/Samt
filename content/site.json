@@ -41,7 +41,7 @@
    }
   ],
   "externals": [],
-  "css": "/* TEXT */\n.bd-text a {\nborder-bottom: 1px solid currentColor;\n}\n.bd-e-lb31qsc3 {\nbackground-color: #00c817;\nmargin-bottom: 0;\n}\n\n/* MOBILE */\n@media (max-width: 760px) {\n.bd-e-lb31qsc3 {\nmax-width: 100%!Important;\nwidth: 100%important;\n}\n}\n",
+  "css": "/* TEXT */\n.bd-text a {\nborder-bottom: 1px solid currentColor;\n}\n.bd-e-lb31qsc3 {\nmargin-bottom: 0;\n}\n\n/* MOBILE */\n@media (max-width: 760px) {\n.bd-e-lb31qsc3 {\nmax-width: 100%!Important;\nwidth: 100%important;\nbackground-color: transparent;\n}\n}\n",
   "head": "<script>\n/* NAV — UNDERLINE THE CURRENT PAGE */\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nvar here = location.pathname.replace(/\\/$/, \"\") || \"/\";\ndocument.querySelectorAll(\".sm-nav a\").forEach(function (a) {\nvar to = a.getAttribute(\"href\").replace(/\\/$/, \"\") || \"/\";\nif (to === here || (to !== \"/\" && here.indexOf(to + \"-\") === 0)) a.classList.add(\"is-current\");\n});\n});\n</script>",
   "showNum": false,
   "zoom": false,
