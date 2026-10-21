@@ -1,4 +1,4 @@
-/* PUBLISHED build */
+/* PUBLISHED mvi6bg58 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -11,12 +11,8 @@
 --bd-sans: "Helvetica Neue", "Helvetica Neue", Arial, sans-serif;
 --bd-mono: "IBM Plex Mono", Menlo, Consolas, monospace;
 --bd-w: 100%;
---bd-wt: 80px;
---bd-wr: 80px;
---bd-wb: 80px;
---bd-wl: 80px;
---bd-pad: 80px;
---bd-top: 40px;
+--bd-pad: 60px;
+--bd-top: 30px;
 --bd-cols: 12;
 --bd-row: 8px;
 --bd-gap: 0px;
@@ -100,9 +96,9 @@ vertical-align: 0.75em;
 position: relative;
 width: var(--bd-w);
 max-width: 100%;
-min-height: 100vh;
-margin: 0 auto;
-padding: var(--bd-wt) var(--bd-wr) var(--bd-wb) var(--bd-wl);
+min-height: calc(100vh - var(--bd-top) * 2);
+margin: var(--bd-top) auto;
+padding: var(--bd-top) var(--bd-pad);
 background: var(--bd-panel);
 display: flex;
 flex-direction: column;
@@ -659,14 +655,8 @@ pointer-events: none;
 width: var(--bd-w);
 max-width: 100%;
 margin: 0 auto;
-padding: 0 var(--bd-wr) 0 var(--bd-wl);
+padding: 16px var(--bd-pad);
 pointer-events: auto;
-}
-.bd-pin.is-fixed.is-top > div {
-padding-top: var(--bd-wt);
-}
-.bd-pin.is-fixed.is-bottom > div {
-padding-bottom: var(--bd-wb);
 }
 .bd-pin.is-fixed.is-top {
 top: 0;
@@ -795,9 +785,10 @@ grid-template-columns: minmax(0, 4fr) minmax(0, 4fr) minmax(0, 4fr);
 column-gap: 40px;
 }
 
-/* HEADER + FOOTER */
-.bd-panel > .bd-pin.bd-p-f0kgkfxt {
-margin-bottom: 200px;
+/* PAGE: HEADER */
+.bd-flow > .bd-e-83zud23g {
+--x: 0;
+--w: 1;
 }
 
 /* PAGE: LIBRARY */
@@ -915,10 +906,6 @@ text-align: center;
 @media (max-width: 760px) {
 :root {
 --bd-top: 0px;
---bd-wt: 32px;
---bd-wr: 20px;
---bd-wb: 32px;
---bd-wl: 20px;
 --bd-pad: 20px;
 --bd-cols: 6;
 --bd-gap: 0px;
@@ -941,6 +928,8 @@ text-align: center;
 .bd-panel {
 width: 100%;
 min-height: 100vh;
+padding-top: 24px;
+padding-bottom: 24px;
 }
 .bd-num {
 margin-bottom: 18px;
@@ -1059,9 +1048,10 @@ column-gap: 24px;
 grid-template-columns: minmax(0, 1fr);
 column-gap: 24px;
 }
-/* HEADER + FOOTER */
-.bd-panel > .bd-pin.bd-p-f0kgkfxt {
-margin-bottom: 64px;
+/* PAGE: HEADER */
+.bd-flow > .bd-e-83zud23g {
+--x: 0;
+--w: 6;
 }
 /* PAGE: LIBRARY */
 
