@@ -1,4 +1,4 @@
-/* PUBLISHED mvign7o8 */
+/* PUBLISHED mvigrss5 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -41,7 +41,7 @@
 --bd-nav-lh: var(--bd-lh);
 --bd-nav-color: var(--bd-ink);
 --bd-nav-indent: 28px;
---bd-nav-fade: 0.12;
+--bd-nav-fade: 0.08;
 --bd-nav-bg: transparent;
 }
 
