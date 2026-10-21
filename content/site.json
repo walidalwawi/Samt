@@ -578,7 +578,7 @@
       "rowGapM": 24,
       "sort": "newest",
       "limit": "",
-      "featured": "marked",
+      "featured": "none",
       "fLayout": "side",
       "fTitleStyle": "",
       "showImage": true,
