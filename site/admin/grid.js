@@ -407,7 +407,7 @@ s.master.types[k].wm = s.colsM;
 s.master.types[k].xm = 0;
 });
 Object.keys(m.types).forEach(function (k) {
-s.master.types[k] = Object.assign(masterDefaults().types[k], s.master.types[k] || {});
+s.master.types[k] = Object.assign({ x: 0, w: s.cols, xm: 0, wm: s.colsM, space: "", spaceM: "" }, masterDefaults().types[k] || {}, s.master.types[k] || {});
 });
 p.order.forEach(function (id) {
 var pg = p.pages[id];

@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Back office</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap">
-<link rel="stylesheet" href="/admin/grid.css">
+<link rel="stylesheet" href="/admin/grid.css?v=1792598205">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.min.css">
 <script>
@@ -66,6 +66,18 @@ window.BD_HOST = "samt";
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/searchcursor.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/search.min.js"></script>
-<script src="/admin/grid.js"></script>
+<script>
+/* CRASH NOTICE — SHOW THE ERROR INSTEAD OF A BLANK SCREEN */
+window.addEventListener("error", function (ev) {
+if (document.getElementById("bd-crash")) return;
+var d = document.createElement("div");
+d.id = "bd-crash";
+d.setAttribute("style", "position:fixed;left:16px;right:16px;bottom:16px;z-index:9999;padding:14px 16px;background:#15161a;color:#fff;font:13px/1.45 system-ui,sans-serif;border-radius:6px");
+d.innerHTML = "<b>The back office hit an error.</b> Reload the page. If it keeps happening, send Claude this line:<br><code style=\"display:block;margin-top:6px;white-space:pre-wrap;opacity:.8\"></code>";
+d.querySelector("code").textContent = (ev.message || "Error") + (ev.filename ? " · " + ev.filename.split("/").pop() + ":" + ev.lineno : "");
+document.body.appendChild(d);
+});
+</script>
+<script src="/admin/grid.js?v=1792598205"></script>
 </body>
 </html>
