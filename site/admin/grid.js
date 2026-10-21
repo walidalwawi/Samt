@@ -64,6 +64,83 @@ I[k] = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width=
 });
 })();
 
+/* BLOCK STYLES — A SITE-WIDE LOOK PER BLOCK TYPE (STYLES TAB); A BLOCK'S OWN VALUE WINS, EMPTY = SITE STYLE */
+var BS_ALIGN = [["left", "Left"], ["center", "Centre"], ["right", "Right"]];
+var BS_CASE = [["none", "As typed"], ["uppercase", "UPPER"], ["lowercase", "lower"]];
+var BLOCK_STYLE = {
+quote: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align", "sel", "center", BS_ALIGN], ["pad", "Padding top/bottom", "dp", 40, null, 28], ["padX", "Padding sides", "dp", 46, null, 22], ["bg", "Background", "color", ""], ["ink", "Text colour", "color", ""], ["shadow", "Soft shadow", "bool", "1"], ["line", "Line on the left", "bool", "0"]],
+posts: [["titleStyle", "Title style", "style", "body"], ["titleSize", "Title size", "dp", ""], ["titleLh", "Title line", "dp", ""], ["metaStyle", "Info style", "style", "small"], ["metaSize", "Info size", "dp", ""], ["metaLh", "Info line", "dp", ""], ["metaGap", "Gap above info", "px", 8], ["cardBg", "Card colour", "color", ""], ["cardPad", "Card padding", "dp", 0], ["minH", "Text min height", "px", ""], ["imgGap", "Image gap", "px", 12], ["imagePos", "Image", "sel", "top", [["top", "Above text"], ["bottom", "Below text"]]], ["ratio", "Crop", "sel", "auto", [["auto", "Original"], ["1", "Square"], ["4/3", "4 : 3"], ["3/2", "3 : 2"], ["16/9", "16 : 9"], ["3/4", "3 : 4"]]], ["hover", "Hover", "sel", "dim", [["none", "None"], ["dim", "Dim"], ["lift", "Lift"]]], ["fTitleStyle", "Featured title", "style", "heading"]],
+library: [["book", "Book look", "bool", "1"], ["spine", "Spine colour", "color", "#8a8a8a"], ["spineW", "Spine width", "px", 10], ["shadow", "Shadow", "bool", "1"], ["radius", "Page corner", "px", 2], ["hover", "Hover", "sel", "tilt", [["none", "None"], ["tilt", "Open (perspective)"], ["lift", "Lift"]]]],
+toggle: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["marker", "Marker", "sel", "plus", [["plus", "+ / —"], ["arrow", "→ / ↓"], ["none", "None"]]], ["itemGap", "Between items", "px", 0], ["indent", "Indent items", "px", 0]],
+product: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align", "sel", "left", BS_ALIGN]],
+pager: [["style", "Text style (words)", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align (words)", "sel", "left", BS_ALIGN]],
+postinfo: [["style", "Text style", "style", "small"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""]],
+menubtn: [["style", "Link style", "style", "body"], ["size", "Link size", "dp", ""], ["lh", "Link line", "dp", ""], ["textCase", "Case", "sel", "none", BS_CASE], ["tracking", "Spacing (em)", "px", ""], ["itemGap", "Between links", "dp", 0], ["groupGap", "Between groups", "dp", 20], ["headGap", "Under heading", "px", 4], ["current", "Current page", "sel", "underline", [["underline", "Line"], ["dim", "Dim"], ["strike", "Strike"], ["arrow", "→"], ["none", "None"]]], ["hover", "Hover", "sel", "underline", [["underline", "Line"], ["dim", "Dim"], ["none", "None"]]], ["brandStyle", "Name style", "style", "body"], ["brandSize", "Name size", "dp", ""], ["brandLh", "Name line", "dp", ""], ["brandGap", "Name gap", "dp", 16]],
+ptitle: [["style", "Text style", "style", "body"], ["align", "Align", "sel", "left", BS_ALIGN]]
+};
+function bsKeys(f) {
+return f[2] === "dp" ? [f[0], f[0] + "M"] : [f[0]];
+}
+function bsNorm(f, v) {
+if (f[2] === "bool") return v === true || v === "1" || v === 1 ? "1" : v === false || v === "0" || v === 0 ? "0" : "";
+return v;
+}
+function bsSite(type) {
+var b = S.project && S.project.site.blockStyles;
+return (b && b[type]) || {};
+}
+function E(e, k) {
+var v = e.props[k];
+if (v !== "" && v != null) return v;
+var sv = bsSite(e.type)[k];
+return sv == null ? "" : sv;
+}
+function N(e, k, phone) {
+var site = bsSite(e.type);
+var list = phone ? [e.props[k + "M"], site[k + "M"], e.props[k], site[k]] : [e.props[k], site[k]];
+for (var i = 0; i < list.length; i++) {
+var v = list[i];
+if (v !== "" && v != null && !isNaN(parseFloat(v))) return parseFloat(v);
+}
+return null;
+}
+function ON(e, k) {
+var v = E(e, k);
+return v === true || v === "1" || v === 1;
+}
+function normalizeBlockStyles(p) {
+var s = p.site;
+s.blockStyles = s.blockStyles || {};
+Object.keys(BLOCK_STYLE).forEach(function (t) {
+var els = [];
+p.order.forEach(function (id) { (p.pages[id].els || []).forEach(function (e) { if (e.type === t) els.push(e); }); });
+var fresh = !s.blockStyles[t];
+var bs = s.blockStyles[t] = s.blockStyles[t] || {};
+BLOCK_STYLE[t].forEach(function (f) {
+bsKeys(f).forEach(function (k, i) {
+els.forEach(function (e) { if (e.props[k] !== undefined && f[2] === "bool") e.props[k] = bsNorm(f, e.props[k]); });
+if (bs[k] === undefined) {
+var dv = i === 1 ? (f[5] !== undefined ? f[5] : "") : f[3];
+if (fresh) {
+var cnt = {};
+var best = null;
+els.forEach(function (e) {
+var v = e.props[k];
+if (v === "" || v == null) return;
+var key = String(v);
+cnt[key] = (cnt[key] || 0) + 1;
+if (best === null || cnt[key] > cnt[String(best)]) best = v;
+});
+if (best !== null) dv = best;
+}
+bs[k] = dv;
+}
+if (fresh) els.forEach(function (e) { if (e.props[k] !== undefined && String(e.props[k]) === String(bs[k])) e.props[k] = ""; });
+});
+});
+});
+}
+
 /* STATE */
 var S = {
 store: null,
@@ -432,6 +509,12 @@ var d = elDefaults(e.type).props;
 Object.keys(d).forEach(function (k) { if (e.props[k] === undefined) e.props[k] = clone(d[k]); });
 });
 });
+normalizeBlockStyles(p);
+if (s.master.types.library && s.master.types.library.wm === 4 && s.colsM !== 4 && !s.master.libFix) {
+s.master.types.library.wm = s.colsM;
+s.master.types.library.w = s.cols;
+}
+s.master.libFix = 1;
 if (!s.master.types.gallery) s.master.types.gallery = Object.assign({ space: "", spaceM: "" }, s.master.types.image);
 return p;
 }
@@ -472,7 +555,9 @@ quote: { w: 12, h: 10, props: { html: "<p>A line worth pulling out.</p>", style:
 toggle: { w: 12, h: 6, props: { title: "More", items: ["First", "Second"], open: false, marker: "plus", style: "body", itemGap: 0, indent: 0 } },
 product: { w: 6, h: 30, props: { assetId: "", file: "", alt: "", title: "Product name", price: "", note: "", href: "", style: "body", align: "left", size: "", lh: "" } }
 };
-return clone(map[type]);
+var out = clone(map[type]);
+if (out && BLOCK_STYLE[type]) BLOCK_STYLE[type].forEach(function (f) { bsKeys(f).forEach(function (k) { out.props[k] = ""; }); });
+return out;
 }
 function newPage(title, section, slug, num) {
 return {
@@ -1062,10 +1147,10 @@ grid-column: 3;
 }
 
 /* PAGE TITLE BLOCK */
-.bd-ptitle.is-center {
+.bd-ptitle.is-al-center {
 text-align: center;
 }
-.bd-ptitle.is-right {
+.bd-ptitle.is-al-right {
 text-align: right;
 }
 
@@ -1552,6 +1637,10 @@ display: block;
 min-width: 0;
 border-bottom: 0;
 }
+.bd-lib-cover {
+position: relative;
+display: block;
+}
 .bd-lib-item img,
 .bd-lib-blank {
 display: block;
@@ -1578,8 +1667,48 @@ line-height: 16px;
 .bd-lib-item.is-hidden {
 display: none;
 }
-a.bd-lib-item:hover img {
+.bd-library:not(.is-book) a.bd-lib-item:hover img {
 opacity: 0.85;
+}
+.bd-library.is-book .bd-lib-item {
+perspective: 900px;
+}
+.bd-library.is-book .bd-lib-cover {
+overflow: hidden;
+border-radius: 0 var(--lib-r, 2px) var(--lib-r, 2px) 0;
+transform-origin: left center;
+transition: transform 0.45s ease, box-shadow 0.45s ease;
+}
+.bd-library.is-book .bd-lib-cover::before {
+content: "";
+position: absolute;
+top: 0;
+bottom: 0;
+left: 0;
+z-index: 1;
+width: var(--spine-w, 10px);
+background: linear-gradient(90deg, rgba(0, 0, 0, 0.28), rgba(255, 255, 255, 0.18) 45%, rgba(0, 0, 0, 0.12)), var(--spine, #8a8a8a);
+}
+.bd-library.is-book .bd-lib-cover::after {
+content: "";
+position: absolute;
+top: 0;
+bottom: 0;
+left: var(--spine-w, 10px);
+z-index: 1;
+width: 3px;
+background: linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent);
+}
+.bd-library.has-shadow .bd-lib-cover {
+box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.16);
+}
+.bd-library.is-hov-tilt a.bd-lib-item:hover .bd-lib-cover {
+transform: rotateY(-24deg);
+box-shadow: 14px 8px 18px rgba(0, 0, 0, 0.22);
+}
+.bd-library.is-hov-lift a.bd-lib-item:hover .bd-lib-cover {
+transform: translateY(-6px);
+box-shadow: 4px 12px 18px rgba(0, 0, 0, 0.2);
 }
 
 /* ZOOM */
@@ -1766,63 +1895,74 @@ var out = [];
 page.els.forEach(function (e) {
 var p = e.props;
 var sel = ".bd-e-" + e.id;
-if (e.type === "posts") {
-var pv = [];
-var push = function (name, k, unit) { var x = pick(p, k, phone); if (x != null) pv.push(name + ": " + x + (unit || "px") + ";"); };
-push("--pcols", "cols", " ");
-push("--pgap", "gap");
-push("--prow", "rowGap");
-push("--ppad", "cardPad");
-push("--pminh", "minH");
-if (!phone) {
-push("--pimg-gap", "imgGap");
-push("--pmgap", "metaGap");
-if (p.cardBg) pv.push("--pbg: " + p.cardBg + ";");
-if (p.ratio && p.ratio !== "auto") pv.push("--pratio: " + String(p.ratio).replace("/", " / ") + ";");
-}
-if (pv.length) out.push(sel + " {\n" + pv.join("\n").replace(/ ;/g, ";") + "\n}");
-var ts = pick(p, "titleSize", phone), tl = pick(p, "titleLh", phone), ms = pick(p, "metaSize", phone), ml = pick(p, "metaLh", phone);
-if (ts != null || tl != null) out.push(sel + " .bd-post:not(.is-featured) .bd-post-t {\n" + (ts != null ? "font-size: " + ts + "px;\n" : "") + (tl != null ? "line-height: " + tl + "px;\n" : "") + "}");
-if (ms != null || ml != null) out.push(sel + " .bd-post-m,\n" + sel + " .bd-post-d {\n" + (ms != null ? "font-size: " + ms + "px;\n" : "") + (ml != null ? "line-height: " + ml + "px;\n" : "") + "}");
-}
-if (e.type === "postinfo" || e.type === "pager" || e.type === "product" || e.type === "toggle") {
-var is = pick(p, "size", phone), il = pick(p, "lh", phone);
-if (is != null || il != null) out.push(sel + (e.type === "product" ? " .bd-product-t" : "") + " {\n" + (is != null ? "font-size: " + is + "px;\n" : "") + (il != null ? "line-height: " + il + "px;\n" : "") + "}");
-}
+var d = [];
+var px = function (css, k) { var v = N(e, k, phone); if (v != null) d.push(css + ": " + v + "px;"); };
+var font = function (target, kS, kL) {
+var a = N(e, kS, phone), b = N(e, kL, phone);
+if (a != null || b != null) out.push(target + " {\n" + (a != null ? "font-size: " + a + "px;\n" : "") + (b != null ? "line-height: " + b + "px;\n" : "") + "}");
+};
 if (e.type === "quote") {
-var qp = pick(p, "pad", phone), qx = pick(p, "padX", phone);
-var qv = [];
-if (qp != null || qx != null) qv.push("padding: " + (qp != null ? qp : 0) + "px " + (qx != null ? qx : 0) + "px;");
-if (!phone && p.bg) qv.push("background: " + p.bg + ";");
-if (qv.length) out.push(sel + " {\n" + qv.join("\n") + "\n}");
+var qy = N(e, "pad", phone), qx = N(e, "padX", phone);
+if (qy != null || qx != null) d.push("padding: " + (qy || 0) + "px " + (qx || 0) + "px;");
+if (!phone) {
+if (E(e, "bg")) d.push("background: " + E(e, "bg") + ";");
+if (E(e, "ink")) d.push("color: " + E(e, "ink") + ";");
+d.push("text-align: " + (E(e, "align") || "left") + ";");
+if (ON(e, "shadow")) d.push("box-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);");
+if (ON(e, "line")) d.push("border-left: 1px solid currentColor;");
 }
-if (e.type === "toggle" && !phone) {
-var tv = [];
-if (p.itemGap) tv.push("--tgap: " + parseFloat(p.itemGap) + "px;");
-if (p.indent) tv.push("--tind: " + parseFloat(p.indent) + "px;");
-if (tv.length) out.push(sel + " {\n" + tv.join("\n") + "\n}");
+font(sel, "size", "lh");
 }
+if (e.type === "posts") {
+var pc = pick(p, "cols", phone), pg2 = pick(p, "gap", phone), pr = pick(p, "rowGap", phone);
+if (pc != null) d.push("--pcols: " + pc + ";");
+if (pg2 != null) d.push("--pgap: " + pg2 + "px;");
+if (pr != null) d.push("--prow: " + pr + "px;");
+px("--ppad", "cardPad");
+if (!phone) {
+px("--pminh", "minH");
+px("--pimg-gap", "imgGap");
+px("--pmgap", "metaGap");
+if (E(e, "cardBg")) d.push("--pbg: " + E(e, "cardBg") + ";");
+var ra = E(e, "ratio");
+if (ra && ra !== "auto") d.push("--pratio: " + String(ra).replace("/", " / ") + ";");
+}
+font(sel + " .bd-post:not(.is-featured) .bd-post-t", "titleSize", "titleLh");
+font(sel + " .bd-post-m,\n" + sel + " .bd-post-d", "metaSize", "metaLh");
+}
+if (e.type === "library" && !phone) {
+if (E(e, "spine")) d.push("--spine: " + E(e, "spine") + ";");
+px("--spine-w", "spineW");
+px("--lib-r", "radius");
+(p.items || []).forEach(function (b) { if (b.spine) out.push(sel + ' .bd-lib-item[data-k="' + b.id + '"] {\n--spine: ' + b.spine + ";\n}"); });
+}
+if (e.type === "toggle") {
+if (!phone) {
+px("--tgap", "itemGap");
+px("--tind", "indent");
+}
+font(sel, "size", "lh");
+}
+if (e.type === "product") {
+if (!phone) d.push("text-align: " + (E(e, "align") || "left") + ";");
+font(sel + " .bd-product-t", "size", "lh");
+}
+if (e.type === "pager" || e.type === "postinfo") font(sel, "size", "lh");
 if (e.type === "menubtn") {
-var v = [];
-var bg = pick(p, "brandGap", phone);
-var ig = pick(p, "itemGap", phone);
-var gg = pick(p, "groupGap", phone);
-if (bg != null) v.push("--mgap: " + bg + "px;");
-if (ig != null) v.push("--igap: " + ig + "px;");
-if (gg != null) v.push("--ggap: " + gg + "px;");
-if (!phone && p.headGap !== "" && p.headGap != null) v.push("--hgap: " + parseFloat(p.headGap) + "px;");
-if (v.length) out.push(sel + " {\n" + v.join("\n") + "\n}");
+px("--mgap", "brandGap");
+px("--igap", "itemGap");
+px("--ggap", "groupGap");
+if (!phone) px("--hgap", "headGap");
 var t = [];
-var fs = pick(p, "size", phone);
-var lh = pick(p, "lh", phone);
+var fs = N(e, "size", phone), lh = N(e, "lh", phone);
 if (fs != null) t.push("font-size: " + fs + "px;");
 if (lh != null) t.push("line-height: " + lh + "px;");
-if (!phone && p.textCase && p.textCase !== "none") t.push("text-transform: " + p.textCase + ";");
-if (!phone && p.tracking !== "" && p.tracking != null && !isNaN(parseFloat(p.tracking))) t.push("letter-spacing: " + parseFloat(p.tracking) + "em;");
+if (!phone && E(e, "textCase") && E(e, "textCase") !== "none") t.push("text-transform: " + E(e, "textCase") + ";");
+if (!phone && N(e, "tracking", false) != null) t.push("letter-spacing: " + N(e, "tracking", false) + "em;");
 if (t.length) out.push(sel + " .bd-mlist {\n" + t.join("\n") + "\n}");
-var bs = pick(p, "brandSize", phone), bl2 = pick(p, "brandLh", phone);
-if (bs != null || bl2 != null) out.push(sel + " .bd-mbrand {\n" + (bs != null ? "font-size: " + bs + "px;\n" : "") + (bl2 != null ? "line-height: " + bl2 + "px;\n" : "") + "}");
+font(sel + " .bd-mbrand", "brandSize", "brandLh");
 }
+if (d.length) out.push(sel + " {\n" + d.join("\n") + "\n}");
 });
 return out.join("\n");
 }
@@ -2152,7 +2292,8 @@ var lim = parseInt(p.limit, 10);
 if (lim > 0) list = list.slice(0, lim);
 return { blog: bid, feat: feat, list: list };
 }
-function postCard(q, p, ctx, feat) {
+function postCard(q, e, ctx, feat) {
+var p = e.props;
 var parts = [];
 if (p.showImage) {
 var cv = postCover(q);
@@ -2160,11 +2301,11 @@ var cs = cv ? imgSrc(cv, ctx) : "";
 if (cs) parts.push('<span class="bd-post-img"><img src="' + esc(cs) + '" alt=""' + (ctx === "export" ? ' loading="lazy"' : ' draggable="false"') + "></span>");
 }
 var txt = [];
-if (p.showTitle) txt.push('<span class="bd-post-t bd-ts-' + (feat ? p.fTitleStyle || "heading" : p.titleStyle || "body") + '">' + esc(q.h1 || q.title) + "</span>");
-if (p.showDate && q.date) txt.push('<span class="bd-post-d bd-ts-' + (p.metaStyle || "small") + '">' + esc(fmtDate(q.date)) + "</span>");
+if (p.showTitle) txt.push('<span class="bd-post-t bd-ts-' + (feat ? E(e, "fTitleStyle") || "heading" : E(e, "titleStyle") || "body") + '">' + esc(q.h1 || q.title) + "</span>");
+if (p.showDate && q.date) txt.push('<span class="bd-post-d bd-ts-' + (E(e, "metaStyle") || "small") + '">' + esc(fmtDate(q.date)) + "</span>");
 if (p.showMeta) {
 var w = postWords(q);
-txt.push('<span class="bd-post-m bd-ts-' + (p.metaStyle || "small") + '">' + w + " words ~ " + Math.max(1, Math.ceil(w / 200)) + " min</span>");
+txt.push('<span class="bd-post-m bd-ts-' + (E(e, "metaStyle") || "small") + '">' + w + " words ~ " + Math.max(1, Math.ceil(w / 200)) + " min</span>");
 }
 if (p.showExcerpt && q.excerpt) txt.push('<span class="bd-post-x">' + esc(q.excerpt) + "</span>");
 parts.push('<span class="bd-post-txt">' + txt.join("") + "</span>");
@@ -2173,22 +2314,24 @@ return '<a class="bd-post' + (feat ? " is-featured is-f-" + (p.fLayout || "stack
 function postsHTML(e, ctx) {
 var p = e.props;
 var L = postsList(p);
-var cls = "bd-el bd-e-" + e.id + " bd-posts is-" + (p.layout || "grid") + " is-img-" + (p.imagePos || "top") + " is-hov-" + (p.hover || "none");
+var cls = "bd-el bd-e-" + e.id + " bd-posts is-" + (p.layout || "grid") + " is-img-" + (E(e, "imagePos") || "top") + " is-hov-" + (E(e, "hover") || "none");
 if (!L.blog) return ctx === "export" ? "" : '<div class="' + cls + '"><div class="bd-ed-gempty">Blog posts · add a blog in the Pages tab</div></div>';
 if (!L.feat && !L.list.length) return ctx === "export" ? "" : '<div class="' + cls + '"><div class="bd-ed-gempty">No posts yet · add one with + Post</div></div>';
-return '<div class="' + cls + '">\n' + (L.feat ? postCard(L.feat, p, ctx, true) + "\n" : "") + L.list.map(function (q) { return postCard(q, p, ctx, false); }).join("\n") + "\n</div>";
+return '<div class="' + cls + '">\n' + (L.feat ? postCard(L.feat, e, ctx, true) + "\n" : "") + L.list.map(function (q) { return postCard(q, e, ctx, false); }).join("\n") + "\n</div>";
 }
-function menuBrandHTML(p) {
+function menuBrandHTML(e) {
+var p = e.props;
 var b = p.brand || "none";
 if (b === "none") return "";
-var cls = "bd-mbrand bd-ts-" + (p.brandStyle || "body");
+var cls = "bd-mbrand bd-ts-" + (E(e, "brandStyle") || "body");
 if (b === "page") {
 var bp = forPage();
 return '<span class="' + cls + '">' + esc(bp ? bp.h1 || bp.title : "Page title") + "</span>\n";
 }
 return '<a class="' + cls + '" href="/">' + esc(b === "custom" ? p.brandText || S.project.site.name : S.project.site.name) + "</a>\n";
 }
-function menuListHTML(p) {
+function menuListHTML(e) {
+var p = e.props;
 var s = S.project.site;
 var cur = forPage();
 var pages = seqPages().filter(function (q) { return q.section && !q.parent; });
@@ -2196,7 +2339,7 @@ var groups = s.sections.map(function (sec) {
 return { label: sec.label, items: pages.filter(function (q) { return q.section === sec.key; }), ext: (s.externals || []).filter(function (x) { return x.section === sec.key; }) };
 }).filter(function (g) { return g.items.length || g.ext.length; });
 var heads = p.group === "sections";
-return '<nav class="bd-mlist bd-ts-' + (p.style || "body") + " is-" + (p.dir === "horizontal" ? "horizontal" : "vertical") + " is-cur-" + (p.current || "none") + " is-hov-" + (p.hover || "none") + (heads ? " has-heads" : "") + '" aria-label="Menu">\n' + groups.map(function (g) {
+return '<nav class="bd-mlist bd-ts-' + (E(e, "style") || "body") + " is-" + (p.dir === "horizontal" ? "horizontal" : "vertical") + " is-cur-" + (E(e, "current") || "none") + " is-hov-" + (E(e, "hover") || "none") + (heads ? " has-heads" : "") + '" aria-label="Menu">\n' + groups.map(function (g) {
 return '<div class="bd-mgroup">\n' + (heads ? '<span class="bd-mhead">' + esc(g.label) + "</span>\n" : "") + "<ul>\n" + g.items.map(function (q) {
 return '<li><a href="/' + esc(q.slug || "") + '"' + (cur && q.id === cur.id ? ' class="is-current" aria-current="page"' : "") + ">" + esc(q.title) + "</a></li>";
 }).concat(g.ext.map(function (x) {
@@ -2209,12 +2352,7 @@ var p = e.props;
 var base = "bd-el bd-e-" + e.id;
 if (e.type === "ptitle") {
 var tp = forPage();
-var tc = " bd-ptitle";
-var tsty = textStyle(p);
-if (tsty !== "body") tc += " is-" + tsty;
-if (p.align === "center") tc += " is-center";
-if (p.align === "right") tc += " is-right";
-return '<div class="' + base + tc + '">\n' + (p.num && tp && tp.num ? '<span class="bd-num">' + esc(tp.num) + "</span>\n" : "") + "<h1>" + esc(tp ? tp.h1 || tp.title : "Page title") + "</h1>\n</div>";
+return '<div class="' + base + " bd-ptitle bd-ts-" + (E(e, "style") || "body") + " is-al-" + (E(e, "align") || "left") + '">\n' + (p.num && tp && tp.num ? '<span class="bd-num">' + esc(tp.num) + "</span>\n" : "") + "<h1>" + esc(tp ? tp.h1 || tp.title : "Page title") + "</h1>\n</div>";
 }
 if (e.type === "posts") return postsHTML(e, ctx);
 if (e.type === "postinfo") {
@@ -2226,32 +2364,31 @@ if (p.words) bits.push(wc + " words");
 if (p.time) bits.push(Math.max(1, Math.ceil(wc / 200)) + " min");
 var bl = ip && ip.parent ? S.project.pages[ip.parent] : null;
 var back = p.back ? '<a class="bd-postinfo-back" href="/' + esc(bl ? bl.slug || "" : "") + '">' + esc(p.backLabel || "<") + "</a>" : "";
-return '<div class="' + base + " bd-postinfo bd-ts-" + (p.style || "small") + '">' + back + "<span>" + bits.join(p.words && p.time && !p.date ? " ~ " : " · ") + "</span></div>";
+return '<div class="' + base + " bd-postinfo bd-ts-" + (E(e, "style") || "small") + '">' + back + "<span>" + bits.join(p.words && p.time && !p.date ? " ~ " : " · ") + "</span></div>";
 }
 if (e.type === "quote") {
-return '<blockquote class="' + base + " bd-quote bd-ts-" + (p.style || "body") + " is-al-" + (p.align || "center") + (p.shadow ? " has-shadow" : "") + (p.line ? " has-line" : "") + '">\n' + String(p.html || "") + "\n</blockquote>";
+return '<blockquote class="' + base + " bd-quote bd-ts-" + (E(e, "style") || "body") + '">\n' + String(p.html || "") + "\n</blockquote>";
 }
 if (e.type === "toggle") {
-return '<details class="' + base + " bd-toggle bd-ts-" + (p.style || "body") + " is-mark-" + (p.marker || "plus") + '"' + (p.open ? " open" : "") + ">\n<summary>" + esc(p.title || "") + "</summary>\n<ul>\n" + (p.items || []).map(function (x) { return "<li>" + x + "</li>"; }).join("\n") + "\n</ul>\n</details>";
+return '<details class="' + base + " bd-toggle bd-ts-" + (E(e, "style") || "body") + " is-mark-" + (E(e, "marker") || "plus") + '"' + (p.open ? " open" : "") + ">\n<summary>" + esc(p.title || "") + "</summary>\n<ul>\n" + (p.items || []).map(function (x) { return "<li>" + x + "</li>"; }).join("\n") + "\n</ul>\n</details>";
 }
 if (e.type === "product") {
 var psrc = p.assetId ? imgSrc(p, ctx) : "";
 var pimg = psrc ? '<img src="' + esc(psrc) + '" alt="' + esc(p.alt || p.title) + '"' + (ctx === "export" ? ' loading="lazy"' : "") + ">" : (ctx === "export" ? "" : '<span class="bd-product-empty">Choose an image in the panel</span>');
-var ptxt = '<div class="bd-product-t bd-ts-' + (p.style || "body") + '">' + esc(p.title) + (p.price ? "<br>" + esc(p.price) : "") + (p.note ? '<br><span class="bd-product-n">' + esc(p.note) + "</span>" : "") + "</div>";
+var ptxt = '<div class="bd-product-t bd-ts-' + (E(e, "style") || "body") + '">' + esc(p.title) + (p.price ? "<br>" + esc(p.price) : "") + (p.note ? '<br><span class="bd-product-n">' + esc(p.note) + "</span>" : "") + "</div>";
 var ptag = p.href ? "a" : "figure";
-return "<" + ptag + ' class="' + base + " bd-product is-al-" + (p.align || "left") + '"' + (p.href ? ' href="' + esc(p.href) + '"' : "") + ">\n" + pimg + "\n" + ptxt + "\n</" + ptag + ">";
+return "<" + ptag + ' class="' + base + ' bd-product"' + (p.href ? ' href="' + esc(p.href) + '"' : "") + ">\n" + pimg + "\n" + ptxt + "\n</" + ptag + ">";
 }
 if (e.type === "menubtn") {
 var mc = " bd-menubtn is-mode-" + (p.mode === "list" ? "list" : "button") + " is-al-" + (p.align || "start") + " is-brand-" + (p.brandPos || "before");
 if (p.corner === "right" || p.corner === "left") mc += " is-corner-" + p.corner;
-var inner = p.mode === "list" ? menuListHTML(p) : '<span class="bd-mslot" data-bd-menu></span>';
-return '<div class="' + base + mc + '">\n' + menuBrandHTML(p) + inner + "\n</div>";
+var inner = p.mode === "list" ? menuListHTML(e) : '<span class="bd-mslot" data-bd-menu></span>';
+return '<div class="' + base + mc + '">\n' + menuBrandHTML(e) + inner + "\n</div>";
 }
 if (e.type === "pager") {
 var seq = sitePages();
 var fp0 = forPage();
 if (p.scope === "blog" && fp0 && fp0.parent) seq = postsOf(fp0.parent);
-else if (p.scope === "blog" && S.renderPage && S.renderPage.kind === "pin") seq = sitePages();
 var cp = forPage();
 var at = seq.indexOf(cp);
 if (at < 0) return ctx === "export" ? "" : '<nav class="' + base + ' bd-pagerbar"></nav>';
@@ -2259,16 +2396,32 @@ var pv = seq[at - 1] || (p.loop ? seq[seq.length - 1] : null);
 var nx = seq[at + 1] || (p.loop ? seq[0] : null);
 if (pv === cp) pv = null;
 if (nx === cp) nx = null;
-var mid = p.num === "count" ? (at + 1) + " / " + seq.length : p.num === "title" ? (cp.h1 || cp.title) : p.num === "none" ? "" : (cp.num || "");
-var lk = function (q, dir) { return '<a href="/' + esc(q.slug || "") + '" aria-label="' + (dir === "prev" ? "Previous: " : "Next: ") + esc(q.title) + '">' + BD_ARROWS[dir] + "</a>"; };
 if (p.look === "text") {
 var tl = function (q, lab, cls) { return '<a class="' + cls + '" href="/' + esc(q.slug || "") + '">' + esc(lab) + esc(q.h1 || q.title) + "</a>"; };
 var parts = [];
 if (pv && p.prevLabel) parts.push(tl(pv, p.prevLabel, "bd-pagerbar-prev"));
 if (nx && p.nextLabel !== "") parts.push(tl(nx, p.nextLabel || "", "bd-pagerbar-next"));
-return '<div class="' + base + " bd-pagerbar is-text bd-ts-" + (p.style || "body") + " is-al-" + (p.align || "left") + (p.line ? " has-line" : "") + '">' + parts.join("\n") + "</div>";
+return '<div class="' + base + " bd-pagerbar is-text bd-ts-" + (E(e, "style") || "body") + " is-al-" + (E(e, "align") || "left") + (p.line ? " has-line" : "") + '">' + parts.join("\n") + "</div>";
 }
+var mid = p.num === "count" ? (at + 1) + " / " + seq.length : p.num === "title" ? (cp.h1 || cp.title) : p.num === "none" ? "" : (cp.num || "");
+var lk = function (q, dir) { return '<a href="/' + esc(q.slug || "") + '" aria-label="' + (dir === "prev" ? "Previous: " : "Next: ") + esc(q.title) + '">' + BD_ARROWS[dir] + "</a>"; };
 return '<nav class="' + base + " bd-pagerbar" + (p.line ? " has-line" : "") + '" aria-label="Pages">\n<span class="bd-pagerbar-prev">' + (pv ? lk(pv, "prev") : "") + '</span>\n<span class="bd-pagerbar-num">' + esc(mid) + '</span>\n<span class="bd-pagerbar-next">' + (nx ? lk(nx, "next") : "") + "</span>\n</nav>";
+}
+if (e.type === "library") {
+var books = p.items || [];
+var lcls = " bd-library" + (ON(e, "book") ? " is-book" : "") + (ON(e, "shadow") ? " has-shadow" : "") + " is-hov-" + (E(e, "hover") || "none");
+if (!books.length) return ctx === "export" ? "" : '<div class="' + base + lcls + '"><div class="bd-ed-gempty">Library · add books in the panel</div></div>';
+var topics = libTopics(p);
+var bar = p.filters !== false && topics.length ? '<nav class="bd-lib-filter" aria-label="Topics">\n<button type="button" class="is-on" data-t="">' + esc(p.allLabel || "All") + "</button>\n" + topics.map(function (t) { return '<button type="button" data-t="' + esc(slugify(t)) + '">' + esc(t) + "</button>"; }).join("\n") + "\n</nav>\n" : "";
+var cells = books.map(function (b) {
+var src = libCover(b, ctx);
+var tags = (b.topics || []).map(slugify).join(" ");
+var cover = '<span class="bd-lib-cover">' + (src ? '<img src="' + esc(src) + '" alt="' + esc(b.title || "") + '"' + (ctx === "export" ? ' loading="lazy"' : ' draggable="false"') + ">" : '<span class="bd-lib-blank">' + esc(b.title || "Untitled") + "</span>") + "</span>";
+var inner = cover + (p.titles ? '<span class="bd-lib-t">' + esc(b.title || "") + (b.author ? '<br><i>' + esc(b.author) + "</i>" : "") + "</span>" : "");
+var attrs = ' data-t="' + esc(tags) + '" data-k="' + esc(b.id) + '"';
+return b.href ? '<a class="bd-lib-item" href="' + esc(b.href) + '" target="_blank" rel="noopener"' + attrs + ' title="' + esc(b.title || "") + '">' + inner + "</a>" : '<div class="bd-lib-item"' + attrs + ">" + inner + "</div>";
+}).join("\n");
+return '<div class="' + base + lcls + '">\n' + bar + '<div class="bd-lib-grid">\n' + cells + "\n</div>\n</div>";
 }
 if (e.type === "text") {
 var c = " bd-text";
@@ -2306,19 +2459,6 @@ var src = imgSrc(it, ctx);
 return '<figure class="bd-i-' + it.id + (p.layout === "slides" && i === 0 ? " is-on" : "") + '"><img src="' + esc(src) + '" alt="' + esc(it.alt) + '"' + (it.w ? ' width="' + it.w + '" height="' + it.h + '"' : "") + (ctx === "export" ? ' loading="lazy"' : ' draggable="false"') + ">" + (it.caption ? "<figcaption>" + it.caption + "</figcaption>" : "") + "</figure>";
 }).join("\n");
 return '<div class="' + base + gc + '"' + attrs + '>\n<div class="bd-gi">\n' + figs + "\n</div>\n</div>";
-}
-if (e.type === "library") {
-var books = p.items || [];
-if (!books.length) return ctx === "export" ? "" : '<div class="' + base + ' bd-library"><div class="bd-ed-gempty">Library · add books in the panel</div></div>';
-var topics = libTopics(p);
-var bar = p.filters !== false && topics.length ? '<nav class="bd-lib-filter" aria-label="Topics">\n<button type="button" class="is-on" data-t="">' + esc(p.allLabel || "All") + "</button>\n" + topics.map(function (t) { return '<button type="button" data-t="' + esc(slugify(t)) + '">' + esc(t) + "</button>"; }).join("\n") + "\n</nav>\n" : "";
-var cells = books.map(function (b) {
-var src = libCover(b, ctx);
-var tags = (b.topics || []).map(slugify).join(" ");
-var inner = (src ? '<img src="' + esc(src) + '" alt="' + esc(b.title || "") + '"' + (ctx === "export" ? ' loading="lazy"' : ' draggable="false"') + ">" : '<span class="bd-lib-blank">' + esc(b.title || "Untitled") + "</span>") + (p.titles ? '<span class="bd-lib-t">' + esc(b.title || "") + (b.author ? '<br><i>' + esc(b.author) + "</i>" : "") + "</span>" : "");
-return b.href ? '<a class="bd-lib-item" href="' + esc(b.href) + '" target="_blank" rel="noopener" data-t="' + esc(tags) + '" title="' + esc(b.title || "") + '">' + inner + "</a>" : '<div class="bd-lib-item" data-t="' + esc(tags) + '">' + inner + "</div>";
-}).join("\n");
-return '<div class="' + base + ' bd-library">\n' + bar + '<div class="bd-lib-grid">\n' + cells + "\n</div>\n</div>";
 }
 if (e.type === "link") {
 var lc = p.style === "underline" ? " is-underline" : p.style === "arrow" ? " is-arrow" : "";
@@ -3308,16 +3448,18 @@ h += '<div class="bd-ed-gthumb"><img src="' + esc(imgSrc(it, "edit")) + '" alt="
 });
 return h;
 }
-function libraryPanel(p) {
+function libraryPanel(p, e) {
 var h = row(dpIn("Columns", "el.cols", "el.colsM", p.cols, p.colsM, "int"), dpIn("Gap", "el.gutter", "el.gutterM", p.gutter, p.gutterM, "int"))
 + row(field("Cover shape", select("el.ratio", p.ratio, [["2/3", "Book 2 : 3"], ["3/4", "3 : 4"], ["1", "Square"], ["auto", "Original"]])), field("All button", input("el.allLabel", p.allLabel)))
-+ sw("Topic filter", "el.filters", p.filters !== false) + sw("Titles under covers", "el.titles", !!p.titles);
++ sw("Topic filter", "el.filters", p.filters !== false) + sw("Titles under covers", "el.titles", !!p.titles)
++ lookSection(e);
 var topics = libTopics(p);
 h += '<div class="bd-ed-hint">' + (topics.length ? "Topics: " + topics.map(esc).join(" · ") : "Give books topics to build the filter.") + "</div>";
 h += '<div class="bd-ed-head"><span class="bd-ed-label">' + p.items.length + " book" + (p.items.length === 1 ? "" : "s") + '</span><span class="bd-ed-actions"><button class="bd-ed-btn is-sm" data-act="pick-image">' + I.plus + 'Covers</button><button class="bd-ed-btn is-sm" data-act="lib-add">' + I.plus + "No cover</button></span></div>";
 p.items.forEach(function (b, i) {
 h += '<div class="bd-ed-gthumb">' + (libCover(b, "edit") ? '<img src="' + esc(libCover(b, "edit")) + '" alt="" data-act="lib-cover" data-id="' + b.id + '" title="Replace cover">' : '<button class="bd-ed-x" style="width:44px;height:58px" data-act="lib-cover" data-id="' + b.id + '" aria-label="Add cover">' + I.image + "</button>")
-+ '<div class="bd-ed-field" style="gap:4px">' + input("gi." + i + ".title", b.title, "", ' placeholder="Title" aria-label="Title"') + input("gi." + i + ".author", b.author || "", "", ' placeholder="Author" aria-label="Author"') + input("gi." + i + ".href", b.href, "", ' placeholder="Link to PDF" aria-label="Link"') + (b.assetId ? "" : input("gi." + i + ".src", b.src || "", "", ' placeholder="Cover image URL (Drive links fill this in)" aria-label="Cover URL"')) + input("gi." + i + ".topics", (b.topics || []).join(", "), "csv", ' placeholder="Topics, comma separated" aria-label="Topics"') + "</div>"
++ '<div class="bd-ed-field" style="gap:4px">' + input("gi." + i + ".title", b.title, "", ' placeholder="Title" aria-label="Title"') + input("gi." + i + ".author", b.author || "", "", ' placeholder="Author" aria-label="Author"') + input("gi." + i + ".href", b.href, "", ' placeholder="Link to PDF" aria-label="Link"') + (b.assetId ? "" : input("gi." + i + ".src", b.src || "", "", ' placeholder="Cover image URL (Drive links fill this in)" aria-label="Cover URL"')) + input("gi." + i + ".topics", (b.topics || []).join(", "), "csv", ' placeholder="Topics, comma separated" aria-label="Topics"')
++ '<div class="bd-ed-list-row" style="grid-template-columns:auto minmax(0,1fr) auto;align-items:center"><span class="bd-ed-label" style="margin:0">Spine</span><input type="color" class="bd-ed-input" data-bind="gi.' + i + '.spine" value="' + esc(b.spine || E(e, "spine") || "#8a8a8a") + '" aria-label="Spine colour"><button class="bd-ed-btn is-sm" data-act="set" data-path="gi.' + i + '.spine" data-val="">' + (b.spine ? "Default" : "Default ✓") + "</button></div>" + "</div>"
 + '<div class="bd-ed-gbtns"><button class="bd-ed-x" data-act="gi-up" data-i="' + i + '" aria-label="Earlier">' + I.up + '</button><button class="bd-ed-x" data-act="gi-down" data-i="' + i + '" aria-label="Later">' + I.dn + '</button><button class="bd-ed-x" data-act="gi-del" data-i="' + i + '" aria-label="Remove">' + I.x + "</button></div></div>";
 });
 return h;
@@ -3335,6 +3477,10 @@ row(dpIn("Size", p + ".size", p + ".sizeM", st.size, st.sizeM), dpIn("Line", p +
 + row(field("Case", select(p + ".textCase", st.textCase, [["none", "As typed"], ["uppercase", "UPPER"], ["lowercase", "lower"]])), numIn("Spacing (em)", p + ".tracking", st.tracking))
 + sw("Italic", p + ".italic", st.italic)
 + colorIn("Colour", p + ".color", st.color, s.colors.ink), i === 0) + "</div>";
+});
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Blocks</span><div class="bd-ed-hint">The look every block of a kind starts with. A block can still change any of these in its own panel.</div></div>';
+Object.keys(BLOCK_STYLE).forEach(function (t) {
+h += '<div class="bd-ed-sec">' + adv("bs-" + t, BD_TYPE_NAME[t], styleFields(t, "site")) + "</div>";
 });
 return h;
 }
@@ -3444,7 +3590,7 @@ h += '<button class="bd-ed-btn" data-act="pick-image">' + I.image + (p.assetId ?
 + sw("Click to zoom", "el.zoom", p.zoom !== false);
 }
 if (e.type === "gallery") h += galleryPanel(p);
-if (e.type === "library") h += libraryPanel(p);
+if (e.type === "library") h += libraryPanel(p, e);
 if (e.type === "link") {
 h += field("Text", input("el.text", p.text)) + field("Goes to", input("el.href", p.href, "", ' placeholder="/page or https://"'))
 + row(field("Look", select("el.style", p.style, [["plain", "Plain"], ["underline", "Underline"], ["arrow", "Arrow →"]])))
@@ -3460,9 +3606,7 @@ if (e.type === "embed") h += field("YouTube or Vimeo link", input("el.url", p.ur
 if (e.type === "html") h += field("HTML", '<textarea class="bd-ed-input" data-bind="el.code" rows="8">' + esc(p.code) + "</textarea>") + '<button class="bd-ed-btn" data-act="ins-html">' + I.code + "Open in code editor</button>";
 if (e.type === "rule") h += '<div class="bd-ed-hint">A thin line in the rule colour.</div>';
 if (e.type === "ptitle") {
-h += row(field("Style", select("el.style", textStyle(p), BD_STYLES)), field("Align", select("el.align", p.align, [["left", "Left"], ["center", "Centre"], ["right", "Right"]])))
-+ sw("Page number above", "el.num", !!p.num)
-+ '<div class="bd-ed-hint">Shows the title of whichever page is open. Put it in the header to use it on every page.</div>';
+h += sw("Page number above", "el.num", !!p.num) + lookSection(e) + '<div class="bd-ed-hint">Shows the title of whichever page is open. Put it in the header to use it on every page.</div>';
 }
 if (e.type === "menubtn") {
 var list = p.mode === "list";
@@ -3471,61 +3615,42 @@ h += field("Type", seg("el.mode", list ? "list" : "button", [["list", "List of l
 + '<span class="bd-ed-label">Next to it</span>'
 + row(field("Show", select("el.brand", p.brand || "none", [["none", "Nothing"], ["site", "Site name"], ["page", "Page title"], ["custom", "My own text"]])), field("Sits", select("el.brandPos", p.brandPos || "before", [["before", "Before"], ["after", "After"], ["above", "Above"]])))
 + (p.brand === "custom" ? field("Text", input("el.brandText", p.brandText, "", ' placeholder="' + esc(S.project.site.name) + '"')) : "")
-+ (p.brand && p.brand !== "none" ? row(field("Its style", select("el.brandStyle", p.brandStyle || "body", BD_STYLES)), dpIn("Size", "el.brandSize", "el.brandSizeM", p.brandSize, p.brandSizeM, "blank"), dpIn("Line", "el.brandLh", "el.brandLhM", p.brandLh, p.brandLhM, "blank")) + row(dpIn("Gap to the menu", "el.brandGap", "el.brandGapM", p.brandGap, p.brandGapM, "blank")) : "")
 + field("Align", seg("el.align", p.align || "start", [["start", "Left"], ["center", "Centre"], ["end", "Right"], ["spread", "Spread"]]));
 if (list) {
-h += '<span class="bd-ed-label">Links</span>'
-+ row(field("Direction", seg("el.dir", p.dir || "vertical", [["vertical", "Down"], ["horizontal", "Across"]])), field("Grouping", seg("el.group", p.group || "flat", [["flat", "One list"], ["sections", "By section"]])))
-+ row(field("Style", select("el.style", p.style || "body", BD_STYLES)), field("Case", select("el.textCase", p.textCase || "none", [["none", "As typed"], ["uppercase", "UPPER"], ["lowercase", "lower"]])))
-+ row(dpIn("Size", "el.size", "el.sizeM", p.size, p.sizeM, "blank"), dpIn("Line", "el.lh", "el.lhM", p.lh, p.lhM, "blank"), numIn("Spacing (em)", "el.tracking", p.tracking))
-+ row(dpIn("Between links", "el.itemGap", "el.itemGapM", p.itemGap, p.itemGapM, "blank"), dpIn("Between groups", "el.groupGap", "el.groupGapM", p.groupGap, p.groupGapM, "blank"), p.group === "sections" ? numIn("Under heading", "el.headGap", p.headGap) : "")
-+ field("Current page", seg("el.current", p.current || "none", [["underline", "Line"], ["dim", "Dim"], ["strike", "Strike"], ["arrow", "→"], ["none", "None"]]))
-+ field("Hover", seg("el.hover", p.hover || "none", [["underline", "Line"], ["dim", "Dim"], ["none", "None"]]))
-+ '<div class="bd-ed-hint">Lists the pages that sit in a menu section (Pages tab). Sections and outside links are in Site.</div>';
+h += row(field("Direction", seg("el.dir", p.dir || "vertical", [["vertical", "Down"], ["horizontal", "Across"]])), field("Grouping", seg("el.group", p.group || "flat", [["flat", "One list"], ["sections", "By section"]])))
++ lookSection(e) + '<div class="bd-ed-hint">Lists the pages that sit in a menu section (Pages tab). Sections and outside links are in Site.</div>';
 } else {
-h += "</div>" + navPanel(true) + '<div class="bd-ed-sec"><div class="bd-ed-hint">The button and overlay style is shared by every menu button on the site. Sections and outside links are in Site.</div>';
+h += lookSection(e) + "</div>" + navPanel(true) + '<div class="bd-ed-sec"><div class="bd-ed-hint">The button and overlay style is shared by every menu button on the site. Sections and outside links are in Site.</div>';
 }
 }
 if (e.type === "pager") {
 h += row(field("Look", seg("el.look", p.look || "arrows", [["arrows", "Arrows"], ["text", "Words"]])), field("Goes through", select("el.scope", p.scope || "site", [["site", "Pages"], ["blog", "Posts of this blog"]])));
-if (p.look === "text") h += row(field("Before next title", input("el.nextLabel", p.nextLabel, "", ' placeholder="Next, "')), field("Before previous title", input("el.prevLabel", p.prevLabel, "", ' placeholder="empty = hide"')))
-+ row(field("Style", select("el.style", p.style || "body", BD_STYLES)), field("Align", seg("el.align", p.align || "left", [["left", "L"], ["center", "C"], ["right", "R"]])))
-+ row(dpIn("Size", "el.size", "el.sizeM", p.size, p.sizeM, "blank"), dpIn("Line", "el.lh", "el.lhM", p.lh, p.lhM, "blank"));
+if (p.look === "text") h += row(field("Before next title", input("el.nextLabel", p.nextLabel, "", ' placeholder="Next, "')), field("Before previous title", input("el.prevLabel", p.prevLabel, "", ' placeholder="empty = hide"')));
 else h += field("Middle shows", select("el.num", p.num || "num", [["num", "Page number"], ["count", "3 / 12"], ["title", "Page title"], ["none", "Nothing"]]));
-h += sw("Line above", "el.line", !!p.line) + sw("Loop from last to first", "el.loop", !!p.loop)
+h += sw("Line above", "el.line", !!p.line) + sw("Loop from last to first", "el.loop", !!p.loop) + lookSection(e)
 + '<div class="bd-ed-hint">' + (p.scope === "blog" ? "Goes to the previous and next post of the blog this post belongs to." : "Goes to the previous and next page in the order of the Pages list (blog posts are skipped).") + "</div>";
 }
-if (e.type === "posts") h += postsPanel(e);
 if (e.type === "postinfo") {
 h += sw("Back link to the blog", "el.back", p.back !== false) + (p.back !== false ? field("Back link text", input("el.backLabel", p.backLabel, "", ' placeholder="<"')) : "")
 + sw("Date", "el.date", !!p.date) + sw("Word count", "el.words", p.words !== false) + sw("Reading time", "el.time", p.time !== false)
-+ row(field("Style", select("el.style", p.style || "small", BD_STYLES)), dpIn("Size", "el.size", "el.sizeM", p.size, p.sizeM, "blank"), dpIn("Line", "el.lh", "el.lhM", p.lh, p.lhM, "blank"))
-+ '<div class="bd-ed-hint">Counts the words in this post’s text and quotes. Reading time is one minute per 200 words.</div>';
++ lookSection(e) + '<div class="bd-ed-hint">Counts the words in this post’s text and quotes. Reading time is one minute per 200 words.</div>';
 }
 if (e.type === "quote") {
 h += '<div class="bd-ed-actions"><button class="bd-ed-btn" data-act="ins-html">' + I.html + "Edit text</button></div>"
-+ field("Text", '<textarea class="bd-ed-input" data-bind="el.html" rows="5">' + esc(p.html) + "</textarea>")
-+ row(field("Style", select("el.style", p.style || "body", BD_STYLES)), field("Align", seg("el.align", p.align || "center", [["left", "L"], ["center", "C"], ["right", "R"]])))
-+ row(dpIn("Padding top/bottom", "el.pad", "el.padM", p.pad, p.padM, "blank"), dpIn("Left/right", "el.padX", "el.padXM", p.padX, p.padXM, "blank"))
-+ colorIn("Background", "el.bg", p.bg, S.project.site.colors.panel)
-+ sw("Soft shadow", "el.shadow", !!p.shadow) + sw("Line on the left", "el.line", !!p.line);
++ field("Text", '<textarea class="bd-ed-input" data-bind="el.html" rows="5">' + esc(p.html) + "</textarea>") + lookSection(e);
 }
 if (e.type === "toggle") {
 h += field("Heading you click", input("el.title", p.title))
 + field("Items, one per line", '<textarea class="bd-ed-input" data-bind="el.items" data-type="lines" rows="7">' + esc((p.items || []).join("\n")) + "</textarea>")
-+ row(field("Marker", seg("el.marker", p.marker || "plus", [["plus", "+ / —"], ["arrow", "→ / ↓"], ["none", "None"]])), field("Style", select("el.style", p.style || "body", BD_STYLES)))
-+ row(numIn("Between items", "el.itemGap", p.itemGap, "int"), numIn("Indent items", "el.indent", p.indent, "int"))
-+ row(dpIn("Size", "el.size", "el.sizeM", p.size, p.sizeM, "blank"), dpIn("Line", "el.lh", "el.lhM", p.lh, p.lhM, "blank"))
-+ sw("Open to start", "el.open", !!p.open);
++ sw("Open to start", "el.open", !!p.open) + lookSection(e);
 }
 if (e.type === "product") {
 h += '<button class="bd-ed-btn" data-act="pick-image">' + I.image + (p.assetId ? "Replace image" : "Choose image") + "</button>"
 + field("Name", input("el.title", p.title)) + row(field("Price", input("el.price", p.price, "", ' placeholder="£20.00"')), field("Note", input("el.note", p.note, "", ' placeholder="Sold out"')))
 + field("Link (shop, email…)", input("el.href", p.href, "", ' placeholder="https:// or mailto:"'))
-+ row(field("Style", select("el.style", p.style || "body", BD_STYLES)), field("Align", seg("el.align", p.align || "left", [["left", "L"], ["center", "C"], ["right", "R"]])))
-+ row(dpIn("Size", "el.size", "el.sizeM", p.size, p.sizeM, "blank"), dpIn("Line", "el.lh", "el.lhM", p.lh, p.lhM, "blank"))
-+ field("Alt text", input("el.alt", p.alt));
++ field("Alt text", input("el.alt", p.alt)) + lookSection(e);
 }
+if (e.type === "posts") h += postsPanel(e);
 return h;
 }
 function postsPanel(e) {
@@ -3539,19 +3664,47 @@ var h = (bl.length > 1 ? field("Blog", select("el.blog", p.blog || "", [["", "Th
 + row(field("Order", select("el.sort", p.sort || "order", [["order", "As listed"], ["newest", "Newest first"]])), numIn("Show at most", "el.limit", p.limit, "blank"))
 + '<span class="bd-ed-label">Each card shows</span>'
 + sw("Image (first image in the post)", "el.showImage", !!p.showImage) + sw("Title", "el.showTitle", !!p.showTitle) + sw("Date", "el.showDate", !!p.showDate) + sw("Words ~ minutes", "el.showMeta", !!p.showMeta) + sw("Excerpt", "el.showExcerpt", !!p.showExcerpt)
-+ '<span class="bd-ed-label">Card look</span>'
-+ row(field("Image", seg("el.imagePos", p.imagePos || "top", [["top", "Above text"], ["bottom", "Below text"]])), field("Crop", select("el.ratio", p.ratio || "auto", [["auto", "Original"], ["1", "Square"], ["4/3", "4 : 3"], ["3/2", "3 : 2"], ["16/9", "16 : 9"], ["3/4", "3 : 4"]])))
-+ colorIn("Card colour", "el.cardBg", p.cardBg, S.project.site.colors.panel)
-+ row(dpIn("Padding", "el.cardPad", "el.cardPadM", p.cardPad, p.cardPadM, "blank"), numIn("Text min height", "el.minH", p.minH, "blank"), numIn("Image gap", "el.imgGap", p.imgGap, "blank"))
-+ row(field("Title style", select("el.titleStyle", p.titleStyle || "body", BD_STYLES)), dpIn("Size", "el.titleSize", "el.titleSizeM", p.titleSize, p.titleSizeM, "blank"), dpIn("Line", "el.titleLh", "el.titleLhM", p.titleLh, p.titleLhM, "blank"))
-+ row(field("Info style", select("el.metaStyle", p.metaStyle || "small", BD_STYLES)), dpIn("Size", "el.metaSize", "el.metaSizeM", p.metaSize, p.metaSizeM, "blank"), dpIn("Line", "el.metaLh", "el.metaLhM", p.metaLh, p.metaLhM, "blank"))
-+ row(numIn("Gap above info", "el.metaGap", p.metaGap, "blank"), p.featured !== "none" ? field("Featured title", select("el.fTitleStyle", p.fTitleStyle || "heading", BD_STYLES)) : "", field("Hover", select("el.hover", p.hover || "none", [["none", "None"], ["dim", "Dim"], ["lift", "Lift"]])));
++ lookSection(e);
 var all = L.blog ? postsOf(L.blog) : [];
 h += '<div class="bd-ed-head"><span class="bd-ed-label">' + all.length + " post" + (all.length === 1 ? "" : "s") + '</span><button class="bd-ed-btn is-sm" data-act="post-add" data-id="' + (L.blog || "") + '">' + I.plus + "Post</button></div>";
 all.forEach(function (q, i) {
 h += '<div class="bd-ed-plist"><button class="bd-ed-x' + (q.featured ? " is-on" : "") + '" data-act="post-feat" data-id="' + q.id + '" aria-label="Featured" title="Featured">' + I.star + '</button><button class="bd-ed-pg" style="grid-template-columns:1fr" data-act="page" data-id="' + q.id + '"><span>' + esc(q.title) + '</span></button><button class="bd-ed-x" data-act="post-move" data-id="' + q.id + '" data-val="-1" aria-label="Earlier">' + I.up + '</button><button class="bd-ed-x" data-act="post-move" data-id="' + q.id + '" data-val="1" aria-label="Later">' + I.dn + "</button></div>";
 });
 return h + '<div class="bd-ed-hint">Each post is its own page. Click one to open it. Cards use the post’s title, first image and text.</div>';
+}
+function bsOptName(opts, v) {
+for (var i = 0; i < opts.length; i++) if (String(opts[i][0]) === String(v)) return opts[i][1];
+return v === "" || v == null ? "none" : String(v);
+}
+function styleFields(type, scope, e) {
+var site = bsSite(type);
+var el = scope === "el";
+var ph = S.mode === "phone";
+var cells = BLOCK_STYLE[type].map(function (f) {
+var k = f[0], kind = f[2];
+var path = el ? "el." + k : "site.blockStyles." + type + "." + k;
+var cur = el ? e.props[k] : site[k];
+var sv = site[k];
+if (kind === "style" || kind === "sel" || kind === "bool") {
+var opts = kind === "style" ? BD_STYLES : kind === "bool" ? [["1", "On"], ["0", "Off"]] : f[4];
+var inh = el ? [["", "Site · " + bsOptName(opts, sv)]] : [];
+return field(f[1], select(path, cur == null ? "" : String(cur), inh.concat(opts)));
+}
+if (kind === "color") {
+var shown = cur || sv || "";
+return field(f[1], '<div class="bd-ed-list-row" style="grid-template-columns:minmax(0,1fr) auto"><input type="color" class="bd-ed-input" data-bind="' + path + '" value="' + esc(shown || "#ffffff") + '"><button class="bd-ed-btn" style="height:30px" data-act="set" data-path="' + path + '" data-val="">' + (cur ? (el ? "Site" : "Clear") : el ? "Site" : "None") + "</button></div>");
+}
+var bindK = kind === "dp" && ph ? path + "M" : path;
+var v = kind === "dp" && ph ? (el ? e.props[k + "M"] : site[k + "M"]) : cur;
+var phv = kind === "dp" && ph ? (el ? (site[k + "M"] !== "" && site[k + "M"] != null ? site[k + "M"] : e.props[k] !== "" && e.props[k] != null ? e.props[k] : sv) : sv) : (el ? sv : "");
+return field(f[1] + (kind === "dp" && ph ? ' <b class="bd-ed-ph">phone</b>' : ""), '<input class="bd-ed-input bd-ed-n" inputmode="decimal" data-bind="' + bindK + '" data-type="blank" value="' + esc(v == null ? "" : v) + '"' + (phv !== "" && phv != null ? ' placeholder="' + esc(phv) + '"' : "") + ">");
+});
+var h = "";
+for (var i = 0; i < cells.length; i += 2) h += row(cells[i], cells[i + 1] || "");
+return h;
+}
+function lookSection(e) {
+return '<span class="bd-ed-label">Look</span>' + styleFields(e.type, "el", e) + '<div class="bd-ed-hint">Empty or “Site” follows the ' + esc(BD_TYPE_NAME[e.type]) + " style in the Styles tab. Set a value here to change only this one.</div>";
 }
 function blockPlace(e) {
 var pg = curPage();

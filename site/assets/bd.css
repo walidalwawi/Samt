@@ -1,4 +1,4 @@
-/* PUBLISHED mvic4n49 */
+/* PUBLISHED build */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -458,10 +458,10 @@ grid-column: 3;
 }
 
 /* PAGE TITLE BLOCK */
-.bd-ptitle.is-center {
+.bd-ptitle.is-al-center {
 text-align: center;
 }
-.bd-ptitle.is-right {
+.bd-ptitle.is-al-right {
 text-align: right;
 }
 
@@ -916,6 +916,10 @@ display: block;
 min-width: 0;
 border-bottom: 0;
 }
+.bd-lib-cover {
+position: relative;
+display: block;
+}
 .bd-lib-item img,
 .bd-lib-blank {
 display: block;
@@ -942,8 +946,48 @@ line-height: 16px;
 .bd-lib-item.is-hidden {
 display: none;
 }
-a.bd-lib-item:hover img {
+.bd-library:not(.is-book) a.bd-lib-item:hover img {
 opacity: 0.85;
+}
+.bd-library.is-book .bd-lib-item {
+perspective: 900px;
+}
+.bd-library.is-book .bd-lib-cover {
+overflow: hidden;
+border-radius: 0 var(--lib-r, 2px) var(--lib-r, 2px) 0;
+transform-origin: left center;
+transition: transform 0.45s ease, box-shadow 0.45s ease;
+}
+.bd-library.is-book .bd-lib-cover::before {
+content: "";
+position: absolute;
+top: 0;
+bottom: 0;
+left: 0;
+z-index: 1;
+width: var(--spine-w, 10px);
+background: linear-gradient(90deg, rgba(0, 0, 0, 0.28), rgba(255, 255, 255, 0.18) 45%, rgba(0, 0, 0, 0.12)), var(--spine, #8a8a8a);
+}
+.bd-library.is-book .bd-lib-cover::after {
+content: "";
+position: absolute;
+top: 0;
+bottom: 0;
+left: var(--spine-w, 10px);
+z-index: 1;
+width: 3px;
+background: linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent);
+}
+.bd-library.has-shadow .bd-lib-cover {
+box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.16);
+}
+.bd-library.is-hov-tilt a.bd-lib-item:hover .bd-lib-cover {
+transform: rotateY(-24deg);
+box-shadow: 14px 8px 18px rgba(0, 0, 0, 0.22);
+}
+.bd-library.is-hov-lift a.bd-lib-item:hover .bd-lib-cover {
+transform: translateY(-6px);
+box-shadow: 4px 12px 18px rgba(0, 0, 0, 0.2);
 }
 
 /* ZOOM */
@@ -1163,12 +1207,6 @@ margin-bottom: 200px;
 
 /* PAGE: HEADER */
 
-.bd-e-83zud23g {
---mgap: 26px;
---igap: 0px;
---ggap: 20px;
---hgap: 4px;
-}
 .bd-e-83zud23g .bd-mlist {
 font-size: 13px;
 line-height: 19px;
@@ -1177,9 +1215,24 @@ line-height: 19px;
 font-size: 13px;
 line-height: 19px;
 }
+.bd-e-83zud23g {
+--mgap: 26px;
+--igap: 0px;
+--ggap: 20px;
+--hgap: 4px;
+}
 
 /* PAGE: JOURNAL */
 
+.bd-e-5ygn83c2 .bd-post:not(.is-featured) .bd-post-t {
+font-size: 15px;
+line-height: 22px;
+}
+.bd-e-5ygn83c2 .bd-post-m,
+.bd-e-5ygn83c2 .bd-post-d {
+font-size: 11px;
+line-height: 16px;
+}
 .bd-e-5ygn83c2 {
 --pcols: 3;
 --pgap: 40px;
@@ -1190,15 +1243,6 @@ line-height: 19px;
 --pmgap: 12px;
 --pbg: #eeeeee;
 --pratio: 1;
-}
-.bd-e-5ygn83c2 .bd-post:not(.is-featured) .bd-post-t {
-font-size: 15px;
-line-height: 22px;
-}
-.bd-e-5ygn83c2 .bd-post-m,
-.bd-e-5ygn83c2 .bd-post-d {
-font-size: 11px;
-line-height: 16px;
 }
 
 /* PAGE: HOW TO DESEED A WATERMELON FOR SAFE CONSUMPTION */
@@ -1212,12 +1256,18 @@ line-height: 16px;
 }
 .bd-e-5mxm3w9z {
 padding: 40px 40px;
+text-align: center;
+box-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);
 }
 .bd-e-wa12r3y2 {
 padding: 40px 46px;
+text-align: center;
+box-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);
 }
 .bd-e-eiirm6n4 {
 padding: 40px 46px;
+text-align: center;
+box-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);
 }
 .bd-e-m8huukvm {
 font-size: 11px;
@@ -1246,12 +1296,18 @@ line-height: 16px;
 }
 .bd-e-675bn26y {
 padding: 40px 46px;
+text-align: center;
+box-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);
 }
 .bd-e-o03ntekz {
 padding: 40px 46px;
+text-align: center;
+box-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);
 }
 .bd-e-lwaxrbru {
 padding: 40px 46px;
+text-align: center;
+box-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);
 }
 .bd-e-jvxwreue {
 font-size: 11px;
@@ -1277,9 +1333,13 @@ line-height: 16px;
 }
 .bd-e-sx3aj3f0 {
 padding: 40px 46px;
+text-align: center;
+box-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);
 }
 .bd-e-n957q76z {
 padding: 40px 46px;
+text-align: center;
+box-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);
 }
 .bd-e-hox6tjmi {
 font-size: 11px;
@@ -1293,6 +1353,11 @@ line-height: 16px;
 --gut: 30px;
 --ratio: 2 / 3;
 }
+.bd-e-lb31qsc3 {
+--spine: #8a8a8a;
+--spine-w: 10px;
+--lib-r: 2px;
+}
 
 /* PAGE: SUPPLY */
 
@@ -1300,9 +1365,15 @@ line-height: 16px;
 font-size: 11px;
 line-height: 18px;
 }
+.bd-e-2xkm99iq {
+text-align: center;
+}
 .bd-e-pw5i8g5x .bd-product-t {
 font-size: 11px;
 line-height: 18px;
+}
+.bd-e-pw5i8g5x {
+text-align: center;
 }
 
 /* PAGE: ABOUT */
@@ -1448,7 +1519,7 @@ line-height: 17px;
 }
 .bd-flow > .bd-library {
 --x: 0;
---w: 4;
+--w: 6;
 }
 .bd-flow > .bd-link {
 --x: 0;
@@ -1516,11 +1587,6 @@ margin-bottom: 64px;
 }
 /* PAGE: HEADER */
 
-.bd-e-83zud23g {
---mgap: 26px;
---igap: 0px;
---ggap: 20px;
-}
 .bd-e-83zud23g .bd-mlist {
 font-size: 13px;
 line-height: 19px;
@@ -1529,15 +1595,13 @@ line-height: 19px;
 font-size: 13px;
 line-height: 19px;
 }
+.bd-e-83zud23g {
+--mgap: 26px;
+--igap: 0px;
+--ggap: 20px;
+}
 /* PAGE: JOURNAL */
 
-.bd-e-5ygn83c2 {
---pcols: 1;
---pgap: 24px;
---prow: 24px;
---ppad: 18px;
---pminh: 84px;
-}
 .bd-e-5ygn83c2 .bd-post:not(.is-featured) .bd-post-t {
 font-size: 15px;
 line-height: 22px;
@@ -1546,6 +1610,12 @@ line-height: 22px;
 .bd-e-5ygn83c2 .bd-post-d {
 font-size: 11px;
 line-height: 16px;
+}
+.bd-e-5ygn83c2 {
+--pcols: 1;
+--pgap: 24px;
+--prow: 24px;
+--ppad: 18px;
 }
 /* PAGE: HOW TO DESEED A WATERMELON FOR SAFE CONSUMPTION */
 .bd-flow > .bd-e-el3path8 {
@@ -1628,10 +1698,7 @@ font-size: 11px;
 line-height: 16px;
 }
 /* PAGE: LIBRARY */
-.bd-flow > .bd-e-lb31qsc3 {
---x: 0;
---w: 4;
-}
+
 .bd-e-lb31qsc3 {
 --cols: 2;
 --gut: 15px;

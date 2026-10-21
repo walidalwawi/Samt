@@ -181,7 +181,7 @@
      "x": 0,
      "w": 12,
      "xm": 0,
-     "wm": 4,
+     "wm": 6,
      "space": "",
      "spaceM": ""
     },
@@ -289,7 +289,8 @@
      "space": "",
      "spaceM": ""
     }
-   }
+   },
+   "libFix": 1
   },
   "layout": {
    "cols": 2,
@@ -307,7 +308,115 @@
   "mb": 80,
   "mtM": 30,
   "mrM": 20,
-  "mbM": 30
+  "mbM": 30,
+  "blockStyles": {
+   "quote": {
+    "style": "small",
+    "size": "",
+    "sizeM": "",
+    "lh": "",
+    "lhM": "",
+    "align": "center",
+    "pad": 40,
+    "padM": 28,
+    "padX": 46,
+    "padXM": 22,
+    "bg": "",
+    "ink": "",
+    "shadow": "1",
+    "line": "0"
+   },
+   "posts": {
+    "titleStyle": "body",
+    "titleSize": 15,
+    "titleSizeM": "",
+    "titleLh": 22,
+    "titleLhM": "",
+    "metaStyle": "small",
+    "metaSize": 11,
+    "metaSizeM": "",
+    "metaLh": 16,
+    "metaLhM": "",
+    "metaGap": 12,
+    "cardBg": "#eeeeee",
+    "cardPad": 18,
+    "cardPadM": "",
+    "minH": 84,
+    "imgGap": 18,
+    "imagePos": "bottom",
+    "ratio": "1",
+    "hover": "none",
+    "fTitleStyle": "heading"
+   },
+   "library": {
+    "book": "1",
+    "spine": "#8a8a8a",
+    "spineW": 10,
+    "shadow": "1",
+    "radius": 2,
+    "hover": "tilt"
+   },
+   "toggle": {
+    "style": "body",
+    "size": "",
+    "sizeM": "",
+    "lh": "",
+    "lhM": "",
+    "marker": "plus",
+    "itemGap": 9,
+    "indent": 6
+   },
+   "product": {
+    "style": "small",
+    "size": 11,
+    "sizeM": "",
+    "lh": 18,
+    "lhM": "",
+    "align": "center"
+   },
+   "pager": {
+    "style": "small",
+    "size": 11,
+    "sizeM": "",
+    "lh": 16,
+    "lhM": "",
+    "align": "center"
+   },
+   "postinfo": {
+    "style": "small",
+    "size": 11,
+    "sizeM": "",
+    "lh": 16,
+    "lhM": ""
+   },
+   "menubtn": {
+    "style": "body",
+    "size": 13,
+    "sizeM": "",
+    "lh": 19,
+    "lhM": "",
+    "textCase": "none",
+    "tracking": "",
+    "itemGap": 0,
+    "itemGapM": "",
+    "groupGap": 20,
+    "groupGapM": "",
+    "headGap": 4,
+    "current": "underline",
+    "hover": "underline",
+    "brandStyle": "body",
+    "brandSize": 13,
+    "brandSizeM": "",
+    "brandLh": 19,
+    "brandLhM": "",
+    "brandGap": 26,
+    "brandGapM": ""
+   },
+   "ptitle": {
+    "style": "body",
+    "align": "left"
+   }
+  }
  },
  "order": [
   "f0kgkfxt",
@@ -351,28 +460,30 @@
       "brand": "custom",
       "brandText": "ص مت",
       "brandPos": "above",
-      "brandStyle": "body",
-      "brandSize": 13,
-      "brandLh": 19,
-      "brandGap": 26,
+      "brandStyle": "",
+      "brandSize": "",
+      "brandLh": "",
+      "brandGap": "",
       "brandGapM": "",
       "align": "start",
       "dir": "vertical",
       "group": "flat",
-      "style": "body",
-      "size": 13,
+      "style": "",
+      "size": "",
       "sizeM": "",
-      "lh": 19,
+      "lh": "",
       "lhM": "",
-      "textCase": "none",
+      "textCase": "",
       "tracking": "",
-      "itemGap": 0,
+      "itemGap": "",
       "itemGapM": "",
-      "groupGap": 20,
+      "groupGap": "",
       "groupGapM": "",
-      "headGap": 4,
-      "current": "underline",
-      "hover": "underline"
+      "headGap": "",
+      "current": "",
+      "hover": "",
+      "brandSizeM": "",
+      "brandLhM": ""
      }
     }
    ],
@@ -435,27 +546,31 @@
       "limit": "",
       "featured": "marked",
       "fLayout": "stack",
-      "fTitleStyle": "heading",
+      "fTitleStyle": "",
       "showImage": true,
       "showTitle": true,
       "showDate": false,
       "showMeta": true,
       "showExcerpt": false,
-      "imagePos": "bottom",
-      "ratio": "1",
-      "imgGap": 18,
-      "cardBg": "#eeeeee",
-      "cardPad": 18,
+      "imagePos": "",
+      "ratio": "",
+      "imgGap": "",
+      "cardBg": "",
+      "cardPad": "",
       "cardPadM": "",
-      "minH": 84,
-      "titleStyle": "body",
-      "titleSize": 15,
-      "titleLh": 22,
-      "metaStyle": "small",
-      "metaSize": 11,
-      "metaLh": 16,
-      "metaGap": 12,
-      "hover": "none"
+      "minH": "",
+      "titleStyle": "",
+      "titleSize": "",
+      "titleLh": "",
+      "metaStyle": "",
+      "metaSize": "",
+      "metaLh": "",
+      "metaGap": "",
+      "hover": "",
+      "titleSizeM": "",
+      "titleLhM": "",
+      "metaSizeM": "",
+      "metaLhM": ""
      }
     }
    ],
@@ -535,9 +650,11 @@
       "date": false,
       "words": true,
       "time": true,
-      "style": "small",
-      "size": 11,
-      "lh": 16
+      "style": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": ""
      }
     },
     {
@@ -571,15 +688,20 @@
      "m": null,
      "props": {
       "html": "But how did a symbol that claims to empower the prohibited come to eclipse it? The answer lies not in the curated gallery walls or carefully written statements at public events, but in another watermelon, one carried by a mother in Haifa in the early 1970s.",
-      "style": "small",
-      "align": "center",
-      "pad": 40,
+      "style": "",
+      "align": "",
+      "pad": "",
       "padX": 40,
-      "padM": 28,
-      "padXM": 22,
+      "padM": "",
+      "padXM": "",
       "bg": "",
-      "shadow": true,
-      "line": false
+      "shadow": "",
+      "line": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": "",
+      "ink": ""
      }
     },
     {
@@ -747,15 +869,20 @@
      "m": null,
      "props": {
       "html": "<p>A lazy and cowardly infantilization of the Palestinian struggle sold as radical ingenuity, designed to satisfy performative dissent yet survive within empire’s optics.</p>",
-      "style": "small",
-      "align": "center",
-      "pad": 40,
-      "padX": 46,
-      "padM": 28,
-      "padXM": 22,
+      "style": "",
+      "align": "",
+      "pad": "",
+      "padX": "",
+      "padM": "",
+      "padXM": "",
       "bg": "",
-      "shadow": true,
-      "line": false
+      "shadow": "",
+      "line": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": "",
+      "ink": ""
      }
     },
     {
@@ -809,15 +936,20 @@
      "m": null,
      "props": {
       "html": "<p>Born in Haifa in 1945, Zakia Shamut was one of the first Palestinian women in the ’48 territories to join the armed resistance. By the early 1970s she had carried out seven operations against settlers and soldiers alike. For years she eluded capture, only later arrested mid-pregnancy along with her family and sentenced by an Israeli military court to 1,188 years in prison.</p>",
-      "style": "small",
-      "align": "center",
-      "pad": 40,
-      "padX": 46,
-      "padM": 28,
-      "padXM": 22,
+      "style": "",
+      "align": "",
+      "pad": "",
+      "padX": "",
+      "padM": "",
+      "padXM": "",
       "bg": "",
-      "shadow": true,
-      "line": false
+      "shadow": "",
+      "line": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": "",
+      "ink": ""
      }
     },
     {
@@ -877,10 +1009,12 @@
       "look": "text",
       "nextLabel": "Next, ",
       "prevLabel": "",
-      "align": "center",
-      "style": "small",
-      "size": 11,
-      "lh": 16
+      "align": "",
+      "style": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": ""
      }
     }
    ],
@@ -952,9 +1086,11 @@
       "date": false,
       "words": true,
       "time": true,
-      "style": "small",
-      "size": 11,
-      "lh": 16
+      "style": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": ""
      }
     },
     {
@@ -1238,10 +1374,12 @@
       "look": "text",
       "nextLabel": "Next, ",
       "prevLabel": "",
-      "align": "center",
-      "style": "small",
-      "size": 11,
-      "lh": 16
+      "align": "",
+      "style": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": ""
      }
     }
    ],
@@ -1309,9 +1447,11 @@
       "date": false,
       "words": true,
       "time": true,
-      "style": "small",
-      "size": 11,
-      "lh": 16
+      "style": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": ""
      }
     },
     {
@@ -1403,15 +1543,20 @@
      "m": null,
      "props": {
       "html": "<p>Improvisation becomes a necessity when the structures meant to preserve life are the same ones dismantling it.</p>",
-      "style": "small",
-      "align": "center",
-      "pad": 40,
-      "padX": 46,
-      "padM": 28,
-      "padXM": 22,
+      "style": "",
+      "align": "",
+      "pad": "",
+      "padX": "",
+      "padM": "",
+      "padXM": "",
       "bg": "",
-      "shadow": true,
-      "line": false
+      "shadow": "",
+      "line": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": "",
+      "ink": ""
      }
     },
     {
@@ -1503,15 +1648,20 @@
      "m": null,
      "props": {
       "html": "<p>Militant improvisation cannot be disciplined into institutional logic, where visibility is often weaponised and “militancy” becomes a strategy performed within the sanctioned violence of art spaces.</p>",
-      "style": "small",
-      "align": "center",
-      "pad": 40,
-      "padX": 46,
-      "padM": 28,
-      "padXM": 22,
+      "style": "",
+      "align": "",
+      "pad": "",
+      "padX": "",
+      "padM": "",
+      "padXM": "",
       "bg": "",
-      "shadow": true,
-      "line": false
+      "shadow": "",
+      "line": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": "",
+      "ink": ""
      }
     },
     {
@@ -1565,15 +1715,20 @@
      "m": null,
      "props": {
       "html": "<p>Improvisation allows movement in shadows, avoiding the traps of co-optation and spectacle. By refusing to ask for entry, it appears uninvited, knowing that inclusion is not solidarity, but the final act of neutralisation.</p>",
-      "style": "small",
-      "align": "center",
-      "pad": 40,
-      "padX": 46,
-      "padM": 28,
-      "padXM": 22,
+      "style": "",
+      "align": "",
+      "pad": "",
+      "padX": "",
+      "padM": "",
+      "padXM": "",
       "bg": "",
-      "shadow": true,
-      "line": false
+      "shadow": "",
+      "line": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": "",
+      "ink": ""
      }
     },
     {
@@ -1631,10 +1786,12 @@
       "look": "text",
       "nextLabel": "Next, ",
       "prevLabel": "",
-      "align": "center",
-      "style": "small",
-      "size": 11,
-      "lh": 16
+      "align": "",
+      "style": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": ""
      }
     }
    ],
@@ -1702,9 +1859,11 @@
       "date": false,
       "words": true,
       "time": true,
-      "style": "small",
-      "size": 11,
-      "lh": 16
+      "style": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": ""
      }
     },
     {
@@ -1896,10 +2055,12 @@
       "look": "text",
       "nextLabel": "Next, ",
       "prevLabel": "",
-      "align": "center",
-      "style": "small",
-      "size": 11,
-      "lh": 16
+      "align": "",
+      "style": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": ""
      }
     }
    ],
@@ -1967,9 +2128,11 @@
       "date": false,
       "words": true,
       "time": true,
-      "style": "small",
-      "size": 11,
-      "lh": 16
+      "style": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": ""
      }
     },
     {
@@ -2061,15 +2224,20 @@
      "m": null,
      "props": {
       "html": "<p>*Capital is material gain that can be interpreted through fame, status, opportunity, and all forms of wealth.</p>",
-      "style": "small",
-      "align": "center",
-      "pad": 40,
-      "padX": 46,
-      "padM": 28,
-      "padXM": 22,
+      "style": "",
+      "align": "",
+      "pad": "",
+      "padX": "",
+      "padM": "",
+      "padXM": "",
       "bg": "",
-      "shadow": true,
-      "line": false
+      "shadow": "",
+      "line": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": "",
+      "ink": ""
      }
     },
     {
@@ -2179,15 +2347,20 @@
      "m": null,
      "props": {
       "html": "<p>Inspiration is the first step of mobilisation, not an indulgent state that ends once the initial engagement is over. It must ignite a continuous burn.</p>",
-      "style": "small",
-      "align": "center",
-      "pad": 40,
-      "padX": 46,
-      "padM": 28,
-      "padXM": 22,
+      "style": "",
+      "align": "",
+      "pad": "",
+      "padX": "",
+      "padM": "",
+      "padXM": "",
       "bg": "",
-      "shadow": true,
-      "line": false
+      "shadow": "",
+      "line": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": "",
+      "ink": ""
      }
     },
     {
@@ -2229,10 +2402,12 @@
       "look": "text",
       "nextLabel": "Next, ",
       "prevLabel": "",
-      "align": "center",
-      "style": "small",
-      "size": 11,
-      "lh": 16
+      "align": "",
+      "style": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": ""
      }
     }
    ],
@@ -3662,10 +3837,7 @@
       "filters": true,
       "allLabel": "All"
      },
-     "own": {
-      "xm": 0,
-      "wm": 4
-     }
+     "own": {}
     }
    ],
    "kind": "page",
@@ -3723,10 +3895,12 @@
       "price": "£20.00",
       "note": "",
       "href": "",
-      "style": "small",
-      "align": "center",
-      "size": 11,
-      "lh": 18
+      "style": "",
+      "align": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": ""
      }
     },
     {
@@ -3748,10 +3922,12 @@
       "price": "£55.00",
       "note": "Sold out",
       "href": "",
-      "style": "small",
-      "align": "center",
-      "size": 11,
-      "lh": 18
+      "style": "",
+      "align": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": ""
      }
     }
    ],
@@ -3872,10 +4048,14 @@
        "Yal Solan"
       ],
       "open": false,
-      "marker": "plus",
-      "style": "body",
-      "itemGap": 9,
-      "indent": 6
+      "marker": "",
+      "style": "",
+      "itemGap": "",
+      "indent": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": ""
      }
     },
     {
