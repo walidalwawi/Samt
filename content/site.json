@@ -385,16 +385,16 @@
    },
    "postinfo": {
     "style": "small",
-    "size": 11,
+    "size": 15,
     "sizeM": "",
-    "lh": 16,
+    "lh": 25,
     "lhM": ""
    },
    "menubtn": {
-    "style": "body",
-    "size": 13,
+    "style": "small",
+    "size": 15,
     "sizeM": "",
-    "lh": 19,
+    "lh": 22,
     "lhM": "",
     "textCase": "none",
     "tracking": "",
@@ -406,11 +406,11 @@
     "current": "underline",
     "hover": "underline",
     "brandStyle": "body",
-    "brandSize": 13,
+    "brandSize": 20,
     "brandSizeM": "",
-    "brandLh": 19,
+    "brandLh": 22,
     "brandLhM": "",
-    "brandGap": 26,
+    "brandGap": 25,
     "brandGapM": ""
    },
    "ptitle": {
