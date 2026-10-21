@@ -716,12 +716,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5252.png",
       "alt": "* How To Deseed A Watermelon For Safe Consumption — drawing",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1550,
+      "h": 1259
      }
     },
     {
@@ -754,12 +756,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5253.png",
       "alt": "1. start by cutting a desirable slice",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1550,
+      "h": 1259
      }
     },
     {
@@ -792,12 +796,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5254.png",
       "alt": "2. Carefuly pick out the seeds",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1550,
+      "h": 1259
      }
     },
     {
@@ -830,12 +836,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5255.png",
       "alt": "3. cut slice into 3 parts",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1550,
+      "h": 1259
      }
     },
     {
@@ -915,12 +923,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5254-2.png",
       "alt": "4. seperate the rend from the flesh",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1550,
+      "h": 1259
      }
     },
     {
@@ -982,12 +992,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5256.png",
       "alt": "5. serve cold in a hot day.",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1550,
+      "h": 1134
      }
     },
     {
