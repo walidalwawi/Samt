@@ -1170,6 +1170,35 @@
      }
     },
     {
+     "id": "8m2pnbxi",
+     "type": "quote",
+     "d": {
+      "x": 0,
+      "y": 46,
+      "w": 12,
+      "h": 10
+     },
+     "m": null,
+     "props": {
+      "html": "He was the arrow of the compass, pointing steadily towards Palestine. Not just Palestine in geographical terms, but Palestine in its humanitarian sense, the symbol of a just cause, whether it is located in Egypt, Vietnam or South Africa. – Naji al-Ali",
+      "style": "",
+      "align": "",
+      "pad": "",
+      "padX": "",
+      "padM": "",
+      "padXM": "",
+      "bg": "",
+      "shadow": "",
+      "line": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": "",
+      "ink": ""
+     },
+     "col": 2
+    },
+    {
      "id": "rpo20wse",
      "type": "text",
      "col": 2,
@@ -1181,7 +1210,7 @@
      },
      "m": null,
      "props": {
-      "html": "<p><em>He was the arrow of the compass, pointing steadily towards Palestine. Not just Palestine in geographical terms, but Palestine in its humanitarian sense, the symbol of a just cause, whether it is located in Egypt, Vietnam or South Africa. – Naji al-Ali</em></p>",
+      "html": "<p></p>",
       "style": "small",
       "indent": false,
       "align": "left"
