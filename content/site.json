@@ -2015,12 +2015,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5154.png",
       "alt": "The bourgeoi’rtist at an easel",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1773,
+      "h": 1772
      }
     },
     {
@@ -2053,12 +2055,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5155.png",
       "alt": "Trading a sickle for money",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1773,
+      "h": 1772
      }
     },
     {
@@ -2091,12 +2095,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5157.png",
       "alt": "A framed sickle sold to a collector",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1773,
+      "h": 1772
      }
     },
     {
@@ -2129,12 +2135,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5156.png",
       "alt": "The bourgeoi’rtist eating a gold bar",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1773,
+      "h": 1772
      }
     },
     {
