@@ -135,7 +135,8 @@
    "title": "right",
    "fade": 0.12,
    "bg": "",
-   "bgAlpha": 0.92
+   "bgAlpha": 0.92,
+   "menu": "main"
   },
   "master": {
    "space": 32,
@@ -416,7 +417,44 @@
     "style": "body",
     "align": "left"
    }
-  }
+  },
+  "menus": [
+   {
+    "id": "main",
+    "name": "Main menu",
+    "items": [
+     {
+      "id": "ntnx8cyt",
+      "type": "heading",
+      "label": "a. samt"
+     },
+     {
+      "id": "2bzy1zy0",
+      "type": "page",
+      "page": "fji5ongj",
+      "label": ""
+     },
+     {
+      "id": "x5d88rg3",
+      "type": "page",
+      "page": "b2lr3tkr",
+      "label": ""
+     },
+     {
+      "id": "5g3blue0",
+      "type": "page",
+      "page": "zty6iib1",
+      "label": ""
+     },
+     {
+      "id": "abmvifimc6",
+      "type": "page",
+      "page": "nsye72w3",
+      "label": ""
+     }
+    ]
+   }
+  ]
  },
  "order": [
   "f0kgkfxt",
@@ -483,7 +521,8 @@
       "current": "",
       "hover": "",
       "brandSizeM": "",
-      "brandLhM": ""
+      "brandLhM": "",
+      "menu": ""
      }
     }
    ],
@@ -4105,7 +4144,7 @@
    "h1": "",
    "num": "",
    "slug": "about",
-   "section": "",
+   "section": "a",
    "desc": "Samt — Arabic for silence — a virtual platform for art and research founded by Walid Al Wawi in 2017.",
    "header": false,
    "layout": "free",

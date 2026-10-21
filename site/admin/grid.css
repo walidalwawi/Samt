@@ -1108,3 +1108,20 @@ color: var(--e-accent);
 .bd-ed-x.is-on svg {
 fill: currentColor;
 }
+
+/* MENU EDITOR */
+.bd-ed-mitem {
+display: grid;
+grid-template-columns: minmax(0, 1fr) auto;
+gap: 6px;
+align-items: start;
+padding: 8px 0;
+border-bottom: 1px dashed var(--e-line);
+}
+.bd-ed-mitem.is-head {
+padding-top: 14px;
+}
+.bd-ed-mitem .bd-ed-gbtns {
+display: flex;
+gap: 2px;
+}

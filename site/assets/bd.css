@@ -1,4 +1,4 @@
-/* PUBLISHED mvifgh4t */
+/* PUBLISHED build */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -372,6 +372,10 @@ cursor: default;
 }
 .bd-menu.is-flat .bd-menu-head {
 display: none;
+}
+.bd-menu-group.is-plain .bd-menu-items {
+display: block;
+padding-left: 0;
 }
 .bd-menu.is-flat .bd-menu-items {
 display: block;

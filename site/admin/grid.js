@@ -141,6 +141,77 @@ if (fresh) els.forEach(function (e) { if (e.props[k] !== undefined && String(e.p
 });
 }
 
+/* MENUS — EXPLICIT LISTS OF PAGES, LINKS AND HEADINGS; ANY MENU BLOCK OR THE OVERLAY SHOWS ONE */
+function normalizeMenus(p) {
+var s = p.site;
+if (!Array.isArray(s.menus) || !s.menus.length) {
+var items = [];
+s.sections.forEach(function (sec) {
+var pages = p.order.map(function (id) { return p.pages[id]; }).filter(function (q) { return q && q.kind !== "pin" && !q.parent && q.section === sec.key; });
+var ext = (s.externals || []).filter(function (x) { return x.section === sec.key; });
+if (!pages.length && !ext.length) return;
+items.push({ id: uid(), type: "heading", label: sec.label });
+pages.forEach(function (q) { items.push({ id: uid(), type: "page", page: q.id, label: "" }); });
+ext.forEach(function (x) { items.push({ id: uid(), type: "link", label: x.title, url: x.url, newTab: true }); });
+});
+s.menus = [{ id: "main", name: "Main menu", items: items }];
+}
+s.menus.forEach(function (m) { m.items = (m.items || []).filter(function (it) { return it.type !== "page" || p.pages[it.page]; }); });
+if (!s.nav.menu || !s.menus.some(function (m) { return m.id === s.nav.menu; })) s.nav.menu = s.menus[0].id;
+}
+function menuById(id) {
+var ms = S.project.site.menus || [];
+return ms.filter(function (m) { return m.id === id; })[0] || ms[0] || { id: "", name: "", items: [] };
+}
+function menuGroups(id) {
+var groups = [];
+var g = { label: "", items: [] };
+menuById(id).items.forEach(function (it) {
+if (it.type === "heading") {
+if (g.label || g.items.length) groups.push(g);
+g = { label: it.label || "", items: [] };
+return;
+}
+if (it.type === "page") {
+var q = S.project.pages[it.page];
+if (!q) return;
+g.items.push({ title: it.label || q.title, slug: q.slug || "", page: q.id });
+} else if (it.type === "link") g.items.push({ title: it.label || it.url, url: it.url || "#", ext: it.newTab !== false });
+});
+if (g.label || g.items.length) groups.push(g);
+return groups;
+}
+function menuEditor(id) {
+var ms = S.project.site.menus;
+var mi = ms.indexOf(menuById(id));
+var m = ms[mi];
+var base = "menu." + mi + ".items.";
+var pageOpts = seqPages().map(function (q) { return [q.id, (q.parent ? "  ↳ " : "") + q.title]; });
+var h = field("Menu name", input("menu." + mi + ".name", m.name));
+if (!m.items.length) h += '<div class="bd-ed-hint">Empty. Add pages, links or headings below.</div>';
+m.items.forEach(function (it, i) {
+var ctl = '<span class="bd-ed-gbtns" style="flex-direction:row"><button class="bd-ed-x" data-act="menu-item-move" data-m="' + mi + '" data-i="' + i + '" data-val="-1" aria-label="Up">' + I.up + '</button><button class="bd-ed-x" data-act="menu-item-move" data-m="' + mi + '" data-i="' + i + '" data-val="1" aria-label="Down">' + I.dn + '</button><button class="bd-ed-x" data-act="menu-item-del" data-m="' + mi + '" data-i="' + i + '" aria-label="Remove">' + I.x + "</button></span>";
+var body;
+if (it.type === "heading") body = '<span class="bd-ed-label" style="margin:0">Heading</span>' + input(base + i + ".label", it.label, "", ' placeholder="Heading" aria-label="Heading"');
+else if (it.type === "page") {
+var q = S.project.pages[it.page];
+body = select(base + i + ".page", it.page, pageOpts) + input(base + i + ".label", it.label, "", ' placeholder="' + esc(q ? q.title : "") + '" aria-label="Label"');
+} else body = input(base + i + ".label", it.label, "", ' placeholder="Label" aria-label="Label"') + input(base + i + ".url", it.url, "", ' placeholder="https://" aria-label="Address"') + '<label class="bd-ed-check"><input type="checkbox" data-act="menu-item-tab" data-m="' + mi + '" data-i="' + i + '"' + (it.newTab !== false ? " checked" : "") + ">New tab</label>";
+h += '<div class="bd-ed-mitem' + (it.type === "heading" ? " is-head" : "") + '"><div class="bd-ed-field" style="gap:4px">' + body + "</div>" + ctl + "</div>";
+});
+var missing = seqPages().filter(function (q) { return !q.parent && !m.items.some(function (it) { return it.type === "page" && it.page === q.id; }); });
+h += '<div class="bd-ed-actions">'
++ '<select class="bd-ed-input" data-act-select="menu-add-page" data-m="' + mi + '" aria-label="Add a page"><option value="">+ Page…</option>' + seqPages().map(function (q) { return '<option value="' + q.id + '">' + esc((q.parent ? "↳ " : "") + q.title) + "</option>"; }).join("") + "</select>"
++ '<button class="bd-ed-btn is-sm" data-act="menu-item-add" data-m="' + mi + '" data-val="link">' + I.plus + 'Link</button><button class="bd-ed-btn is-sm" data-act="menu-item-add" data-m="' + mi + '" data-val="heading">' + I.plus + "Heading</button>"
++ (missing.length ? '<button class="bd-ed-btn is-sm" data-act="menu-add-all" data-m="' + mi + '">' + I.plus + "All " + missing.length + " missing pages</button>" : "")
++ "</div>";
+return h;
+}
+function menuPicker(path, cur) {
+var ms = S.project.site.menus;
+return '<div class="bd-ed-list-row" style="grid-template-columns:minmax(0,1fr) auto">' + select(path, cur || ms[0].id, ms.map(function (m) { return [m.id, m.name]; })) + '<button class="bd-ed-btn is-sm" data-act="menu-new" data-path="' + path + '">' + I.plus + "New menu</button></div>";
+}
+
 /* STATE */
 var S = {
 store: null,
@@ -510,6 +581,7 @@ Object.keys(d).forEach(function (k) { if (e.props[k] === undefined) e.props[k] =
 });
 });
 normalizeBlockStyles(p);
+normalizeMenus(p);
 if (s.master.types.library && s.master.types.library.wm === 4 && s.colsM !== 4 && !s.master.libFix) {
 s.master.types.library.wm = s.colsM;
 s.master.types.library.w = s.cols;
@@ -547,7 +619,7 @@ embed: { w: 12, h: 40, props: { url: "", title: "Video" } },
 html: { w: 12, h: 8, props: { code: "<p>Custom HTML</p>" } },
 rule: { w: 12, h: 2, props: {} },
 ptitle: { w: 12, h: 3, props: { style: "body", align: "left", num: false } },
-menubtn: { w: 12, h: 3, props: { mode: "button", corner: "", brand: "none", brandText: "", brandPos: "before", brandStyle: "body", brandSize: "", brandLh: "", brandGap: 16, brandGapM: "", align: "start", dir: "vertical", group: "flat", style: "body", size: "", sizeM: "", lh: "", lhM: "", textCase: "none", tracking: "", itemGap: 0, itemGapM: "", groupGap: 20, groupGapM: "", headGap: 4, current: "underline", hover: "underline" } },
+menubtn: { w: 12, h: 3, props: { menu: "", mode: "button", corner: "", brand: "none", brandText: "", brandPos: "before", brandStyle: "body", brandSize: "", brandLh: "", brandGap: 16, brandGapM: "", align: "start", dir: "vertical", group: "flat", style: "body", size: "", sizeM: "", lh: "", lhM: "", textCase: "none", tracking: "", itemGap: 0, itemGapM: "", groupGap: 20, groupGapM: "", headGap: 4, current: "underline", hover: "underline" } },
 pager: { w: 12, h: 3, props: { num: "num", line: false, loop: false, scope: "site", look: "arrows", nextLabel: "Next, ", prevLabel: "", align: "left", style: "body" } },
 posts: { w: 12, h: 30, props: { blog: "", layout: "grid", cols: 3, colsM: 1, gap: 40, gapM: 24, rowGap: 40, rowGapM: 24, sort: "order", limit: "", featured: "none", fLayout: "stack", fTitleStyle: "heading", showImage: true, showTitle: true, showDate: false, showMeta: true, showExcerpt: false, imagePos: "top", ratio: "auto", imgGap: 12, cardBg: "", cardPad: 0, cardPadM: "", minH: "", titleStyle: "body", titleSize: "", titleLh: "", metaStyle: "small", metaSize: "", metaLh: "", metaGap: 8, hover: "dim" } },
 postinfo: { w: 12, h: 3, props: { back: true, backLabel: "<", date: false, words: true, time: true, style: "small", size: "", lh: "" } },
@@ -1061,6 +1133,10 @@ cursor: default;
 }
 .bd-menu.is-flat .bd-menu-head {
 display: none;
+}
+.bd-menu-group.is-plain .bd-menu-items {
+display: block;
+padding-left: 0;
 }
 .bd-menu.is-flat .bd-menu-items {
 display: block;
@@ -2332,19 +2408,14 @@ return '<a class="' + cls + '" href="/">' + esc(b === "custom" ? p.brandText || 
 }
 function menuListHTML(e) {
 var p = e.props;
-var s = S.project.site;
 var cur = forPage();
-var pages = seqPages().filter(function (q) { return q.section && !q.parent; });
-var groups = s.sections.map(function (sec) {
-return { label: sec.label, items: pages.filter(function (q) { return q.section === sec.key; }), ext: (s.externals || []).filter(function (x) { return x.section === sec.key; }) };
-}).filter(function (g) { return g.items.length || g.ext.length; });
+var groups = menuGroups(p.menu || S.project.site.nav.menu);
 var heads = p.group === "sections";
 return '<nav class="bd-mlist bd-ts-' + (E(e, "style") || "body") + " is-" + (p.dir === "horizontal" ? "horizontal" : "vertical") + " is-cur-" + (E(e, "current") || "none") + " is-hov-" + (E(e, "hover") || "none") + (heads ? " has-heads" : "") + '" aria-label="Menu">\n' + groups.map(function (g) {
-return '<div class="bd-mgroup">\n' + (heads ? '<span class="bd-mhead">' + esc(g.label) + "</span>\n" : "") + "<ul>\n" + g.items.map(function (q) {
-return '<li><a href="/' + esc(q.slug || "") + '"' + (cur && q.id === cur.id ? ' class="is-current" aria-current="page"' : "") + ">" + esc(q.title) + "</a></li>";
-}).concat(g.ext.map(function (x) {
-return '<li><a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.title) + "</a></li>";
-})).join("\n") + "\n</ul>\n</div>";
+return '<div class="bd-mgroup">\n' + (heads && g.label ? '<span class="bd-mhead">' + esc(g.label) + "</span>\n" : "") + "<ul>\n" + g.items.map(function (it) {
+if (it.url) return '<li><a href="' + esc(it.url) + '"' + (it.ext ? ' target="_blank" rel="noopener"' : "") + ">" + esc(it.title) + "</a></li>";
+return '<li><a href="/' + esc(it.slug) + '"' + (cur && it.page === cur.id ? ' class="is-current" aria-current="page"' : "") + ">" + esc(it.title) + "</a></li>";
+}).join("\n") + "\n</ul>\n</div>";
 }).join("\n") + "\n</nav>\n";
 }
 function elHTML(e, ctx) {
@@ -2560,7 +2631,7 @@ var s = S.project.site;
 var pages = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (p) { return p && p.kind !== "pin"; }).map(function (p) {
 return { section: p.section, slug: p.slug, num: p.num, title: p.title };
 });
-return { site: s.name, menu: s.menu || hasMenuButton(), pager: s.pager, nav: { icon: s.nav.icon, label: s.nav.label, openLabel: s.nav.openLabel, corner: s.nav.corner, headings: s.nav.headings, accordion: s.nav.accordion, current: s.nav.current, title: s.nav.title }, sections: s.sections, pages: pages, externals: s.externals, current: pageSlug };
+return { site: s.name, menu: s.menu || hasMenuButton(), groups: menuGroups(s.nav.menu).map(function (g) { return { label: g.label, items: g.items.map(function (it) { return it.url ? { title: it.title, url: it.url, ext: !!it.ext } : { title: it.title, slug: it.slug }; }) }; }), pager: s.pager, nav: { icon: s.nav.icon, label: s.nav.label, openLabel: s.nav.openLabel, corner: s.nav.corner, headings: s.nav.headings, accordion: s.nav.accordion, current: s.nav.current, title: s.nav.title }, sections: s.sections, pages: pages, externals: s.externals, current: pageSlug };
 }
 
 /* SITE CHROME (EXPORTED AS-IS) */
@@ -2602,40 +2673,37 @@ var o = data.nav || {};
 var menu = make("nav", "bd-menu is-cur-" + (o.current || "dim") + (o.headings === false ? " is-flat" : "") + (o.accordion === false ? " is-open-all" : "") + (o.title === "left" ? " is-title-left" : ""));
 menu.setAttribute("aria-label", "Menu");
 var list = make("div", "bd-menu-list");
-data.sections.forEach(function (s) {
-var items = pages.filter(function (p) { return p.section === s.key; });
-var ext = (data.externals || []).filter(function (x) { return x.section === s.key; });
-if (!items.length && !ext.length) return;
-var group = make("div", "bd-menu-group" + (s.key === section ? " is-open" : ""));
+(data.groups || []).forEach(function (gr) {
+if (!gr.items.length && !gr.label) return;
+var mine = gr.items.some(function (it) { return !it.url && it.slug === data.current; });
+var group = make("div", "bd-menu-group" + (mine || !gr.label ? " is-open" : ""));
+var ul = make("ul", "bd-menu-items");
+if (gr.label) {
 var head = make("button", "bd-menu-head");
 head.type = "button";
-head.textContent = s.label;
-head.setAttribute("aria-expanded", s.key === section || o.accordion === false ? "true" : "false");
+head.textContent = gr.label;
+head.setAttribute("aria-expanded", mine || o.accordion === false ? "true" : "false");
 head.addEventListener("click", function () {
 if (o.accordion === false) return;
 var open = group.classList.toggle("is-open");
 head.setAttribute("aria-expanded", open ? "true" : "false");
 });
-var ul = make("ul", "bd-menu-items");
-items.forEach(function (p) {
+group.appendChild(head);
+} else group.classList.add("is-plain");
+gr.items.forEach(function (it) {
 var li = make("li");
-var a = make("a", p.slug === data.current ? "is-current" : "");
-a.textContent = p.title;
-link(a, p);
-li.appendChild(a);
-ul.appendChild(li);
-});
-ext.forEach(function (x) {
-var li = make("li");
-var a = make("a");
-a.textContent = x.title;
-a.href = x.url;
+var a = make("a", !it.url && it.slug === data.current ? "is-current" : "");
+a.textContent = it.title;
+if (it.url) {
+a.href = it.url;
+if (it.ext) {
 a.target = "_blank";
 a.rel = "noopener";
+}
+} else link(a, { slug: it.slug });
 li.appendChild(a);
 ul.appendChild(li);
 });
-group.appendChild(head);
 group.appendChild(ul);
 list.appendChild(group);
 });
@@ -3487,7 +3555,7 @@ return h;
 function pagesPanel() {
 var s = S.project.site;
 var groups = s.sections.map(function (x) { return { key: x.key, label: x.label, pages: [] }; });
-var other = { key: "", label: "Not in menu", pages: [] };
+var other = { key: "", label: "No group", pages: [] };
 var pins = { key: "", label: "Header & footer", pages: [], pins: true };
 S.project.order.forEach(function (id) {
 var p = S.project.pages[id];
@@ -3551,7 +3619,8 @@ return '<div class="bd-ed-list-row">' + input("site.sections." + i + ".key", x.k
 var ext = s.externals.map(function (x, i) {
 return '<div class="bd-ed-field" style="gap:6px;padding-bottom:6px;border-bottom:1px dashed var(--e-line)"><div class="bd-ed-list-row">' + select("site.externals." + i + ".section", x.section, s.sections.map(function (q) { return [q.key, q.key]; })) + input("site.externals." + i + ".title", x.title, "", ' aria-label="Link title"') + '<button class="bd-ed-x" data-act="del-ext" data-i="' + i + '" aria-label="Remove link">' + I.x + "</button></div>" + input("site.externals." + i + ".url", x.url, "", ' aria-label="Link address" placeholder="https://"') + "</div>";
 }).join("") + '<button class="bd-ed-btn" data-act="add-ext">' + I.plus + "Outside link</button>";
-if (s.menu || hasType("menubtn")) h += '<div class="bd-ed-sec">' + adv("site-sections", "Menu sections and links", secs + ext) + "</div>";
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Menus</span>' + menuPicker("ui.menuEdit", S.menuEdit) + menuEditor(S.menuEdit || s.menus[0].id) + '<div class="bd-ed-hint">A menu is the list of links a Menu block or the overlay shows. Make as many as you like; each Menu block picks one.</div>' + (s.menus.length > 1 ? '<button class="bd-ed-btn is-danger is-sm" data-act="menu-del" data-id="' + esc(S.menuEdit || s.menus[0].id) + '">Delete this menu</button>' : "") + "</div>";
+h += '<div class="bd-ed-sec">' + adv("site-sections", "Page groups (Pages tab)", '<div class="bd-ed-hint">Groups only sort the Pages list and number pages. They don’t decide what shows in a menu.</div>' + secs) + "</div>";
 h += '<div class="bd-ed-sec">' + adv("site-adv", "Advanced", '<span class="bd-ed-label">Master placement</span>' + masterPanel()
 + '<span class="bd-ed-label">Grid</span>' + row(dpIn("Units", "site.cols", "site.colsM", s.cols, s.colsM, "int"), dpIn("Gap", "site.gap", "site.gapM", s.gap, s.gapM, "int"), numIn("Free-grid row", "site.row", s.row, "int"))) + "</div>";
 return h;
@@ -3610,7 +3679,10 @@ h += sw("Page number above", "el.num", !!p.num) + lookSection(e) + '<div class="
 }
 if (e.type === "menubtn") {
 var list = p.mode === "list";
+var mid = list ? p.menu || S.project.site.nav.menu : S.project.site.nav.menu;
 h += field("Type", seg("el.mode", list ? "list" : "button", [["list", "List of links"], ["button", "Button + overlay"]]))
++ field("Shows", menuPicker(list ? "el.menu" : "site.nav.menu", mid))
++ adv("menu-links-" + mid, "Edit the links in “" + esc(menuById(mid).name) + "”", menuEditor(mid), true)
 + field("Position", select("el.corner", p.corner || "", [["", "In line"], ["right", "Top right corner"], ["left", "Top left corner"]]))
 + '<span class="bd-ed-label">Next to it</span>'
 + row(field("Show", select("el.brand", p.brand || "none", [["none", "Nothing"], ["site", "Site name"], ["page", "Page title"], ["custom", "My own text"]])), field("Sits", select("el.brandPos", p.brandPos || "before", [["before", "Before"], ["after", "After"], ["above", "Above"]])))
@@ -3618,9 +3690,9 @@ h += field("Type", seg("el.mode", list ? "list" : "button", [["list", "List of l
 + field("Align", seg("el.align", p.align || "start", [["start", "Left"], ["center", "Centre"], ["end", "Right"], ["spread", "Spread"]]));
 if (list) {
 h += row(field("Direction", seg("el.dir", p.dir || "vertical", [["vertical", "Down"], ["horizontal", "Across"]])), field("Grouping", seg("el.group", p.group || "flat", [["flat", "One list"], ["sections", "By section"]])))
-+ lookSection(e) + '<div class="bd-ed-hint">Lists the pages that sit in a menu section (Pages tab). Sections and outside links are in Site.</div>';
++ lookSection(e);
 } else {
-h += lookSection(e) + "</div>" + navPanel(true) + '<div class="bd-ed-sec"><div class="bd-ed-hint">The button and overlay style is shared by every menu button on the site. Sections and outside links are in Site.</div>';
+h += lookSection(e) + "</div>" + navPanel(true) + '<div class="bd-ed-sec"><div class="bd-ed-hint">The overlay and its button style are shared by every menu button on the site.</div>';
 }
 }
 if (e.type === "pager") {
@@ -3789,9 +3861,10 @@ var s = S.project.site;
 h += '<div class="bd-ed-sec"><span class="bd-ed-title">Page</span>'
 + field("Title in menu", input("page.title", pg.title))
 + field("Heading on the page", input("page.h1", pg.h1, "", ' placeholder="' + esc(pg.title) + '"'))
-+ row(field("Section", select("page.section", pg.section, [["", "Not in menu"]].concat(s.sections.map(function (x) { return [x.key, x.label]; })))), field("Number", input("page.num", pg.num)))
++ row(field("Group", select("page.section", pg.section, [["", "No group"]].concat(s.sections.map(function (x) { return [x.key, x.label]; })))), field("Number", input("page.num", pg.num)))
 + (pg.slug === "" ? '<div class="bd-ed-hint">' + I.home.replace("<svg", '<svg style="width:12px;height:12px;vertical-align:-2px"') + " Home page</div>" : field("Address · /" + esc(pg.slug), input("page.slug", pg.slug, "slug", ' placeholder="page-name"')))
 + sw("Show the title", "page.header", pg.header !== false)
++ '<span class="bd-ed-label">Show in menus</span>' + S.project.site.menus.map(function (m) { return '<label class="bd-ed-check"><input type="checkbox" data-act="page-menu" data-id="' + m.id + '"' + (m.items.some(function (it) { return it.type === "page" && it.page === pg.id; }) ? " checked" : "") + ">" + esc(m.name) + "</label>"; }).join("")
 + (pg.blog ? '<div class="bd-ed-hint">This page is a blog. Its posts are listed under it in Pages.</div><button class="bd-ed-btn" data-act="post-add" data-id="' + pg.id + '">' + I.plus + "Post</button>" : "")
 + (pg.parent ? '<span class="bd-ed-label">Post</span>' + row(field("Blog", select("page.parent", pg.parent, blogs().map(function (b) { return [b.id, b.title]; }))), field("Date", '<input type="date" class="bd-ed-input" data-bind="page.date" value="' + esc(pg.date || "") + '">'))
 + field("Excerpt for the card", '<textarea class="bd-ed-input" data-bind="page.excerpt" rows="3">' + esc(pg.excerpt || "") + "</textarea>")
@@ -5945,6 +6018,14 @@ location.reload();
 "left-tab": function () { S.leftTab = val; renderLeft(); },
 "page": function () { goPage(b.getAttribute("data-id")); },
 "page-add": function () { addPage("page"); },
+"menu-item-move": function () { var m = S.project.site.menus[+b.getAttribute("data-m")]; var i = +b.getAttribute("data-i"), j = i + (+val); if (j < 0 || j >= m.items.length) return; snap(); var t = m.items[i]; m.items[i] = m.items[j]; m.items[j] = t; changed(); },
+"menu-item-del": function () { var m = S.project.site.menus[+b.getAttribute("data-m")]; snap(); m.items.splice(+b.getAttribute("data-i"), 1); changed(); },
+"menu-item-tab": function () { var m = S.project.site.menus[+b.getAttribute("data-m")]; snap(); m.items[+b.getAttribute("data-i")].newTab = b.checked; changed({ skipRight: true }); },
+"menu-item-add": function () { var m = S.project.site.menus[+b.getAttribute("data-m")]; snap(); m.items.push(val === "heading" ? { id: uid(), type: "heading", label: "Heading" } : { id: uid(), type: "link", label: "Link", url: "https://", newTab: true }); changed(); },
+"menu-add-all": function () { var m = S.project.site.menus[+b.getAttribute("data-m")]; snap(); seqPages().forEach(function (q) { if (!q.parent && !m.items.some(function (it) { return it.type === "page" && it.page === q.id; })) m.items.push({ id: uid(), type: "page", page: q.id, label: "" }); }); changed(); },
+"menu-new": function () { snap(); var nm = { id: uid(), name: "Menu " + (S.project.site.menus.length + 1), items: [] }; S.project.site.menus.push(nm); var path = b.getAttribute("data-path"); if (path === "ui.menuEdit") S.menuEdit = nm.id; else applyPath(path, nm.id); changed(); },
+"menu-del": function () { var id = b.getAttribute("data-id"); var ms = S.project.site.menus; if (ms.length < 2) return; snap(); S.project.site.menus = ms.filter(function (m) { return m.id !== id; }); S.menuEdit = S.project.site.menus[0].id; normalizeMenus(S.project); changed(); },
+"page-menu": function () { var m = menuById(b.getAttribute("data-id")); var pg = curPage(); snap(); if (b.checked) { if (!m.items.some(function (it) { return it.type === "page" && it.page === pg.id; })) m.items.push({ id: uid(), type: "page", page: pg.id, label: "" }); } else m.items = m.items.filter(function (it) { return !(it.type === "page" && it.page === pg.id); }); changed({ skipRight: true }); },
 "blog-add": function () { addBlog(); },
 "post-add": function () { var bid = b.getAttribute("data-id") || (curPage().blog ? curPage().id : curPage().parent); if (bid) addPost(bid); else addBlog(); },
 "post-move": function () { movePost(b.getAttribute("data-id"), +val); },
@@ -6053,7 +6134,11 @@ function applyPath(path, v) {
 var root = path.split(".")[0];
 var rest = path.slice(root.length + 1);
 var el = selEl();
-if (root === "site") {
+if (root === "ui") {
+S[rest] = v;
+} else if (root === "menu") {
+setPath(S.project.site.menus, rest, v);
+} else if (root === "site") {
 setPath(S.project.site, rest, v);
 if (rest === "sans" || rest === "mono") ensureFont(v);
 if (rest === "name") S.project.name = v;
@@ -6098,6 +6183,14 @@ var rv = parseInt(t.value, 10);
 if (isNaN(rv)) return;
 snap();
 applyPath(t.getAttribute("data-bind"), rv);
+changed();
+return;
+}
+if (t.getAttribute("data-act-select") === "menu-add-page") {
+if (!t.value) return;
+var mm = S.project.site.menus[+t.getAttribute("data-m")];
+snap();
+mm.items.push({ id: uid(), type: "page", page: t.value, label: "" });
 changed();
 return;
 }

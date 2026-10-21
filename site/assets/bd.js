@@ -1,5 +1,8 @@
 /* DATA */
-var BD_DATA = {"site":"Samt","menu":false,"pager":false,"nav":{"icon":"lines","label":"☰","openLabel":"","corner":"right","headings":true,"accordion":true,"current":"dim","title":"right"},"sections":[{"key":"a","label":"a. samt"}],"pages":[{"section":"a","slug":"","num":"","title":"Journal"},
+var BD_DATA = {"site":"Samt","menu":false,"groups":[{"label":"a. samt","items":[{"title":"Journal","slug":""},
+{"title":"Library","slug":"library"},
+{"title":"Supply","slug":"supply"},
+{"title":"About","slug":"about"}]}],"pager":false,"nav":{"icon":"lines","label":"☰","openLabel":"","corner":"right","headings":true,"accordion":true,"current":"dim","title":"right"},"sections":[{"key":"a","label":"a. samt"}],"pages":[{"section":"a","slug":"","num":"","title":"Journal"},
 {"section":"","slug":"how-to-deseed-a-watermelon","num":"","title":"How To Deseed A Watermelon For Safe Consumption"},
 {"section":"","slug":"handala-and-the-freeze-point","num":"","title":"Handala And The Freeze Point"},
 {"section":"","slug":"militant-improvisation","num":"","title":"Militant Improvisation"},
@@ -7,7 +10,7 @@ var BD_DATA = {"site":"Samt","menu":false,"pager":false,"nav":{"icon":"lines","l
 {"section":"","slug":"art-in-times-of-crisis","num":"","title":"Art In Times Of Crisis"},
 {"section":"a","slug":"library","num":"","title":"Library"},
 {"section":"a","slug":"supply","num":"","title":"Supply"},
-{"section":"","slug":"about","num":"","title":"About"}],"externals":[]};
+{"section":"a","slug":"about","num":"","title":"About"}],"externals":[]};
 
 /* CHROME */
 function bdChrome(root, data, nav) {
@@ -48,40 +51,37 @@ var o = data.nav || {};
 var menu = make("nav", "bd-menu is-cur-" + (o.current || "dim") + (o.headings === false ? " is-flat" : "") + (o.accordion === false ? " is-open-all" : "") + (o.title === "left" ? " is-title-left" : ""));
 menu.setAttribute("aria-label", "Menu");
 var list = make("div", "bd-menu-list");
-data.sections.forEach(function (s) {
-var items = pages.filter(function (p) { return p.section === s.key; });
-var ext = (data.externals || []).filter(function (x) { return x.section === s.key; });
-if (!items.length && !ext.length) return;
-var group = make("div", "bd-menu-group" + (s.key === section ? " is-open" : ""));
+(data.groups || []).forEach(function (gr) {
+if (!gr.items.length && !gr.label) return;
+var mine = gr.items.some(function (it) { return !it.url && it.slug === data.current; });
+var group = make("div", "bd-menu-group" + (mine || !gr.label ? " is-open" : ""));
+var ul = make("ul", "bd-menu-items");
+if (gr.label) {
 var head = make("button", "bd-menu-head");
 head.type = "button";
-head.textContent = s.label;
-head.setAttribute("aria-expanded", s.key === section || o.accordion === false ? "true" : "false");
+head.textContent = gr.label;
+head.setAttribute("aria-expanded", mine || o.accordion === false ? "true" : "false");
 head.addEventListener("click", function () {
 if (o.accordion === false) return;
 var open = group.classList.toggle("is-open");
 head.setAttribute("aria-expanded", open ? "true" : "false");
 });
-var ul = make("ul", "bd-menu-items");
-items.forEach(function (p) {
+group.appendChild(head);
+} else group.classList.add("is-plain");
+gr.items.forEach(function (it) {
 var li = make("li");
-var a = make("a", p.slug === data.current ? "is-current" : "");
-a.textContent = p.title;
-link(a, p);
-li.appendChild(a);
-ul.appendChild(li);
-});
-ext.forEach(function (x) {
-var li = make("li");
-var a = make("a");
-a.textContent = x.title;
-a.href = x.url;
+var a = make("a", !it.url && it.slug === data.current ? "is-current" : "");
+a.textContent = it.title;
+if (it.url) {
+a.href = it.url;
+if (it.ext) {
 a.target = "_blank";
 a.rel = "noopener";
+}
+} else link(a, { slug: it.slug });
 li.appendChild(a);
 ul.appendChild(li);
 });
-group.appendChild(head);
 group.appendChild(ul);
 list.appendChild(group);
 });
