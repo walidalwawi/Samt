@@ -1,13 +1,13 @@
 /* DATA */
-var BD_DATA = {"site":"Samt","menu":false,"pager":false,"nav":{"icon":"lines","label":"☰","openLabel":"","corner":"right","headings":true,"accordion":true,"current":"dim","title":"right"},"sections":[{"key":"a","label":"a. samt"}],"pages":[{"section":"a","slug":"","num":"","title":"Journal"},
+var BD_DATA = {"site":"Samt","menu":true,"pager":false,"nav":{"icon":"lines","label":"☰","openLabel":"","corner":"right","headings":true,"accordion":true,"current":"dim","title":"right"},"sections":[{"key":"a","label":"a. samt"}],"pages":[{"section":"","slug":"","num":"","title":"Journal"},
 {"section":"","slug":"how-to-deseed-a-watermelon","num":"","title":"How To Deseed A Watermelon For Safe Consumption"},
 {"section":"","slug":"handala-and-the-freeze-point","num":"","title":"Handala And The Freeze Point"},
 {"section":"","slug":"militant-improvisation","num":"","title":"Militant Improvisation"},
 {"section":"","slug":"the-bourgeoi-rtist","num":"","title":"The Bourgeoi’rtist"},
 {"section":"","slug":"art-in-times-of-crisis","num":"","title":"Art In Times Of Crisis"},
-{"section":"a","slug":"library","num":"","title":"Library"},
-{"section":"a","slug":"supply","num":"","title":"Supply"},
-{"section":"a","slug":"about","num":"","title":"About"}],"externals":[]};
+{"section":"","slug":"library","num":"","title":"Library"},
+{"section":"","slug":"supply","num":"","title":"Supply"},
+{"section":"","slug":"about","num":"","title":"About"}],"externals":[]};
 
 /* CHROME */
 function bdChrome(root, data, nav) {
