@@ -3,17 +3,22 @@
 Website for samt.co. Hosted on Cloudflare (free), built with the grid back office.
 
 ## Edit the site
-Open **walidalwawi.com/admin** or **samt.co/admin** — it's one back office for both. Switch sites from the name at the top left. First time only: paste a GitHub key with access to both repos (the page tells you how).
+Open **walidalwawi.com/admin** or **samt.co/admin** — one back office for both. Switch sites from the name at the top left. First time only: paste a GitHub key with access to both repos.
 
-- **Pages** (left): every page, grouped by menu section. Add, duplicate, reorder, make home.
-- **Canvas** (middle): add blocks from the rail — text, image, gallery, link, notes, list, video, HTML, rule. Drag to move, pull the handle to resize; everything snaps to the grid. Tap selected text again to type.
-- **Inspect**: tap anything on the page to get the design bar — size, line, spacing, weight, colour, align, fill, spacing above/below, padding, width, border, opacity, show/hide. Style "just this" or "all like it", in Site CSS or this page only. On Phone it writes to the one mobile block. Also: parent, show rule in code, move block, replace image, edit HTML.
-- **Code**: Site CSS, Page CSS, Head HTML, the selected block, any other repo file (Files), and the generated output. Upload PDFs and other files from Files → Upload.
-- **Columns** (above the canvas, or Site tab): 1 column centred or spread, or 2 / 3 columns spread across the page with set widths (of 12) and a gutter. Phone: 1 or 2 columns. Drag a block sideways into another column, or pick its column in the block panel. Header and footer (Pin) have their own column settings.
-- **Master / Styles / Menu / Site**: the grid, type styles, menu button and colours shared by every page.
-- **Save & publish** (or Cmd+S): puts everything live in one GitHub commit. Cloudflare updates the site in about 30 seconds.
+```
+TOP BAR    site ▾ · Desktop | Phone · undo redo · Code · Preview · Save & publish
+LEFT       Pages (pages, + Header, + Footer) · Styles (type) · Site (colours, frame, menu, Advanced)
+CANVAS     column bar on top (Site | This page · 1 2 3 · widths · gutter; phone 1 2)
+           rail: add text, image, gallery, link, notes, list, video, HTML, rule · ⌖ style anything
+RIGHT      what you tapped: Page · Header/Footer · Block (content, Style, column, actions) · Menu
+CODE       Site CSS · Page CSS · Head · Block · Files
+```
 
-Edits are kept in your browser until you publish.
+- Tap a block: edit its content, then **Style** it (size, colour, spacing…) — "Just this" or "All like it". **Pick inside** styles one word, image or link within it.
+- **⌖** in the rail: style anything on the page, including the header and menu.
+- On **Phone**, every number you change is the phone value, and Style writes phone-only CSS.
+- Rarely needed settings sit under **Advanced** (master placement, grid units, free-grid pages, exact block placement).
+- **Save & publish** (or Cmd+S) puts everything live in one GitHub commit; Cloudflare updates in about 30 seconds. Edits are kept in your browser until you publish.
 
 ## Where things live
 - `content/site.json` — the whole site (pages, blocks, styles). The back office reads and writes this.

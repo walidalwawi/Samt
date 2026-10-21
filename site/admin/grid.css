@@ -960,3 +960,126 @@ padding: 0 8px;
 font-family: var(--e-mono);
 font-size: 10.5px;
 }
+
+/* SIMPLER PANELS */
+.bd-ed-title {
+font-size: 15px;
+font-weight: 500;
+}
+.bd-ed-ph {
+font-weight: 400;
+padding: 1px 5px;
+margin-left: 4px;
+border-radius: 2px;
+background: var(--e-accent);
+color: var(--e-accent-ink);
+letter-spacing: 0.04em;
+}
+.bd-ed-n {
+font-family: var(--e-mono);
+font-size: 12px;
+font-variant-numeric: tabular-nums;
+}
+.bd-ed-adv {
+border-top: 1px solid var(--e-line);
+margin: 0 -12px;
+padding: 0 12px;
+}
+.bd-ed-sec > .bd-ed-adv:first-child {
+border-top: 0;
+margin-top: -4px;
+}
+.bd-ed-adv > summary {
+list-style: none;
+display: flex;
+align-items: center;
+gap: 8px;
+min-height: 34px;
+cursor: pointer;
+font-family: var(--e-mono);
+font-size: 10.5px;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: var(--e-mute);
+}
+.bd-ed-adv > summary::-webkit-details-marker {
+display: none;
+}
+.bd-ed-adv > summary::before {
+content: "+";
+width: 12px;
+color: var(--e-ink);
+}
+.bd-ed-adv[open] > summary::before {
+content: "−";
+}
+.bd-ed-adv[open] {
+padding-bottom: 12px;
+}
+.bd-ed-adv[open] > summary + * {
+margin-top: 2px;
+}
+.bd-ed-adv > :not(summary) + :not(summary) {
+margin-top: 10px;
+}
+.bd-ed-sum {
+margin-left: auto;
+text-transform: none;
+letter-spacing: 0;
+}
+.bd-ed-mrow {
+padding: 8px 0;
+border-bottom: 1px dashed var(--e-line);
+}
+.bd-ed-mrow > span {
+display: block;
+margin-bottom: 4px;
+font-weight: 500;
+}
+.bd-ed-btn.is-sm {
+height: 26px;
+padding: 0 7px;
+font-size: 11.5px;
+}
+.bd-ed-btn.is-sm svg {
+width: 14px;
+height: 14px;
+}
+.bd-ed-rail-sep {
+height: 1px;
+margin: 3px 4px;
+background: var(--e-line);
+}
+
+/* RULER */
+.bd-ed-ruler {
+flex-wrap: wrap;
+row-gap: 6px;
+}
+.bd-ed-rcols {
+flex-wrap: wrap;
+justify-content: flex-end;
+}
+.bd-ed-rcols b {
+font-weight: 500;
+color: var(--e-ink);
+}
+.bd-ed-rsel {
+width: auto;
+height: 24px;
+padding: 0 4px;
+font-family: var(--e-mono);
+font-size: 10.5px;
+}
+.bd-ed-rnum {
+display: inline-flex;
+align-items: center;
+gap: 4px;
+}
+.bd-ed-rnum input {
+width: 48px;
+height: 24px;
+padding: 0 6px;
+font-family: var(--e-mono);
+font-size: 10.5px;
+}

@@ -254,16 +254,7 @@
    "section": "",
    "desc": "",
    "header": false,
-   "layout": {
-    "cols": 1,
-    "align": "center",
-    "spans": [
-     12
-    ],
-    "colsM": 1,
-    "gutter": 30,
-    "gutterM": 20
-   },
+   "layout": "master",
    "css": "",
    "els": [
     {
@@ -289,7 +280,17 @@
     "show": "all",
     "pages": []
    },
-   "stack": []
+   "stack": [],
+   "colset": {
+    "cols": 1,
+    "align": "center",
+    "spans": [
+     12
+    ],
+    "colsM": 1,
+    "gutter": 30,
+    "gutterM": 20
+   }
   },
   "fji5ongj": {
    "id": "fji5ongj",
@@ -300,18 +301,7 @@
    "section": "a",
    "desc": "Samt journal: essays on art, resistance and the institution.",
    "header": false,
-   "layout": {
-    "cols": 3,
-    "align": "center",
-    "spans": [
-     4,
-     4,
-     4
-    ],
-    "colsM": 1,
-    "gutter": 40,
-    "gutterM": 24
-   },
+   "layout": "master",
    "css": "/* CARD IMAGES SIT INSIDE THE GREY CARD */\n.bd-col > .bd-html + .bd-figure {\nmargin-top: 0;\npadding: 0 18px 18px;\nbackground: #eeeeee;\n}",
    "els": [
     {
@@ -533,6 +523,18 @@
     "fixed": false,
     "show": "all",
     "pages": []
+   },
+   "colset": {
+    "cols": 3,
+    "align": "center",
+    "spans": [
+     4,
+     4,
+     4
+    ],
+    "colsM": 1,
+    "gutter": 40,
+    "gutterM": 24
    }
   },
   "xvis31th": {

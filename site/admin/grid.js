@@ -297,17 +297,17 @@ if (!Array.isArray(L.spans) || L.spans.length !== L.cols) L.spans = SPAN_PRESETS
 return L;
 }
 function lay(page) {
-return page && (page.kind === "pin" || page.ownLayout) ? page.layout : S.project.site.layout;
+return page && (page.kind === "pin" || page.ownLayout) && page.colset ? page.colset : S.project.site.layout;
 }
 function layWho(page) {
 return page.kind === "pin" ? "pin" : page.ownLayout ? "page" : "site";
 }
 function layFor(who) {
-return who === "site" ? S.project.site.layout : curPage().layout;
+return who === "site" ? S.project.site.layout : curPage().colset;
 }
 function isSpreadPage(page) {
 var L = lay(page);
-return isSpread(S.project.site) || (page.kind !== "pin" && page.ownLayout && (L.cols > 1 || L.align === "spread"));
+return isSpread(S.project.site) || (page.kind !== "pin" && page.ownLayout && !!page.colset && (L.cols > 1 || L.align === "spread"));
 }
 function nCols(page) {
 if (!page || !isMaster(page)) return 1;
@@ -328,8 +328,8 @@ var s = S.project.site;
 var out = [".bd-main .bd-cols {\ngrid-template-columns: " + colTemplate(s.layout, phone) + ";\ncolumn-gap: " + (phone ? s.layout.gutterM : s.layout.gutter) + "px;\n}"];
 S.project.order.forEach(function (id) {
 var p = S.project.pages[id];
-if (!p || !(p.kind === "pin" || p.ownLayout) || p.layout.cols < 2) return;
-out.push(".bd-cols.bd-cl-" + p.id + " {\ngrid-template-columns: " + colTemplate(p.layout, phone) + ";\ncolumn-gap: " + (phone ? p.layout.gutterM : p.layout.gutter) + "px;\n}");
+if (!p || !(p.kind === "pin" || p.ownLayout) || !p.colset || p.colset.cols < 2) return;
+out.push(".bd-cols.bd-cl-" + p.id + " {\ngrid-template-columns: " + colTemplate(p.colset, phone) + ";\ncolumn-gap: " + (phone ? p.colset.gutterM : p.colset.gutter) + "px;\n}");
 });
 return out.join("\n");
 }
@@ -371,7 +371,11 @@ pg.pin = pg.pin || { place: "top", fixed: false, show: "all", pages: [] };
 s.layout = fixLayout(s.layout);
 p.order.forEach(function (id) {
 var pg = p.pages[id];
-if (pg.kind === "pin" || pg.ownLayout) pg.layout = fixLayout(pg.layout);
+if (pg.layout && typeof pg.layout === "object") {
+pg.colset = pg.layout;
+pg.layout = "master";
+}
+if (pg.kind === "pin" || pg.ownLayout) pg.colset = fixLayout(pg.colset);
 });
 if (!s.master.types.gallery) s.master.types.gallery = Object.assign({ space: "", spaceM: "" }, s.master.types.image);
 return p;
@@ -1297,7 +1301,13 @@ min-height: 640px;
 .is-editing .bd-grid,
 .is-editing .bd-flow {
 position: relative;
+}
+.is-editing .bd-main > .bd-grid,
+.is-editing .bd-main > .bd-flow {
 min-height: 360px;
+}
+.is-editing .bd-pin .bd-flow {
+min-height: 40px;
 }
 .is-editing .bd-col {
 position: relative;
@@ -2060,6 +2070,11 @@ S.uploads = [];
 S.generated = [];
 S.inspect = false;
 S.ins = null;
+S.open = {};
+document.addEventListener("toggle", function (e) {
+var d = e.target;
+if (d && d.getAttribute && d.getAttribute("data-key")) S.open[d.getAttribute("data-key")] = d.open;
+}, true);
 function lsDel(k) {
 try {
 localStorage.removeItem(k);
@@ -2343,7 +2358,6 @@ t.innerHTML = '<button class="bd-ed-btn is-icon bd-ed-narrow" data-act="toggle-l
 + '<button class="bd-ed-btn is-icon" data-act="undo" aria-label="Undo"' + (S.undo.length ? "" : " disabled") + ">" + I.undo + "</button>"
 + '<button class="bd-ed-btn is-icon" data-act="redo" aria-label="Redo"' + (S.redo.length ? "" : " disabled") + ">" + I.redo + "</button>"
 + '<button class="bd-ed-btn' + (S.codeOpen ? " is-on" : "") + '" data-act="code">' + I.code + '<span class="bd-ed-hide-narrow">Code</span></button>'
-+ '<button class="bd-ed-btn' + (S.inspect ? " is-on" : "") + '" data-act="inspect">' + I.target + '<span class="bd-ed-hide-narrow">Inspect</span></button>'
 + '<button class="bd-ed-btn' + (S.preview && !S.inspect ? " is-on" : "") + '" data-act="preview">' + I.eye + '<span class="bd-ed-hide-narrow">Preview</span></button>'
 + '<button class="bd-ed-btn is-primary" data-act="export"' + (S.publishing ? " disabled" : "") + ">" + I.up + '<span class="bd-ed-hide-narrow">' + (S.publishing ? "Publishing…" : "Save & publish") + "</span></button>"
 + '<span class="bd-ed-status bd-ed-hide-narrow"></span>'
@@ -2359,21 +2373,33 @@ function input(path, val, type, extra) {
 return '<input class="bd-ed-input" data-bind="' + path + '"' + (type ? ' data-type="' + type + '"' : "") + ' value="' + esc(val) + '"' + (extra || "") + ">";
 }
 function numIn(label, path, val, type) {
-return '<label class="bd-ed-num"><span>' + label + '</span><input class="bd-ed-input" inputmode="decimal" data-bind="' + path + '" data-type="' + (type || "num") + '" value="' + esc(val) + '" aria-label="' + label + '"></label>';
+return field(label, '<input class="bd-ed-input bd-ed-n" inputmode="decimal" data-bind="' + path + '" data-type="' + (type || "num") + '" value="' + esc(val) + '">');
+}
+/* ONE FIELD THAT EDITS THE DESKTOP VALUE ON DESKTOP AND THE PHONE VALUE ON PHONE */
+function dpIn(label, pathD, pathM, vD, vM, type) {
+var ph = S.mode === "phone";
+return field(label + (ph ? ' <b class="bd-ed-ph">phone</b>' : ""), '<input class="bd-ed-input bd-ed-n" inputmode="decimal" data-bind="' + (ph ? pathM : pathD) + '" data-type="' + (type || "num") + '" value="' + esc(ph ? vM : vD) + '"' + (ph && vD !== "" && vD != null ? ' placeholder="' + esc(vD) + '"' : "") + ">");
+}
+function row() {
+return '<div class="bd-ed-row">' + Array.prototype.slice.call(arguments).join("") + "</div>";
+}
+function adv(key, title, inner, open) {
+var o = S.open[key] != null ? S.open[key] : !!open;
+return '<details class="bd-ed-adv" data-key="' + key + '"' + (o ? " open" : "") + "><summary>" + title + "</summary>" + inner + "</details>";
 }
 function sw(label, path, on) {
 return '<div class="bd-ed-toggle"><span>' + label + '</span><button class="bd-ed-switch' + (on ? " is-on" : "") + '" data-act="set" data-path="' + path + '" data-val="' + (!on) + '" data-vtype="bool" role="switch" aria-checked="' + !!on + '" aria-label="' + label + '"></button></div>';
 }
 function seg(path, cur, opts) {
 return '<div class="bd-ed-seg">' + opts.map(function (o) {
-return '<button data-act="set" data-path="' + path + '" data-val="' + o[0] + '" class="' + (cur === o[0] ? "is-on" : "") + '">' + o[1] + "</button>";
+return '<button data-act="set" data-path="' + path + '" data-val="' + o[0] + '" class="' + (String(cur) === String(o[0]) ? "is-on" : "") + '">' + o[1] + "</button>";
 }).join("") + "</div>";
 }
 function select(path, cur, opts) {
 return '<select class="bd-ed-input" data-bind="' + path + '">' + opts.map(function (o) {
 var v = Array.isArray(o) ? o[0] : o;
 var l = Array.isArray(o) ? o[1] : o;
-return '<option value="' + esc(v) + '"' + (v === cur ? " selected" : "") + ">" + esc(l) + "</option>";
+return '<option value="' + esc(v) + '"' + (String(v) === String(cur) ? " selected" : "") + ">" + esc(l) + "</option>";
 }).join("") + "</select>";
 }
 function chips(path, list) {
@@ -2387,82 +2413,62 @@ return field(label, '<div class="bd-ed-list-row" style="grid-template-columns:mi
 function navPanel() {
 var s = S.project.site;
 var n = s.nav;
-var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">Menu button</span></div>'
-+ sw("Show menu on the site", "site.menu", s.menu)
-+ sw("Show it open on the canvas", "ui.menuOpen", !!S.menuOpen)
-+ field("Button face", seg("site.nav.icon", n.icon, [["lines", "Lines"], ["text", "Text or symbol"]]));
+var h = '<div class="bd-ed-sec"><span class="bd-ed-label">Button</span>'
++ sw("Menu on the site", "site.menu", s.menu)
++ sw("Show it open here", "ui.menuOpen", !!S.menuOpen)
++ field("Face", seg("site.nav.icon", n.icon, [["lines", "Lines"], ["text", "Text or symbol"]]));
 if (n.icon === "text") {
 h += field("Label", input("site.nav.label", n.label, "", ' placeholder="☰  menu  index;  +"'))
 + chips("site.nav.label", ["☰", "≡", "+", "○", "●", "✳", "※", "→", "menu", "index;", "Menu"])
-+ field("Label while open (optional)", input("site.nav.openLabel", n.openLabel, "", ' placeholder="×  close"'))
++ field("Label while open", input("site.nav.openLabel", n.openLabel, "", ' placeholder="×  close"'))
 + chips("site.nav.openLabel", ["×", "−", "✕", "←", "close", "Close"]);
 }
-h += field("Font", seg("site.nav.btnFont", n.btnFont, [["sans", "Main"], ["mono", "Mono"]]))
-+ '<div class="bd-ed-row">' + numIn("S", "site.nav.btnSize", n.btnSize, "num") + "</div>"
+h += row(field("Font", seg("site.nav.btnFont", n.btnFont, [["sans", "Main"], ["mono", "Mono"]])), numIn("Size", "site.nav.btnSize", n.btnSize))
 + colorIn("Colour", "site.nav.btnColor", n.btnColor, s.colors.ink)
 + field("Case", seg("site.nav.btnCase", n.btnCase, [["none", "As typed"], ["uppercase", "UPPER"], ["lowercase", "lower"]]))
 + field("Corner", seg("site.nav.corner", n.corner, [["left", "Top left"], ["right", "Top right"]]))
-+ '<span class="bd-ed-label">Offset from panel edge · desktop / phone</span><div class="bd-ed-row">' + numIn("T", "site.nav.btnTop", n.btnTop, "int") + numIn("S", "site.nav.btnSide", n.btnSide, "int") + numIn("t", "site.nav.btnTopM", n.btnTopM, "int") + numIn("s", "site.nav.btnSideM", n.btnSideM, "int") + "</div>"
-+ '<div class="bd-ed-hint">T/t from the top · S/s from the side, in px</div></div>';
++ row(dpIn("From top", "site.nav.btnTop", "site.nav.btnTopM", n.btnTop, n.btnTopM, "int"), dpIn("From side", "site.nav.btnSide", "site.nav.btnSideM", n.btnSide, n.btnSideM, "int"))
++ "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Menu</span>'
 + field("Font", seg("site.nav.font", n.font, [["sans", "Main"], ["mono", "Mono"]]))
-+ '<span class="bd-ed-label">Size / line · desktop, phone (0 = body)</span><div class="bd-ed-row">' + numIn("S", "site.nav.size", n.size, "num") + numIn("L", "site.nav.lh", n.lh, "num") + numIn("s", "site.nav.sizeM", n.sizeM, "num") + numIn("l", "site.nav.lhM", n.lhM, "num") + "</div>"
++ row(dpIn("Size (0 = body)", "site.nav.size", "site.nav.sizeM", n.size, n.sizeM), dpIn("Line", "site.nav.lh", "site.nav.lhM", n.lh, n.lhM))
 + colorIn("Colour", "site.nav.color", n.color, s.colors.ink)
-+ '<div class="bd-ed-row">' + field("Case", select("site.nav.navCase", n.navCase, [["none", "As typed"], ["uppercase", "UPPER"], ["lowercase", "lower"]])) + field("Letter spacing (em)", input("site.nav.tracking", n.tracking, "num", ' inputmode="decimal"')) + "</div>"
++ row(field("Case", select("site.nav.navCase", n.navCase, [["none", "As typed"], ["uppercase", "UPPER"], ["lowercase", "lower"]])), numIn("Spacing (em)", "site.nav.tracking", n.tracking))
 + sw("Section headings", "site.nav.headings", n.headings)
-+ (n.headings ? sw("Fold sections (tap to open)", "site.nav.accordion", n.accordion) : "")
-+ '<div class="bd-ed-row">' + field("Indent items (px)", input("site.nav.indent", n.indent, "int")) + "</div>"
++ (n.headings ? sw("Fold sections", "site.nav.accordion", n.accordion) : "")
++ numIn("Indent items (px)", "site.nav.indent", n.indent, "int")
 + field("Current page", seg("site.nav.current", n.current, [["dim", "Dim"], ["underline", "Line"], ["strike", "Strike"], ["arrow", "→"]]))
 + field("Site name", seg("site.nav.title", n.title, [["left", "Left"], ["right", "Right"], ["hide", "Hide"]]))
 + field("Page behind menu · " + Math.round(n.fade * 100) + "%", '<input type="range" min="0" max="1" step="0.02" data-bind="site.nav.fade" data-type="num" value="' + n.fade + '" aria-label="Page opacity behind menu">')
-+ colorIn("Backdrop colour", "site.nav.bg", n.bg, s.colors.panel)
++ colorIn("Backdrop", "site.nav.bg", n.bg, s.colors.panel)
 + (n.bg ? field("Backdrop strength · " + Math.round(n.bgAlpha * 100) + "%", '<input type="range" min="0" max="1" step="0.02" data-bind="site.nav.bgAlpha" data-type="num" value="' + n.bgAlpha + '" aria-label="Backdrop strength">') : "")
 + "</div>";
-return h;
-}
-function layPanel(who, L) {
-var p = who === "site" ? "site.layout" : "page.layout";
-var phone = S.mode === "phone";
-var h = '<span class="bd-ed-label">Columns · desktop</span>'
-+ '<div class="bd-ed-seg">' + [1, 2, 3].map(function (n) { return '<button data-act="lay-cols" data-who="' + who + '" data-val="' + n + '" class="' + (L.cols === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</div>";
-if (L.cols === 1 && who !== "pin") h += field("One column", seg(p + ".align", L.align, [["center", "Centred"], ["spread", "Spread"]]));
-if (L.cols > 1) {
-h += field("Widths (of 12)", '<select class="bd-ed-input" data-act-select="lay-spans" data-who="' + who + '">' + SPAN_PRESETS[L.cols].map(function (sp) {
-var v = sp.join("-");
-return '<option value="' + v + '"' + (L.spans.join("-") === v ? " selected" : "") + ">" + sp.join(" · ") + "</option>";
-}).join("") + "</select>");
-h += '<span class="bd-ed-label">Gutter · desktop / phone (px)</span><div class="bd-ed-row">' + numIn("D", p + ".gutter", L.gutter, "int") + numIn("P", p + ".gutterM", L.gutterM, "int") + "</div>";
-h += '<span class="bd-ed-label">Columns · phone</span><div class="bd-ed-seg">' + [1, 2].map(function (n) { return '<button data-act="lay-colsM" data-who="' + who + '" data-val="' + n + '" class="' + (L.colsM === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</div>";
-}
-h += '<div class="bd-ed-hint">' + (L.cols > 1 ? "Columns spread across the page width. Blocks sit in a column; drag a block sideways into another column or pick it in the block panel." : L.align === "spread" && who === "site" ? "One column across the full page width." : "One centred column at the panel width set in Site.") + (phone ? " You’re on Phone: switch 1 / 2 above the canvas." : "") + "</div>";
 return h;
 }
 function masterPanel() {
 var s = S.project.site;
 var m = s.master;
-var h = '<div class="bd-ed-sec"><span class="bd-ed-label">Master layout</span><div class="bd-ed-hint">Pages that follow the master stack their blocks top to bottom. Change a value here and every following page updates.</div>'
-+ '<span class="bd-ed-label">Space between blocks · desktop / phone (px)</span><div class="bd-ed-row">' + numIn("D", "site.master.space", m.space, "int") + numIn("P", "site.master.spaceM", m.spaceM, "int") + "</div>"
-+ '<span class="bd-ed-label">Header indent (columns) · space below (px)</span><div class="bd-ed-row">' + numIn("X", "site.master.headX", m.headX, "int") + numIn("x", "site.master.headXM", m.headXM, "int") + numIn("D", "site.master.headSpace", m.headSpace, "int") + numIn("P", "site.master.headSpaceM", m.headSpaceM, "int") + "</div>"
-+ '<button class="bd-ed-btn" style="white-space:normal;height:auto;min-height:32px;padding:6px 10px;text-align:left" data-act="all-master">Make every page follow the master</button></div>';
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Where each block sits</span><div class="bd-ed-hint">X start column (0 is the left edge) · W columns wide · lowercase is phone. Leave Space above empty to use the gap set at the top.</div>';
+var h = '<div class="bd-ed-hint">Spacing and the default place of each block type inside a column, on a ' + (S.mode === "phone" ? s.colsM : s.cols) + "-unit grid.</div>"
++ row(dpIn("Space between blocks", "site.master.space", "site.master.spaceM", m.space, m.spaceM, "int"))
++ row(dpIn("Title indent (units)", "site.master.headX", "site.master.headXM", m.headX, m.headXM, "int"), dpIn("Space under title", "site.master.headSpace", "site.master.headSpaceM", m.headSpace, m.headSpaceM, "int"));
 Object.keys(BD_TYPE_CLASS).forEach(function (k) {
 var t = m.types[k];
-h += '<div class="bd-ed-field" style="gap:5px;padding-bottom:8px;border-bottom:1px dashed var(--e-line)"><span class="bd-ed-label" style="color:var(--e-ink)">' + BD_TYPE_NAME[k] + '</span><div class="bd-ed-row">' + numIn("X", "site.master.types." + k + ".x", t.x, "int") + numIn("W", "site.master.types." + k + ".w", t.w, "int") + numIn("x", "site.master.types." + k + ".xm", t.xm, "int") + numIn("w", "site.master.types." + k + ".wm", t.wm, "int") + '</div><span class="bd-ed-label">Space above · desktop / phone</span><div class="bd-ed-row">' + numIn("D", "site.master.types." + k + ".space", t.space, "blank") + numIn("P", "site.master.types." + k + ".spaceM", t.spaceM, "blank") + "</div></div>";
+var p = "site.master.types." + k;
+h += '<div class="bd-ed-mrow"><span>' + BD_TYPE_NAME[k] + "</span>" + row(dpIn("Start", p + ".x", p + ".xm", t.x, t.xm, "int"), dpIn("Width", p + ".w", p + ".wm", t.w, t.wm, "int"), dpIn("Space above", p + ".space", p + ".spaceM", t.space, t.spaceM, "blank")) + "</div>";
 });
-h += "</div>";
+h += '<button class="bd-ed-btn" data-act="all-master">Make every page follow the master</button>';
 return h;
 }
 function galleryPanel(g) {
 var p = "el";
-var h = field("Layout", seg(p + ".layout", g.layout, [["grid", "Grid"], ["columns", "Columns"], ["justify", "Justify"], ["free", "Freeform"], ["slides", "Slideshow"]]));
-if (g.layout === "grid" || g.layout === "columns") h += '<span class="bd-ed-label">Columns · desktop / phone</span><div class="bd-ed-row">' + numIn("D", p + ".cols", g.cols, "int") + numIn("P", p + ".colsM", g.colsM, "int") + "</div>";
-if (g.layout === "grid") h += field("Crop", select(p + ".ratio", g.ratio, [["auto", "Original shape"], ["1", "Square"], ["4/3", "4 : 3"], ["3/2", "3 : 2"], ["16/9", "16 : 9"], ["3/4", "3 : 4 tall"]])) + field("Align in row", seg(p + ".align", g.align, [["start", "Top"], ["center", "Middle"], ["end", "Bottom"]]));
-if (g.layout === "justify") h += '<span class="bd-ed-label">Row height · desktop / phone (px)</span><div class="bd-ed-row">' + numIn("D", p + ".rowH", g.rowH, "int") + numIn("P", p + ".rowHM", g.rowHM, "int") + "</div>";
-if (g.layout === "free") h += field("Snap (% of width)", select(p + ".snap", g.snap, [["0", "Off"], ["1", "1%"], ["2.5", "2.5%"], ["5", "5%"], ["10", "10%"]])) + field("On phones", seg(p + ".freeM", g.freeM, [["stack", "Stack"], ["scale", "Keep layout"]])) + '<div class="bd-ed-hint">Drag images inside the gallery. Pull the corner square to resize. Everything snaps.</div>';
-if (g.layout === "slides") h += field("Transition", seg(p + ".transition", g.transition, [["fade", "Fade"], ["slide", "Slide"]])) + field("Navigation", seg(p + ".nav", g.nav, [["arrows", "Arrows"], ["zones", "Click sides"], ["single", "Click to advance"], ["none", "None"]])) + field("Autoplay (seconds, 0 = off)", input(p + ".auto", g.auto, "num")) + sw("Show counter", p + ".counter", g.counter);
-if (g.layout !== "slides" && g.layout !== "free") h += '<span class="bd-ed-label">Gutter · desktop / phone (px)</span><div class="bd-ed-row">' + numIn("D", p + ".gutter", g.gutter, "int") + numIn("P", p + ".gutterM", g.gutterM, "int") + "</div>";
-h += sw("Show captions", p + ".captions", g.captions) + (g.layout !== "slides" ? sw("Click to zoom", p + ".zoom", g.zoom) : "");
-h += '</div><div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">' + g.items.length + " image" + (g.items.length === 1 ? "" : "s") + '</span><button class="bd-ed-btn" style="height:26px" data-act="pick-image">' + I.plus + "Add</button></div>";
+var h = field("Layout", select(p + ".layout", g.layout, [["grid", "Grid"], ["columns", "Columns"], ["justify", "Justify"], ["free", "Freeform"], ["slides", "Slideshow"]]));
+if (g.layout === "grid" || g.layout === "columns") h += row(dpIn("Columns", p + ".cols", p + ".colsM", g.cols, g.colsM, "int"), g.layout !== "slides" ? dpIn("Gutter", p + ".gutter", p + ".gutterM", g.gutter, g.gutterM, "int") : "");
+if (g.layout === "grid") h += row(field("Crop", select(p + ".ratio", g.ratio, [["auto", "Original"], ["1", "Square"], ["4/3", "4 : 3"], ["3/2", "3 : 2"], ["16/9", "16 : 9"], ["3/4", "3 : 4"]])), field("Align", select(p + ".align", g.align, [["start", "Top"], ["center", "Middle"], ["end", "Bottom"]])));
+if (g.layout === "justify") h += row(dpIn("Row height", p + ".rowH", p + ".rowHM", g.rowH, g.rowHM, "int"), dpIn("Gutter", p + ".gutter", p + ".gutterM", g.gutter, g.gutterM, "int"));
+if (g.layout === "free") h += row(field("Snap", select(p + ".snap", g.snap, [["0", "Off"], ["1", "1%"], ["2.5", "2.5%"], ["5", "5%"], ["10", "10%"]])), field("On phones", select(p + ".freeM", g.freeM, [["stack", "Stack"], ["scale", "Keep layout"]]))) + '<div class="bd-ed-hint">Drag images inside the gallery; pull the corner square to resize.</div>';
+if (g.layout === "slides") h += row(field("Transition", select(p + ".transition", g.transition, [["fade", "Fade"], ["slide", "Slide"]])), field("Navigation", select(p + ".nav", g.nav, [["arrows", "Arrows"], ["zones", "Click sides"], ["single", "Click to advance"], ["none", "None"]])), numIn("Autoplay (s)", p + ".auto", g.auto)) + sw("Counter", p + ".counter", g.counter);
+h += sw("Captions", p + ".captions", g.captions) + (g.layout !== "slides" ? sw("Click to zoom", p + ".zoom", g.zoom) : "");
+h += '<div class="bd-ed-head"><span class="bd-ed-label">' + g.items.length + " image" + (g.items.length === 1 ? "" : "s") + '</span><button class="bd-ed-btn" style="height:26px" data-act="pick-image">' + I.plus + "Add</button></div>";
 g.items.forEach(function (it, i) {
 h += '<div class="bd-ed-gthumb"><img src="' + esc(imgSrc(it, "edit")) + '" alt=""><div class="bd-ed-field" style="gap:4px">' + input("gi." + i + ".caption", it.caption, "", ' placeholder="Caption" aria-label="Caption"') + input("gi." + i + ".alt", it.alt, "", ' placeholder="Describe the image" aria-label="Alt text"') + '</div><div class="bd-ed-gbtns"><button class="bd-ed-x" data-act="gi-up" data-i="' + i + '" aria-label="Earlier">' + I.up + '</button><button class="bd-ed-x" data-act="gi-down" data-i="' + i + '" aria-label="Later">' + I.dn + '</button><button class="bd-ed-x" data-act="gi-del" data-i="' + i + '" aria-label="Remove">' + I.x + "</button></div></div>";
 });
@@ -2470,33 +2476,22 @@ return h;
 }
 function stylesPanel() {
 var s = S.project.site;
-var h = '<div class="bd-ed-sec"><div class="bd-ed-hint">Each text block uses one of these styles. Notes and lists use Mono; image captions use Caption.</div></div>';
-BD_STYLES.forEach(function (k) {
+var h = '<div class="bd-ed-sec"><div class="bd-ed-hint">The type every block uses. Pick a block’s style in its panel; for one-off changes use Style in the block panel.' + (S.mode === "phone" ? " Showing phone sizes." : "") + "</div>"
++ row(field("Main face", select("site.sans", s.sans, BD_FONTS_SANS)), field("Mono face", select("site.mono", s.mono, BD_FONTS_MONO))) + "</div>";
+BD_STYLES.forEach(function (k, i) {
 var st = s.styles[k[0]];
 var p = "site.styles." + k[0];
-h += '<div class="bd-ed-sec"><span class="bd-ed-label" style="color:var(--e-ink)">' + k[1] + "</span>"
-+ field("Face", seg(p + ".font", st.font, [["sans", "Main"], ["mono", "Mono"]]))
-+ '<span class="bd-ed-label">Size / line · desktop, phone</span><div class="bd-ed-row">' + numIn("S", p + ".size", st.size) + numIn("L", p + ".lh", st.lh) + numIn("s", p + ".sizeM", st.sizeM) + numIn("l", p + ".lhM", st.lhM) + "</div>"
-+ field("Weight", seg(p + ".weight", String(st.weight), [["400", "Regular"], ["500", "Medium"], ["700", "Bold"]]))
-+ '<div class="bd-ed-row">' + field("Case", select(p + ".textCase", st.textCase, [["none", "As typed"], ["uppercase", "UPPER"], ["lowercase", "lower"]])) + field("Spacing (em)", input(p + ".tracking", st.tracking, "num")) + "</div>"
+h += '<div class="bd-ed-sec">' + adv("style-" + k[0], k[1] + ' <span class="bd-ed-sum">' + (S.mode === "phone" ? st.sizeM + "/" + st.lhM : st.size + "/" + st.lh) + " · " + (st.font === "mono" ? "mono" : "main") + "</span>",
+row(dpIn("Size", p + ".size", p + ".sizeM", st.size, st.sizeM), dpIn("Line", p + ".lh", p + ".lhM", st.lh, st.lhM))
++ row(field("Face", seg(p + ".font", st.font, [["sans", "Main"], ["mono", "Mono"]])), field("Weight", select(p + ".weight", String(st.weight), [["400", "Regular"], ["500", "Medium"], ["700", "Bold"]])))
++ row(field("Case", select(p + ".textCase", st.textCase, [["none", "As typed"], ["uppercase", "UPPER"], ["lowercase", "lower"]])), numIn("Spacing (em)", p + ".tracking", st.tracking))
 + sw("Italic", p + ".italic", st.italic)
-+ field("Colour", '<div class="bd-ed-list-row" style="grid-template-columns:minmax(0,1fr) auto"><input type="color" class="bd-ed-input" data-bind="' + p + '.color" value="' + esc(st.color || s.colors.ink) + '"><button class="bd-ed-btn" style="height:30px" data-act="set" data-path="' + p + '.color" data-val="">' + (st.color ? "Reset" : "Ink") + "</button></div>")
-+ "</div>";
++ colorIn("Colour", p + ".color", st.color, s.colors.ink), i === 0) + "</div>";
 });
 return h;
 }
-function renderLeft() {
-var L = $("bd-left");
-L.classList.toggle("is-open", S.leftOpen);
-if (!S.project) {
-L.innerHTML = "";
-return;
-}
+function pagesPanel() {
 var s = S.project.site;
-var h = '<div class="bd-ed-tabs" role="tablist">' + [["pages", "Pages"], ["master", "Master"], ["styles", "Styles"], ["menu", "Menu"], ["site", "Site"]].map(function (t) {
-return '<button data-act="left-tab" data-val="' + t[0] + '" class="' + (S.leftTab === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
-}).join("") + "</div>";
-if (S.leftTab === "pages") {
 var groups = s.sections.map(function (x) { return { key: x.key, label: x.label, pages: [] }; });
 var other = { key: "", label: "Not in menu", pages: [] };
 var pins = { key: "", label: "Header & footer", pages: [], pins: true };
@@ -2511,67 +2506,127 @@ g.pages.push(p);
 });
 if (other.pages.length) groups.push(other);
 groups.push(pins);
-h += '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">' + (S.project.order.length - pins.pages.length) + ' pages</span><div class="bd-ed-actions"><button class="bd-ed-btn" style="height:26px" data-act="page-add">' + I.plus + 'Page</button><button class="bd-ed-btn" style="height:26px" data-act="pin-add">' + I.pin + "Pin</button></div></div>";
+var h = '<div class="bd-ed-sec"><div class="bd-ed-actions"><button class="bd-ed-btn" data-act="page-add">' + I.plus + 'Page</button><button class="bd-ed-btn" data-act="pin-add" data-val="top">' + I.plus + 'Header</button><button class="bd-ed-btn" data-act="pin-add" data-val="bottom">' + I.plus + "Footer</button></div>";
 groups.forEach(function (g) {
 if (!g.pages.length && !g.pins) return;
 h += '<div class="bd-ed-group"><div class="bd-ed-group-label">' + esc(g.label) + "</div>";
-if (g.pins && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">Add a header or footer with + Pin: a small page shown on every page, at the top or bottom, with its own columns.</div>';
+if (g.pins && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">None yet. A header or footer shows on every page, with its own columns.</div>';
 g.pages.forEach(function (p) {
-h += '<button class="bd-ed-pg' + (p.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + p.id + '"><b>' + (p.kind === "pin" ? "pin" : esc(p.num || "·")) + "</b><span>" + (p.slug === "" && p.kind !== "pin" ? "⌂ " : "") + esc(p.title) + "</span></button>";
+var tag = p.kind === "pin" ? (p.pin.place === "bottom" ? "foot" : "head") : esc(p.num || "·");
+h += '<button class="bd-ed-pg' + (p.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + p.id + '"><b>' + tag + "</b><span>" + (p.slug === "" && p.kind !== "pin" ? "⌂ " : "") + esc(p.title) + "</span></button>";
 });
 h += "</div>";
 });
 h += "</div>";
 var cp = curPage();
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">This page</span><div class="bd-ed-actions">'
-+ '<button class="bd-ed-btn" data-act="page-up">' + I.up + "Up</button>"
-+ '<button class="bd-ed-btn" data-act="page-down">' + I.dn + "Down</button>"
+h += '<div class="bd-ed-sec"><div class="bd-ed-actions">'
++ '<button class="bd-ed-btn" data-act="page-up" aria-label="Move up">' + I.up + "</button>"
++ '<button class="bd-ed-btn" data-act="page-down" aria-label="Move down">' + I.dn + "</button>"
 + '<button class="bd-ed-btn" data-act="page-dup">' + I.copy + "Duplicate</button>"
-+ (cp.slug !== "" && cp.kind !== "pin" ? '<button class="bd-ed-btn" data-act="make-home">' + I.home + "Make home</button>" : "")
-+ '<button class="bd-ed-btn is-danger" data-act="page-del">' + I.trash + "Delete</button></div>";
-if (S.confirm === "page") {
-h += '<div class="bd-ed-confirm">Delete “' + esc(cp.title) + '” for good? <button class="bd-ed-btn is-danger" data-act="page-del-yes">Delete</button><button class="bd-ed-btn" data-act="confirm-no">Keep</button></div>';
++ (cp.slug !== "" && cp.kind !== "pin" ? '<button class="bd-ed-btn" data-act="make-home">' + I.home + "Home</button>" : "")
++ '<button class="bd-ed-btn is-danger" data-act="page-del" aria-label="Delete">' + I.trash + "</button></div>";
+if (S.confirm === "page") h += '<div class="bd-ed-confirm">Delete “' + esc(cp.title) + '” for good? <button class="bd-ed-btn is-danger" data-act="page-del-yes">Delete</button><button class="bd-ed-btn" data-act="confirm-no">Keep</button></div>';
+return h + "</div>";
 }
-h += "</div>";
-} else if (S.leftTab === "master") {
-h += masterPanel();
-} else if (S.leftTab === "menu") {
-h += navPanel();
-} else if (S.leftTab === "styles") {
-h += stylesPanel();
-} else {
-h += '<div class="bd-ed-sec">' + field("Site name", input("site.name", s.name)) + "</div>";
-h += '<div class="bd-ed-sec">' + layPanel("site", s.layout) + "</div>";
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Colour</span><div class="bd-ed-row">'
-+ field("Page", '<input type="color" class="bd-ed-input" data-bind="site.colors.page" value="' + esc(s.colors.page) + '">')
-+ field("Panel", '<input type="color" class="bd-ed-input" data-bind="site.colors.panel" value="' + esc(s.colors.panel) + '">')
-+ field("Ink", '<input type="color" class="bd-ed-input" data-bind="site.colors.ink" value="' + esc(s.colors.ink) + '">')
-+ field("Rule", '<input type="color" class="bd-ed-input" data-bind="site.colors.rule" value="' + esc(s.colors.rule) + '">')
-+ "</div></div>";
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Type</span>' + field("Main face", select("site.sans", s.sans, BD_FONTS_SANS)) + field("Mono face", select("site.mono", s.mono, BD_FONTS_MONO))
-+ '<div class="bd-ed-hint">Sizes live in the Styles tab.</div></div>';
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Grid</span><div class="bd-ed-row">' + numIn("C", "site.cols", s.cols, "int") + numIn("P", "site.colsM", s.colsM, "int") + numIn("R", "site.row", s.row, "int") + "</div>"
-+ '<div class="bd-ed-hint">C desktop columns · P phone columns · R row height in px</div>'
-+ '<div class="bd-ed-row">' + numIn("G", "site.gap", s.gap, "int") + numIn("g", "site.gapM", s.gapM, "int") + numIn("I", "site.indent", s.indent, "int") + numIn("i", "site.indentM", s.indentM, "int") + "</div>"
-+ '<div class="bd-ed-hint">G/g column gap · I/i paragraph indent, desktop/phone</div>'
-+ '<span class="bd-ed-label">Panel</span><div class="bd-ed-row">' + numIn("W", "site.w", s.w, "int") + numIn("P", "site.pad", s.pad, "int") + numIn("T", "site.top", s.top, "int") + "</div>"
-+ '<div class="bd-ed-hint">W width · P side padding · T top margin</div></div>';
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Page furniture</span>' + sw("Page title at the top", "site.header", s.header) + sw("Page number above the title", "site.showNum", s.showNum) + sw("Click images to zoom", "site.zoom", s.zoom) + sw("Menu", "site.menu", s.menu) + sw("Arrows at the bottom", "site.pager", s.pager) + "</div>";
-h += '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">Menu sections</span><button class="bd-ed-btn" style="height:26px" data-act="add-section">' + I.plus + "Add</button></div>";
-s.sections.forEach(function (x, i) {
-h += '<div class="bd-ed-list-row">' + input("site.sections." + i + ".key", x.key, "", ' aria-label="Section key"') + input("site.sections." + i + ".label", x.label, "", ' aria-label="Section label"') + '<button class="bd-ed-x" data-act="del-section" data-i="' + i + '" aria-label="Remove section">' + I.x + "</button></div>";
-});
-h += '<div class="bd-ed-hint">Pages join a section from the page panel on the right.</div></div>';
-h += '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">Outside links in menu</span><button class="bd-ed-btn" style="height:26px" data-act="add-ext">' + I.plus + "Add</button></div>";
-s.externals.forEach(function (x, i) {
-h += '<div class="bd-ed-field" style="gap:6px;padding-bottom:6px;border-bottom:1px dashed var(--e-line)"><div class="bd-ed-list-row">' + select("site.externals." + i + ".section", x.section, s.sections.map(function (q) { return [q.key, q.key]; })) + input("site.externals." + i + ".title", x.title, "", ' aria-label="Link title"') + '<button class="bd-ed-x" data-act="del-ext" data-i="' + i + '" aria-label="Remove link">' + I.x + "</button></div>" + input("site.externals." + i + ".url", x.url, "", ' aria-label="Link address" placeholder="https://"') + "</div>";
-});
-h += "</div>";
+function sitePanel() {
+var s = S.project.site;
+var h = '<div class="bd-ed-sec">' + field("Site name", input("site.name", s.name))
++ '<span class="bd-ed-label">Colour</span>' + row(
+field("Page", '<input type="color" class="bd-ed-input" data-bind="site.colors.page" value="' + esc(s.colors.page) + '">'),
+field("Panel", '<input type="color" class="bd-ed-input" data-bind="site.colors.panel" value="' + esc(s.colors.panel) + '">'),
+field("Ink", '<input type="color" class="bd-ed-input" data-bind="site.colors.ink" value="' + esc(s.colors.ink) + '">'),
+field("Rule", '<input type="color" class="bd-ed-input" data-bind="site.colors.rule" value="' + esc(s.colors.rule) + '">')) + "</div>";
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Page frame</span>'
++ row(numIn("Width", "site.w", s.w, "int"), numIn("Side padding", "site.pad", s.pad, "int"), numIn("Top", "site.top", s.top, "int"))
++ row(dpIn("Paragraph indent", "site.indent", "site.indentM", s.indent, s.indentM, "int"))
++ '<div class="bd-ed-hint">Columns are set in the bar above the canvas.</div></div>';
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title", "site.header", s.header) + (s.header ? sw("Number above the title", "site.showNum", s.showNum) : "") + sw("Menu", "site.menu", s.menu) + sw("Arrows to next page", "site.pager", s.pager) + sw("Click images to zoom", "site.zoom", s.zoom)
++ (s.menu ? '<button class="bd-ed-btn" data-act="menu-style">' + I.sliders + "Style the menu</button>" : "") + "</div>";
+var secs = s.sections.map(function (x, i) {
+return '<div class="bd-ed-list-row">' + input("site.sections." + i + ".key", x.key, "", ' aria-label="Section key"') + input("site.sections." + i + ".label", x.label, "", ' aria-label="Section label"') + '<button class="bd-ed-x" data-act="del-section" data-i="' + i + '" aria-label="Remove section">' + I.x + "</button></div>";
+}).join("") + '<button class="bd-ed-btn" data-act="add-section">' + I.plus + "Section</button>";
+var ext = s.externals.map(function (x, i) {
+return '<div class="bd-ed-field" style="gap:6px;padding-bottom:6px;border-bottom:1px dashed var(--e-line)"><div class="bd-ed-list-row">' + select("site.externals." + i + ".section", x.section, s.sections.map(function (q) { return [q.key, q.key]; })) + input("site.externals." + i + ".title", x.title, "", ' aria-label="Link title"') + '<button class="bd-ed-x" data-act="del-ext" data-i="' + i + '" aria-label="Remove link">' + I.x + "</button></div>" + input("site.externals." + i + ".url", x.url, "", ' aria-label="Link address" placeholder="https://"') + "</div>";
+}).join("") + '<button class="bd-ed-btn" data-act="add-ext">' + I.plus + "Outside link</button>";
+if (s.menu) h += '<div class="bd-ed-sec">' + adv("site-sections", "Menu sections and links", secs + ext) + "</div>";
+h += '<div class="bd-ed-sec">' + adv("site-adv", "Advanced", '<span class="bd-ed-label">Master placement</span>' + masterPanel()
++ '<span class="bd-ed-label">Grid</span>' + row(dpIn("Units", "site.cols", "site.colsM", s.cols, s.colsM, "int"), dpIn("Gap", "site.gap", "site.gapM", s.gap, s.gapM, "int"), numIn("Free-grid row", "site.row", s.row, "int"))) + "</div>";
+return h;
 }
+function renderLeft() {
+var L = $("bd-left");
+L.classList.toggle("is-open", S.leftOpen);
+if (!S.project) {
+L.innerHTML = "";
+return;
+}
+if (["pages", "styles", "site"].indexOf(S.leftTab) < 0) S.leftTab = "pages";
+var h = '<div class="bd-ed-tabs" role="tablist">' + [["pages", "Pages"], ["styles", "Styles"], ["site", "Site"]].map(function (t) {
+return '<button data-act="left-tab" data-val="' + t[0] + '" class="' + (S.leftTab === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
+}).join("") + "</div>";
+if (S.leftTab === "pages") h += pagesPanel();
+else if (S.leftTab === "styles") h += stylesPanel();
+else h += sitePanel();
 L.innerHTML = h;
 }
 
 /* RIGHT PANEL */
+function blockContent(e) {
+var p = e.props;
+var h = "";
+if (e.type === "text") {
+h += '<div class="bd-ed-actions"><button class="bd-ed-btn" data-act="edit-text">' + I.text + 'Edit text</button><button class="bd-ed-btn" data-act="ins-html">' + I.html + "HTML</button></div>"
++ row(field("Style", select("el.style", textStyle(p), BD_STYLES)), field("Align", select("el.align", p.align, [["left", "Left"], ["center", "Centre"], ["right", "Right"]])))
++ sw("Indent new paragraphs", "el.indent", p.indent);
+}
+if (e.type === "image") {
+h += '<button class="bd-ed-btn" data-act="pick-image">' + I.image + (p.assetId ? "Replace image" : "Choose image") + "</button>"
++ field("Alt text", input("el.alt", p.alt, "", ' placeholder="Describe the image"'))
++ field("Caption", input("el.caption", p.caption))
++ row(field("Fit", select("el.fit", p.fit, [["contain", "Whole image"], ["cover", "Fill the box"]])))
++ sw("Click to zoom", "el.zoom", p.zoom !== false);
+}
+if (e.type === "gallery") h += galleryPanel(p);
+if (e.type === "link") {
+h += field("Text", input("el.text", p.text)) + field("Goes to", input("el.href", p.href, "", ' placeholder="/page or https://"'))
++ row(field("Look", select("el.style", p.style, [["plain", "Plain"], ["underline", "Underline"], ["arrow", "Arrow →"]])))
++ sw("Open in new tab", "el.newTab", p.newTab);
+}
+if (e.type === "notes") h += field("Notes, one per line", '<textarea class="bd-ed-input" data-bind="el.items" data-type="lines" rows="6">' + esc((p.items || []).join("\n")) + "</textarea>") + '<div class="bd-ed-hint">Numbers continue across the page. Links: &lt;a href="/files/x.pdf"&gt;x.pdf&lt;/a&gt;</div>';
+if (e.type === "list") {
+h += field("Heading", input("el.heading", p.heading))
++ row(field("Style", select("el.style", p.style || "body", BD_STYLES)), dpIn("Left column (all lists)", "site.labelW", "site.labelWM", S.project.site.labelW, S.project.site.labelWM, "int"))
++ field("Rows: left | right", '<textarea class="bd-ed-input" data-bind="el.rows" data-type="rows" rows="8">' + esc((p.rows || []).map(function (r) { return (r[0] || "") + " | " + (r[1] || ""); }).join("\n")) + "</textarea>");
+}
+if (e.type === "embed") h += field("YouTube or Vimeo link", input("el.url", p.url, "", ' placeholder="https://vimeo.com/123456"')) + field("Title", input("el.title", p.title)) + '<div class="bd-ed-hint">Plays on the live site.</div>';
+if (e.type === "html") h += field("HTML", '<textarea class="bd-ed-input" data-bind="el.code" rows="8">' + esc(p.code) + "</textarea>") + '<button class="bd-ed-btn" data-act="ins-html">' + I.code + "Open in code editor</button>";
+if (e.type === "rule") h += '<div class="bd-ed-hint">A thin line in the rule colour.</div>';
+return h;
+}
+function blockPlace(e) {
+var pg = curPage();
+var ph = S.mode === "phone";
+if (isMaster(pg)) {
+var ep = effPlace(e, ph);
+var hasOwn = e.own && (ph ? (e.own.xm != null || e.own.wm != null) : (e.own.x != null || e.own.w != null));
+return '<div class="bd-ed-hint">Inside its column, on ' + gridCols() + " units" + (ph ? " (phone)" : "") + ". Drag sideways or pull the handle to change. " + (hasOwn ? "This block has its own place." : "Following the master.") + "</div>"
++ row(numIn("Start", "own.x", ep.x, "int"), numIn("Width", "own.w", ep.w, "int"))
++ (hasOwn ? '<button class="bd-ed-btn" data-act="own-reset">Back to master</button>' : "");
+}
+var pos = e[posKey()] || e.d;
+return '<div class="bd-ed-hint">Free grid' + (ph ? " · phone" : "") + ". Drag to move, pull a handle to resize. Arrow keys nudge.</div>" + row(numIn("Start", "pos.x", pos.x, "int"), numIn("Row", "pos.y", pos.y, "int"), numIn("Width", "pos.w", pos.w, "int"), numIn("Height", "pos.h", pos.h, "int"));
+}
+function syncInsToBlock(e) {
+if (!shadow) return;
+var node = shadow.querySelector(".bd-main .bd-e-" + e.id) || shadow.querySelector(".bd-e-" + e.id);
+if (!node) {
+S.ins = null;
+return;
+}
+var cur = insEl();
+if (cur && node.contains(cur) && S.ins.block === e.id) return;
+S.ins = { path: insPath(node), block: e.id, scope: S.ins ? S.ins.scope : "one", where: S.ins ? S.ins.where : "site" };
+}
 function renderRight() {
 var R = $("bd-right");
 R.classList.toggle("is-open", S.rightOpen);
@@ -2580,136 +2635,77 @@ R.innerHTML = "";
 return;
 }
 if (S.inspect) {
-R.innerHTML = insPanel();
+R.innerHTML = insPanel(false);
 fillIns();
 return;
 }
 var e = selEl();
+var pg = curPage();
 var h = "";
 if (S.sel === "__menu" && !S.preview) {
-h += '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">Menu button + menu</span><button class="bd-ed-btn" style="height:26px" data-act="deselect">Done</button></div><div class="bd-ed-hint">These settings apply on every page.</div></div>' + navPanel();
-R.innerHTML = h;
+R.innerHTML = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Menu</span><button class="bd-ed-btn" style="height:26px" data-act="deselect">Done</button></div><div class="bd-ed-hint">Applies on every page.</div></div>' + navPanel();
 return;
 }
-if (e && !S.preview && isMaster(curPage())) {
-var ph = S.mode === "phone";
-var ep = effPlace(e, ph);
-var hasOwn = e.own && (ph ? (e.own.xm != null || e.own.wm != null) : (e.own.x != null || e.own.w != null));
-h += '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">' + BD_TYPE_NAME[e.type] + '</span><button class="bd-ed-btn" style="height:26px" data-act="deselect">Page settings</button></div>'
-+ (nCols(curPage()) > 1 ? field("Column", '<div class="bd-ed-seg">' + Array.apply(null, Array(nCols(curPage()))).map(function (x, i) { return '<button data-act="set-col" data-val="' + (i + 1) + '" class="' + (colOf(e, curPage()) === i + 1 ? "is-on" : "") + '">' + (i + 1) + "</button>"; }).join("") + "</div>") : "")
-+ '<span class="bd-ed-label">' + (ph ? "Phone" : "Desktop") + " placement · " + (hasOwn ? "own" : "from master") + '</span><div class="bd-ed-row">' + numIn("X", "own.x", ep.x, "int") + numIn("W", "own.w", ep.w, "int") + "</div>"
-+ (hasOwn ? '<button class="bd-ed-btn" data-act="own-reset">Back to master placement</button>' : "")
-+ '<div class="bd-ed-hint">Drag sideways to shift columns, up or down to reorder. Spacing comes from the master.</div></div>';
-}
-else if (e && !S.preview) {
-var pos = e[posKey()] || e.d;
-var names = BD_TYPE_NAME;
-h += '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">' + names[e.type] + '</span><button class="bd-ed-btn" style="height:26px" data-act="deselect">Page settings</button></div>'
-+ '<span class="bd-ed-label">' + (S.mode === "phone" ? "Phone" : "Desktop") + " position · " + gridCols() + ' columns</span><div class="bd-ed-row">'
-+ numIn("X", "pos.x", pos.x, "int") + numIn("Y", "pos.y", pos.y, "int") + numIn("W", "pos.w", pos.w, "int") + numIn("H", "pos.h", pos.h, "int") + "</div>"
-+ '<div class="bd-ed-hint">Drag to move. Pull the right or bottom handle to resize. Arrow keys nudge, Shift+arrows resize.</div></div>';
-}
 if (e && !S.preview) {
-var p = e.props;
-h += '<div class="bd-ed-sec">';
-if (e.type === "text") {
-h += '<button class="bd-ed-btn" data-act="edit-text">' + I.text + "Edit text</button>"
-+ field("Style", select("el.style", textStyle(p), BD_STYLES))
-+ '<div class="bd-ed-hint">Edit how each style looks in the Styles tab.</div>'
-+ field("Align", seg("el.align", p.align, [["left", "Left"], ["center", "Centre"], ["right", "Right"]]))
-+ sw("Indent new paragraphs", "el.indent", p.indent);
-}
-if (e.type === "image") {
-h += '<button class="bd-ed-btn" data-act="pick-image">' + I.image + (p.assetId ? "Replace image" : "Choose image") + "</button>"
-+ (p.file ? '<div class="bd-ed-hint">Exports as images/' + esc(p.file) + "</div>" : "")
-+ field("Alt text", input("el.alt", p.alt, "", ' placeholder="Describe the image"'))
-+ field("Caption", input("el.caption", p.caption))
-+ field("Fit", seg("el.fit", p.fit, [["contain", "Whole image"], ["cover", "Fill the box"]]))
-+ sw("Click to zoom", "el.zoom", p.zoom !== false);
-}
-if (e.type === "gallery") {
-h += galleryPanel(p);
-}
-if (e.type === "link") {
-h += field("Text", input("el.text", p.text)) + field("Goes to", input("el.href", p.href, "", ' placeholder="/page or https://"'))
-+ sw("Open in new tab", "el.newTab", p.newTab)
-+ field("Style", seg("el.style", p.style, [["plain", "Plain"], ["underline", "Underline"], ["arrow", "Arrow →"]]));
-}
-if (e.type === "notes") {
-h += field("Notes, one per line", '<textarea class="bd-ed-input" data-bind="el.items" data-type="lines" rows="6">' + esc((p.items || []).join("\n")) + "</textarea>")
-+ '<div class="bd-ed-hint">Numbers continue across the page. HTML links work, e.g. &lt;a href="/files/x.pdf"&gt;x.pdf&lt;/a&gt;</div>';
-}
-if (e.type === "list") {
-h += field("Heading", input("el.heading", p.heading))
-+ field("Style", select("el.style", p.style || "body", BD_STYLES))
-+ '<div class="bd-ed-row">' + numIn("L", "site.labelW", S.project.site.labelW, "int") + numIn("l", "site.labelWM", S.project.site.labelWM, "int") + "</div>"
-+ '<div class="bd-ed-hint">L and l set the left column width on desktop and phone. Shared by every list.</div>'
-+ field("Rows: left | right", '<textarea class="bd-ed-input" data-bind="el.rows" data-type="rows" rows="8">' + esc((p.rows || []).map(function (r) { return (r[0] || "") + " | " + (r[1] || ""); }).join("\n")) + "</textarea>");
-}
-if (e.type === "embed") {
-h += field("YouTube or Vimeo link", input("el.url", p.url, "", ' placeholder="https://vimeo.com/123456"')) + field("Title", input("el.title", p.title))
-+ '<div class="bd-ed-hint">Videos play on your live site. Here you see a placeholder.</div>';
-}
-if (e.type === "html") {
-h += field("HTML", '<textarea class="bd-ed-input" data-bind="el.code" rows="8">' + esc(p.code) + "</textarea>")
-+ '<div class="bd-ed-hint">Scripts only run on the live site.</div>';
-}
-if (e.type === "rule") {
-h += '<div class="bd-ed-hint">A thin line in the rule colour, centred in its box.</div>';
-}
-h += "</div>";
-h += '<div class="bd-ed-sec"><div class="bd-ed-actions">'
+syncInsToBlock(e);
+var n = nCols(pg);
+h += '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">' + BD_TYPE_NAME[e.type] + '</span><button class="bd-ed-btn" style="height:26px" data-act="deselect">Done</button></div>'
++ blockContent(e) + "</div>";
+h += insPanel(true);
+h += '<div class="bd-ed-sec">'
++ (n > 1 ? field("Column", '<div class="bd-ed-seg">' + Array.apply(null, Array(n)).map(function (x, i) { return '<button data-act="set-col" data-val="' + (i + 1) + '" class="' + (colOf(e, pg) === i + 1 ? "is-on" : "") + '">' + (i + 1) + "</button>"; }).join("") + "</div>") : "")
++ '<div class="bd-ed-actions">'
++ (isMaster(pg) ? '<button class="bd-ed-btn" data-act="sel-up" aria-label="Move up">' + I.up + '</button><button class="bd-ed-btn" data-act="sel-down" aria-label="Move down">' + I.dn + "</button>" : '<button class="bd-ed-btn" data-act="sel-front">' + I.front + 'Front</button><button class="bd-ed-btn" data-act="sel-back">' + I.back + "Back</button>")
 + '<button class="bd-ed-btn" data-act="sel-dup">' + I.copy + "Duplicate</button>"
-+ (isMaster(curPage()) ? '<button class="bd-ed-btn" data-act="sel-up">' + I.up + 'Up</button><button class="bd-ed-btn" data-act="sel-down">' + I.dn + "Down</button>" : '<button class="bd-ed-btn" data-act="sel-front">' + I.front + 'Front</button><button class="bd-ed-btn" data-act="sel-back">' + I.back + "Back</button>")
-+ '<button class="bd-ed-btn is-danger" data-act="sel-del">' + I.trash + "Delete</button></div></div>";
++ '<button class="bd-ed-btn is-danger" data-act="sel-del" aria-label="Delete">' + I.trash + "</button></div>"
++ adv("blk-place", "Exact placement", blockPlace(e)) + "</div>";
+R.innerHTML = h;
+fillIns();
+return;
 }
-if ((!e || S.preview) && curPage().kind === "pin") {
-var pp = curPage();
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Pin</span>'
-+ field("Name", input("page.title", pp.title))
-+ field("Where", seg("page.pin.place", pp.pin.place, [["top", "Header"], ["bottom", "Footer"]]))
-+ sw("Fixed while scrolling", "page.pin.fixed", pp.pin.fixed)
-+ field("Shows on", seg("page.pin.show", pp.pin.show, [["all", "Every page"], ["pages", "Chosen pages"]]));
-if (pp.pin.show === "pages") {
+S.ins = null;
+if (pg.kind === "pin") {
+var foot = pg.pin.place === "bottom";
+h += '<div class="bd-ed-sec"><span class="bd-ed-title">' + (foot ? "Footer" : "Header") + "</span>"
++ field("Name", input("page.title", pg.title))
++ field("Sits at", seg("page.pin.place", pg.pin.place, [["top", "Top · header"], ["bottom", "Bottom · footer"]]))
++ sw("Stays put while scrolling", "page.pin.fixed", pg.pin.fixed)
++ field("Shows on", seg("page.pin.show", pg.pin.show, [["all", "Every page"], ["pages", "Chosen pages"]]));
+if (pg.pin.show === "pages") {
 S.project.order.forEach(function (id) {
 var q = S.project.pages[id];
 if (q.kind === "pin") return;
-h += '<label class="bd-ed-check"><input type="checkbox" data-act="pin-page" data-id="' + q.id + '"' + ((pp.pin.pages || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc(q.title) + "</label>";
+h += '<label class="bd-ed-check"><input type="checkbox" data-act="pin-page" data-id="' + q.id + '"' + ((pg.pin.pages || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc(q.title) + "</label>";
 });
 }
-h += '<div class="bd-ed-hint">Build the header or footer with blocks like any page. It is added to the pages above.</div></div>';
-h += '<div class="bd-ed-sec">' + layPanel("pin", pp.layout) + "</div>";
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Layout</span>' + '<div class="bd-ed-seg"><button data-act="layout" data-val="master" class="' + (isMaster(pp) ? "is-on" : "") + '">Follow master</button><button data-act="layout" data-val="free" class="' + (isMaster(pp) ? "" : "is-on") + '">Break · free grid</button></div></div>';
-} else if (!e || S.preview) {
-var pg = curPage();
+h += '<div class="bd-ed-hint">Add blocks from the rail like any page. Its columns are set in the bar above the canvas.</div></div>';
+} else {
 var s = S.project.site;
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Layout</span>' + '<div class="bd-ed-seg"><button data-act="layout" data-val="master" class="' + (isMaster(pg) ? "is-on" : "") + '">Follow master</button><button data-act="layout" data-val="free" class="' + (isMaster(pg) ? "" : "is-on") + '">Break · free grid</button></div><div class="bd-ed-hint">' + (isMaster(pg) ? "Blocks stack with the master spacing and placement. Break to place them anywhere on the grid." : "This page ignores the master. Follow master to stack its blocks again in their current order.") + "</div></div>";
-if (isMaster(pg)) h += '<div class="bd-ed-sec"><span class="bd-ed-label">Columns for this page</span><div class="bd-ed-seg"><button data-act="page-own" data-val="site" class="' + (pg.ownLayout ? "" : "is-on") + '">Same as site</button><button data-act="page-own" data-val="page" class="' + (pg.ownLayout ? "is-on" : "") + '">Its own</button></div>' + (pg.ownLayout ? layPanel("page", pg.layout) : '<div class="bd-ed-hint">Uses the site columns (Site tab). Choose Its own to give this page different columns.</div>') + "</div>";
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Page</span>'
+h += '<div class="bd-ed-sec"><span class="bd-ed-title">Page</span>'
 + field("Title in menu", input("page.title", pg.title))
-+ field("Heading on page", input("page.h1", pg.h1, "", ' placeholder="' + esc(pg.title) + '"'))
-+ '<div class="bd-ed-row">' + field("Number", input("page.num", pg.num)) + field("Section", select("page.section", pg.section, [["", "Not in menu"]].concat(s.sections.map(function (x) { return [x.key, x.label]; })))) + "</div>"
-+ (pg.slug === "" ? '<div class="bd-ed-hint">' + I.home.replace("<svg", '<svg style="width:12px;height:12px;vertical-align:-2px"') + " This is the home page.</div>" : field("Address", input("page.slug", pg.slug, "slug", ' placeholder="page-name"')) + '<div class="bd-ed-hint">yoursite.com/' + esc(pg.slug) + "</div>")
++ field("Heading on the page", input("page.h1", pg.h1, "", ' placeholder="' + esc(pg.title) + '"'))
++ row(field("Section", select("page.section", pg.section, [["", "Not in menu"]].concat(s.sections.map(function (x) { return [x.key, x.label]; })))), field("Number", input("page.num", pg.num)))
++ (pg.slug === "" ? '<div class="bd-ed-hint">' + I.home.replace("<svg", '<svg style="width:12px;height:12px;vertical-align:-2px"') + " Home page</div>" : field("Address · /" + esc(pg.slug), input("page.slug", pg.slug, "slug", ' placeholder="page-name"')))
++ sw("Show the title", "page.header", pg.header !== false)
 + field("Description for search", '<textarea class="bd-ed-input" data-bind="page.desc" rows="3" style="font-family:var(--e-sans);font-size:12.5px">' + esc(pg.desc) + "</textarea>")
-+ sw("Show the title on this page", "page.header", pg.header !== false)
 + "</div>";
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Stack pages below this one</span><div class="bd-ed-hint">Stacked pages scroll on after this page, like one long page.</div>';
+var stack = "";
 S.project.order.forEach(function (id) {
 var q = S.project.pages[id];
 if (q.kind === "pin" || q.id === pg.id) return;
-h += '<label class="bd-ed-check"><input type="checkbox" data-act="stack-page" data-id="' + q.id + '"' + ((pg.stack || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc((q.num ? q.num + "  " : "") + q.title) + "</label>";
+stack += '<label class="bd-ed-check"><input type="checkbox" data-act="stack-page" data-id="' + q.id + '"' + ((pg.stack || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc((q.num ? q.num + "  " : "") + q.title) + "</label>";
 });
-h += "</div>";
-if (S.mode === "phone" && !isMaster(pg)) {
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Phone layout</span><div class="bd-ed-hint">Arrange this page for phones. Desktop stays as it is.</div><button class="bd-ed-btn" data-act="restack">' + I.restack + "Restack from desktop</button></div>";
+h += '<div class="bd-ed-sec">' + adv("pg-stack", "Continue with other pages", '<div class="bd-ed-hint">Chosen pages scroll on below this one, like one long page.</div>' + stack) + "</div>";
 }
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">How it works</span><div class="bd-ed-hint">Add blocks from the rail on the left of the canvas. Tap a block to select it; tap selected text again to type. On pages that follow the master, drag up or down to reorder and sideways to shift columns. On free pages, drag anywhere on the grid. Tap the menu button to style the button and the menu.</div></div>';
-}
+var free = '<div class="bd-ed-seg"><button data-act="layout" data-val="master" class="' + (isMaster(pg) ? "is-on" : "") + '">Columns</button><button data-act="layout" data-val="free" class="' + (isMaster(pg) ? "" : "is-on") + '">Free grid</button></div><div class="bd-ed-hint">' + (isMaster(pg) ? "Blocks stack in columns. Free grid lets you place them anywhere, row by row." : "Blocks sit anywhere on the grid. Columns stacks them again in order.") + "</div>"
++ (S.mode === "phone" && !isMaster(pg) ? '<button class="bd-ed-btn" data-act="restack">' + I.restack + "Restack phone from desktop</button>" : "");
+h += '<div class="bd-ed-sec">' + adv("pg-adv", "Advanced layout", free, !isMaster(pg)) + "</div>";
+h += '<div class="bd-ed-sec"><div class="bd-ed-hint">Add blocks from the rail. Tap a block to edit and style it; tap text again to type. Drag to reorder or move between columns. ' + I.target.replace("<svg", '<svg style="width:12px;height:12px;vertical-align:-2px"') + " in the rail styles anything on the page.</div></div>";
 R.innerHTML = h;
 }
 
 /* CODE DRAWER */
-var CODE_TABS = [["site", "Site CSS"], ["page", "Page CSS"], ["head", "Head HTML"], ["el", "Block"], ["files", "Files"], ["out", "Output"]];
+var CODE_TABS = [["site", "Site CSS"], ["page", "Page CSS"], ["head", "Head"], ["el", "Block"], ["files", "Files"]];
 function codeValue(tab) {
 var pg = curPage();
 var e = selEl();
@@ -2792,7 +2788,7 @@ if (tab === "out") side = 'Read-only. This is what Publish writes.<div class="bd
 return '<button data-act="out-tab" data-val="' + o[0] + '" class="' + (S.outTab === o[0] ? "is-on" : "") + '" style="justify-content:flex-start">' + esc(o[1]) + "</button>";
 }).join("") + '</div><button class="bd-ed-btn" data-act="copy-out">' + I.copy + "Copy</button>";
 var ro = codeReadOnly(tab);
-C.innerHTML = '<div style="display:flex;flex-direction:column;flex:1;min-width:0"><div class="bd-ed-tabs" role="tablist">' + CODE_TABS.map(function (t) {
+C.innerHTML = '<div style="display:flex;flex-direction:column;flex:1;min-width:0"><div class="bd-ed-tabs" role="tablist">' + CODE_TABS.concat(tab === "out" ? [["out", "Output"]] : []).map(function (t) {
 return '<button data-act="code-tab" data-val="' + t[0] + '" class="' + (tab === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
 }).join("") + '</div><div class="bd-ed-code-body" id="bd-code-host"></div></div>'
 + '<div class="bd-ed-code-side bd-ed-hint">' + side + "</div>";
@@ -2877,7 +2873,7 @@ return;
 scheduleSave();
 renderTop();
 renderCanvas();
-if (S.inspect) fillIns();
+if (S.inspect || (S.ins && selEl())) fillIns();
 else renderRight();
 }
 function applyCode(t) {
@@ -3080,11 +3076,14 @@ return css.slice(0, leadStart) + block + after;
 function insRoot() {
 return shadow ? shadow.querySelector(".bd-site") : null;
 }
+function insKids(el) {
+return Array.prototype.filter.call(el.children, function (c) { return !/(^|\s)bd-ed-/.test(String(c.className || "")) && c.tagName !== "STYLE"; });
+}
 function insPath(el) {
 var root = insRoot();
 var path = [];
 while (el && el !== root && el.parentElement) {
-path.unshift(Array.prototype.indexOf.call(el.parentElement.children, el));
+path.unshift(insKids(el.parentElement).indexOf(el));
 el = el.parentElement;
 }
 return el === root ? path : null;
@@ -3094,7 +3093,7 @@ var root = insRoot();
 if (!S.ins || !root) return null;
 var el = root;
 for (var i = 0; i < S.ins.path.length; i++) {
-el = el.children[S.ins.path[i]];
+el = insKids(el)[S.ins.path[i]];
 if (!el) return null;
 }
 return el;
@@ -3208,45 +3207,47 @@ var m = /rgba?\(\s*(\d+)[ ,]+(\d+)[ ,]+(\d+)/.exec(c);
 if (!m) return "#000000";
 return "#" + [m[1], m[2], m[3]].map(function (x) { return ("0" + (+x).toString(16)).slice(-2); }).join("");
 }
-function insPanel() {
+function insPanel(embedded) {
 var el = insEl();
-var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">Inspect</span><button class="bd-ed-btn" style="height:26px" data-act="inspect">Done</button></div>';
-if (!el) return h + '<div class="bd-ed-hint">Tap anything on the page — a word, a heading, an image, the menu button — to style it. ' + (S.mode === "phone" ? "You’re on Phone, so changes go in the mobile block." : "Switch to Phone to style the phone layout separately.") + "</div></div>";
+var h = "";
+if (!embedded) {
+h += '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Style anything</span><button class="bd-ed-btn" style="height:26px" data-act="inspect">Done</button></div>';
+if (!el) return h + '<div class="bd-ed-hint">Tap anything on the page — a word, a heading, the menu, the header — to style it. ' + (S.mode === "phone" ? "On Phone, changes apply to phones only." : "Switch to Phone to style phones separately.") + "</div></div>";
+} else {
+if (!el) return "";
+h += '<div class="bd-ed-sec">';
+}
 var s = insSels(el);
 var blk = insBlock(el);
-var model = blk ? selEl() : null;
-var hasImg = el.tagName === "IMG" || !!el.querySelector && !!el.querySelector("img");
-h += '<div class="bd-ed-ins-tag">' + esc(insLabel(el)) + "</div>"
-+ '<div class="bd-ed-actions">' + (el.parentElement && el !== insRoot() ? '<button class="bd-ed-btn" data-act="ins-parent">' + I.up + "Parent</button>" : "") + '<button class="bd-ed-btn" data-act="ins-code">' + I.code + "Show rule</button>" + '<button class="bd-ed-btn" data-act="ins-clear">' + I.x + "Clear</button></div>"
-+ field("Style", seg("ins.scope", S.ins.scope, [["one", "Just this"], ["all", s.all === s.one ? "Same" : "All like it"]]))
-+ '<div class="bd-ed-hint bd-ed-ins-sel">' + esc(S.ins.scope === "all" ? s.all : s.one) + "</div>"
-+ field("Saved in", seg("ins.where", S.ins.where, [["site", "Site CSS"], ["page", "This page"]]))
-+ '<div class="bd-ed-hint">' + (S.mode === "phone" ? "Phone · writes to the mobile block. Grey values come from desktop." : "Desktop · switch to Phone to set phone values.") + "</div></div>";
+var whole = embedded && blk && blk === el;
+h += '<div class="bd-ed-head"><span class="bd-ed-label">Style' + (S.mode === "phone" ? ' <b class="bd-ed-ph">phone</b>' : "") + '</span><span class="bd-ed-actions">'
++ (embedded ? '<button class="bd-ed-btn is-sm" data-act="ins-pick">' + I.target + (whole ? "Pick inside" : "Pick") + "</button>" : "")
++ (!whole && el.parentElement && el !== insRoot() ? '<button class="bd-ed-btn is-sm" data-act="ins-parent">' + I.up + "Parent</button>" : "")
++ '<button class="bd-ed-btn is-sm" data-act="ins-code" aria-label="Show rule in code">' + I.code + "</button></span></div>"
++ (whole ? "" : '<div class="bd-ed-ins-tag">' + esc(insLabel(el)) + "</div>")
++ row(field("Applies to", select("ins.scope", S.ins.scope, [["one", "Just this"], ["all", s.all === s.one ? "Same" : "All like it"]])), field("Saved in", select("ins.where", S.ins.where, [["site", "Site CSS"], ["page", "This page"]])));
 var groups = {};
 IFIELDS.forEach(function (f) {
 if (!groups[f.g]) groups[f.g] = [];
 groups[f.g].push(f);
 });
-Object.keys(groups).forEach(function (g) {
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">' + g + '</span><div class="bd-ed-ins-grid">';
+Object.keys(groups).forEach(function (g, gi) {
+var inner = '<div class="bd-ed-ins-grid">';
 groups[g].forEach(function (f) {
-h += '<label class="bd-ed-ins-f" data-k="' + f.k + '"><span>' + f.l + "</span>";
-if (f.seg) h += '<span class="bd-ed-seg">' + f.seg.map(function (v) { return '<button data-act="ins-seg" data-k="' + f.k + '" data-val="' + v + '">' + (v === "left" ? "L" : v === "center" ? "C" : "R") + "</button>"; }).join("") + "</span>";
-else if (f.opts) h += '<select class="bd-ed-input" data-ins="' + f.k + '">' + f.opts.map(function (v) { return '<option value="' + v + '">' + (v || "—") + "</option>"; }).join("") + "</select>";
-else h += '<span class="bd-ed-ins-row">' + (f.col ? '<input type="color" data-ins-col="' + f.k + '" aria-label="' + f.l + ' colour">' : "") + '<input class="bd-ed-input" data-ins="' + f.k + '" autocomplete="off" spellcheck="false" autocapitalize="off"></span>';
-h += "</label>";
+inner += '<label class="bd-ed-ins-f" data-k="' + f.k + '"><span>' + f.l + "</span>";
+if (f.seg) inner += '<span class="bd-ed-seg">' + f.seg.map(function (v) { return '<button data-act="ins-seg" data-k="' + f.k + '" data-val="' + v + '">' + (v === "left" ? "L" : v === "center" ? "C" : "R") + "</button>"; }).join("") + "</span>";
+else if (f.opts) inner += '<select class="bd-ed-input" data-ins="' + f.k + '">' + f.opts.map(function (v) { return '<option value="' + v + '">' + (v || "—") + "</option>"; }).join("") + "</select>";
+else inner += '<span class="bd-ed-ins-row">' + (f.col ? '<input type="color" data-ins-col="' + f.k + '" aria-label="' + f.l + ' colour">' : "") + '<input class="bd-ed-input" data-ins="' + f.k + '" autocomplete="off" spellcheck="false" autocapitalize="off"></span>';
+inner += "</label>";
 });
-h += "</div></div>";
+inner += "</div>";
+h += adv("ins-" + g, g, inner, !embedded || gi === 0);
 });
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Block</span><div class="bd-ed-actions">';
-if (model) {
-h += '<button class="bd-ed-btn" data-act="sel-up">' + I.up + 'Up</button><button class="bd-ed-btn" data-act="sel-down">' + I.dn + "Down</button>";
-if (model.type === "text" || model.type === "html") h += '<button class="bd-ed-btn" data-act="ins-html">' + I.html + "Edit HTML</button>";
-if (model.type === "image" || (model.type === "gallery" && el.tagName === "IMG")) h += '<button class="bd-ed-btn" data-act="ins-img">' + I.image + "Replace image</button>";
-h += '<button class="bd-ed-btn" data-act="ins-block">' + I.sliders + "Block settings</button>";
-} else h += '<div class="bd-ed-hint">Not inside a block — this is the page frame, header or menu. Style it here; its content comes from the Site and Menu tabs.</div>';
-h += "</div></div>";
-return h;
+if (!embedded) {
+var model = blk ? selEl() : null;
+if (model) h += '<div class="bd-ed-actions">' + ((model.type === "image" || (model.type === "gallery" && el.tagName === "IMG")) ? '<button class="bd-ed-btn" data-act="ins-img">' + I.image + "Replace image</button>" : "") + '<button class="bd-ed-btn" data-act="ins-block">' + I.sliders + "Open block</button></div>";
+}
+return h + "</div>";
 }
 function fillIns() {
 var R = $("bd-right");
@@ -3278,7 +3279,7 @@ return IFIELDS.filter(function (f) { return f.k === k; })[0];
 }
 document.addEventListener("input", function (e) {
 var t = e.target;
-if (!S.inspect || !t.closest || !t.closest("#bd-right")) return;
+if (!t.closest || !t.closest("#bd-right")) return;
 var k = t.getAttribute("data-ins");
 var kc = t.getAttribute("data-ins-col");
 if (kc) {
@@ -3297,7 +3298,7 @@ S.insT = setTimeout(function () { insSetProp(f.p, t.value); }, t.tagName === "SE
 }, true);
 document.addEventListener("keydown", function (e) {
 var t = e.target;
-if (!S.inspect || !t.getAttribute || !t.getAttribute("data-ins") || t.tagName !== "INPUT") return;
+if (!t.getAttribute || !t.getAttribute("data-ins") || t.tagName !== "INPUT") return;
 if (e.key === "Enter") {
 t.blur();
 return;
@@ -3318,7 +3319,7 @@ var r = $("bd-rail");
 r.hidden = !S.project || S.preview;
 r.innerHTML = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["link", "Link"], ["notes", "Notes"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"]].map(function (t) {
 return '<button class="bd-ed-tool" data-act="add" data-type="' + t[0] + '" data-tip="' + t[1] + '" aria-label="Add ' + t[1] + '">' + I[t[0]] + "</button>";
-}).join("");
+}).join("") + '<span class="bd-ed-rail-sep"></span><button class="bd-ed-tool" data-act="inspect" data-tip="Style anything" aria-label="Style anything">' + I.target + "</button>";
 }
 
 /* CANVAS */
@@ -3346,12 +3347,25 @@ new ResizeObserver(function () { fitSheet(); }).observe(document.getElementById(
 function rulerCols(page, phone) {
 var L = lay(page);
 var who = layWho(page);
-var name = who === "pin" ? (page.pin.place === "bottom" ? "Footer" : "Header") : who === "page" ? "This page" : "Site columns";
+var pin = page.kind === "pin";
+var h = '<span class="bd-ed-rcols">';
+if (!pin) h += '<span class="bd-ed-seg">' + [["site", "Site"], ["page", "This page"]].map(function (o) { return '<button data-act="page-own" data-val="' + o[0] + '" class="' + ((o[0] === "page") === !!page.ownLayout ? "is-on" : "") + '">' + o[1] + "</button>"; }).join("") + "</span>";
+else h += "<b>" + (page.pin.place === "bottom" ? "Footer" : "Header") + "</b>";
 if (phone) {
-if (L.cols < 2) return '<span class="bd-ed-rcols">' + name + " · 1 on phone</span>";
-return '<span class="bd-ed-rcols">' + name + ' · phone <span class="bd-ed-seg">' + [1, 2].map(function (n) { return '<button data-act="lay-colsM" data-who="' + who + '" data-val="' + n + '" class="' + (L.colsM === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</span></span>";
+h += L.cols < 2 ? "<span>1 column on phone</span>" : '<span>Phone</span><span class="bd-ed-seg">' + [1, 2].map(function (n) { return '<button data-act="lay-colsM" data-who="' + who + '" data-val="' + n + '" class="' + (L.colsM === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</span>"
++ (L.cols > 1 ? '<label class="bd-ed-rnum">Gutter<input class="bd-ed-input" inputmode="decimal" data-bind="' + (who === "site" ? "site.layout" : "page.colset") + '.gutterM" data-type="int" value="' + L.gutterM + '"></label>' : "");
+return h + "</span>";
 }
-return '<span class="bd-ed-rcols">' + name + ' <span class="bd-ed-seg">' + [1, 2, 3].map(function (n) { return '<button data-act="lay-cols" data-who="' + who + '" data-val="' + n + '" class="' + (L.cols === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</span>" + (L.cols === 1 && who !== "pin" ? ' <span class="bd-ed-seg">' + [["center", "Centred"], ["spread", "Spread"]].map(function (o) { return '<button data-act="set" data-path="' + (who === "page" ? "page" : "site") + '.layout.align" data-val="' + o[0] + '" class="' + (L.align === o[0] ? "is-on" : "") + '">' + o[1] + "</button>"; }).join("") + "</span>" : "") + "</span>";
+h += '<span class="bd-ed-seg">' + [1, 2, 3].map(function (n) { return '<button data-act="lay-cols" data-who="' + who + '" data-val="' + n + '" class="' + (L.cols === n ? "is-on" : "") + '">' + n + (n === 1 ? " col" : "") + "</button>"; }).join("") + "</span>";
+if (L.cols === 1 && !pin) h += '<span class="bd-ed-seg">' + [["center", "Centred"], ["spread", "Spread"]].map(function (o) { return '<button data-act="set" data-path="' + (who === "page" ? "page.colset" : "site.layout") + '.align" data-val="' + o[0] + '" class="' + (L.align === o[0] ? "is-on" : "") + '">' + o[1] + "</button>"; }).join("") + "</span>";
+if (L.cols > 1) {
+h += '<select class="bd-ed-input bd-ed-rsel" data-act-select="lay-spans" data-who="' + who + '" aria-label="Column widths">' + SPAN_PRESETS[L.cols].map(function (sp) {
+var v = sp.join("-");
+return '<option value="' + v + '"' + (L.spans.join("-") === v ? " selected" : "") + ">" + sp.join(" · ") + "</option>";
+}).join("") + "</select>"
++ '<label class="bd-ed-rnum">Gutter<input class="bd-ed-input" inputmode="decimal" data-bind="' + (who === "site" ? "site.layout" : "page.colset") + '.gutter" data-type="int" value="' + L.gutter + '"></label>';
+}
+return h + "</span>";
 }
 function renderCanvas() {
 renderRail();
@@ -3575,7 +3589,7 @@ if (t.closest(".bd-menu, .bd-pager")) return;
 var pinEl = t.closest("[data-pin]");
 if (pinEl) {
 goPage(pinEl.getAttribute("data-pin"));
-toast("Editing the pin. It shows on the pages it’s set to.");
+toast("Editing the " + (S.project.pages[pinEl.getAttribute("data-pin")].pin.place === "bottom" ? "footer" : "header") + ".");
 return;
 }
 var stEl = t.closest("[data-stack]");
@@ -4190,13 +4204,15 @@ el.props.items.splice(i, 1);
 if (dir) el.props.items.splice(clamp(i + dir, 0, el.props.items.length), 0, it);
 changed();
 }
-function addPage(kind) {
+function addPage(kind, place) {
 var cur = curPage();
-var p = newPage(kind === "pin" ? "New pin" : "New page", kind === "pin" ? "" : (cur ? cur.section : ""), "", "");
+var foot = place === "bottom";
+var p = newPage(kind === "pin" ? (foot ? "Footer" : "Header") : "New page", kind === "pin" ? "" : (cur ? cur.section : ""), "", "");
 p.kind = kind === "pin" ? "pin" : "page";
 p.stack = [];
-p.pin = { place: "top", fixed: false, show: "all", pages: [] };
-p.slug = uniqueSlug(kind === "pin" ? "pin" : "new-page", p.id);
+p.pin = { place: foot ? "bottom" : "top", fixed: false, show: "all", pages: [] };
+if (kind === "pin") p.colset = fixLayout({ cols: 1 });
+p.slug = uniqueSlug(kind === "pin" ? (foot ? "footer" : "header") : "new-page", p.id);
 if (kind === "pin") p.els[0].props.html = "<p>" + esc(S.project.site.name) + "</p>";
 snap();
 S.project.pages[p.id] = p;
@@ -4615,6 +4631,7 @@ return '<button class="bd-ed-proj' + (x.repo === REPO.repo ? " is-on" : "") + '"
 + '<div class="bd-ed-sec"><div class="bd-ed-actions">'
 + '<button class="bd-ed-btn is-primary" data-act="export"' + (S.publishing ? " disabled" : "") + ">" + I.up + "Publish</button>"
 + '<button class="bd-ed-btn" data-act="zip">' + I.down + "Download zip</button>"
++ '<button class="bd-ed-btn" data-act="view-out">' + I.code + "Generated code</button>"
 + (hasDraft() ? '<button class="bd-ed-btn is-danger" data-act="discard">' + I.undo + "Discard changes</button>" : "")
 + "</div>";
 if (S.confirm === "discard") h += '<div class="bd-ed-confirm">Throw away everything not yet published? <button class="bd-ed-btn is-danger" data-act="discard-yes">Discard</button><button class="bd-ed-btn" data-act="confirm-no">Keep</button></div>';
@@ -4674,7 +4691,7 @@ var on = val === "page";
 if (!!pg.ownLayout === on) return;
 snap();
 pg.ownLayout = on;
-if (on && !pg.layout) pg.layout = fixLayout(clone(S.project.site.layout));
+if (on && !pg.colset) pg.colset = fixLayout(clone(S.project.site.layout));
 changed();
 },
 "lay-cols": function () {
@@ -4726,7 +4743,7 @@ S.replaceItem = id;
 $("bd-file").multiple = false;
 $("bd-file").click();
 },
-"ins-block": function () { var id = S.sel; S.inspect = false; S.preview = false; S.ins = null; S.sel = id; render(); },
+"ins-block": function () { var id = S.sel; S.inspect = false; S.preview = false; S.sel = id; render(); },
 "file-new": function () { S.fileNew = !S.fileNew; renderCode(); var n = $("bd-file-name"); if (n) n.focus(); },
 "file-create": function () {
 var n = $("bd-file-name");
@@ -4808,7 +4825,10 @@ changed();
 toast("Every page now follows the master.");
 },
 "sel-up": function () { moveEl(-1); },
-"pin-add": function () { addPage("pin"); },
+"pin-add": function () { addPage("pin", val); },
+"menu-style": function () { S.leftOpen = false; selectEl("__menu"); if (window.innerWidth <= 980) { S.rightOpen = true; renderLeft(); renderRight(); } },
+"view-out": function () { closePop(); S.codeOpen = true; S.codeTab = "out"; render(); },
+"ins-pick": function () { S.inspect = true; S.preview = true; S.sel = null; render(); },
 "pin-page": function () {
 var pp = curPage();
 snap();
@@ -4890,7 +4910,16 @@ p.h = Math.max(1, p.h);
 }
 document.addEventListener("change", function (e) {
 var t = e.target;
-if (!S.project || !t.getAttribute || t.getAttribute("data-act-select") !== "lay-spans") return;
+if (!S.project || !t.getAttribute) return;
+if (t.closest && t.closest("#bd-ruler") && t.getAttribute("data-bind")) {
+var rv = parseInt(t.value, 10);
+if (isNaN(rv)) return;
+snap();
+applyPath(t.getAttribute("data-bind"), rv);
+changed();
+return;
+}
+if (t.getAttribute("data-act-select") !== "lay-spans") return;
 var L = layFor(t.getAttribute("data-who"));
 snap();
 L.spans = t.value.split("-").map(Number);
@@ -4909,6 +4938,13 @@ return;
 }
 var path = t.getAttribute && t.getAttribute("data-bind");
 if (!path) return;
+if (t.closest("#bd-ruler")) return;
+if (path.indexOf("ins.") === 0) {
+if (S.ins) S.ins[path.slice(4)] = t.value;
+var sl = $("bd-right").querySelector(".bd-ed-ins-tag");
+fillIns();
+return;
+}
 var type = t.getAttribute("data-type");
 var v = t.value;
 if (type === "int") v = parseInt(v, 10);
