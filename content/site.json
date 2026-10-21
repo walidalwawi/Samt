@@ -316,12 +316,12 @@
     "sizeM": "",
     "lh": "",
     "lhM": "",
-    "align": "center",
+    "align": "left",
     "pad": 40,
     "padM": 28,
-    "padX": 46,
+    "padX": 40,
     "padXM": 22,
-    "bg": "",
+    "bg": "#ffffff",
     "ink": "",
     "shadow": "1",
     "line": "0"
@@ -1145,11 +1145,40 @@
      },
      "m": null,
      "props": {
-      "html": "<p><em>I drew him as a child who is not beautiful; his hair is like the hair of a hedgehog who uses his thorns as a weapon. Handala is not a fat, happy, relaxed or pampered child. He is barefooted like the refugee camp children, and he is an icon that protects me from making mistakes. – Naji al-Ali</em></p>",
+      "html": "<p></p>",
       "style": "small",
       "indent": false,
       "align": "left"
      }
+    },
+    {
+     "id": "7bxmml6l",
+     "type": "quote",
+     "d": {
+      "x": 0,
+      "y": 59,
+      "w": 12,
+      "h": 10
+     },
+     "m": null,
+     "props": {
+      "html": "I drew him as a child who is not beautiful; his hair is like the hair of a hedgehog who uses his thorns as a weapon. Handala is not a fat, happy, relaxed or pampered child. He is barefooted like the refugee camp children, and he is an icon that protects me from making mistakes. – Naji al-Ali",
+      "style": "",
+      "align": "",
+      "pad": "",
+      "padX": "",
+      "padM": "",
+      "padXM": "",
+      "bg": "",
+      "shadow": "",
+      "line": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": "",
+      "ink": ""
+     },
+     "col": 2
     },
     {
      "id": "992ugdjj",
