@@ -296,8 +296,8 @@
    "cols": 2,
    "align": "center",
    "spans": [
-    4,
-    8
+    6,
+    6
    ],
    "colsM": 1,
    "gutter": 40,
@@ -426,6 +426,7 @@
   "k2b6e868",
   "ap7jj2t4",
   "1bp9xrs5",
+  "yz9k3ab9",
   "b2lr3tkr",
   "zty6iib1",
   "nsye72w3"
@@ -4108,7 +4109,7 @@
    "section": "a",
    "desc": "Samt — Arabic for silence — a virtual platform for art and research founded by Walid Al Wawi in 2017.",
    "header": false,
-   "layout": "master",
+   "layout": "free",
    "css": "",
    "els": [
     {
@@ -4117,11 +4118,16 @@
      "col": 1,
      "d": {
       "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
+      "y": 1,
+      "w": 5,
+      "h": 3
      },
-     "m": null,
+     "m": {
+      "x": 0,
+      "y": 0,
+      "w": 6,
+      "h": 3
+     },
      "props": {
       "html": "<p>Samt n.– Making no sound; quiet; still</p>",
       "style": "body",
@@ -4135,11 +4141,16 @@
      "col": 1,
      "d": {
       "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 6
+      "y": 82,
+      "w": 5,
+      "h": 1
      },
-     "m": null,
+     "m": {
+      "x": 0,
+      "y": 97,
+      "w": 6,
+      "h": 3
+     },
      "props": {
       "title": "Contributors:",
       "items": [
@@ -4218,12 +4229,17 @@
      "type": "text",
      "col": 2,
      "d": {
-      "x": 0,
+      "x": 6,
       "y": 0,
-      "w": 12,
-      "h": 4
+      "w": 6,
+      "h": 36
      },
-     "m": null,
+     "m": {
+      "x": 0,
+      "y": 6,
+      "w": 6,
+      "h": 38
+     },
      "props": {
       "html": "<p>Arabic for silence, Samt is a virtual platform for art and research that functions in periodic volumes, and mainly exists online through Samt.co</p><p>Founded by Walid Al Wawi in 2017, Samt’s mission centres around challenging the political economy and institutional hierarchy of the art system, by shifting the receptivity of art discourse from the conventional state of physical geographies to a fluid and contemporary techno-digital approach.</p><p>In 2022 Samt further expanded on its mission with the creation of Samt Alternative Art School (SAAS); an experimental rethinking of creative resistance as mode of authentic production; combating the colonialist Eurocentric academia, capitalistic frameworks and patriarchal dominance of the historical and contemporary art canon.</p>",
       "style": "body",
@@ -4236,14 +4252,19 @@
      "type": "text",
      "col": 2,
      "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
+      "x": 6,
+      "y": 41,
+      "w": 6,
+      "h": 44
      },
-     "m": null,
+     "m": {
+      "x": 0,
+      "y": 49,
+      "w": 6,
+      "h": 46
+     },
      "props": {
-      "html": "<p>Founding Director:<br><a href=\"https://walidalwawi.com\">Walid Al Wawi</a></p><p>Guest educators:<br>Ragini Nagu</p><p>Guest curators:<br>Sarah Al Agroobi<br>Tara Aldughaither<br>Areej Kaoud</p><p>Previous collaborators:<br><a href=\"https://daratalfunun.org\" target=\"_blank\" rel=\"noopener\">Darat Al Funun, Amman</a><br><a href=\"https://www.tate.org.uk\" target=\"_blank\" rel=\"noopener\">TATE Exchange, London</a><br><a href=\"https://greynoise.org\" target=\"_blank\" rel=\"noopener\">Grey Noise Gallery, Dubai</a><br><a href=\"#\">Satellite Art Space, Dubai</a></p>",
+      "html": "<p>Founding Director:<br><a href=\"https://walidalwawi.com\">Walid Al Wawi</a></p>\n<p>Guest educators:<br>Ragini Nagu</p>\n<p>Guest curators:<br>Sarah Al Agroobi<br>Tara Aldughaither<br>Areej Kaoud</p>\n<p>Previous collaborators:<br><a href=\"https://daratalfunun.org\" target=\"_blank\" rel=\"noopener\">Darat Al Funun, Amman</a><br><a href=\"https://www.tate.org.uk\" target=\"_blank\" rel=\"noopener\">TATE Exchange, London</a><br><a href=\"https://greynoise.org\" target=\"_blank\" rel=\"noopener\">Grey Noise Gallery, Dubai</a><br><a href=\"#\">Satellite Art Space, Dubai</a></p>",
       "style": "body",
       "indent": false,
       "align": "left"
@@ -4251,6 +4272,105 @@
     }
    ],
    "kind": "page",
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
+   }
+  },
+  "yz9k3ab9": {
+   "id": "yz9k3ab9",
+   "title": "New post",
+   "h1": "",
+   "num": "",
+   "slug": "new-post",
+   "section": "",
+   "desc": "",
+   "header": true,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "jw2y1kl6",
+     "type": "postinfo",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 3
+     },
+     "m": null,
+     "props": {
+      "back": true,
+      "backLabel": "<",
+      "date": false,
+      "words": true,
+      "time": true,
+      "style": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": ""
+     }
+    },
+    {
+     "id": "agwpzrer",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 8
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Write here.</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "52x0qv80",
+     "type": "pager",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 3
+     },
+     "m": null,
+     "props": {
+      "num": "num",
+      "line": false,
+      "loop": false,
+      "scope": "blog",
+      "look": "text",
+      "nextLabel": "Next, ",
+      "prevLabel": "",
+      "align": "center",
+      "style": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": ""
+     }
+    }
+   ],
+   "kind": "page",
+   "parent": "fji5ongj",
+   "date": "2026-10-21",
+   "excerpt": "",
+   "featured": false,
    "stack": [],
    "pin": {
     "place": "top",

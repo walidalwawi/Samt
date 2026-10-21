@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>New post — Samt</title>
+<link rel="stylesheet" href="/assets/bd.css">
+<!-- HEAD -->
+<script>
+/* NAV — UNDERLINE THE CURRENT PAGE */
+document.addEventListener("DOMContentLoaded", function () {
+var here = location.pathname.replace(/\/$/, "") || "/";
+document.querySelectorAll(".sm-nav a").forEach(function (a) {
+var to = a.getAttribute("href").replace(/\/$/, "") || "/";
+if (to === here || (to !== "/" && here.indexOf(to + "-") === 0)) a.classList.add("is-current");
+});
+});
+</script>
+<script src="/assets/bd.js" defer></script>
+</head>
+<body class="bd-site" data-bd-page="new-post">
+<div class="bd-panel">
+<div class="bd-pin bd-p-f0kgkfxt is-top">
+<div class="bd-flow">
+<div class="bd-el bd-e-83zud23g bd-menubtn is-mode-list is-al-start is-brand-above">
+<a class="bd-mbrand bd-ts-body" href="/">ص مت</a>
+<nav class="bd-mlist bd-ts-body is-vertical is-cur-underline is-hov-underline" aria-label="Menu">
+<div class="bd-mgroup">
+<ul>
+<li><a href="/">Journal</a></li>
+<li><a href="/library">Library</a></li>
+<li><a href="/supply">Supply</a></li>
+<li><a href="/about">About</a></li>
+</ul>
+</div>
+</nav>
+
+</div>
+</div>
+</div>
+<main class="bd-main">
+
+<!-- CONTENT -->
+<div class="bd-cols is-c2">
+<div class="bd-col bd-flow" data-col="1">
+<div class="bd-el bd-e-jw2y1kl6 bd-postinfo bd-ts-small"><a class="bd-postinfo-back" href="/">&lt;</a><span>2 words ~ 1 min</span></div>
+
+<div class="bd-el bd-e-agwpzrer bd-text">
+<p>Write here.</p>
+</div>
+
+<div class="bd-el bd-e-52x0qv80 bd-pagerbar is-text bd-ts-small is-al-center"></div>
+</div>
+<div class="bd-col bd-flow" data-col="2">
+
+</div>
+</div>
+
+</main>
+</div>
+</body>
+</html>

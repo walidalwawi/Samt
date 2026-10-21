@@ -5,6 +5,7 @@ var BD_DATA = {"site":"Samt","menu":false,"pager":false,"nav":{"icon":"lines","l
 {"section":"","slug":"militant-improvisation","num":"","title":"Militant Improvisation"},
 {"section":"","slug":"the-bourgeoi-rtist","num":"","title":"The Bourgeoi’rtist"},
 {"section":"","slug":"art-in-times-of-crisis","num":"","title":"Art In Times Of Crisis"},
+{"section":"","slug":"new-post","num":"","title":"New post"},
 {"section":"a","slug":"library","num":"","title":"Library"},
 {"section":"a","slug":"supply","num":"","title":"Supply"},
 {"section":"a","slug":"about","num":"","title":"About"}],"externals":[]};
