@@ -1,4 +1,4 @@
-/* PUBLISHED mvie13s9 */
+/* PUBLISHED mvie4emu */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1237,11 +1237,11 @@ line-height: 16px;
 --pcols: 3;
 --pgap: 40px;
 --prow: 40px;
---ppad: 18px;
---pminh: 84px;
---pimg-gap: 18px;
---pmgap: 12px;
---pbg: #eeeeee;
+--ppad: 0px;
+--pminh: 80px;
+--pimg-gap: 10px;
+--pmgap: 10px;
+--pbg: #ffffff;
 --pratio: 1;
 }
 
@@ -1640,7 +1640,7 @@ line-height: 16px;
 --pcols: 1;
 --pgap: 24px;
 --prow: 24px;
---ppad: 18px;
+--ppad: 0px;
 }
 /* PAGE: HOW TO DESEED A WATERMELON FOR SAFE CONSUMPTION */
 .bd-flow > .bd-e-el3path8 {
