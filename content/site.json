@@ -224,6 +224,30 @@
      "wm": 6,
      "space": "",
      "spaceM": ""
+    },
+    "ptitle": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 6,
+     "space": "",
+     "spaceM": ""
+    },
+    "menubtn": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 6,
+     "space": "",
+     "spaceM": ""
+    },
+    "pager": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 6,
+     "space": "",
+     "spaceM": ""
     }
    }
   },
@@ -3792,7 +3816,11 @@
     "place": "bottom",
     "fixed": false,
     "show": "all",
-    "pages": []
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
    },
    "colset": {
     "cols": 1,

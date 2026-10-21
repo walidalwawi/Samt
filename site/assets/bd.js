@@ -104,7 +104,13 @@ else burger.innerHTML = icons.burger;
 };
 face(false);
 burger.setAttribute("aria-label", "Open menu");
+var slot = root.querySelector("[data-bd-menu]");
+if (slot) {
+burger.className += " is-inline";
+slot.appendChild(burger);
+} else {
 host.appendChild(burger);
+}
 var setMenu = function (open) {
 host.classList.toggle("has-menu", open);
 burger.setAttribute("aria-expanded", open ? "true" : "false");

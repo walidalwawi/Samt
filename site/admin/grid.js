@@ -48,7 +48,10 @@ home: '<path d="M3.5 9.5 10 4l6.5 5.5M5.5 8v8h9V8"/>',
 restack: '<path d="M5 4h10v3H5zM5 9h10v3H5zM5 14h10v3H5z"/>',
 library: '<rect x="3" y="3.5" width="3.5" height="13"/><rect x="8" y="3.5" width="3.5" height="13"/><path d="m13.5 4.5 3.3-.8 2.4 12.2-3.3.8z"/>',
 gallery: '<rect x="2.5" y="3" width="6.5" height="6.5"/><rect x="11" y="3" width="6.5" height="6.5"/><rect x="2.5" y="11.5" width="6.5" height="6"/><rect x="11" y="11.5" width="6.5" height="6"/>',
-pin: '<path d="M7 3h6l-1 5 3 3H5l3-3zM10 11v6"/>'
+pin: '<path d="M7 3h6l-1 5 3 3H5l3-3zM10 11v6"/>',
+ptitle: '<path d="M3.5 7h13M3.5 11h8"/><path d="M3.5 15h5" opacity=".5"/>',
+menubtn: '<path d="M4 6h12M4 10h12M4 14h12"/>',
+pager: '<path d="M7.5 6.5 4 10l3.5 3.5M4 10h5M12.5 6.5 16 10l-3.5 3.5M16 10h-5"/>'
 };
 Object.keys(p).forEach(function (k) {
 I[k] = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p[k] + '</svg>';
@@ -214,10 +217,10 @@ function styleCSS(s, phone) {
 var st = s.styles;
 var map = [
 ["body", ".bd-site,\n.bd-list.is-body ul"],
-["heading", ".bd-text.is-heading,\n.bd-text.is-large,\n.bd-list.is-heading ul"],
-["small", ".bd-text.is-small,\n.bd-list.is-small ul"],
-["caption", ".bd-text.is-caption,\n.bd-figure figcaption,\n.bd-gi figcaption,\n.bd-zoom-cap,\n.bd-list.is-caption ul"],
-["mono", ".bd-text.is-mono,\n.bd-notes,\n.bd-list.is-mono ul"]
+["heading", ".bd-text.is-heading,\n.bd-text.is-large,\n.bd-ptitle.is-heading,\n.bd-list.is-heading ul"],
+["small", ".bd-text.is-small,\n.bd-ptitle.is-small,\n.bd-list.is-small ul"],
+["caption", ".bd-text.is-caption,\n.bd-ptitle.is-caption,\n.bd-figure figcaption,\n.bd-gi figcaption,\n.bd-zoom-cap,\n.bd-list.is-caption ul"],
+["mono", ".bd-text.is-mono,\n.bd-ptitle.is-mono,\n.bd-notes,\n.bd-list.is-mono ul"]
 ];
 return map.map(function (m) {
 var x = st[m[0]];
@@ -286,7 +289,10 @@ link: { x: 0, w: 4, xm: 0, wm: 4, space: "", spaceM: "" },
 list: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 embed: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 html: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
-rule: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" }
+rule: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
+ptitle: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
+menubtn: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
+pager: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" }
 }
 };
 }
@@ -378,8 +384,16 @@ t.wm = k === "notes" ? Math.max(1, s.colsM - 1) : s.colsM;
 t.xm = k === "notes" ? Math.min(1, s.colsM - t.wm) : 0;
 });
 }
+var hadTypes = s.master && s.master.types ? Object.keys(s.master.types) : null;
 s.master = Object.assign(m, s.master || {});
 s.master.types = Object.assign(masterDefaults().types, s.master.types || {});
+if (hadTypes) Object.keys(s.master.types).forEach(function (k) {
+if (hadTypes.indexOf(k) > -1) return;
+s.master.types[k].w = s.cols;
+s.master.types[k].x = 0;
+s.master.types[k].wm = s.colsM;
+s.master.types[k].xm = 0;
+});
 Object.keys(m.types).forEach(function (k) {
 s.master.types[k] = Object.assign(masterDefaults().types[k], s.master.types[k] || {});
 });
@@ -402,8 +416,8 @@ if (pg.kind === "pin" || pg.ownLayout) pg.colset = fixLayout(pg.colset);
 if (!s.master.types.gallery) s.master.types.gallery = Object.assign({ space: "", spaceM: "" }, s.master.types.image);
 return p;
 }
-var BD_TYPE_CLASS = { text: "bd-text", notes: "bd-notes", image: "bd-figure", gallery: "bd-gallery", library: "bd-library", link: "bd-link", list: "bd-list", embed: "bd-embed", html: "bd-html", rule: "bd-rule" };
-var BD_TYPE_NAME = { text: "Text", notes: "Notes", image: "Image", gallery: "Gallery", library: "Library", link: "Link", list: "List", embed: "Video", html: "HTML", rule: "Rule" };
+var BD_TYPE_CLASS = { text: "bd-text", notes: "bd-notes", image: "bd-figure", gallery: "bd-gallery", library: "bd-library", link: "bd-link", list: "bd-list", embed: "bd-embed", html: "bd-html", rule: "bd-rule", ptitle: "bd-ptitle", menubtn: "bd-menubtn", pager: "bd-pagerbar" };
+var BD_TYPE_NAME = { text: "Text", notes: "Notes", image: "Image", gallery: "Gallery", library: "Library", link: "Link", list: "List", embed: "Video", html: "HTML", rule: "Rule", ptitle: "Page title", menubtn: "Menu", pager: "Page arrows" };
 function effPlace(e, phone) {
 var s = S.project.site;
 var t = s.master.types[e.type] || { x: 0, w: 12, xm: 0, wm: 4 };
@@ -429,7 +443,10 @@ notes: { w: 7, h: 6, x: 5, props: { items: ["First note."] } },
 list: { w: 12, h: 10, props: { heading: "Heading", rows: [["2026", "Entry"]] } },
 embed: { w: 12, h: 40, props: { url: "", title: "Video" } },
 html: { w: 12, h: 8, props: { code: "<p>Custom HTML</p>" } },
-rule: { w: 12, h: 2, props: {} }
+rule: { w: 12, h: 2, props: {} },
+ptitle: { w: 12, h: 3, props: { style: "body", align: "left", num: false } },
+menubtn: { w: 12, h: 3, props: { corner: "right" } },
+pager: { w: 12, h: 3, props: { num: "num", line: false, loop: false } }
 };
 return clone(map[type]);
 }
@@ -1019,6 +1036,73 @@ height: 22px;
 .bd-pager-next {
 grid-column: 3;
 }
+
+/* PAGE TITLE BLOCK */
+.bd-ptitle.is-center {
+text-align: center;
+}
+.bd-ptitle.is-right {
+text-align: right;
+}
+
+/* MENU BLOCK */
+.bd-pin {
+position: relative;
+}
+.bd-menubtn {
+min-height: 1px;
+}
+.bd-flow > .bd-menubtn.is-corner-right,
+.bd-flow > .bd-menubtn.is-corner-left {
+position: absolute;
+top: 0;
+width: auto;
+margin: 0;
+z-index: 20;
+}
+.bd-flow > .bd-menubtn.is-corner-right {
+right: 0;
+left: auto;
+}
+.bd-flow > .bd-menubtn.is-corner-left {
+left: 0;
+}
+.bd-burger.is-inline {
+display: block;
+position: relative;
+top: auto;
+right: auto;
+left: auto;
+}
+.bd-pin .bd-el {
+transition: opacity 0.25s ease;
+}
+.has-menu .bd-pin .bd-el:not(.bd-menubtn) {
+opacity: var(--bd-nav-fade);
+}
+
+/* PAGE ARROWS BLOCK */
+.bd-pagerbar {
+display: grid;
+grid-template-columns: calc(100% * var(--bd-head-x) / var(--bd-cols)) 1fr auto;
+align-items: center;
+}
+.bd-pagerbar.has-line {
+padding-top: 14px;
+border-top: 1px solid var(--bd-rule);
+}
+.bd-pagerbar a {
+display: block;
+width: 24px;
+}
+.bd-pagerbar svg {
+display: block;
+width: 22px;
+height: 22px;
+}
+.bd-pagerbar-next {
+grid-column: 3;
+}
 `);
 out.push(EXTRA_BASE);
 out.push("/* TYPE STYLES */\n" + styleCSS(s, false) + "\n");
@@ -1402,6 +1486,17 @@ return ".bd-e-" + e.id + " {\ngrid-column: " + (p.x + 1) + " / span " + p.w + ";
 }).filter(Boolean).join("\n");
 }
 var EDIT_CSS = `
+.is-pin-page .bd-main {
+position: relative;
+}
+.is-pin-page .bd-burger {
+pointer-events: none;
+}
+.is-editing .bd-menubtn:empty {
+min-width: 40px;
+min-height: 16px;
+outline: 1px dashed rgba(47, 75, 255, 0.5);
+}
 /* EDITOR ONLY */
 .bd-panel {
 min-height: 640px;
@@ -1653,9 +1748,47 @@ return out.sort(function (a, b) { return a.localeCompare(b); });
 function galleryDefaults() {
 return { layout: "grid", items: [], cols: 3, colsM: 2, gutter: 16, gutterM: 10, ratio: "auto", align: "start", rowH: 220, rowHM: 140, captions: true, zoom: true, transition: "fade", nav: "arrows", auto: 0, counter: true, snap: 2.5, freeM: "stack" };
 }
+function seqPages() {
+return S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin"; });
+}
+function forPage() {
+var r = S.renderPage;
+if (r && r.kind !== "pin") return r;
+var seq = seqPages();
+return seq[1] || seq[0] || null;
+}
+var BD_ARROWS = {
+prev: '<svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 11H4M10 4.5 3.5 11l6.5 6.5"/></svg>',
+next: '<svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11h15M12 4.5l6.5 6.5-6.5 6.5"/></svg>'
+};
 function elHTML(e, ctx) {
 var p = e.props;
 var base = "bd-el bd-e-" + e.id;
+if (e.type === "ptitle") {
+var tp = forPage();
+var tc = " bd-ptitle";
+var tsty = textStyle(p);
+if (tsty !== "body") tc += " is-" + tsty;
+if (p.align === "center") tc += " is-center";
+if (p.align === "right") tc += " is-right";
+return '<div class="' + base + tc + '">\n' + (p.num && tp && tp.num ? '<span class="bd-num">' + esc(tp.num) + "</span>\n" : "") + "<h1>" + esc(tp ? tp.h1 || tp.title : "Page title") + "</h1>\n</div>";
+}
+if (e.type === "menubtn") {
+return '<div class="' + base + " bd-menubtn" + (p.corner === "right" || p.corner === "left" ? " is-corner-" + p.corner : "") + '" data-bd-menu></div>';
+}
+if (e.type === "pager") {
+var seq = seqPages();
+var cp = forPage();
+var at = seq.indexOf(cp);
+if (at < 0) return ctx === "export" ? "" : '<nav class="' + base + ' bd-pagerbar"></nav>';
+var pv = seq[at - 1] || (p.loop ? seq[seq.length - 1] : null);
+var nx = seq[at + 1] || (p.loop ? seq[0] : null);
+if (pv === cp) pv = null;
+if (nx === cp) nx = null;
+var mid = p.num === "count" ? (at + 1) + " / " + seq.length : p.num === "title" ? (cp.h1 || cp.title) : p.num === "none" ? "" : (cp.num || "");
+var lk = function (q, dir) { return '<a href="/' + esc(q.slug || "") + '" aria-label="' + (dir === "prev" ? "Previous: " : "Next: ") + esc(q.title) + '">' + BD_ARROWS[dir] + "</a>"; };
+return '<nav class="' + base + " bd-pagerbar" + (p.line ? " has-line" : "") + '" aria-label="Pages">\n<span class="bd-pagerbar-prev">' + (pv ? lk(pv, "prev") : "") + '</span>\n<span class="bd-pagerbar-num">' + esc(mid) + '</span>\n<span class="bd-pagerbar-next">' + (nx ? lk(nx, "next") : "") + "</span>\n</nav>";
+}
 if (e.type === "text") {
 var c = " bd-text";
 var sty = textStyle(p);
@@ -1767,6 +1900,13 @@ return p && p.id !== page.id && (p.kind === "pin" || (page.stack || []).indexOf(
 });
 }
 function pageHTML(page, ctx) {
+var keep = S.renderPage;
+S.renderPage = page;
+var out = pageHTMLInner(page, ctx);
+S.renderPage = keep;
+return out;
+}
+function pageHTMLInner(page, ctx) {
 var s = S.project.site;
 var edit = ctx === "edit";
 var top = pinsFor(page, "top", false).map(function (p) { return pinHTML(p, ctx); }).join("\n");
@@ -1788,12 +1928,15 @@ var flow = isMaster(page);
 var els = (flow ? page.els : sortedEls(page, "d")).map(function (e) { return elHTML(e, ctx); }).filter(Boolean).join("\n\n");
 return '<div class="bd-panel">\n<main class="bd-main">\n\n' + (head ? "<!-- HEADER -->\n" + head + "\n" : "") + '<!-- CONTENT -->\n<div class="' + (flow ? "bd-flow" : "bd-grid") + '">\n' + els + "\n</div>\n\n</main>\n</div>";
 }
+function hasType(t) {
+return S.project.order.some(function (id) { var p = S.project.pages[id]; return p && (p.els || []).some(function (e) { return e.type === t; }); });
+}
 function chromeData(pageSlug) {
 var s = S.project.site;
 var pages = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (p) { return p && p.kind !== "pin"; }).map(function (p) {
 return { section: p.section, slug: p.slug, num: p.num, title: p.title };
 });
-return { site: s.name, menu: s.menu, pager: s.pager, nav: { icon: s.nav.icon, label: s.nav.label, openLabel: s.nav.openLabel, corner: s.nav.corner, headings: s.nav.headings, accordion: s.nav.accordion, current: s.nav.current, title: s.nav.title }, sections: s.sections, pages: pages, externals: s.externals, current: pageSlug };
+return { site: s.name, menu: s.menu || hasType("menubtn"), pager: s.pager, nav: { icon: s.nav.icon, label: s.nav.label, openLabel: s.nav.openLabel, corner: s.nav.corner, headings: s.nav.headings, accordion: s.nav.accordion, current: s.nav.current, title: s.nav.title }, sections: s.sections, pages: pages, externals: s.externals, current: pageSlug };
 }
 
 /* SITE CHROME (EXPORTED AS-IS) */
@@ -1891,7 +2034,13 @@ else burger.innerHTML = icons.burger;
 };
 face(false);
 burger.setAttribute("aria-label", "Open menu");
+var slot = root.querySelector("[data-bd-menu]");
+if (slot) {
+burger.className += " is-inline";
+slot.appendChild(burger);
+} else {
 host.appendChild(burger);
+}
 var setMenu = function (open) {
 host.classList.toggle("has-menu", open);
 burger.setAttribute("aria-expanded", open ? "true" : "false");
@@ -2733,15 +2882,15 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-label">Page frame</span>'
 + row(dpIn("Top", "site.mt", "site.mtM", s.mt, s.mtM, "int"), dpIn("Right", "site.mr", "site.mrM", s.mr, s.mrM, "int"), dpIn("Bottom", "site.mb", "site.mbM", s.mb, s.mbM, "int"), dpIn("Left", "site.ml", "site.mlM", s.ml, s.mlM, "int"))
 + row(dpIn("Paragraph indent", "site.indent", "site.indentM", s.indent, s.indentM, "int"))
 + '<div class="bd-ed-hint">Columns are set in the bar above the canvas.</div></div>';
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title", "site.header", s.header) + (s.header ? sw("Number above the title", "site.showNum", s.showNum) : "") + sw("Menu", "site.menu", s.menu) + sw("Arrows to next page", "site.pager", s.pager) + sw("Click images to zoom", "site.zoom", s.zoom)
-+ (s.menu ? '<button class="bd-ed-btn" data-act="menu-style">' + I.sliders + "Style the menu</button>" : "") + "</div>";
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title", "site.header", s.header) + (s.header ? sw("Number above the title", "site.showNum", s.showNum) : "") + sw("Floating menu button", "site.menu", s.menu) + sw("Page arrows at the end", "site.pager", s.pager) + sw("Click images to zoom", "site.zoom", s.zoom)
++ (s.menu || hasType("menubtn") ? '<button class="bd-ed-btn" data-act="menu-style">' + I.sliders + "Style the menu</button>" : "") + '<div class="bd-ed-hint">Or add Menu, Page title and Page arrows blocks to the header and footer.</div></div>';
 var secs = s.sections.map(function (x, i) {
 return '<div class="bd-ed-list-row">' + input("site.sections." + i + ".key", x.key, "", ' aria-label="Section key"') + input("site.sections." + i + ".label", x.label, "", ' aria-label="Section label"') + '<button class="bd-ed-x" data-act="del-section" data-i="' + i + '" aria-label="Remove section">' + I.x + "</button></div>";
 }).join("") + '<button class="bd-ed-btn" data-act="add-section">' + I.plus + "Section</button>";
 var ext = s.externals.map(function (x, i) {
 return '<div class="bd-ed-field" style="gap:6px;padding-bottom:6px;border-bottom:1px dashed var(--e-line)"><div class="bd-ed-list-row">' + select("site.externals." + i + ".section", x.section, s.sections.map(function (q) { return [q.key, q.key]; })) + input("site.externals." + i + ".title", x.title, "", ' aria-label="Link title"') + '<button class="bd-ed-x" data-act="del-ext" data-i="' + i + '" aria-label="Remove link">' + I.x + "</button></div>" + input("site.externals." + i + ".url", x.url, "", ' aria-label="Link address" placeholder="https://"') + "</div>";
 }).join("") + '<button class="bd-ed-btn" data-act="add-ext">' + I.plus + "Outside link</button>";
-if (s.menu) h += '<div class="bd-ed-sec">' + adv("site-sections", "Menu sections and links", secs + ext) + "</div>";
+if (s.menu || hasType("menubtn")) h += '<div class="bd-ed-sec">' + adv("site-sections", "Menu sections and links", secs + ext) + "</div>";
 h += '<div class="bd-ed-sec">' + adv("site-adv", "Advanced", '<span class="bd-ed-label">Master placement</span>' + masterPanel()
 + '<span class="bd-ed-label">Grid</span>' + row(dpIn("Units", "site.cols", "site.colsM", s.cols, s.colsM, "int"), dpIn("Gap", "site.gap", "site.gapM", s.gap, s.gapM, "int"), numIn("Free-grid row", "site.row", s.row, "int"))) + "</div>";
 return h;
@@ -2795,6 +2944,21 @@ h += field("Heading", input("el.heading", p.heading))
 if (e.type === "embed") h += field("YouTube or Vimeo link", input("el.url", p.url, "", ' placeholder="https://vimeo.com/123456"')) + field("Title", input("el.title", p.title)) + '<div class="bd-ed-hint">Plays on the live site.</div>';
 if (e.type === "html") h += field("HTML", '<textarea class="bd-ed-input" data-bind="el.code" rows="8">' + esc(p.code) + "</textarea>") + '<button class="bd-ed-btn" data-act="ins-html">' + I.code + "Open in code editor</button>";
 if (e.type === "rule") h += '<div class="bd-ed-hint">A thin line in the rule colour.</div>';
+if (e.type === "ptitle") {
+h += row(field("Style", select("el.style", textStyle(p), BD_STYLES)), field("Align", select("el.align", p.align, [["left", "Left"], ["center", "Centre"], ["right", "Right"]])))
++ sw("Page number above", "el.num", !!p.num)
++ '<div class="bd-ed-hint">Shows the title of whichever page is open. Put it in the header to use it on every page.</div>';
+}
+if (e.type === "menubtn") {
+h += field("Position", select("el.corner", p.corner || "", [["", "In line"], ["right", "Top right corner"], ["left", "Top left corner"]]))
++ '<button class="bd-ed-btn" data-act="menu-style">' + I.sliders + "Style the menu</button>"
++ '<div class="bd-ed-hint">The button opens the full menu of your pages. Sections and outside links are in Site.</div>';
+}
+if (e.type === "pager") {
+h += field("Middle shows", select("el.num", p.num || "num", [["num", "Page number"], ["count", "3 / 12"], ["title", "Page title"], ["none", "Nothing"]]))
++ sw("Line above", "el.line", !!p.line) + sw("Loop from last page to first", "el.loop", !!p.loop)
++ '<div class="bd-ed-hint">Arrows go to the previous and next page in the order of the Pages list.</div>';
+}
 return h;
 }
 function blockPlace(e) {
@@ -3165,7 +3329,7 @@ var IFIELDS = [
 { g: "Box", k: "op", l: "Opacity", p: ["opacity"], c: "opacity" },
 { g: "Box", k: "disp", l: "Show", p: ["display"], c: "display", opts: ["", "block", "inline", "flex", "grid", "none"] }
 ];
-var BD_TYPE_CLASSES = ["bd-text", "bd-notes", "bd-figure", "bd-gallery", "bd-library", "bd-link", "bd-list", "bd-embed", "bd-html", "bd-rule"];
+var BD_TYPE_CLASSES = ["bd-text", "bd-notes", "bd-figure", "bd-gallery", "bd-library", "bd-link", "bd-list", "bd-embed", "bd-html", "bd-rule", "bd-ptitle", "bd-menubtn", "bd-pagerbar"];
 var INSPECT_CSS = `
 /* INSPECT */
 .is-inspect * {
@@ -3513,7 +3677,8 @@ insSetProp(insField(t.getAttribute("data-ins")).p, nv);
 function renderRail() {
 var r = $("bd-rail");
 r.hidden = !S.project || S.preview;
-r.innerHTML = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["notes", "Notes"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"]].map(function (t) {
+r.innerHTML = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["notes", "Notes"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"], ["sep"], ["ptitle", "Page title"], ["menubtn", "Menu"], ["pager", "Page arrows"]].map(function (t) {
+if (t[0] === "sep") return '<span class="bd-ed-rail-sep"></span>';
 return '<button class="bd-ed-tool" data-act="add" data-type="' + t[0] + '" data-tip="' + t[1] + '" aria-label="Add ' + t[1] + '">' + I[t[0]] + "</button>";
 }).join("") + '<span class="bd-ed-rail-sep"></span><button class="bd-ed-tool" data-act="inspect" data-tip="Style anything" aria-label="Style anything">' + I.target + "</button>";
 }
@@ -3605,7 +3770,7 @@ var pc = cssSplit(page.css);
 var pinH = page.kind === "pin" ? (phone && page.pin.hM !== "" && page.pin.hM != null ? page.pin.hM : page.pin.h) : "";
 if (pinH !== "" && pinH != null && !isNaN(parseFloat(pinH))) layout += "\n.bd-main {\nflex: none;\nheight: " + parseFloat(pinH) + "px;\nbox-shadow: 0 1px 0 #ff4d00;\n}";
 var css = baseCSS(s, "edit") + "\n" + (!isSpread(s) && isSpreadPage(page) ? ":host {\n--bd-w: 100%;\n}\n" : "") + layout + "\n" + sc.desk + "\n" + pc.desk + "\n" + (phone ? sc.mob + "\n" + pc.mob + "\n" : "") + (S.inspect ? INSPECT_CSS : S.preview ? "" : EDIT_CSS);
-shadow.innerHTML = "<style>" + css + '</style><div class="bd-site' + (phone ? " is-phone" : "") + (S.inspect ? " is-inspect" : S.preview ? "" : " is-editing") + '" data-bd-page="' + esc(page.slug) + '">' + pageHTML(page, "edit") + "</div>";
+shadow.innerHTML = "<style>" + css + '</style><div class="bd-site' + (phone ? " is-phone" : "") + (S.inspect ? " is-inspect" : S.preview ? "" : " is-editing") + (page.kind === "pin" ? " is-pin-page" : "") + '" data-bd-page="' + esc(page.slug) + '">' + pageHTML(page, "edit") + "</div>";
 var data = chromeData(page.slug);
 data.open = !!S.menuOpen;
 data.onToggle = function (o) { S.menuOpen = o; };
@@ -3772,7 +3937,7 @@ return;
 }
 if (S.preview || !S.project) return;
 var t = e.target;
-if (t.closest(".bd-burger")) {
+if (t.closest(".bd-burger") && !(curPage().kind === "pin" && t.closest(".bd-menubtn"))) {
 if (S.live) endEdit();
 selectEl("__menu");
 if (window.innerWidth <= 980) {
