@@ -1041,7 +1041,7 @@
      }
     },
     {
-     "id": "wmli2ng2",
+     "id": "4gz4lgi7",
      "type": "text",
      "col": 2,
      "d": {
@@ -1052,7 +1052,251 @@
      },
      "m": null,
      "props": {
-      "html": "<p>Paste this essay’s text here.</p>",
+      "html": "<p>A small boy with his back turned, hands clasped behind him, barefoot and ragged, an eternal witness, helpless in front of injustice. For many, this is Handala: a ten-year-old symbol of tragedy, frozen in silence.</p><p>But Handala was never meant to be a mute bystander. Born in the press, he was improvised into militancy using daily papers in Kuwait, Beirut, and London, he infiltrated living rooms, cafes, buses, and workplaces, finding his way into camp walls, school notebooks, banners, and graffiti. He circulated without permission, disappearing from editorial oversight and institutional supervision.</p><p>Far from passive, Handala was meant to intervene. He threw stones, planted flags, and shook his fist, actively participating in the struggle.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "nqzwc44d",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Handala throwing a stone",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "0ajv5ygz",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p><em>I drew him as a child who is not beautiful; his hair is like the hair of a hedgehog who uses his thorns as a weapon. Handala is not a fat, happy, relaxed or pampered child. He is barefooted like the refugee camp children, and he is an icon that protects me from making mistakes. – Naji al-Ali</em></p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "992ugdjj",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>That mobility, shifting from action to observation depending on what the scene demanded, is what placed Handala firmly inside the logic of militant improvisation. From protests to despair, resistance to ridicule, his image shifted as swiftly as the crisis. His flexibility made him effective, his outline, instantly recognisable, reproduced endlessly on walls, banners, T-shirts, and solidarity posters across the world, in fact he was so averted to monumentalisation that he refused even provincial framing:</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "rpo20wse",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p><em>He was the arrow of the compass, pointing steadily towards Palestine. Not just Palestine in geographical terms, but Palestine in its humanitarian sense, the symbol of a just cause, whether it is located in Egypt, Vietnam or South Africa. – Naji al-Ali</em></p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "zm8rdwwi",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>But then came what I define as the Freeze Point, the moment a tactic ossifies into a canonical icon. It is the cultural equivalent of guerrilla theory’s warning: once a mobile unit builds a fortress, it gains stability and loses mobility, becoming easier to neutralise.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "upcq3ppf",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Handala seized by a hand",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "ykvw1sjl",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>By the late 1980s, Handala froze. After Naji al-Ali’s assassination in 1987, his icon was sanctified. The First Intifada had just erupted, and in the absence of his creator, Handala was quickly adopted as a rallying emblem. He appeared on banners, leaflets, graffiti walls, and protest placards, omnipresent, but no longer adaptive. The figure was untouchable, beyond revision. What had been a living tactic became a sacred image.</p><p>NGOs, solidarity networks, and cultural institutions soon embraced this frozen Handala. His outline was reproduced on museum walls, solidarity stamps, and heritage merchandise. He was made safe for circulation within official spaces, transformed from a guerrilla courier into a commemorative logo. The boy who once threw stones or planted flags was now confined to a single, silent posture.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "s1rse6sd",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "A man holding Freeze Point glue behind Handala",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "3a9z49lr",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Circulation persisted, but adaptation was over. The figure no longer responded to massacres, strikes, or betrayals in real time. He no longer bent to the shifting crises of his people. Instead, he symbolised Palestine in the abstract, a banner of identity, detached from the tactical urgency of the struggle on the ground.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "pmthshbb",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Freeze Point glue fixing Handala’s hands",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "4q6ro34i",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Preservation masquerading as honour, repetition mistaken for survival. Revolutionary art must resist reverence and be prepared to vanish before it can be frozen in a static monument. Handala’s Freeze Point shows how insurgent icons are neutralised not by being banned, but by being revered above their objective.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "mpcgkwml",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Handala in a frame held by hands",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "d4h0llkl",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p><em>When Handala exposes the plots and conspiracy of the enemies of the people, his role is positive. – Naji al-Ali</em></p>",
       "style": "small",
       "indent": false,
       "align": "left"
@@ -1132,7 +1376,7 @@
      }
     },
     {
-     "id": "v6r6jzqz",
+     "id": "es3v42fy",
      "type": "text",
      "col": 2,
      "d": {
@@ -1143,7 +1387,260 @@
      },
      "m": null,
      "props": {
-      "html": "<p>Paste this essay’s text here.</p>",
+      "html": "<p>In moments of profound crisis, the limitations of form become impossible to ignore. The act of depiction collapses under the weight of necessity, and the canonical tools used to represent suffering, injustice, or resistance within cultural production reveal their theatrical inadequacy in the face of material urgency.</p><p>Creative language, as inherited through dominant institutions, is already disarmed. It has been neutralized through repetition, commodified through circulation, and contained through institutional framing. Even the most violent realities are metabolised into spectacle where suffering becomes content and resistance is theme.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "em4apitx",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "A figure facing a framed portrait",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "wfk9uave",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Art, when assimilated into this cycle, becomes soft décor for hard power, a symbolic currency within elite cultural economies, where it is asked to heal, to reconcile, to soothe. But what if healing, within this dynamic, is itself a trap? What if the invitation to “process” trauma is merely a detour, a return to a world that must be refused?</p><p>Militant improvisation emerges precisely at this point of refusal, through which it performs an entirely different function. It is tactically operational before it is metaphorical or symbolic, driven first and foremost by urgency: the urgency of the moment (the temporal) and the urgency of clarity (the contextual).</p><p>1. Temporal</p><p>Art produced within institutional frameworks often fetishizes immortality and manufactures relevance. It is nurtured by the luxury of time, slow reflection, delayed interpretation. It validates itself through processes of curation, contextualization, and critical analysis. It waits for reviews, and participates in cycles of exhibition and critique. By the time it arrives, the world it responds to no longer exists.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "i613ey3y",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Two wrists wearing watches",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "675bn26y",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<blockquote class=\"sm-pull\">Improvisation becomes a necessity when the structures meant to preserve life are the same ones dismantling it.</blockquote>"
+     }
+    },
+    {
+     "id": "7kx0g73k",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Militant improvisation refuses delay. It is born into emergency, through the very womb of crisis. It understands that its urgency renders it ephemeral, sometimes by choice, but more often by force. In response, it improvises itself for immediate impact, with no formal attachments. It is not crafted for permanence, nor intended for the archive.</p><p>2. Contextual</p><p>Militant improvisation does not require philosophical intricacy or theoretical complexity. It is not formulated to be seen only through squinting eyes, It is vivid and instantly legible, rejecting interpretive buffers and conceptual padding. It speaks to those already in motion, those without the luxury of a still moment to fill up with silence. If it cannot be understood immediately, it has already failed to act.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "q1thynvg",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "An arrow through a watermelon",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "aqterse7",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>In fact, one might not always recognize the categorical form of the improvised on sight, as it is not meant to be measured by institutional metrics. Militant improvisation may appear alien to the linguistics of art discourse, not because it is too abstract, but because it rejects the frameworks that render art palatable and profitable. It manifests as gestures that resist authorship, unconcerned with legacy or polish.</p><p>Crucially, militant improvisation must not be confused with “Radical Art” as defined by galleries or academic discourse. It is not a provocateur in form yet conformist in function. It is not about illustrating slogans or echoing movements from a safe distance. It is grounded in non-metaphorical violence, not in shocking the spectator, but in sustaining revolutionary continuity.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "ag59ru3d",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "A figure drawing a bow",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "o03ntekz",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<blockquote class=\"sm-pull\">Militant improvisation cannot be disciplined into institutional logic, where visibility is often weaponised and “militancy” becomes a strategy performed within the sanctioned violence of art spaces.</blockquote>"
+     }
+    },
+    {
+     "id": "hwspn68q",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Likewise, militant improvisation does not refer to “militant aesthetics,” because insurgency has no aesthetic, and crisis follows no formal logic. It is not defined by style, and its aesthetics are not a choice. It is not “art activism” in the liberal tradition, nor a strategic disruption of bourgeois spaces for symbolic effect. Instead it is carved in struggle and indistinguishable from survival.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "q38oeegp",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Two framed faces pierced by an arrow",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "lwaxrbru",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<blockquote class=\"sm-pull\">Improvisation allows movement in shadows, avoiding the traps of co-optation and spectacle. By refusing to ask for entry, it appears uninvited, knowing that inclusion is not solidarity, but the final act of neutralisation.</blockquote>"
+     }
+    },
+    {
+     "id": "rnn7jitj",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>***</p>",
+      "style": "small",
+      "indent": false,
+      "align": "center"
+     }
+    },
+    {
+     "id": "xc8rkhj9",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Though militant improvisation rejects the conventions of art as an institution, it enters this discourse not because it desires to belong, but because it is continually pursued and appropriated by it. Its methods, born of urgency and refusal, are inherently creative acts of insurgent making.</p><p>What forces it into overlap with the artistic paradigm is not a shared ethos, but the historical tendency of bourgeois artists and academics to hijack revolutionary gestures, extracting form while discarding function.</p><p>Thus, militant improvisation appears here not as art, but as a contested zone where art’s complicity, appropriation, and limits are exposed.</p>",
       "style": "small",
       "indent": false,
       "align": "left"
@@ -1223,7 +1720,7 @@
      }
     },
     {
-     "id": "3lq6jz2i",
+     "id": "jruugxlw",
      "type": "text",
      "col": 2,
      "d": {
@@ -1234,7 +1731,159 @@
      },
      "m": null,
      "props": {
-      "html": "<p>Paste this essay’s text here.</p>",
+      "html": "<p>Art by the bourgeoi’rtist often becomes a reflection of insecurity, trapped between bourgeois aspiration and proletarian anxiety.</p><p>The bourgeoi’rtist seeks legitimacy, clinging to aestheticism, abstraction, and identity performance as a means of escaping class contradiction. Their art, though sometimes cloaked in the language of liberation, rarely disrupts power structures; it performs dissent without material consequence.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "rkek5l01",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "The bourgeoi’rtist at an easel",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "e2mkzi9d",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>The bourgeoi’rtist mistakes visibility for revolution; they fear irrelevance more than repression. Their art, a frail indulgence, teeters on a tightrope between conformity and shock, self-pity and self-glorification.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "mgesbrg0",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Trading a sickle for money",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "e16e5gdr",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Rather than challenge the oppressor, they commodify the oppressed. They produce “radical” art for elite institutions, galleries, and biennales, reducing resistance to style.</p><p>Their revolution is aestheticized, sanitized, and sold, romanticizing the margins while maintaining proximity to cultural capital. Their only “risk” lies in provocation, not confrontation.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "cliy287r",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "A framed sickle sold to a collector",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "dulroys1",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>The bourgeoi’rtist makes art about struggle, never within it. Their politics are gestures, their canvas a mirror of personal angst rather than a blueprint of collective strategy.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "gwebyrmd",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "The bourgeoi’rtist eating a gold bar",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "qcife4rd",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>But true change cannot emerge from those dependent on neutrality. Revolution can only be true when it’s based in the material reality of the struggle. Art must be a product of revolution; revolution must not be a product for art.</p>",
       "style": "small",
       "indent": false,
       "align": "left"
@@ -1314,7 +1963,7 @@
      }
     },
     {
-     "id": "h19ziisk",
+     "id": "x25wj0dh",
      "type": "text",
      "col": 2,
      "d": {
@@ -1325,10 +1974,212 @@
      },
      "m": null,
      "props": {
-      "html": "<p>Paste this essay’s text here.</p>",
+      "html": "<p>In capitalist societies, most art is commodified, produced not for its cultural value but for its ability to generate profit. This commodification leads to an abundance of artistic production that is devoid of significant meaning or intention beyond its market value. Thus, reducing production costs becomes a priority, yet paradoxically, its relatability must be increased.</p>",
       "style": "small",
       "indent": false,
       "align": "left"
+     }
+    },
+    {
+     "id": "7ox0uwfv",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Scissors cutting the strings of CRISIS balloons",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "pptrshp7",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>However, in times of crisis, it is crucial that such relatability does not foster proletarian union towards disruption, as this could challenge the capitalist framework within which the art is designed to function, and threaten the class privilege of the bourgeoisie for whom it generates capital.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "twrdlimk",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "A figure holding a dollar-sign balloon",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "sx3aj3f0",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<blockquote class=\"sm-pull\">*Capital is material gain that can be interpreted through fame, status, opportunity, and all forms of wealth.</blockquote>"
+     }
+    },
+    {
+     "id": "vtw6kydi",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>1. Art As Preservative:</p><p>In times of crisis, limiting art’s role to merely documenting and preserving the culture of those facing atrocities reveals a perspective of privilege. If art serves as a form of documentation, its intended function is to act as a reference for future generations about the atrocities it depicts. This raises critical questions about its audience, which cannot include those in crisis, as this perspective implies that art does not aim to halt the crisis but merely to observe it. Thus, the audience is those who, through class privilege, observe from a distance, expected to survive the ordeal.</p><p>The act of documenting and preserving a culture should ideally occur alongside its flourishing, not amidst its destruction.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "2pcvyi4c",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "A figure standing among crayons",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "w5woypq9",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>2. Art As Solace:</p><p>In times of crisis, framing art as a spiritual healer offers solace, yet raises questions about its audience. It becomes a pacifier, distracting from grief and anger, and lulls people into comfort, preventing engagement and dulling the impulse for change.</p><p>This perspective diminishes art’s potential and undermines its ability to inspire action and prevent atrocities. By relegating art to mere pacification, we overlook its transformative power. Art should challenge, provoke, encourage and drive societal action. It must transcend temporary comfort, aiming to stir the human spirit and inspire collective movement towards a more just society.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "q5zxltfs",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "A figure painting a bird piñata",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "4kghhpjo",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>3. Art As Inspiration:</p><p>In times of crisis, art must not cater to the comfortable; it must reject the bourgeoisie and serve the affected – the workers, peasants, and soldiers. Therefore, artists must immerse themselves in the lives of the people to create art that is accessible, relevant, and mobilising, directly contributing to the material and ideological struggle.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "n957q76z",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<blockquote class=\"sm-pull\">Inspiration is the first step of mobilisation, not an indulgent state that ends once the initial engagement is over. It must ignite a continuous burn.</blockquote>"
+     }
+    },
+    {
+     "id": "b36wvb3y",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "The piñata broken open by sticks",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
      }
     },
     {
