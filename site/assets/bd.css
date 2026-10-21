@@ -1,4 +1,4 @@
-/* PUBLISHED build */
+/* PUBLISHED mvibgkjc */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1189,6 +1189,7 @@ line-height: 19px;
 --pimg-gap: 18px;
 --pmgap: 12px;
 --pbg: #eeeeee;
+--pratio: 1;
 }
 .bd-e-5ygn83c2 .bd-post:not(.is-featured) .bd-post-t {
 font-size: 15px;

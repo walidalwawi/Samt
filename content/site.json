@@ -432,9 +432,9 @@
       "gapM": 24,
       "rowGap": 40,
       "rowGapM": 24,
-      "sort": "order",
+      "sort": "newest",
       "limit": "",
-      "featured": "none",
+      "featured": "marked",
       "fLayout": "stack",
       "fTitleStyle": "heading",
       "showImage": true,
@@ -443,7 +443,7 @@
       "showMeta": true,
       "showExcerpt": false,
       "imagePos": "bottom",
-      "ratio": "auto",
+      "ratio": "1",
       "imgGap": 18,
       "cardBg": "#eeeeee",
       "cardPad": 18,
@@ -1646,7 +1646,7 @@
    "parent": "fji5ongj",
    "date": "",
    "excerpt": "",
-   "featured": false
+   "featured": true
   },
   "ap7jj2t4": {
    "id": "ap7jj2t4",
