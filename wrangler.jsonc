@@ -1,0 +1,10 @@
+// CLOUDFLARE SETTINGS — SERVES THE /site FOLDER AS THE WEBSITE
+// "name" MUST MATCH THE WORKER NAME IN THE CLOUDFLARE DASHBOARD
+{
+"name": "samt",
+"compatibility_date": "2026-10-01",
+"assets": {
+"directory": "./site",
+"not_found_handling": "404-page"
+}
+}

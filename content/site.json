@@ -1,0 +1,401 @@
+{
+ "id": "9o0hnqdp",
+ "name": "Samt for Art and Research",
+ "site": {
+  "name": "Samt for Art and Research",
+  "w": 750,
+  "pad": 100,
+  "top": 50,
+  "cols": 12,
+  "colsM": 6,
+  "row": 50,
+  "gap": 0,
+  "gapM": 0,
+  "indent": 100,
+  "indentM": 0,
+  "labelW": 100,
+  "labelWM": 88,
+  "colors": {
+   "page": "#ffffff",
+   "panel": "#ffffff",
+   "ink": "#111111",
+   "rule": "#ffffff"
+  },
+  "sans": "Hanken Grotesk",
+  "mono": "IBM Plex Mono",
+  "fs": 23.5,
+  "lh": 29.6,
+  "ms": 16.5,
+  "ml": 22.2,
+  "fsM": 18,
+  "lhM": 23,
+  "msM": 13,
+  "mlM": 17.5,
+  "header": true,
+  "menu": true,
+  "pager": true,
+  "sections": [
+   {
+    "key": "a",
+    "label": "a. samt"
+   },
+   {
+    "key": "e",
+    "label": "e. external"
+   }
+  ],
+  "externals": [
+   {
+    "section": "e",
+    "title": "Walid Al Wawi",
+    "url": "https://walidalwawi.com"
+   }
+  ],
+  "css": "",
+  "head": "",
+  "showNum": false,
+  "zoom": true,
+  "styles": {
+   "body": {
+    "font": "sans",
+    "size": 15,
+    "lh": 20,
+    "sizeM": 15,
+    "lhM": 20,
+    "weight": 400,
+    "italic": false,
+    "textCase": "none",
+    "tracking": 0,
+    "color": ""
+   },
+   "heading": {
+    "font": "sans",
+    "size": 21.8,
+    "lh": 26,
+    "sizeM": 21.8,
+    "lhM": 26,
+    "weight": 400,
+    "italic": false,
+    "textCase": "none",
+    "tracking": 0,
+    "color": ""
+   },
+   "small": {
+    "font": "sans",
+    "size": 15,
+    "lh": 20,
+    "sizeM": 15,
+    "lhM": 20,
+    "weight": 400,
+    "italic": false,
+    "textCase": "none",
+    "tracking": 0,
+    "color": ""
+   },
+   "caption": {
+    "font": "mono",
+    "size": 15,
+    "lh": 20,
+    "sizeM": 15,
+    "lhM": 20,
+    "weight": 400,
+    "italic": false,
+    "textCase": "none",
+    "tracking": 0,
+    "color": ""
+   },
+   "mono": {
+    "font": "mono",
+    "size": 15,
+    "lh": 20,
+    "sizeM": 15,
+    "lhM": 20,
+    "weight": 400,
+    "italic": false,
+    "textCase": "none",
+    "tracking": 0,
+    "color": ""
+   }
+  },
+  "nav": {
+   "icon": "text",
+   "label": "index;",
+   "openLabel": "",
+   "btnFont": "sans",
+   "btnSize": 15,
+   "btnColor": "",
+   "btnCase": "lowercase",
+   "corner": "right",
+   "btnTop": 50,
+   "btnSide": 100,
+   "btnTopM": 24,
+   "btnSideM": 20,
+   "font": "sans",
+   "size": 0,
+   "lh": 0,
+   "sizeM": 0,
+   "lhM": 0,
+   "color": "",
+   "navCase": "none",
+   "tracking": 0,
+   "headings": true,
+   "accordion": true,
+   "current": "dim",
+   "indent": 0,
+   "title": "hide",
+   "fade": 0.1,
+   "bg": "",
+   "bgAlpha": 0.92
+  },
+  "master": {
+   "space": 50,
+   "spaceM": 50,
+   "headX": 2,
+   "headXM": 1,
+   "headSpace": 60,
+   "headSpaceM": 40,
+   "types": {
+    "text": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 4,
+     "space": "",
+     "spaceM": ""
+    },
+    "notes": {
+     "x": 5,
+     "w": 7,
+     "xm": 1,
+     "wm": 3,
+     "space": "",
+     "spaceM": ""
+    },
+    "image": {
+     "x": 1,
+     "w": 9,
+     "xm": 0,
+     "wm": 4,
+     "space": "",
+     "spaceM": ""
+    },
+    "gallery": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 4,
+     "space": "",
+     "spaceM": ""
+    },
+    "link": {
+     "x": 0,
+     "w": 4,
+     "xm": 0,
+     "wm": 4,
+     "space": "",
+     "spaceM": ""
+    },
+    "list": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 4,
+     "space": "",
+     "spaceM": ""
+    },
+    "embed": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 4,
+     "space": "",
+     "spaceM": ""
+    },
+    "html": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 4,
+     "space": "",
+     "spaceM": ""
+    },
+    "rule": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 4,
+     "space": "",
+     "spaceM": ""
+    }
+   }
+  }
+ },
+ "order": [
+  "kazu81od",
+  "yd2iqf31",
+  "w184ot7r",
+  "7jkq40ys"
+ ],
+ "pages": {
+  "kazu81od": {
+   "id": "kazu81od",
+   "title": "Open Call",
+   "h1": "Open call · Art in the Times of Crisis",
+   "num": "1",
+   "slug": "",
+   "section": "a",
+   "desc": "",
+   "header": true,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "86hyltmv",
+     "type": "text",
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Paste this page’s text from samt.co here.</p>",
+      "font": "sans",
+      "size": "body",
+      "indent": true,
+      "align": "left"
+     }
+    }
+   ],
+   "kind": "page",
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": []
+   }
+  },
+  "yd2iqf31": {
+   "id": "yd2iqf31",
+   "title": "Art in the Times of Crisis",
+   "h1": "",
+   "num": "2",
+   "slug": "art-in-the-times-of-crisis",
+   "section": "a",
+   "desc": "",
+   "header": true,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "z5gezvaq",
+     "type": "text",
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Paste this page’s text from samt.co here.</p>",
+      "font": "sans",
+      "size": "body",
+      "indent": true,
+      "align": "left"
+     }
+    }
+   ],
+   "kind": "page",
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": []
+   }
+  },
+  "w184ot7r": {
+   "id": "w184ot7r",
+   "title": "Library",
+   "h1": "",
+   "num": "3",
+   "slug": "library",
+   "section": "a",
+   "desc": "",
+   "header": true,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "e14zgxuj",
+     "type": "text",
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Paste this page’s text from samt.co here.</p>",
+      "font": "sans",
+      "size": "body",
+      "indent": true,
+      "align": "left"
+     }
+    }
+   ],
+   "kind": "page",
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": []
+   }
+  },
+  "7jkq40ys": {
+   "id": "7jkq40ys",
+   "title": "Supply Store",
+   "h1": "",
+   "num": "4",
+   "slug": "supply-store",
+   "section": "a",
+   "desc": "",
+   "header": true,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "qb1fp7zn",
+     "type": "text",
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Paste this page’s text from samt.co here.</p>",
+      "font": "sans",
+      "size": "body",
+      "indent": true,
+      "align": "left"
+     }
+    }
+   ],
+   "kind": "page",
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": []
+   }
+  }
+ }
+}

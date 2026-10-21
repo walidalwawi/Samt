@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Back office — Samt</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap">
+<link rel="stylesheet" href="/admin/grid.css">
+<script>
+/* SITE — WHICH GITHUB REPO THIS BACK OFFICE PUBLISHES TO */
+window.BD_REPO = {
+owner: "walidalwawi",
+repo: "samt",
+branch: "main",
+domain: "samt.co",
+name: "Samt"
+};
+</script>
+</head>
+<body>
+<div class="bd-ed-app" id="bd-app">
+<header class="bd-ed-top" id="bd-top"></header>
+<aside class="bd-ed-panel bd-ed-left" id="bd-left"></aside>
+<section class="bd-ed-stage" id="bd-stage">
+<div class="bd-ed-rail" id="bd-rail"></div>
+<div id="bd-textbar-slot"></div>
+<div class="bd-ed-sheet-wrap">
+<div class="bd-ed-ruler" id="bd-ruler"></div>
+<div class="bd-ed-fit" id="bd-fit"><div class="bd-ed-sheet is-desk" id="bd-sheet"></div></div>
+</div>
+<div class="bd-ed-empty" id="bd-empty" hidden></div>
+</section>
+<aside class="bd-ed-panel bd-ed-right" id="bd-right"></aside>
+<section class="bd-ed-panel bd-ed-code" id="bd-code"></section>
+</div>
+<div class="bd-ed-pop" id="bd-pop" hidden></div>
+<div class="bd-ed-toast" id="bd-toast" hidden></div>
+<input type="file" id="bd-file" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" hidden>
+<div class="bd-ed-gate" id="bd-gate" hidden>
+<div class="bd-ed-gate-card">
+<span class="bd-ed-label">Back office · samt.co</span>
+<h1>Connect your GitHub key</h1>
+<ol>
+<li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → new fine-grained token</a></li>
+<li>Repository access: only <b>walidalwawi/samt</b></li>
+<li>Permissions: <b>Contents → Read and write</b></li>
+<li>Generate, copy, paste it here. It stays in this browser only.</li>
+</ol>
+<div class="bd-ed-gate-row">
+<input class="bd-ed-input" id="bd-gate-key" type="password" autocomplete="off" placeholder="github_pat_…" aria-label="GitHub key">
+<button class="bd-ed-btn is-primary" id="bd-gate-go">Connect</button>
+</div>
+<div class="bd-ed-gate-msg" id="bd-gate-msg"></div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="/admin/grid.js"></script>
+</body>
+</html>
