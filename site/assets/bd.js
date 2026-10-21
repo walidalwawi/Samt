@@ -1,8 +1,8 @@
 /* DATA */
-var BD_DATA = {"site":"Samt","menu":true,"groups":[{"label":"a. samt","items":[{"title":"Journal","slug":""},
-{"title":"Library","slug":"library"},
+var BD_DATA = {"site":"Samt","menu":true,"groups":[{"label":"a. samt","items":[{"title":"Library","slug":"library"},
 {"title":"Supply","slug":"supply"},
-{"title":"About","slug":"about"}]}],"pager":false,"nav":{"icon":"lines","label":"☰","openLabel":"","corner":"right","headings":true,"accordion":true,"current":"dim","title":"right"},"sections":[{"key":"a","label":"a. samt"}],"pages":[{"section":"","slug":"","num":"","title":"Journal"},
+{"title":"About","slug":"about"},
+{"title":"Journal","slug":""}]}],"pager":false,"nav":{"icon":"lines","label":"☰","openLabel":"","corner":"right","headings":true,"accordion":true,"current":"dim","title":"right"},"sections":[{"key":"a","label":"a. samt"}],"pages":[{"section":"","slug":"","num":"","title":"Journal"},
 {"section":"","slug":"how-to-deseed-a-watermelon","num":"","title":"How To Deseed A Watermelon For Safe Consumption"},
 {"section":"","slug":"handala-and-the-freeze-point","num":"","title":"Handala And The Freeze Point"},
 {"section":"","slug":"militant-improvisation","num":"","title":"Militant Improvisation"},
