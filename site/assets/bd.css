@@ -1,4 +1,4 @@
-/* PUBLISHED mvihmfzb */
+/* PUBLISHED mvihrf4u */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -23,11 +23,11 @@
 --bd-indent: 0px;
 --bd-label: 100px;
 --bd-fs: 15px;
---bd-lh: 22px;
---bd-ms: 13px;
---bd-ml: 19px;
+--bd-lh: 20px;
+--bd-ms: 12px;
+--bd-ml: 18px;
 --bd-ls: 15px;
---bd-ll: 22px;
+--bd-ll: 20px;
 --bd-space: 32px;
 --bd-head-x: 2;
 --bd-head-space: 0px;
@@ -1070,7 +1070,7 @@ font-style: normal;
 text-transform: none;
 letter-spacing: 0em;
 font-size: 15px;
-line-height: 22px;
+line-height: 20px;
 }
 .bd-text.is-heading,
 .bd-text.is-large,
@@ -1083,7 +1083,7 @@ font-style: normal;
 text-transform: none;
 letter-spacing: 0em;
 font-size: 15px;
-line-height: 22px;
+line-height: 20px;
 }
 .bd-text.is-small,
 .bd-ptitle.is-small,
@@ -1094,8 +1094,8 @@ font-weight: 400;
 font-style: normal;
 text-transform: none;
 letter-spacing: 0em;
-font-size: 13px;
-line-height: 19px;
+font-size: 15px;
+line-height: 20px;
 }
 .bd-text.is-caption,
 .bd-ptitle.is-caption,
@@ -1109,8 +1109,8 @@ font-weight: 400;
 font-style: normal;
 text-transform: none;
 letter-spacing: 0em;
-font-size: 13px;
-line-height: 19px;
+font-size: 12px;
+line-height: 18px;
 }
 .bd-text.is-mono,
 .bd-ptitle.is-mono,
@@ -1122,8 +1122,8 @@ font-weight: 400;
 font-style: normal;
 text-transform: none;
 letter-spacing: 0em;
-font-size: 13px;
-line-height: 19px;
+font-size: 12px;
+line-height: 18px;
 }
 
 /* MASTER */
