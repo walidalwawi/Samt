@@ -1581,12 +1581,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5149.png",
       "alt": "A figure facing a framed portrait",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1772,
+      "h": 1772
      }
     },
     {
@@ -1619,12 +1621,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5150.png",
       "alt": "Two wrists wearing watches",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1773,
+      "h": 1773
      }
     },
     {
@@ -1686,12 +1690,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5151.png",
       "alt": "An arrow through a watermelon",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1773,
+      "h": 1773
      }
     },
     {
@@ -1724,12 +1730,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5152.png",
       "alt": "A figure drawing a bow",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1772,
+      "h": 2246
      }
     },
     {
@@ -1791,12 +1799,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5153.png",
       "alt": "Two framed faces pierced by an arrow",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1772,
+      "h": 1773
      }
     },
     {
