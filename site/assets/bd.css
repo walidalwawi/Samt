@@ -150,6 +150,16 @@ width: auto;
 max-width: calc(var(--w, var(--bd-cols)) * var(--bd-colw) + (var(--w, var(--bd-cols)) - 1) * var(--bd-gap));
 }
 
+/* COLUMNS */
+.bd-cols {
+display: grid;
+align-items: start;
+row-gap: var(--bd-space);
+}
+.bd-col {
+min-width: 0;
+}
+
 /* TEXT */
 .bd-text p + p {
 margin-top: var(--bd-lh);
@@ -694,6 +704,12 @@ line-height: 20px;
 --w: 12;
 }
 
+/* COLUMNS */
+.bd-main .bd-cols {
+grid-template-columns: minmax(0, 12fr);
+column-gap: 30px;
+}
+
 /* MOBILE */
 @media (max-width: 760px) {
 :root {
@@ -826,5 +842,10 @@ line-height: 20px;
 .bd-flow > .bd-rule {
 --x: 0;
 --w: 4;
+}
+/* COLUMNS */
+.bd-main .bd-cols {
+grid-template-columns: minmax(0, 1fr);
+column-gap: 20px;
 }
 }

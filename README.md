@@ -9,6 +9,7 @@ Open **walidalwawi.com/admin** or **samt.co/admin** — it's one back office for
 - **Canvas** (middle): add blocks from the rail — text, image, gallery, link, notes, list, video, HTML, rule. Drag to move, pull the handle to resize; everything snaps to the grid. Tap selected text again to type.
 - **Inspect**: tap anything on the page to get the design bar — size, line, spacing, weight, colour, align, fill, spacing above/below, padding, width, border, opacity, show/hide. Style "just this" or "all like it", in Site CSS or this page only. On Phone it writes to the one mobile block. Also: parent, show rule in code, move block, replace image, edit HTML.
 - **Code**: Site CSS, Page CSS, Head HTML, the selected block, any other repo file (Files), and the generated output. Upload PDFs and other files from Files → Upload.
+- **Columns** (above the canvas, or Site tab): 1 column centred or spread, or 2 / 3 columns spread across the page with set widths (of 12) and a gutter. Phone: 1 or 2 columns. Drag a block sideways into another column, or pick its column in the block panel. Header and footer (Pin) have their own column settings.
 - **Master / Styles / Menu / Site**: the grid, type styles, menu button and colours shared by every page.
 - **Save & publish** (or Cmd+S): puts everything live in one GitHub commit. Cloudflare updates the site in about 30 seconds.
 

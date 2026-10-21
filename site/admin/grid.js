@@ -276,6 +276,49 @@ rule: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" }
 }
 };
 }
+/* COLUMNS — LIKE A CARGO COLUMN SET: 1 (CENTRED OR SPREAD), 2 OR 3 SPREAD, PHONE 1 OR 2 */
+var SPAN_PRESETS = {
+1: [[12]],
+2: [[6, 6], [4, 8], [8, 4], [3, 9], [9, 3], [5, 7], [7, 5]],
+3: [[4, 4, 4], [3, 6, 3], [6, 3, 3], [3, 3, 6], [2, 5, 5], [5, 5, 2], [3, 4, 5]]
+};
+function layoutDefaults() {
+return { cols: 1, align: "center", spans: [12], colsM: 1, gutter: 30, gutterM: 20 };
+}
+function fixLayout(L) {
+L = Object.assign(layoutDefaults(), L || {});
+L.cols = clamp(parseInt(L.cols, 10) || 1, 1, 3);
+L.colsM = clamp(parseInt(L.colsM, 10) || 1, 1, 2);
+if (!Array.isArray(L.spans) || L.spans.length !== L.cols) L.spans = SPAN_PRESETS[L.cols][0].slice();
+return L;
+}
+function lay(page) {
+return page && page.kind === "pin" ? page.layout : S.project.site.layout;
+}
+function nCols(page) {
+if (!page || !isMaster(page)) return 1;
+return lay(page).cols || 1;
+}
+function colOf(e, page) {
+return clamp(e.col || 1, 1, nCols(page));
+}
+function isSpread(s) {
+return s.layout.cols > 1 || s.layout.align === "spread";
+}
+function colTemplate(L, phone) {
+if (phone) return L.colsM === 2 && L.cols > 1 ? "repeat(2, minmax(0, 1fr))" : "minmax(0, 1fr)";
+return L.spans.map(function (n) { return "minmax(0, " + n + "fr)"; }).join(" ");
+}
+function colRules(phone) {
+var s = S.project.site;
+var out = [".bd-main .bd-cols {\ngrid-template-columns: " + colTemplate(s.layout, phone) + ";\ncolumn-gap: " + (phone ? s.layout.gutterM : s.layout.gutter) + "px;\n}"];
+S.project.order.forEach(function (id) {
+var p = S.project.pages[id];
+if (!p || p.kind !== "pin" || p.layout.cols < 2) return;
+out.push(".bd-p-" + p.id + " .bd-cols {\ngrid-template-columns: " + colTemplate(p.layout, phone) + ";\ncolumn-gap: " + (phone ? p.layout.gutterM : p.layout.gutter) + "px;\n}");
+});
+return out.join("\n");
+}
 function normalizeProject(p) {
 var d = siteDefaults(p.site && p.site.name);
 var s = p.site;
@@ -310,6 +353,11 @@ if (!pg.layout) pg.layout = "master";
 pg.kind = pg.kind || "page";
 pg.stack = pg.stack || [];
 pg.pin = pg.pin || { place: "top", fixed: false, show: "all", pages: [] };
+});
+s.layout = fixLayout(s.layout);
+p.order.forEach(function (id) {
+var pg = p.pages[id];
+if (pg.kind === "pin") pg.layout = fixLayout(pg.layout);
 });
 if (!s.master.types.gallery) s.master.types.gallery = Object.assign({ space: "", spaceM: "" }, s.master.types.image);
 return p;
@@ -484,7 +532,7 @@ out.push("/* TOKENS */", R + " {",
 "--bd-rule: " + s.colors.rule + ";",
 "--bd-sans: " + fontStack(s.sans) + ";",
 "--bd-mono: " + fontStack(s.mono, true) + ";",
-"--bd-w: " + s.w + "px;",
+"--bd-w: " + (isSpread(s) ? "100%" : s.w + "px") + ";",
 "--bd-pad: " + s.pad + "px;",
 "--bd-top: " + s.top + "px;",
 "--bd-cols: " + s.cols + ";",
@@ -621,6 +669,16 @@ margin-top: var(--bd-space);
 .bd-flow > .bd-link {
 width: auto;
 max-width: calc(var(--w, var(--bd-cols)) * var(--bd-colw) + (var(--w, var(--bd-cols)) - 1) * var(--bd-gap));
+}
+
+/* COLUMNS */
+.bd-cols {
+display: grid;
+align-items: start;
+row-gap: var(--bd-space);
+}
+.bd-col {
+min-width: 0;
 }
 
 /* TEXT */
@@ -1226,6 +1284,12 @@ min-height: 640px;
 position: relative;
 min-height: 360px;
 }
+.is-editing .bd-col {
+position: relative;
+min-height: 120px;
+outline: 1px dashed rgba(47, 75, 255, 0.28);
+outline-offset: 4px;
+}
 .bd-ed-drop {
 position: absolute;
 left: 0;
@@ -1502,8 +1566,15 @@ return pa.y - pb.y || pa.x - pb.x;
 }
 function contentHTML(page, ctx) {
 var flow = isMaster(page);
-var els = (flow ? page.els : sortedEls(page, "d")).map(function (e) { return elHTML(e, ctx); }).filter(Boolean).join("\n\n");
-return '<div class="' + (flow ? "bd-flow" : "bd-grid") + '">\n' + els + "\n</div>";
+var html = function (list) { return list.map(function (e) { return elHTML(e, ctx); }).filter(Boolean).join("\n\n"); };
+if (!flow) return '<div class="bd-grid">\n' + html(sortedEls(page, "d")) + "\n</div>";
+var n = nCols(page);
+if (n < 2) return '<div class="bd-flow">\n' + html(page.els) + "\n</div>";
+var out = '<div class="bd-cols is-c' + n + '">';
+for (var c = 1; c <= n; c++) {
+out += '\n<div class="bd-col bd-flow" data-col="' + c + '">\n' + html(page.els.filter(function (e) { return colOf(e, page) === c; })) + "\n</div>";
+}
+return out + "\n</div>";
 }
 function pinsFor(page, place, fixed) {
 return S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (p) {
@@ -1513,7 +1584,7 @@ return p.pin.show === "all" || (p.pin.pages || []).indexOf(page.id) > -1;
 });
 }
 function pinHTML(p, ctx) {
-return '<div class="bd-pin is-' + p.pin.place + (p.pin.fixed ? " is-fixed" : "") + '"' + (ctx === "edit" ? ' data-pin="' + p.id + '"' : "") + ">\n" + contentHTML(p, ctx === "edit" ? "view" : ctx) + "\n</div>";
+return '<div class="bd-pin bd-p-' + p.id + " is-" + p.pin.place + (p.pin.fixed ? " is-fixed" : "") + '"' + (ctx === "edit" ? ' data-pin="' + p.id + '"' : "") + ">\n" + contentHTML(p, ctx === "edit" ? "view" : ctx) + "\n</div>";
 }
 function headHTML(page) {
 var s = S.project.site;
@@ -1799,13 +1870,14 @@ var s = S.project.site;
 var pages = S.project.order.map(function (id) { return S.project.pages[id]; });
 var out = [baseCSS(s, "export")];
 out.push("/* MASTER */\n" + masterRules(s, false) + "\n");
+out.push("/* COLUMNS */\n" + colRules(false) + "\n");
 pages.forEach(function (p) {
 var r = layoutRules(p, false);
 if (r) out.push("/* PAGE: " + (p.title || p.slug).toUpperCase().replace(/\*\//g, "") + " */\n" + r + "\n");
 });
 var cs = cssSplit(s.css);
 if (cs.desk.trim()) out.push("/* CUSTOM */\n" + cs.desk.trim() + "\n");
-var mob = [mobileRules(s, ":root"), "/* MASTER */\n" + masterRules(s, true)];
+var mob = [mobileRules(s, ":root"), "/* MASTER */\n" + masterRules(s, true), "/* COLUMNS */\n" + colRules(true)];
 pages.forEach(function (p) {
 var r = layoutRules(p, true);
 if (r) mob.push("/* PAGE: " + (p.title || p.slug).toUpperCase().replace(/\*\//g, "") + " */\n" + r);
@@ -2333,6 +2405,23 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-label">Menu</span>'
 + "</div>";
 return h;
 }
+function layPanel(who, L) {
+var p = who === "pin" ? "page.layout" : "site.layout";
+var phone = S.mode === "phone";
+var h = '<span class="bd-ed-label">Columns · desktop</span>'
++ '<div class="bd-ed-seg">' + [1, 2, 3].map(function (n) { return '<button data-act="lay-cols" data-who="' + who + '" data-val="' + n + '" class="' + (L.cols === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</div>";
+if (L.cols === 1 && who === "site") h += field("One column", seg(p + ".align", L.align, [["center", "Centred"], ["spread", "Spread"]]));
+if (L.cols > 1) {
+h += field("Widths (of 12)", '<select class="bd-ed-input" data-act-select="lay-spans" data-who="' + who + '">' + SPAN_PRESETS[L.cols].map(function (sp) {
+var v = sp.join("-");
+return '<option value="' + v + '"' + (L.spans.join("-") === v ? " selected" : "") + ">" + sp.join(" · ") + "</option>";
+}).join("") + "</select>");
+h += '<span class="bd-ed-label">Gutter · desktop / phone (px)</span><div class="bd-ed-row">' + numIn("D", p + ".gutter", L.gutter, "int") + numIn("P", p + ".gutterM", L.gutterM, "int") + "</div>";
+h += '<span class="bd-ed-label">Columns · phone</span><div class="bd-ed-seg">' + [1, 2].map(function (n) { return '<button data-act="lay-colsM" data-who="' + who + '" data-val="' + n + '" class="' + (L.colsM === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</div>";
+}
+h += '<div class="bd-ed-hint">' + (L.cols > 1 ? "Columns spread across the page width. Blocks sit in a column; drag a block sideways into another column or pick it in the block panel." : L.align === "spread" && who === "site" ? "One column across the full page width." : "One centred column at the panel width set in Site.") + (phone ? " You’re on Phone: switch 1 / 2 above the canvas." : "") + "</div>";
+return h;
+}
 function masterPanel() {
 var s = S.project.site;
 var m = s.master;
@@ -2395,7 +2484,7 @@ return '<button data-act="left-tab" data-val="' + t[0] + '" class="' + (S.leftTa
 if (S.leftTab === "pages") {
 var groups = s.sections.map(function (x) { return { key: x.key, label: x.label, pages: [] }; });
 var other = { key: "", label: "Not in menu", pages: [] };
-var pins = { key: "", label: "Pins", pages: [], pins: true };
+var pins = { key: "", label: "Header & footer", pages: [], pins: true };
 S.project.order.forEach(function (id) {
 var p = S.project.pages[id];
 if (p.kind === "pin") {
@@ -2411,7 +2500,7 @@ h += '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">'
 groups.forEach(function (g) {
 if (!g.pages.length && !g.pins) return;
 h += '<div class="bd-ed-group"><div class="bd-ed-group-label">' + esc(g.label) + "</div>";
-if (g.pins && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">A pin is a small page that shows on every page, at the top or bottom, fixed or scrolling.</div>';
+if (g.pins && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">Add a header or footer with + Pin: a small page shown on every page, at the top or bottom, with its own columns.</div>';
 g.pages.forEach(function (p) {
 h += '<button class="bd-ed-pg' + (p.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + p.id + '"><b>' + (p.kind === "pin" ? "pin" : esc(p.num || "·")) + "</b><span>" + (p.slug === "" && p.kind !== "pin" ? "⌂ " : "") + esc(p.title) + "</span></button>";
 });
@@ -2437,6 +2526,7 @@ h += navPanel();
 h += stylesPanel();
 } else {
 h += '<div class="bd-ed-sec">' + field("Site name", input("site.name", s.name)) + "</div>";
+h += '<div class="bd-ed-sec">' + layPanel("site", s.layout) + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Colour</span><div class="bd-ed-row">'
 + field("Page", '<input type="color" class="bd-ed-input" data-bind="site.colors.page" value="' + esc(s.colors.page) + '">')
 + field("Panel", '<input type="color" class="bd-ed-input" data-bind="site.colors.panel" value="' + esc(s.colors.panel) + '">')
@@ -2491,6 +2581,7 @@ var ph = S.mode === "phone";
 var ep = effPlace(e, ph);
 var hasOwn = e.own && (ph ? (e.own.xm != null || e.own.wm != null) : (e.own.x != null || e.own.w != null));
 h += '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">' + BD_TYPE_NAME[e.type] + '</span><button class="bd-ed-btn" style="height:26px" data-act="deselect">Page settings</button></div>'
++ (nCols(curPage()) > 1 ? field("Column", '<div class="bd-ed-seg">' + Array.apply(null, Array(nCols(curPage()))).map(function (x, i) { return '<button data-act="set-col" data-val="' + (i + 1) + '" class="' + (colOf(e, curPage()) === i + 1 ? "is-on" : "") + '">' + (i + 1) + "</button>"; }).join("") + "</div>") : "")
 + '<span class="bd-ed-label">' + (ph ? "Phone" : "Desktop") + " placement · " + (hasOwn ? "own" : "from master") + '</span><div class="bd-ed-row">' + numIn("X", "own.x", ep.x, "int") + numIn("W", "own.w", ep.w, "int") + "</div>"
 + (hasOwn ? '<button class="bd-ed-btn" data-act="own-reset">Back to master placement</button>' : "")
 + '<div class="bd-ed-hint">Drag sideways to shift columns, up or down to reorder. Spacing comes from the master.</div></div>';
@@ -2561,7 +2652,7 @@ if ((!e || S.preview) && curPage().kind === "pin") {
 var pp = curPage();
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Pin</span>'
 + field("Name", input("page.title", pp.title))
-+ field("Where", seg("page.pin.place", pp.pin.place, [["top", "Top"], ["bottom", "Bottom"]]))
++ field("Where", seg("page.pin.place", pp.pin.place, [["top", "Header"], ["bottom", "Footer"]]))
 + sw("Fixed while scrolling", "page.pin.fixed", pp.pin.fixed)
 + field("Shows on", seg("page.pin.show", pp.pin.show, [["all", "Every page"], ["pages", "Chosen pages"]]));
 if (pp.pin.show === "pages") {
@@ -2571,7 +2662,8 @@ if (q.kind === "pin") return;
 h += '<label class="bd-ed-check"><input type="checkbox" data-act="pin-page" data-id="' + q.id + '"' + ((pp.pin.pages || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc(q.title) + "</label>";
 });
 }
-h += '<div class="bd-ed-hint">Build the pin with blocks like any page. It is added to the pages above.</div></div>';
+h += '<div class="bd-ed-hint">Build the header or footer with blocks like any page. It is added to the pages above.</div></div>';
+h += '<div class="bd-ed-sec">' + layPanel("pin", pp.layout) + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Layout</span>' + '<div class="bd-ed-seg"><button data-act="layout" data-val="master" class="' + (isMaster(pp) ? "is-on" : "") + '">Follow master</button><button data-act="layout" data-val="free" class="' + (isMaster(pp) ? "" : "is-on") + '">Break · free grid</button></div></div>';
 } else if (!e || S.preview) {
 var pg = curPage();
@@ -3235,6 +3327,16 @@ if (window.ResizeObserver) {
 new ResizeObserver(function () { fitSheet(); }).observe(document.getElementById("bd-sheet"));
 new ResizeObserver(function () { fitSheet(); }).observe(document.getElementById("bd-stage"));
 }
+function rulerCols(page, phone) {
+var L = lay(page);
+var who = page.kind === "pin" ? "pin" : "site";
+var name = who === "pin" ? (page.pin.place === "bottom" ? "Footer" : "Header") : "Columns";
+if (phone) {
+if (L.cols < 2) return '<span class="bd-ed-rcols">' + name + " · 1 on phone</span>";
+return '<span class="bd-ed-rcols">' + name + ' · phone <span class="bd-ed-seg">' + [1, 2].map(function (n) { return '<button data-act="lay-colsM" data-who="' + who + '" data-val="' + n + '" class="' + (L.colsM === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</span></span>";
+}
+return '<span class="bd-ed-rcols">' + name + ' <span class="bd-ed-seg">' + [1, 2, 3].map(function (n) { return '<button data-act="lay-cols" data-who="' + who + '" data-val="' + n + '" class="' + (L.cols === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</span>" + (L.cols === 1 && who === "site" ? ' <span class="bd-ed-seg">' + [["center", "Centred"], ["spread", "Spread"]].map(function (o) { return '<button data-act="set" data-path="site.layout.align" data-val="' + o[0] + '" class="' + (L.align === o[0] ? "is-on" : "") + '">' + o[1] + "</button>"; }).join("") + "</span>" : "") + "</span>";
+}
 function renderCanvas() {
 renderRail();
 var sheet = $("bd-sheet");
@@ -3256,12 +3358,12 @@ var phone = S.mode === "phone";
 var master = isMaster(page);
 if (phone && !master && ensurePhone(page)) scheduleSave();
 sheet.className = "bd-ed-sheet " + (phone ? "is-phone" : "is-desk");
-var sheetW = phone ? 390 : Math.max(640, s.w + 80);
+var sheetW = phone ? 390 : isSpread(s) ? 1280 : Math.max(640, s.w + 80);
 sheet.style.width = sheetW + "px";
 var ruler = $("bd-ruler");
 ruler.className = "bd-ed-ruler" + (phone ? " is-phone" : "");
 ruler.style.maxWidth = sheetW + "px";
-ruler.innerHTML = "<span>" + (S.inspect ? "Inspect · tap anything to style it · " + (phone ? "phone" : "desktop") : S.preview ? "Preview · menu and arrows work" : (phone ? "Phone" : "Desktop") + " · " + sheetW + 'px · <span id="bd-zoom">100%</span>') + "</span><span>" + (master ? "Follows master · " : "Free grid · ") + (phone ? s.colsM : s.cols) + " columns</span>";
+ruler.innerHTML = "<span>" + (S.inspect ? "Inspect · tap anything to style it · " + (phone ? "phone" : "desktop") : S.preview ? "Preview · menu and arrows work" : (phone ? "Phone" : "Desktop") + " · " + sheetW + 'px · <span id="bd-zoom">100%</span>') + "</span>" + (master && !S.preview ? rulerCols(page, phone) : "<span>" + (master ? "Follows master" : "Free grid") + "</span>");
 if (!shadow) {
 shadow = sheet.attachShadow({ mode: "open" });
 bindCanvas();
@@ -3270,8 +3372,8 @@ var shown = [page].concat(relatedPages(page));
 shown.forEach(function (p) {
 if (phone && !isMaster(p) && p !== page && ensurePhone(p)) scheduleSave();
 });
-var layout = masterRules(s, false) + "\n" + shown.map(function (p) { return layoutRules(p, false); }).join("\n");
-if (phone) layout += "\n" + mobileRules(s, ".bd-site") + "\n" + masterRules(s, true) + "\n" + shown.map(function (p) { return layoutRules(p, true); }).join("\n");
+var layout = masterRules(s, false) + "\n" + colRules(false) + "\n" + shown.map(function (p) { return layoutRules(p, false); }).join("\n");
+if (phone) layout += "\n" + mobileRules(s, ".bd-site") + "\n" + masterRules(s, true) + "\n" + colRules(true) + "\n" + shown.map(function (p) { return layoutRules(p, true); }).join("\n");
 var sc = cssSplit(s.css);
 var pc = cssSplit(page.css);
 var css = baseCSS(s, "edit") + "\n" + layout + "\n" + sc.desk + "\n" + pc.desk + "\n" + (phone ? sc.mob + "\n" + pc.mob + "\n" : "") + (S.inspect ? INSPECT_CSS : S.preview ? "" : EDIT_CSS);
@@ -3298,10 +3400,12 @@ hd.className = "bd-ed-fh";
 f.appendChild(hd);
 });
 }
+shadow.querySelectorAll(".bd-main > .bd-flow, .bd-main > .bd-grid, .bd-main > .bd-cols > .bd-col").forEach(function (g) {
 var cols = document.createElement("div");
 cols.className = "bd-ed-cols";
 cols.innerHTML = new Array(gridCols() + 1).join("<i></i>");
-grid.insertBefore(cols, grid.firstChild);
+g.insertBefore(cols, g.firstChild);
+});
 if (S.sel === "__menu") {
 var b = shadow.querySelector(".bd-burger");
 if (b) b.classList.add("is-selected");
@@ -3317,8 +3421,8 @@ var old = shadow.querySelector(".bd-ed-sel");
 if (old) old.remove();
 var e = selEl();
 if (!e || S.preview || S.live) return;
-var node = shadow.querySelector(".bd-e-" + e.id);
-var grid = shadow.querySelector(".bd-main > .bd-grid, .bd-main > .bd-flow");
+var node = shadow.querySelector(".bd-main .bd-e-" + e.id);
+var grid = node && node.parentElement;
 if (!node || !grid) return;
 var flow = isMaster(curPage());
 var phone = S.mode === "phone";
@@ -3332,7 +3436,7 @@ var label;
 if (flow) {
 var ep = tmp || effPlace(e, phone);
 var own = e.own && (phone ? (e.own.xm != null || e.own.wm != null) : (e.own.x != null || e.own.w != null));
-label = BD_TYPE_NAME[e.type].toLowerCase() + " · col " + (ep.x + 1) + " · span " + ep.w + (own ? " · own" : " · master");
+label = BD_TYPE_NAME[e.type].toLowerCase() + (nCols(curPage()) > 1 ? " · column " + colOf(e, curPage()) : "") + " · x " + (ep.x + 1) + " · span " + ep.w + (own ? " · own" : " · master");
 box.innerHTML = '<span class="bd-ed-tag">' + label + '</span><span class="bd-ed-h" data-h="e"></span>';
 } else {
 var pos = tmp || e[posKey()] || e.d;
@@ -3486,7 +3590,8 @@ var grid = shadow.querySelector(".bd-main > .bd-grid, .bd-main > .bd-flow");
 if (handle) {
 var el = selEl();
 e.preventDefault();
-var hn = shadow.querySelector(".bd-e-" + el.id);
+var hn = shadow.querySelector(".bd-main .bd-e-" + el.id);
+grid = hn.parentElement;
 if (flow) S.drag = { kind: "fresize", id: el.id, grid: grid, node: hn, start: effPlace(el, phone), curW: null, moved: false, sx: e.clientX, sy: e.clientY };
 else S.drag = { kind: "resize", dir: handle.getAttribute("data-h"), id: el.id, grid: grid, node: hn, start: clone(el[posKey()]), cur: null, moved: false, sx: e.clientX, sy: e.clientY };
 return;
@@ -3508,9 +3613,10 @@ if (!was) selectEl(id);
 var model = selEl();
 if (!model) return;
 e.preventDefault();
+grid = node.parentElement;
 if (flow) {
 var ep = effPlace(model, phone);
-S.drag = { kind: "flow", id: id, grid: grid, node: node, start: ep, curX: null, idx: page.els.indexOf(model), target: null, moved: false, was: was, sx: e.clientX, sy: e.clientY, off: colAt(grid, e.clientX) - ep.x };
+S.drag = { kind: "flow", id: id, col: colOf(model, page), grid: grid, node: node, start: ep, curX: null, idx: page.els.indexOf(model), target: null, moved: false, was: was, sx: e.clientX, sy: e.clientY, off: colAt(grid, e.clientX) - ep.x };
 return;
 }
 var pos = model[posKey()];
@@ -3529,12 +3635,31 @@ var text = (e.clipboardData || window.clipboardData).getData("text/plain");
 document.execCommand("insertText", false, text);
 });
 }
-function flowTarget(d, cy) {
+function flowTarget(d, cx, cy) {
 var page = curPage();
-var others = page.els.filter(function (x) { return x.id !== d.id; });
+var tcol = d.col;
+var boxes = shadow.querySelectorAll(".bd-main > .bd-cols > .bd-col");
+var host = d.grid;
+if (boxes.length) {
+var best = null;
+var bestD = Infinity;
+boxes.forEach(function (b) {
+var r = b.getBoundingClientRect();
+var dist = cx < r.left ? r.left - cx : cx > r.right ? cx - r.right : 0;
+if (dist < bestD) {
+bestD = dist;
+best = b;
+}
+});
+if (best) {
+tcol = +best.getAttribute("data-col");
+host = best;
+}
+}
+var others = page.els.filter(function (x) { return x.id !== d.id && (!boxes.length || colOf(x, page) === tcol); });
 var t = others.length;
 for (var i = 0; i < others.length; i++) {
-var n = shadow.querySelector(".bd-e-" + others[i].id);
+var n = shadow.querySelector(".bd-main .bd-e-" + others[i].id);
 if (!n) continue;
 var r = n.getBoundingClientRect();
 if (cy < r.top + r.height / 2) {
@@ -3543,22 +3668,27 @@ break;
 }
 }
 var ind = shadow.querySelector(".bd-ed-drop");
-if (!ind) {
+if (!ind || ind.parentElement !== host) {
+if (ind) ind.remove();
 ind = document.createElement("div");
 ind.className = "bd-ed-drop";
-d.grid.appendChild(ind);
+host.appendChild(ind);
 }
 var y;
 if (t < others.length) {
-var nn = shadow.querySelector(".bd-e-" + others[t].id);
+var nn = shadow.querySelector(".bd-main .bd-e-" + others[t].id);
 y = nn.offsetTop - 6;
 } else {
-var last = others.length ? shadow.querySelector(".bd-e-" + others[others.length - 1].id) : null;
+var last = others.length ? shadow.querySelector(".bd-main .bd-e-" + others[others.length - 1].id) : null;
 y = last ? last.offsetTop + last.offsetHeight + 6 : 0;
 }
 ind.style.top = y + "px";
-ind.hidden = t === d.idx;
-return t;
+var before = t < others.length ? others[t].id : null;
+var after = page.els.filter(function (x) { return colOf(x, page) === d.col; });
+var k = after.indexOf(page.els.filter(function (x) { return x.id === d.id; })[0]);
+var nowBefore = after[k + 1] ? after[k + 1].id : null;
+ind.hidden = tcol === d.col && before === nowBefore;
+return { col: tcol, before: before, same: tcol === d.col && before === nowBefore };
 }
 window.addEventListener("pointermove", function (e) {
 var d = S.drag;
@@ -3592,7 +3722,7 @@ d.curX = nx;
 d.node.style.setProperty("--x", nx);
 placeSel({ x: nx, w: d.start.w });
 }
-d.target = flowTarget(d, e.clientY);
+d.target = flowTarget(d, e.clientX, e.clientY);
 } else if (d.kind === "fresize") {
 var nw = clamp(colAt(d.grid, e.clientX) - d.start.x + 1, 1, cols - d.start.x);
 if (nw !== (d.curW == null ? d.start.w : d.curW)) {
@@ -3647,15 +3777,13 @@ if (d.kind === "flow" || d.kind === "fresize") {
 var page = curPage();
 var xChanged = d.curX != null && d.curX !== d.start.x;
 var wChanged = d.curW != null && d.curW !== d.start.w;
-var moved = d.target != null && d.target !== d.idx;
+var moved = d.target != null && !d.target.same;
+if (moved && d.target.col !== d.col) xChanged = false;
 if (xChanged || wChanged || moved) {
 snap();
 if (xChanged) setOwn(el, phone, { x: d.curX, w: d.start.w });
 if (wChanged) setOwn(el, phone, { x: d.start.x, w: d.curW });
-if (moved) {
-page.els.splice(d.idx, 1);
-page.els.splice(d.target, 0, el);
-}
+if (moved) placeInCol(page, el, d.target.col, d.target.before);
 changed();
 return;
 }
@@ -3910,6 +4038,8 @@ var page = curPage();
 var d = elDefaults(type);
 var cols = S.project.site.cols;
 var el = { id: uid(), type: type, d: { x: d.x || 0, y: bottomOf(page, "d") + (page.els.length ? 3 : 0), w: Math.min(d.w, cols), h: d.h }, m: null, props: d.props };
+var near = selEl();
+if (nCols(page) > 1) el.col = near ? colOf(near, page) : 1;
 if (el.d.x + el.d.w > cols) el.d.x = 0;
 if (S.mode === "phone") {
 ensurePhone(page);
@@ -3969,16 +4099,40 @@ el.z = 0;
 }
 changed();
 }
+function placeInCol(page, el, col, beforeId) {
+page.els.splice(page.els.indexOf(el), 1);
+if (nCols(page) > 1) el.col = col;
+var at = -1;
+if (beforeId) at = page.els.map(function (x) { return x.id; }).indexOf(beforeId);
+if (at < 0) {
+var same = page.els.filter(function (x) { return colOf(x, page) === colOf(el, page); });
+at = same.length ? page.els.indexOf(same[same.length - 1]) + 1 : page.els.length;
+}
+page.els.splice(at, 0, el);
+}
 function moveEl(dir) {
 var el = selEl();
 if (!el) return;
 var page = curPage();
-var i = page.els.indexOf(el);
+var same = page.els.filter(function (x) { return colOf(x, page) === colOf(el, page); });
+var i = same.indexOf(el);
 var j = i + dir;
-if (j < 0 || j >= page.els.length) return;
+if (j < 0 || j >= same.length) return;
 snap();
-page.els.splice(i, 1);
-page.els.splice(j, 0, el);
+var other = same[j];
+page.els.splice(page.els.indexOf(el), 1);
+var at = page.els.indexOf(other);
+page.els.splice(dir > 0 ? at + 1 : at, 0, el);
+changed();
+}
+function setCol(n) {
+var el = selEl();
+var page = curPage();
+if (!el || nCols(page) < 2) return;
+n = clamp(n, 1, nCols(page));
+if (colOf(el, page) === n) return;
+snap();
+placeInCol(page, el, n, null);
 changed();
 }
 function nudge(dx, dy, resize) {
@@ -4498,6 +4652,23 @@ S.leftOpen = false;
 }
 render();
 },
+"lay-cols": function () {
+var L = b.getAttribute("data-who") === "pin" ? curPage().layout : S.project.site.layout;
+var n = +val;
+if (L.cols === n) return;
+snap();
+L.cols = n;
+L.spans = SPAN_PRESETS[n][0].slice();
+if (n === 1) L.colsM = 1;
+changed();
+},
+"lay-colsM": function () {
+var L = b.getAttribute("data-who") === "pin" ? curPage().layout : S.project.site.layout;
+snap();
+L.colsM = +val;
+changed();
+},
+"set-col": function () { setCol(+val); },
 "ins-parent": function () { var el = insEl(); if (el && el.parentElement) pickIns(el.parentElement); },
 "ins-clear": function () { S.ins = null; markIns(); renderRight(); },
 "ins-seg": function () {
@@ -4692,6 +4863,14 @@ p.y = Math.max(0, p.y);
 p.h = Math.max(1, p.h);
 }
 }
+document.addEventListener("change", function (e) {
+var t = e.target;
+if (!S.project || !t.getAttribute || t.getAttribute("data-act-select") !== "lay-spans") return;
+var L = t.getAttribute("data-who") === "pin" ? curPage().layout : S.project.site.layout;
+snap();
+L.spans = t.value.split("-").map(Number);
+changed();
+});
 document.addEventListener("focusin", function (e) {
 if (e.target.matches && e.target.matches("[data-bind], #bd-code-ta")) S.pendingSnap = true;
 });

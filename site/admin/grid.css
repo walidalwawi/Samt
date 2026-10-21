@@ -943,3 +943,20 @@ border: 1px solid var(--e-line);
 border-radius: 3px;
 background: var(--e-raise);
 }
+
+/* RULER COLUMNS */
+.bd-ed-ruler {
+align-items: center;
+gap: 8px;
+}
+.bd-ed-rcols {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+}
+.bd-ed-rcols .bd-ed-seg button {
+height: 22px;
+padding: 0 8px;
+font-family: var(--e-mono);
+font-size: 10.5px;
+}
