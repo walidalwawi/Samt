@@ -3,23 +3,94 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Open Call — Samt for Art and Research</title>
+<title>Samt</title>
+<meta name="description" content="Samt journal: essays on art, resistance and the institution.">
 <link rel="stylesheet" href="/assets/bd.css">
+<!-- HEAD -->
+<script>
+/* NAV — UNDERLINE THE CURRENT PAGE */
+document.addEventListener("DOMContentLoaded", function () {
+var here = location.pathname.replace(/\/$/, "") || "/";
+document.querySelectorAll(".sm-nav a").forEach(function (a) {
+var to = a.getAttribute("href").replace(/\/$/, "") || "/";
+if (to === here || (to !== "/" && here.indexOf(to + "-") === 0)) a.classList.add("is-current");
+});
+});
+</script>
+<style>
+/* PAGE */
+/* CARD IMAGES SIT INSIDE THE GREY CARD */
+.bd-col > .bd-html + .bd-figure {
+margin-top: 0;
+padding: 0 18px 18px;
+background: #eeeeee;
+}
+</style>
 <script src="/assets/bd.js" defer></script>
 </head>
 <body class="bd-site" data-bd-page="">
 <div class="bd-panel">
+<div class="bd-pin bd-p-f0kgkfxt is-top">
+<div class="bd-flow">
+<div class="bd-el bd-e-83zud23g bd-html">
+<nav class="sm-nav" aria-label="Main">
+<a class="sm-logo" href="/" lang="ar">ص مت</a>
+<a href="/">Journal</a>
+<a href="/library">Library</a>
+<a href="/supply">Supply</a>
+<a href="/about">About</a>
+</nav>
+</div>
+</div>
+</div>
 <main class="bd-main">
 
-<!-- HEADER -->
-<header class="bd-head">
-<h1>Open call · Art in the Times of Crisis</h1>
-</header>
-
 <!-- CONTENT -->
-<div class="bd-flow">
-<div class="bd-el bd-e-86hyltmv bd-text has-indent">
-<p>Paste this page’s text from samt.co here.</p>
+<div class="bd-cols is-c3 bd-cl-fji5ongj">
+<div class="bd-col bd-flow" data-col="1">
+<div class="bd-el bd-e-vts2lu15 bd-html">
+<a class="sm-card" href="/the-colonial-scissors">
+<span class="sm-card-t">The Colonial Scissors: Cutting Art from Craft</span>
+<span class="sm-card-m">706 words ~ 4 min</span>
+</a>
+</div>
+
+<div class="bd-el bd-e-gti6hctf bd-html">
+<a class="sm-card" href="/militant-improvisation">
+<span class="sm-card-t">Militant Improvisation: Urgency and Refusal In the Militant Cultural Front</span>
+<span class="sm-card-m">738 words ~ 4 min</span>
+</a>
+</div>
+</div>
+<div class="bd-col bd-flow" data-col="2">
+<div class="bd-el bd-e-ej6gei4s bd-html">
+<a class="sm-card" href="/how-to-deseed-a-watermelon">
+<span class="sm-card-t">How To Deseed A Watermelon For Safe Consumption: On the domestication of danger</span>
+<span class="sm-card-m">949 words ~ 5 min</span>
+</a>
+</div>
+
+<div class="bd-el bd-e-zu7jdfec bd-html">
+<a class="sm-card" href="/the-bourgeoi-rtist">
+<span class="sm-card-t">The Bourgeoi’rtist</span>
+<span class="sm-card-m">197 words ~ 1 min</span>
+</a>
+</div>
+</div>
+<div class="bd-col bd-flow" data-col="3">
+<div class="bd-el bd-e-qtyqx2ab bd-html">
+<a class="sm-card" href="/handala-and-the-freeze-point">
+<span class="sm-card-t">Handala And The Freeze Point: How To Disable A Militant Icon</span>
+<span class="sm-card-m">578 words ~ 3 min</span>
+</a>
+</div>
+
+<div class="bd-el bd-e-331bn6ow bd-html">
+<a class="sm-card" href="/art-in-times-of-crisis">
+<span class="sm-card-t">Art In Times Of Crisis: The Culture Of Suffering.</span>
+<span class="sm-card-m">478 words ~ 3 min</span>
+</a>
+</div>
 </div>
 </div>
 

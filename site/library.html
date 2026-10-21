@@ -3,23 +3,50 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Library — Samt for Art and Research</title>
+<title>Library — Samt</title>
+<meta name="description" content="Samt curated library.">
 <link rel="stylesheet" href="/assets/bd.css">
+<!-- HEAD -->
+<script>
+/* NAV — UNDERLINE THE CURRENT PAGE */
+document.addEventListener("DOMContentLoaded", function () {
+var here = location.pathname.replace(/\/$/, "") || "/";
+document.querySelectorAll(".sm-nav a").forEach(function (a) {
+var to = a.getAttribute("href").replace(/\/$/, "") || "/";
+if (to === here || (to !== "/" && here.indexOf(to + "-") === 0)) a.classList.add("is-current");
+});
+});
+</script>
 <script src="/assets/bd.js" defer></script>
 </head>
 <body class="bd-site" data-bd-page="library">
 <div class="bd-panel">
+<div class="bd-pin bd-p-f0kgkfxt is-top">
+<div class="bd-flow">
+<div class="bd-el bd-e-83zud23g bd-html">
+<nav class="sm-nav" aria-label="Main">
+<a class="sm-logo" href="/" lang="ar">ص مت</a>
+<a href="/">Journal</a>
+<a href="/library">Library</a>
+<a href="/supply">Supply</a>
+<a href="/about">About</a>
+</nav>
+</div>
+</div>
+</div>
 <main class="bd-main">
 
-<!-- HEADER -->
-<header class="bd-head">
-<h1>Library</h1>
-</header>
-
 <!-- CONTENT -->
-<div class="bd-flow">
-<div class="bd-el bd-e-e14zgxuj bd-text has-indent">
-<p>Paste this page’s text from samt.co here.</p>
+<div class="bd-cols is-c2">
+<div class="bd-col bd-flow" data-col="1">
+<div class="bd-el bd-e-7yzw4ty2 bd-text">
+<p>Library</p>
+</div>
+</div>
+<div class="bd-col bd-flow" data-col="2">
+<div class="bd-el bd-e-6szcvv5x bd-text is-small">
+<p>Paste the library here.</p>
+</div>
 </div>
 </div>
 

@@ -8,7 +8,8 @@ letter: { id: "d6ccadf82f999f43c9ec859f0dc3bb9b", file: "resignation-letter.webp
 };
 
 /* FONT OPTIONS */
-var BD_FONTS_SANS = ["Hanken Grotesk", "Instrument Sans", "Schibsted Grotesk", "Work Sans", "Archivo", "IBM Plex Sans", "Newsreader", "EB Garamond", "Instrument Serif", "Fraunces"];
+var BD_SYSTEM_FONTS = ["Helvetica Neue", "Arial", "Georgia", "Times New Roman"];
+var BD_FONTS_SANS = ["Helvetica Neue", "Arial", "Hanken Grotesk", "Instrument Sans", "Schibsted Grotesk", "Work Sans", "Archivo", "IBM Plex Sans", "Newsreader", "EB Garamond", "Instrument Serif", "Fraunces"];
 var BD_FONTS_MONO = ["IBM Plex Mono", "JetBrains Mono", "Space Mono", "DM Mono", "Courier Prime"];
 var BD_SERIFS = ["Newsreader", "EB Garamond", "Instrument Serif", "Fraunces"];
 
@@ -131,9 +132,12 @@ if (BD_SERIFS.indexOf(name) > -1) return '"' + name + '", Georgia, "Times New Ro
 return '"' + name + '", "Helvetica Neue", Arial, sans-serif';
 }
 function fontQuery(names) {
+names = names.filter(function (n) { return BD_SYSTEM_FONTS.indexOf(n) < 0; });
+if (!names.length) return "";
 return "https://fonts.googleapis.com/css2?" + names.map(function (n) { return "family=" + n.replace(/ /g, "+") + ":ital,wght@0,400;1,400"; }).join("&") + "&display=swap";
 }
 function ensureFont(name) {
+if (BD_SYSTEM_FONTS.indexOf(name) > -1) return;
 var id = "bd-font-" + slugify(name);
 if (document.getElementById(id)) return;
 var l = document.createElement("link");
@@ -293,7 +297,17 @@ if (!Array.isArray(L.spans) || L.spans.length !== L.cols) L.spans = SPAN_PRESETS
 return L;
 }
 function lay(page) {
-return page && page.kind === "pin" ? page.layout : S.project.site.layout;
+return page && (page.kind === "pin" || page.ownLayout) ? page.layout : S.project.site.layout;
+}
+function layWho(page) {
+return page.kind === "pin" ? "pin" : page.ownLayout ? "page" : "site";
+}
+function layFor(who) {
+return who === "site" ? S.project.site.layout : curPage().layout;
+}
+function isSpreadPage(page) {
+var L = lay(page);
+return isSpread(S.project.site) || (page.kind !== "pin" && page.ownLayout && (L.cols > 1 || L.align === "spread"));
 }
 function nCols(page) {
 if (!page || !isMaster(page)) return 1;
@@ -314,8 +328,8 @@ var s = S.project.site;
 var out = [".bd-main .bd-cols {\ngrid-template-columns: " + colTemplate(s.layout, phone) + ";\ncolumn-gap: " + (phone ? s.layout.gutterM : s.layout.gutter) + "px;\n}"];
 S.project.order.forEach(function (id) {
 var p = S.project.pages[id];
-if (!p || p.kind !== "pin" || p.layout.cols < 2) return;
-out.push(".bd-p-" + p.id + " .bd-cols {\ngrid-template-columns: " + colTemplate(p.layout, phone) + ";\ncolumn-gap: " + (phone ? p.layout.gutterM : p.layout.gutter) + "px;\n}");
+if (!p || !(p.kind === "pin" || p.ownLayout) || p.layout.cols < 2) return;
+out.push(".bd-cols.bd-cl-" + p.id + " {\ngrid-template-columns: " + colTemplate(p.layout, phone) + ";\ncolumn-gap: " + (phone ? p.layout.gutterM : p.layout.gutter) + "px;\n}");
 });
 return out.join("\n");
 }
@@ -357,7 +371,7 @@ pg.pin = pg.pin || { place: "top", fixed: false, show: "all", pages: [] };
 s.layout = fixLayout(s.layout);
 p.order.forEach(function (id) {
 var pg = p.pages[id];
-if (pg.kind === "pin") pg.layout = fixLayout(pg.layout);
+if (pg.kind === "pin" || pg.ownLayout) pg.layout = fixLayout(pg.layout);
 });
 if (!s.master.types.gallery) s.master.types.gallery = Object.assign({ space: "", spaceM: "" }, s.master.types.image);
 return p;
@@ -522,7 +536,8 @@ var t = sizeTokens(s, false);
 var out = [];
 if (ctx === "export") {
 out.push("/* FONTS */");
-out.push('@import url("' + fontQuery(s.sans === s.mono ? [s.sans] : [s.sans, s.mono]) + '");');
+var fq = fontQuery(s.sans === s.mono ? [s.sans] : [s.sans, s.mono]);
+if (fq) out.push('@import url("' + fq + '");');
 out.push("");
 }
 out.push("/* TOKENS */", R + " {",
@@ -1570,7 +1585,7 @@ var html = function (list) { return list.map(function (e) { return elHTML(e, ctx
 if (!flow) return '<div class="bd-grid">\n' + html(sortedEls(page, "d")) + "\n</div>";
 var n = nCols(page);
 if (n < 2) return '<div class="bd-flow">\n' + html(page.els) + "\n</div>";
-var out = '<div class="bd-cols is-c' + n + '">';
+var out = '<div class="bd-cols is-c' + n + (page.kind === "pin" || page.ownLayout ? " bd-cl-" + page.id : "") + '">';
 for (var c = 1; c <= n; c++) {
 out += '\n<div class="bd-col bd-flow" data-col="' + c + '">\n' + html(page.els.filter(function (e) { return colOf(e, page) === c; })) + "\n</div>";
 }
@@ -1894,7 +1909,7 @@ return "/* DATA */\nvar BD_DATA = " + JSON.stringify(d, null, 0).replace(/\},\{/
 function exportPage(page) {
 var s = S.project.site;
 var title = page.slug === "" && !page.h1 ? s.name : (page.title + " — " + s.name);
-return "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>" + esc(title) + "</title>\n" + (page.desc ? '<meta name="description" content="' + esc(page.desc) + '">\n' : "") + '<link rel="stylesheet" href="/assets/bd.css">\n' + (s.head && s.head.trim() ? "<!-- HEAD -->\n" + s.head.trim() + "\n" : "") + (page.css && page.css.trim() ? "<style>\n/* PAGE */\n" + page.css.trim() + "\n</style>\n" : "") + '<script src="/assets/bd.js" defer><\/script>\n</head>\n<body class="bd-site" data-bd-page="' + esc(page.slug) + '">\n' + pageHTML(page, "export") + "\n</body>\n</html>\n";
+return "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>" + esc(title) + "</title>\n" + (page.desc ? '<meta name="description" content="' + esc(page.desc) + '">\n' : "") + '<link rel="stylesheet" href="/assets/bd.css">\n' + (s.head && s.head.trim() ? "<!-- HEAD -->\n" + s.head.trim() + "\n" : "") + (!isSpread(s) && isSpreadPage(page) ? "<style>\n/* SPREAD */\n:root {\n--bd-w: 100%;\n}\n</style>\n" : "") + (page.css && page.css.trim() ? "<style>\n/* PAGE */\n" + page.css.trim() + "\n</style>\n" : "") + '<script src="/assets/bd.js" defer><\/script>\n</head>\n<body class="bd-site" data-bd-page="' + esc(page.slug) + '">\n' + pageHTML(page, "export") + "\n</body>\n</html>\n";
 }
 function export404() {
 var s = S.project.site;
@@ -2406,11 +2421,11 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-label">Menu</span>'
 return h;
 }
 function layPanel(who, L) {
-var p = who === "pin" ? "page.layout" : "site.layout";
+var p = who === "site" ? "site.layout" : "page.layout";
 var phone = S.mode === "phone";
 var h = '<span class="bd-ed-label">Columns · desktop</span>'
 + '<div class="bd-ed-seg">' + [1, 2, 3].map(function (n) { return '<button data-act="lay-cols" data-who="' + who + '" data-val="' + n + '" class="' + (L.cols === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</div>";
-if (L.cols === 1 && who === "site") h += field("One column", seg(p + ".align", L.align, [["center", "Centred"], ["spread", "Spread"]]));
+if (L.cols === 1 && who !== "pin") h += field("One column", seg(p + ".align", L.align, [["center", "Centred"], ["spread", "Spread"]]));
 if (L.cols > 1) {
 h += field("Widths (of 12)", '<select class="bd-ed-input" data-act-select="lay-spans" data-who="' + who + '">' + SPAN_PRESETS[L.cols].map(function (sp) {
 var v = sp.join("-");
@@ -2669,6 +2684,7 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-label">Layout</span>' + '<div cl
 var pg = curPage();
 var s = S.project.site;
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Layout</span>' + '<div class="bd-ed-seg"><button data-act="layout" data-val="master" class="' + (isMaster(pg) ? "is-on" : "") + '">Follow master</button><button data-act="layout" data-val="free" class="' + (isMaster(pg) ? "" : "is-on") + '">Break · free grid</button></div><div class="bd-ed-hint">' + (isMaster(pg) ? "Blocks stack with the master spacing and placement. Break to place them anywhere on the grid." : "This page ignores the master. Follow master to stack its blocks again in their current order.") + "</div></div>";
+if (isMaster(pg)) h += '<div class="bd-ed-sec"><span class="bd-ed-label">Columns for this page</span><div class="bd-ed-seg"><button data-act="page-own" data-val="site" class="' + (pg.ownLayout ? "" : "is-on") + '">Same as site</button><button data-act="page-own" data-val="page" class="' + (pg.ownLayout ? "is-on" : "") + '">Its own</button></div>' + (pg.ownLayout ? layPanel("page", pg.layout) : '<div class="bd-ed-hint">Uses the site columns (Site tab). Choose Its own to give this page different columns.</div>') + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Page</span>'
 + field("Title in menu", input("page.title", pg.title))
 + field("Heading on page", input("page.h1", pg.h1, "", ' placeholder="' + esc(pg.title) + '"'))
@@ -3329,13 +3345,13 @@ new ResizeObserver(function () { fitSheet(); }).observe(document.getElementById(
 }
 function rulerCols(page, phone) {
 var L = lay(page);
-var who = page.kind === "pin" ? "pin" : "site";
-var name = who === "pin" ? (page.pin.place === "bottom" ? "Footer" : "Header") : "Columns";
+var who = layWho(page);
+var name = who === "pin" ? (page.pin.place === "bottom" ? "Footer" : "Header") : who === "page" ? "This page" : "Site columns";
 if (phone) {
 if (L.cols < 2) return '<span class="bd-ed-rcols">' + name + " · 1 on phone</span>";
 return '<span class="bd-ed-rcols">' + name + ' · phone <span class="bd-ed-seg">' + [1, 2].map(function (n) { return '<button data-act="lay-colsM" data-who="' + who + '" data-val="' + n + '" class="' + (L.colsM === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</span></span>";
 }
-return '<span class="bd-ed-rcols">' + name + ' <span class="bd-ed-seg">' + [1, 2, 3].map(function (n) { return '<button data-act="lay-cols" data-who="' + who + '" data-val="' + n + '" class="' + (L.cols === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</span>" + (L.cols === 1 && who === "site" ? ' <span class="bd-ed-seg">' + [["center", "Centred"], ["spread", "Spread"]].map(function (o) { return '<button data-act="set" data-path="site.layout.align" data-val="' + o[0] + '" class="' + (L.align === o[0] ? "is-on" : "") + '">' + o[1] + "</button>"; }).join("") + "</span>" : "") + "</span>";
+return '<span class="bd-ed-rcols">' + name + ' <span class="bd-ed-seg">' + [1, 2, 3].map(function (n) { return '<button data-act="lay-cols" data-who="' + who + '" data-val="' + n + '" class="' + (L.cols === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</span>" + (L.cols === 1 && who !== "pin" ? ' <span class="bd-ed-seg">' + [["center", "Centred"], ["spread", "Spread"]].map(function (o) { return '<button data-act="set" data-path="' + (who === "page" ? "page" : "site") + '.layout.align" data-val="' + o[0] + '" class="' + (L.align === o[0] ? "is-on" : "") + '">' + o[1] + "</button>"; }).join("") + "</span>" : "") + "</span>";
 }
 function renderCanvas() {
 renderRail();
@@ -3358,7 +3374,7 @@ var phone = S.mode === "phone";
 var master = isMaster(page);
 if (phone && !master && ensurePhone(page)) scheduleSave();
 sheet.className = "bd-ed-sheet " + (phone ? "is-phone" : "is-desk");
-var sheetW = phone ? 390 : isSpread(s) ? 1280 : Math.max(640, s.w + 80);
+var sheetW = phone ? 390 : isSpreadPage(page) ? 1280 : Math.max(640, s.w + 80);
 sheet.style.width = sheetW + "px";
 var ruler = $("bd-ruler");
 ruler.className = "bd-ed-ruler" + (phone ? " is-phone" : "");
@@ -3376,7 +3392,7 @@ var layout = masterRules(s, false) + "\n" + colRules(false) + "\n" + shown.map(f
 if (phone) layout += "\n" + mobileRules(s, ".bd-site") + "\n" + masterRules(s, true) + "\n" + colRules(true) + "\n" + shown.map(function (p) { return layoutRules(p, true); }).join("\n");
 var sc = cssSplit(s.css);
 var pc = cssSplit(page.css);
-var css = baseCSS(s, "edit") + "\n" + layout + "\n" + sc.desk + "\n" + pc.desk + "\n" + (phone ? sc.mob + "\n" + pc.mob + "\n" : "") + (S.inspect ? INSPECT_CSS : S.preview ? "" : EDIT_CSS);
+var css = baseCSS(s, "edit") + "\n" + (!isSpread(s) && isSpreadPage(page) ? ":host {\n--bd-w: 100%;\n}\n" : "") + layout + "\n" + sc.desk + "\n" + pc.desk + "\n" + (phone ? sc.mob + "\n" + pc.mob + "\n" : "") + (S.inspect ? INSPECT_CSS : S.preview ? "" : EDIT_CSS);
 shadow.innerHTML = "<style>" + css + '</style><div class="bd-site' + (phone ? " is-phone" : "") + (S.inspect ? " is-inspect" : S.preview ? "" : " is-editing") + '" data-bd-page="' + esc(page.slug) + '">' + pageHTML(page, "edit") + "</div>";
 var data = chromeData(page.slug);
 data.open = !!S.menuOpen;
@@ -4652,8 +4668,17 @@ S.leftOpen = false;
 }
 render();
 },
+"page-own": function () {
+var pg = curPage();
+var on = val === "page";
+if (!!pg.ownLayout === on) return;
+snap();
+pg.ownLayout = on;
+if (on && !pg.layout) pg.layout = fixLayout(clone(S.project.site.layout));
+changed();
+},
 "lay-cols": function () {
-var L = b.getAttribute("data-who") === "pin" ? curPage().layout : S.project.site.layout;
+var L = layFor(b.getAttribute("data-who"));
 var n = +val;
 if (L.cols === n) return;
 snap();
@@ -4663,7 +4688,7 @@ if (n === 1) L.colsM = 1;
 changed();
 },
 "lay-colsM": function () {
-var L = b.getAttribute("data-who") === "pin" ? curPage().layout : S.project.site.layout;
+var L = layFor(b.getAttribute("data-who"));
 snap();
 L.colsM = +val;
 changed();
@@ -4866,7 +4891,7 @@ p.h = Math.max(1, p.h);
 document.addEventListener("change", function (e) {
 var t = e.target;
 if (!S.project || !t.getAttribute || t.getAttribute("data-act-select") !== "lay-spans") return;
-var L = t.getAttribute("data-who") === "pin" ? curPage().layout : S.project.site.layout;
+var L = layFor(t.getAttribute("data-who"));
 snap();
 L.spans = t.value.split("-").map(Number);
 changed();

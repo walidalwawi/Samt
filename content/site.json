@@ -1,17 +1,17 @@
 {
- "id": "9o0hnqdp",
- "name": "Samt for Art and Research",
+ "id": "el7y2las",
+ "name": "Samt",
  "site": {
-  "name": "Samt for Art and Research",
-  "w": 750,
-  "pad": 100,
-  "top": 50,
+  "name": "Samt",
+  "w": 1200,
+  "pad": 80,
+  "top": 0,
   "cols": 12,
   "colsM": 6,
-  "row": 50,
+  "row": 8,
   "gap": 0,
   "gapM": 0,
-  "indent": 100,
+  "indent": 0,
   "indentM": 0,
   "labelW": 100,
   "labelWM": 88,
@@ -21,7 +21,7 @@
    "ink": "#111111",
    "rule": "#ffffff"
   },
-  "sans": "Hanken Grotesk",
+  "sans": "Helvetica Neue",
   "mono": "IBM Plex Mono",
   "fs": 23.5,
   "lh": 29.6,
@@ -31,36 +31,26 @@
   "lhM": 23,
   "msM": 13,
   "mlM": 17.5,
-  "header": true,
-  "menu": true,
-  "pager": true,
+  "header": false,
+  "menu": false,
+  "pager": false,
   "sections": [
    {
     "key": "a",
     "label": "a. samt"
-   },
-   {
-    "key": "e",
-    "label": "e. external"
    }
   ],
-  "externals": [
-   {
-    "section": "e",
-    "title": "Walid Al Wawi",
-    "url": "https://walidalwawi.com"
-   }
-  ],
-  "css": "",
-  "head": "",
+  "externals": [],
+  "css": "/* HEADER */\n.bd-panel {\npadding-top: 80px;\n}\n.bd-panel > .bd-pin.is-top {\nmargin-bottom: 200px;\n}\n.sm-nav {\nfont-size: 13px;\nline-height: 19px;\n}\n.sm-nav .sm-logo {\ndisplay: block;\nmargin-bottom: 26px;\nfont-size: 13px;\n}\n.sm-nav a {\ndisplay: table;\nborder-bottom: 1px solid transparent;\n}\n.sm-nav a.is-current,\n.sm-nav a:hover {\nborder-bottom-color: currentColor;\n}\n\n/* TEXT */\n.bd-text a {\nborder-bottom: 1px solid currentColor;\n}\n.bd-site .sm-meta {\nfont-size: 11px;\nline-height: 16px;\n}\n.sm-meta a {\nborder-bottom: 0;\n}\n\n/* PULL QUOTE */\n.bd-site .sm-pull {\nmargin: 0;\npadding: 40px 46px;\nfont-size: 13px;\nline-height: 19px;\ntext-align: center;\nbox-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);\n}\n\n/* JOURNAL CARDS */\n.sm-card {\ndisplay: block;\nmin-height: 120px;\npadding: 18px;\nbackground: #eeeeee;\nborder-bottom: 0;\n}\n.sm-card-t {\ndisplay: block;\nfont-size: 15px;\nline-height: 22px;\n}\n.sm-card-m {\ndisplay: block;\nmargin-top: 12px;\nfont-size: 11px;\nline-height: 16px;\n}\n\n/* CONTRIBUTORS */\n.sm-who summary {\nlist-style: none;\ncursor: pointer;\n}\n.sm-who summary::-webkit-details-marker {\ndisplay: none;\n}\n.sm-who summary::before {\ncontent: \"+\";\ndisplay: inline-block;\nwidth: 27px;\n}\n.sm-who[open] summary::before {\ncontent: \"—\";\n}\n.sm-who ul {\nmargin-top: 18px;\npadding-left: 6px;\n}\n.sm-who li {\nline-height: 31px;\n}\n\n/* NEXT */\n.bd-site .sm-next {\npadding-top: 120px;\nfont-size: 11px;\ntext-align: center;\n}\n.sm-next a {\nborder-bottom: 0;\n}\n\n/* SHOP */\n.bd-site .sm-product {\nfont-size: 11px;\nline-height: 18px;\ntext-align: center;\n}\n\n/* MOBILE */\n@media (max-width: 760px) {\n.bd-panel {\npadding-top: 32px;\n}\n.bd-panel > .bd-pin.is-top {\nmargin-bottom: 64px;\n}\n.bd-site .sm-pull {\npadding: 28px 22px;\n}\n}",
+  "head": "<script>\n/* NAV — UNDERLINE THE CURRENT PAGE */\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nvar here = location.pathname.replace(/\\/$/, \"\") || \"/\";\ndocument.querySelectorAll(\".sm-nav a\").forEach(function (a) {\nvar to = a.getAttribute(\"href\").replace(/\\/$/, \"\") || \"/\";\nif (to === here || (to !== \"/\" && here.indexOf(to + \"-\") === 0)) a.classList.add(\"is-current\");\n});\n});\n</script>",
   "showNum": false,
-  "zoom": true,
+  "zoom": false,
   "styles": {
    "body": {
     "font": "sans",
     "size": 15,
-    "lh": 20,
-    "sizeM": 15,
+    "lh": 22,
+    "sizeM": 14,
     "lhM": 20,
     "weight": 400,
     "italic": false,
@@ -70,10 +60,10 @@
    },
    "heading": {
     "font": "sans",
-    "size": 21.8,
-    "lh": 26,
-    "sizeM": 21.8,
-    "lhM": 26,
+    "size": 15,
+    "lh": 22,
+    "sizeM": 14,
+    "lhM": 20,
     "weight": 400,
     "italic": false,
     "textCase": "none",
@@ -82,10 +72,10 @@
    },
    "small": {
     "font": "sans",
-    "size": 15,
-    "lh": 20,
-    "sizeM": 15,
-    "lhM": 20,
+    "size": 13,
+    "lh": 19,
+    "sizeM": 12,
+    "lhM": 17,
     "weight": 400,
     "italic": false,
     "textCase": "none",
@@ -93,11 +83,11 @@
     "color": ""
    },
    "caption": {
-    "font": "mono",
-    "size": 15,
-    "lh": 20,
-    "sizeM": 15,
-    "lhM": 20,
+    "font": "sans",
+    "size": 13,
+    "lh": 19,
+    "sizeM": 12,
+    "lhM": 17,
     "weight": 400,
     "italic": false,
     "textCase": "none",
@@ -105,11 +95,11 @@
     "color": ""
    },
    "mono": {
-    "font": "mono",
-    "size": 15,
-    "lh": 20,
-    "sizeM": 15,
-    "lhM": 20,
+    "font": "sans",
+    "size": 13,
+    "lh": 19,
+    "sizeM": 12,
+    "lhM": 17,
     "weight": 400,
     "italic": false,
     "textCase": "none",
@@ -118,18 +108,18 @@
    }
   },
   "nav": {
-   "icon": "text",
-   "label": "index;",
+   "icon": "lines",
+   "label": "☰",
    "openLabel": "",
    "btnFont": "sans",
-   "btnSize": 15,
+   "btnSize": 24,
    "btnColor": "",
-   "btnCase": "lowercase",
+   "btnCase": "none",
    "corner": "right",
-   "btnTop": 50,
-   "btnSide": 100,
-   "btnTopM": 24,
-   "btnSideM": 20,
+   "btnTop": 34,
+   "btnSide": 34,
+   "btnTopM": 22,
+   "btnSideM": 18,
    "font": "sans",
    "size": 0,
    "lh": 0,
@@ -141,41 +131,41 @@
    "headings": true,
    "accordion": true,
    "current": "dim",
-   "indent": 0,
-   "title": "hide",
-   "fade": 0.1,
+   "indent": 28,
+   "title": "right",
+   "fade": 0.12,
    "bg": "",
    "bgAlpha": 0.92
   },
   "master": {
-   "space": 50,
-   "spaceM": 50,
+   "space": 32,
+   "spaceM": 24,
    "headX": 2,
    "headXM": 1,
-   "headSpace": 60,
-   "headSpaceM": 40,
+   "headSpace": 0,
+   "headSpaceM": 0,
    "types": {
     "text": {
      "x": 0,
      "w": 12,
      "xm": 0,
-     "wm": 4,
+     "wm": 6,
      "space": "",
      "spaceM": ""
     },
     "notes": {
-     "x": 5,
-     "w": 7,
-     "xm": 1,
-     "wm": 3,
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 6,
      "space": "",
      "spaceM": ""
     },
     "image": {
-     "x": 1,
-     "w": 9,
+     "x": 0,
+     "w": 12,
      "xm": 0,
-     "wm": 4,
+     "wm": 6,
      "space": "",
      "spaceM": ""
     },
@@ -183,15 +173,15 @@
      "x": 0,
      "w": 12,
      "xm": 0,
-     "wm": 4,
+     "wm": 6,
      "space": "",
      "spaceM": ""
     },
     "link": {
      "x": 0,
-     "w": 4,
+     "w": 12,
      "xm": 0,
-     "wm": 4,
+     "wm": 6,
      "space": "",
      "spaceM": ""
     },
@@ -199,7 +189,7 @@
      "x": 0,
      "w": 12,
      "xm": 0,
-     "wm": 4,
+     "wm": 6,
      "space": "",
      "spaceM": ""
     },
@@ -207,7 +197,7 @@
      "x": 0,
      "w": 12,
      "xm": 0,
-     "wm": 4,
+     "wm": 6,
      "space": "",
      "spaceM": ""
     },
@@ -215,7 +205,7 @@
      "x": 0,
      "w": 12,
      "xm": 0,
-     "wm": 4,
+     "wm": 6,
      "space": "",
      "spaceM": ""
     },
@@ -223,45 +213,111 @@
      "x": 0,
      "w": 12,
      "xm": 0,
-     "wm": 4,
+     "wm": 6,
      "space": "",
      "spaceM": ""
     }
    }
   },
   "layout": {
-   "cols": 1,
+   "cols": 2,
    "align": "center",
    "spans": [
-    12
+    6,
+    6
    ],
    "colsM": 1,
-   "gutter": 30,
-   "gutterM": 20
+   "gutter": 80,
+   "gutterM": 24
   }
  },
  "order": [
-  "kazu81od",
-  "yd2iqf31",
-  "w184ot7r",
-  "7jkq40ys"
+  "f0kgkfxt",
+  "fji5ongj",
+  "xvis31th",
+  "aj2hm4y8",
+  "ipk7ns57",
+  "k2b6e868",
+  "ap7jj2t4",
+  "1bp9xrs5",
+  "b2lr3tkr",
+  "zty6iib1",
+  "nsye72w3"
  ],
  "pages": {
-  "kazu81od": {
-   "id": "kazu81od",
-   "title": "Open Call",
-   "h1": "Open call · Art in the Times of Crisis",
-   "num": "1",
+  "f0kgkfxt": {
+   "id": "f0kgkfxt",
+   "title": "Header",
+   "h1": "",
+   "num": "",
+   "slug": "header",
+   "section": "",
+   "desc": "",
+   "header": false,
+   "layout": {
+    "cols": 1,
+    "align": "center",
+    "spans": [
+     12
+    ],
+    "colsM": 1,
+    "gutter": 30,
+    "gutterM": 20
+   },
+   "css": "",
+   "els": [
+    {
+     "id": "83zud23g",
+     "type": "html",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<nav class=\"sm-nav\" aria-label=\"Main\">\n<a class=\"sm-logo\" href=\"/\" lang=\"ar\">ص مت</a>\n<a href=\"/\">Journal</a>\n<a href=\"/library\">Library</a>\n<a href=\"/supply\">Supply</a>\n<a href=\"/about\">About</a>\n</nav>"
+     }
+    }
+   ],
+   "kind": "pin",
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": []
+   },
+   "stack": []
+  },
+  "fji5ongj": {
+   "id": "fji5ongj",
+   "title": "Journal",
+   "h1": "",
+   "num": "",
    "slug": "",
    "section": "a",
-   "desc": "",
-   "header": true,
-   "layout": "master",
-   "css": "",
+   "desc": "Samt journal: essays on art, resistance and the institution.",
+   "header": false,
+   "layout": {
+    "cols": 3,
+    "align": "center",
+    "spans": [
+     4,
+     4,
+     4
+    ],
+    "colsM": 1,
+    "gutter": 40,
+    "gutterM": 24
+   },
+   "css": "/* CARD IMAGES SIT INSIDE THE GREY CARD */\n.bd-col > .bd-html + .bd-figure {\nmargin-top: 0;\npadding: 0 18px 18px;\nbackground: #eeeeee;\n}",
    "els": [
     {
-     "id": "86hyltmv",
-     "type": "text",
+     "id": "vts2lu15",
+     "type": "html",
+     "col": 1,
      "d": {
       "x": 0,
       "y": 0,
@@ -270,14 +326,206 @@
      },
      "m": null,
      "props": {
-      "html": "<p>Paste this page’s text from samt.co here.</p>",
-      "font": "sans",
-      "size": "body",
-      "indent": true,
-      "align": "left"
+      "code": "<a class=\"sm-card\" href=\"/the-colonial-scissors\">\n<span class=\"sm-card-t\">The Colonial Scissors: Cutting Art from Craft</span>\n<span class=\"sm-card-m\">706 words ~ 4 min</span>\n</a>"
+     }
+    },
+    {
+     "id": "sxk3v250",
+     "type": "image",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Illustration for The Colonial Scissors: Cutting Art from Craft",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "gti6hctf",
+     "type": "html",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<a class=\"sm-card\" href=\"/militant-improvisation\">\n<span class=\"sm-card-t\">Militant Improvisation: Urgency and Refusal In the Militant Cultural Front</span>\n<span class=\"sm-card-m\">738 words ~ 4 min</span>\n</a>"
+     }
+    },
+    {
+     "id": "nhbht1ov",
+     "type": "image",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Illustration for Militant Improvisation: Urgency and Refusal In the Militant Cultural Front",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "ej6gei4s",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<a class=\"sm-card\" href=\"/how-to-deseed-a-watermelon\">\n<span class=\"sm-card-t\">How To Deseed A Watermelon For Safe Consumption: On the domestication of danger</span>\n<span class=\"sm-card-m\">949 words ~ 5 min</span>\n</a>"
+     }
+    },
+    {
+     "id": "f2i1jgvd",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Illustration for How To Deseed A Watermelon For Safe Consumption: On the domestication of danger",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "zu7jdfec",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<a class=\"sm-card\" href=\"/the-bourgeoi-rtist\">\n<span class=\"sm-card-t\">The Bourgeoi’rtist</span>\n<span class=\"sm-card-m\">197 words ~ 1 min</span>\n</a>"
+     }
+    },
+    {
+     "id": "cnwom5ax",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Illustration for The Bourgeoi’rtist",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "qtyqx2ab",
+     "type": "html",
+     "col": 3,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<a class=\"sm-card\" href=\"/handala-and-the-freeze-point\">\n<span class=\"sm-card-t\">Handala And The Freeze Point: How To Disable A Militant Icon</span>\n<span class=\"sm-card-m\">578 words ~ 3 min</span>\n</a>"
+     }
+    },
+    {
+     "id": "7e3z5nxv",
+     "type": "image",
+     "col": 3,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Illustration for Handala And The Freeze Point: How To Disable A Militant Icon",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "331bn6ow",
+     "type": "html",
+     "col": 3,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<a class=\"sm-card\" href=\"/art-in-times-of-crisis\">\n<span class=\"sm-card-t\">Art In Times Of Crisis: The Culture Of Suffering.</span>\n<span class=\"sm-card-m\">478 words ~ 3 min</span>\n</a>"
+     }
+    },
+    {
+     "id": "b6nr6gut",
+     "type": "image",
+     "col": 3,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Illustration for Art In Times Of Crisis: The Culture Of Suffering.",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
      }
     }
    ],
+   "ownLayout": true,
    "kind": "page",
    "stack": [],
    "pin": {
@@ -287,21 +535,22 @@
     "pages": []
    }
   },
-  "yd2iqf31": {
-   "id": "yd2iqf31",
-   "title": "Art in the Times of Crisis",
+  "xvis31th": {
+   "id": "xvis31th",
+   "title": "The Colonial Scissors",
    "h1": "",
-   "num": "2",
-   "slug": "art-in-the-times-of-crisis",
+   "num": "",
+   "slug": "the-colonial-scissors",
    "section": "a",
-   "desc": "",
-   "header": true,
+   "desc": "The Colonial Scissors: Cutting Art from Craft",
+   "header": false,
    "layout": "master",
    "css": "",
    "els": [
     {
-     "id": "z5gezvaq",
+     "id": "vx6rab4t",
      "type": "text",
+     "col": 1,
      "d": {
       "x": 0,
       "y": 0,
@@ -310,11 +559,61 @@
      },
      "m": null,
      "props": {
-      "html": "<p>Paste this page’s text from samt.co here.</p>",
-      "font": "sans",
-      "size": "body",
-      "indent": true,
+      "html": "<p>The Colonial Scissors: Cutting Art from Craft</p>",
+      "style": "body",
+      "indent": false,
       "align": "left"
+     }
+    },
+    {
+     "id": "j2fjvs2r",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p class=\"sm-meta\"><a href=\"/\">&lt;</a>  706 words ~ 4 min</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "prmaoy1e",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Paste this essay’s text here.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "5k1ff6mz",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<p class=\"sm-next\"><a href=\"/how-to-deseed-a-watermelon\">Next, How To Deseed A Watermelon For Safe Consumption: On the domestication of danger</a></p>"
      }
     }
    ],
@@ -327,21 +626,750 @@
     "pages": []
    }
   },
-  "w184ot7r": {
-   "id": "w184ot7r",
+  "aj2hm4y8": {
+   "id": "aj2hm4y8",
+   "title": "How To Deseed A Watermelon For Safe Consumption",
+   "h1": "",
+   "num": "",
+   "slug": "how-to-deseed-a-watermelon",
+   "section": "a",
+   "desc": "How To Deseed A Watermelon For Safe Consumption: On the domestication of danger",
+   "header": false,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "el3path8",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>How To Deseed A Watermelon For Safe Consumption: On the domestication of danger</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "ating08e",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p class=\"sm-meta\"><a href=\"/\">&lt;</a>  949 words ~ 5 min</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "mwul7ncs",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>2018, Gaza</p><p>Thousands gather, pressing against the border fence in what was called The Great March of Return. Across from them stand Israeli soldiers, framed by the alien architecture of metal and concrete. Rifles raised, they fire directly into the crowd. Men, women, and children struck down beneath the colors of red, black, white, and green stretched across wood. A simple piece of fabric becomes a target.</p><p>Soldiers with rifles; marchers with flags. One fires bullets, the other eclipses erasure by waving above the heads of empire. The Palestinian flag is lethal not for what it can do, but for what it declares: presence, permanence, and the insignificance of the occupier’s power in the face of a people’s pride.</p><p>Beyond Palestine, however, another image has taken hold among those estranged from the land. A watermelon split open, its red flesh and green rind echoing the flag. On tote bags, murals, and gallery merchandise, it circulates freely as shorthand for solidarity.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "5mxm3w9z",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<blockquote class=\"sm-pull\">But how did a symbol that claims to empower the prohibited come to eclipse it? The answer lies not in the curated gallery walls or carefully written statements at public events, but in another watermelon, one carried by a mother in Haifa in the early 1970s.</blockquote>"
+     }
+    },
+    {
+     "id": "h5achvet",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "* How To Deseed A Watermelon For Safe Consumption — drawing",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "oz98uehj",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>1972, Haifa</p><p>A Palestinian woman moves through the machinery of occupation. Her presence appears unremarkable: in one arm she steadies her infant son, in the other she carries a basket of fruit. A mother, slow, vulnerable. Her name was Zakia Shamut, known as “Umm Mas’oud,” and in her basket lay a hollowed watermelon. Poor in nutrition but heavy in substance, its flesh had been replaced with twenty kilograms of explosives.</p><p>The watermelon she carried that day was placed in the occupied city of Haifa, detonating in a Bulgarian circus and killing fifteen Israelis, wounding dozens more.</p><p>In that moment, the colonial logic of domination was undone. A mother and her fruit basket brought the very infrastructure of regulation into collapse. Not by force alone, but by confronting the gaze of empire and exploiting how it sees, and refuses to see, the Palestinian body.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "mormdgpt",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "1. start by cutting a desirable slice",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "mb1xcv3m",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Within the fragile order of the settler colony and its obsession with preserving a façade of permanence, the native body must be rendered transparent and categorically contained within paranoid taxonomies that sustain the colony’s fabricated hierarchy. The colony must therefore multiply its eyes and extend its reach; its surveillance is not confined to official channels but diffused throughout the social fabric of its alien population. Embedded in the gaze of men, women, and children, each settler is a deputized agent of observation.</p><p>Under such an order, the Palestinian mother unfolds a paradox. Beyond the present, her body torments the colonial calculus of demographics; her fertility provokes existential alarm that haunts the settler’s projections of permanence. Yet in the immediate encounter, she is presumed harmless, her maternal role overriding suspicion, her nurturing urges classifying her as noncombatant.</p><p>By understanding this contradiction, Umm Masʿoud converts decades of routine scrutiny into tactical cover. Under the guise of a mother carrying an overbearingly heavy summer fruit, she penetrates the colony’s surveillance, generating an innocent opacity the empire’s logic fails to penetrate.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "lnhoc0om",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "2. Carefuly pick out the seeds",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "qsf52dpk",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>But Zakia’s watermelon was never neutral. She didn’t carry it to disguise her way into safety but to pierce and rupture. Its danger lay in its ephemerality past its objective, refusing to overshadow its purpose of turning the occupier’s violence against itself, by weaponising invisibility, and making survival itself ungovernable.</p><p>In stark contrast to the watermelon that circulates today, while its use may have been argued to serve a purpose under clear and specific circumstances, its usefulness can easily be deemed detrimental to its cause if such circumstances are not present, turning the conveniently coloured fruit into exactly that: convenience that never endangers its carrier.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "0qzra7go",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "3. cut slice into 3 parts",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "10ul0epn",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>The bourgeois order tolerates, even embraces, symbols that leave its machinery intact. Worn on tote bags and distributed on event brochures, the symbol of the watermelon is turned into a harmless emblem of identity. Its safety is precisely its condition of possibility. It punctures nothing; it risks nothing. It thrives because it can be consumed, replicated, and displayed without consequence.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "wa12r3y2",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<blockquote class=\"sm-pull\">A lazy and cowardly infantilization of the Palestinian struggle sold as radical ingenuity, designed to satisfy performative dissent yet survive within empire’s optics.</blockquote>"
+     }
+    },
+    {
+     "id": "o7nhs46f",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>But to resist erasure is not to invent new ways of existing safely within empire’s prohibitions; it is to confront the machinery that enforces it, its bans, its surveillance, its carceral architectures. When the Palestinian flag draws bullets in Gaza and arrests in Jerusalem, replacing it with another symbol in other parts of the world does not preserve solidarity; it concedes to domination and renders it palatable for liberal frameworks that refuse the story of Zakia: that a Palestinian can be a fighter as well as a victim.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "w1w37im6",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "4. seperate the rend from the flesh",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "eiirm6n4",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<blockquote class=\"sm-pull\">Born in Haifa in 1945, Zakia Shamut was one of the first Palestinian women in the ’48 territories to join the armed resistance. By the early 1970s she had carried out seven operations against settlers and soldiers alike. For years she eluded capture, only later arrested mid-pregnancy along with her family and sentenced by an Israeli military court to 1,188 years in prison.</blockquote>"
+     }
+    },
+    {
+     "id": "naz9l3zo",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Zakia’s story exposes the violence of symbolism. It confronts the boundaries between symbol and substance, between décor and intervention. It rejects the safe theatre of resistance that never punctures colonial control. It reminds us that symbols retain their force only when they rupture empire’s machinery, not when they circulate safely within it.</p><p>Her watermelon teaches us that militant improvisation must remain undomesticated. Resistance can only become heritage if it achieves its goal of complete liberation; otherwise, its embrace is simply domestication into institutional order.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "gf0pgah2",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "5. serve cold in a hot day.",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "m8huukvm",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<p class=\"sm-next\"><a href=\"/handala-and-the-freeze-point\">Next, Handala And The Freeze Point: How To Disable A Militant Icon</a></p>"
+     }
+    }
+   ],
+   "kind": "page",
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": []
+   }
+  },
+  "ipk7ns57": {
+   "id": "ipk7ns57",
+   "title": "Handala And The Freeze Point",
+   "h1": "",
+   "num": "",
+   "slug": "handala-and-the-freeze-point",
+   "section": "a",
+   "desc": "Handala And The Freeze Point: How To Disable A Militant Icon",
+   "header": false,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "0q8ev202",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Handala And The Freeze Point: How To Disable A Militant Icon</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "9rdic408",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p class=\"sm-meta\"><a href=\"/\">&lt;</a>  578 words ~ 3 min</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "wmli2ng2",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Paste this essay’s text here.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "37cykksj",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<p class=\"sm-next\"><a href=\"/militant-improvisation\">Next, Militant Improvisation: Urgency and Refusal In the Militant Cultural Front</a></p>"
+     }
+    }
+   ],
+   "kind": "page",
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": []
+   }
+  },
+  "k2b6e868": {
+   "id": "k2b6e868",
+   "title": "Militant Improvisation",
+   "h1": "",
+   "num": "",
+   "slug": "militant-improvisation",
+   "section": "a",
+   "desc": "Militant Improvisation: Urgency and Refusal In the Militant Cultural Front",
+   "header": false,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "9qwrtlea",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Militant Improvisation: Urgency and Refusal In the Militant Cultural Front</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "fl97b2lk",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p class=\"sm-meta\"><a href=\"/\">&lt;</a>  738 words ~ 4 min</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "v6r6jzqz",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Paste this essay’s text here.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "jvxwreue",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<p class=\"sm-next\"><a href=\"/the-bourgeoi-rtist\">Next, The Bourgeoi’rtist</a></p>"
+     }
+    }
+   ],
+   "kind": "page",
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": []
+   }
+  },
+  "ap7jj2t4": {
+   "id": "ap7jj2t4",
+   "title": "The Bourgeoi’rtist",
+   "h1": "",
+   "num": "",
+   "slug": "the-bourgeoi-rtist",
+   "section": "a",
+   "desc": "The Bourgeoi’rtist",
+   "header": false,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "enog2xqs",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>The Bourgeoi’rtist</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "tzmj17f5",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p class=\"sm-meta\"><a href=\"/\">&lt;</a>  197 words ~ 1 min</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "3lq6jz2i",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Paste this essay’s text here.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "4dop256w",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<p class=\"sm-next\"><a href=\"/art-in-times-of-crisis\">Next, Art In Times Of Crisis: The Culture Of Suffering.</a></p>"
+     }
+    }
+   ],
+   "kind": "page",
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": []
+   }
+  },
+  "1bp9xrs5": {
+   "id": "1bp9xrs5",
+   "title": "Art In Times Of Crisis",
+   "h1": "",
+   "num": "",
+   "slug": "art-in-times-of-crisis",
+   "section": "a",
+   "desc": "Art In Times Of Crisis: The Culture Of Suffering.",
+   "header": false,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "7e0aesin",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Art In Times Of Crisis: The Culture Of Suffering.</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "302epmue",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p class=\"sm-meta\"><a href=\"/\">&lt;</a>  478 words ~ 3 min</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "h19ziisk",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Paste this essay’s text here.</p>",
+      "style": "small",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "hox6tjmi",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<p class=\"sm-next\"><a href=\"/the-colonial-scissors\">Next, The Colonial Scissors: Cutting Art from Craft</a></p>"
+     }
+    }
+   ],
+   "kind": "page",
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": []
+   }
+  },
+  "b2lr3tkr": {
+   "id": "b2lr3tkr",
    "title": "Library",
    "h1": "",
-   "num": "3",
+   "num": "",
    "slug": "library",
    "section": "a",
-   "desc": "",
-   "header": true,
+   "desc": "Samt curated library.",
+   "header": false,
    "layout": "master",
    "css": "",
    "els": [
     {
-     "id": "e14zgxuj",
+     "id": "7yzw4ty2",
      "type": "text",
+     "col": 1,
      "d": {
       "x": 0,
       "y": 0,
@@ -350,10 +1378,27 @@
      },
      "m": null,
      "props": {
-      "html": "<p>Paste this page’s text from samt.co here.</p>",
-      "font": "sans",
-      "size": "body",
-      "indent": true,
+      "html": "<p>Library</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "6szcvv5x",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Paste the library here.</p>",
+      "style": "small",
+      "indent": false,
       "align": "left"
      }
     }
@@ -367,21 +1412,42 @@
     "pages": []
    }
   },
-  "7jkq40ys": {
-   "id": "7jkq40ys",
-   "title": "Supply Store",
+  "zty6iib1": {
+   "id": "zty6iib1",
+   "title": "Supply",
    "h1": "",
-   "num": "4",
-   "slug": "supply-store",
+   "num": "",
+   "slug": "supply",
    "section": "a",
-   "desc": "",
-   "header": true,
+   "desc": "Samt supply store.",
+   "header": false,
    "layout": "master",
    "css": "",
    "els": [
     {
-     "id": "qb1fp7zn",
-     "type": "text",
+     "id": "2xkm99iq",
+     "type": "image",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "The Silent Ones Embroidery on white t-shirt",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "sg5627p6",
+     "type": "html",
+     "col": 1,
      "d": {
       "x": 0,
       "y": 0,
@@ -390,10 +1456,132 @@
      },
      "m": null,
      "props": {
-      "html": "<p>Paste this page’s text from samt.co here.</p>",
-      "font": "sans",
-      "size": "body",
-      "indent": true,
+      "code": "<p class=\"sm-product\">The Silent Ones Embroidery on white t-shirt<br>£20.00</p>"
+     }
+    },
+    {
+     "id": "pw5i8g5x",
+     "type": "image",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "assetId": "",
+      "file": "",
+      "alt": "Yoni Clay white incense holder",
+      "caption": "",
+      "fit": "contain",
+      "zoom": false
+     }
+    },
+    {
+     "id": "jqmkjioy",
+     "type": "html",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<p class=\"sm-product\">Yoni Clay white incense holder<br>£55.00<br>Sold out</p>"
+     }
+    }
+   ],
+   "kind": "page",
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": []
+   }
+  },
+  "nsye72w3": {
+   "id": "nsye72w3",
+   "title": "About",
+   "h1": "",
+   "num": "",
+   "slug": "about",
+   "section": "a",
+   "desc": "Samt — Arabic for silence — a virtual platform for art and research founded by Walid Al Wawi in 2017.",
+   "header": false,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "3w6oxzyq",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Samt n.– Making no sound; quiet; still</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "cjjty14h",
+     "type": "html",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "code": "<details class=\"sm-who\">\n<summary>Contributors:</summary>\n<ul>\n<li>Aya Atoui</li>\n<li>Andrew Riad</li>\n<li>Amal Waqar</li>\n<li>Sulaiman Al-Omar</li>\n<li>Reed Ghunaim</li>\n<li>Aya Atoui</li>\n<li>Salmah Al Mansoori</li>\n<li>Tamara Kalo</li>\n<li>Khadeeja Hamid</li>\n<li>Eman Dakhil Al-Ghamdi</li>\n<li>Andrew Riad</li>\n<li>Mai Al Moataz</li>\n<li>Amna Ilyas</li>\n<li>Maryam Alhuraiz</li>\n<li>Naser AL (Firas S)</li>\n<li>Shaima Shamsi</li>\n<li>Mashael Alsaie</li>\n<li>Magali El Haddad</li>\n<li>VOYYYD</li>\n<li>Aya Afaneh</li>\n<li>Taus Makhacheva</li>\n<li>Abdulrahim Alkindi</li>\n<li>Anood Al Obaidly</li>\n<li>Antony Crossfield</li>\n<li>Areej Kaoud</li>\n<li>Bu Yousif</li>\n<li>Collect.ive</li>\n<li>Dinkha Latchin</li>\n<li>Fadi Zumot</li>\n<li>Hadil Moufti</li>\n<li>Hussein Hassan</li>\n<li>Karam Natour</li>\n<li>Kareem Samara</li>\n<li>Mahmoud Safadi</li>\n<li>Mays Albeik</li>\n<li>Mazen Al Ashkar</li>\n<li>Mohamed Khalid</li>\n<li>Moza Almatrooshi</li>\n<li>Mustafa Boga</li>\n<li>Reem Falaknaz</li>\n<li>Reem Kelain</li>\n<li>Saif Mhaisen</li>\n<li>Sara Masinae</li>\n<li>Sarah Alagroobi</li>\n<li>Sarah Brahim</li>\n<li>Tara Aldughaither</li>\n<li>Tulip Hazbar</li>\n<li>Aya Afaneh</li>\n<li>Mashael Al Saie</li>\n<li>Shaima Shamsi</li>\n<li>Fatima Uzdenova</li>\n<li>Behnoosh Feiz</li>\n<li>Yervant</li>\n<li>Vedika Kushalappa</li>\n<li>Layal Berberi</li>\n<li>Dania Al Tamimi</li>\n<li>Rawd Halawani</li>\n<li>Yal Solan</li>\n</ul>\n</details>"
+     }
+    },
+    {
+     "id": "u2gfdifq",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Arabic for silence, Samt is a virtual platform for art and research that functions in periodic volumes, and mainly exists online through Samt.co</p><p>Founded by Walid Al Wawi in 2017, Samt’s mission centres around challenging the political economy and institutional hierarchy of the art system, by shifting the receptivity of art discourse from the conventional state of physical geographies to a fluid and contemporary techno-digital approach.</p><p>In 2022 Samt further expanded on its mission with the creation of Samt Alternative Art School (SAAS); an experimental rethinking of creative resistance as mode of authentic production; combating the colonialist Eurocentric academia, capitalistic frameworks and patriarchal dominance of the historical and contemporary art canon.</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "owa05vjv",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Founding Director:<br><a href=\"https://walidalwawi.com\">Walid Al Wawi</a></p><p>Guest educators:<br>Ragini Nagu</p><p>Guest curators:<br>Sarah Al Agroobi<br>Tara Aldughaither<br>Areej Kaoud</p><p>Previous collaborators:<br><a href=\"https://daratalfunun.org\" target=\"_blank\" rel=\"noopener\">Darat Al Funun, Amman</a><br><a href=\"https://www.tate.org.uk\" target=\"_blank\" rel=\"noopener\">TATE Exchange, London</a><br><a href=\"https://greynoise.org\" target=\"_blank\" rel=\"noopener\">Grey Noise Gallery, Dubai</a><br><a href=\"#\">Satellite Art Space, Dubai</a></p>",
+      "style": "body",
+      "indent": false,
       "align": "left"
      }
     }

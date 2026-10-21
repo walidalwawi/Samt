@@ -1,9 +1,14 @@
 /* DATA */
-var BD_DATA = {"site":"Samt for Art and Research","menu":true,"pager":true,"nav":{"icon":"text","label":"index;","openLabel":"","corner":"right","headings":true,"accordion":true,"current":"dim","title":"hide"},"sections":[{"key":"a","label":"a. samt"},
-{"key":"e","label":"e. external"}],"pages":[{"section":"a","slug":"","num":"1","title":"Open Call"},
-{"section":"a","slug":"art-in-the-times-of-crisis","num":"2","title":"Art in the Times of Crisis"},
-{"section":"a","slug":"library","num":"3","title":"Library"},
-{"section":"a","slug":"supply-store","num":"4","title":"Supply Store"}],"externals":[{"section":"e","title":"Walid Al Wawi","url":"https://walidalwawi.com"}]};
+var BD_DATA = {"site":"Samt","menu":false,"pager":false,"nav":{"icon":"lines","label":"☰","openLabel":"","corner":"right","headings":true,"accordion":true,"current":"dim","title":"right"},"sections":[{"key":"a","label":"a. samt"}],"pages":[{"section":"a","slug":"","num":"","title":"Journal"},
+{"section":"a","slug":"the-colonial-scissors","num":"","title":"The Colonial Scissors"},
+{"section":"a","slug":"how-to-deseed-a-watermelon","num":"","title":"How To Deseed A Watermelon For Safe Consumption"},
+{"section":"a","slug":"handala-and-the-freeze-point","num":"","title":"Handala And The Freeze Point"},
+{"section":"a","slug":"militant-improvisation","num":"","title":"Militant Improvisation"},
+{"section":"a","slug":"the-bourgeoi-rtist","num":"","title":"The Bourgeoi’rtist"},
+{"section":"a","slug":"art-in-times-of-crisis","num":"","title":"Art In Times Of Crisis"},
+{"section":"a","slug":"library","num":"","title":"Library"},
+{"section":"a","slug":"supply","num":"","title":"Supply"},
+{"section":"a","slug":"about","num":"","title":"About"}],"externals":[]};
 
 /* CHROME */
 function bdChrome(root, data, nav) {
