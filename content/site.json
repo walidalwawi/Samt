@@ -295,8 +295,8 @@
    "cols": 2,
    "align": "center",
    "spans": [
-    6,
-    6
+    4,
+    8
    ],
    "colsM": 1,
    "gutter": 40,
