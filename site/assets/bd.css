@@ -1,4 +1,4 @@
-/* PUBLISHED mvigsih3 */
+/* PUBLISHED build */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -35,6 +35,7 @@
 --bd-btn-size: 24px;
 --bd-btn-color: var(--bd-ink);
 --bd-btn-top: 34px;
+--bd-menu-top: var(--bd-menu-top);
 --bd-btn-side: 34px;
 --bd-nav-font: var(--bd-sans);
 --bd-nav-size: var(--bd-fs);
@@ -582,8 +583,12 @@ left: auto;
 .bd-pin .bd-el {
 transition: opacity 0.25s ease;
 }
-.has-menu .bd-pin .bd-el:not(.bd-menubtn) {
+.has-menu .bd-pin .bd-el:not(.bd-menubtn),
+.has-menu .bd-mbrand {
 opacity: var(--bd-nav-fade);
+}
+.bd-mbrand {
+transition: opacity 0.25s ease;
 }
 
 /* BLOG POSTS */
@@ -1460,6 +1465,7 @@ margin-bottom: 0;
 --bd-head-x: 1;
 --bd-head-space: 0px;
 --bd-btn-top: 22px;
+--bd-menu-top: var(--bd-menu-top);
 --bd-btn-side: 18px;
 --bd-nav-size: var(--bd-fs);
 --bd-nav-lh: var(--bd-lh);

@@ -150,7 +150,7 @@ s.sections.forEach(function (sec) {
 var pages = p.order.map(function (id) { return p.pages[id]; }).filter(function (q) { return q && q.kind !== "pin" && !q.parent && q.section === sec.key; });
 var ext = (s.externals || []).filter(function (x) { return x.section === sec.key; });
 if (!pages.length && !ext.length) return;
-items.push({ id: uid(), type: "heading", label: sec.label });
+if (s.sections.filter(function (x) { return p.order.some(function (id) { var q = p.pages[id]; return q && q.kind !== "pin" && !q.parent && q.section === x.key; }) || (s.externals || []).some(function (e) { return e.section === x.key; }); }).length > 1) items.push({ id: uid(), type: "heading", label: sec.label });
 pages.forEach(function (q) { items.push({ id: uid(), type: "page", page: q.id, label: "" }); });
 ext.forEach(function (x) { items.push({ id: uid(), type: "link", label: x.title, url: x.url, newTab: true }); });
 });
@@ -797,6 +797,7 @@ out.push("/* TOKENS */", R + " {",
 "--bd-btn-size: " + s.nav.btnSize + "px;",
 "--bd-btn-color: " + (s.nav.btnColor || "var(--bd-ink)") + ";",
 "--bd-btn-top: " + s.nav.btnTop + "px;",
+(s.nav.menuTop !== "" && s.nav.menuTop != null && !isNaN(parseFloat(s.nav.menuTop)) ? "--bd-menu-top: " + parseFloat(s.nav.menuTop) + "px;" : "--bd-menu-top: var(--bd-menu-top);"),
 "--bd-btn-side: " + s.nav.btnSide + "px;",
 "--bd-nav-font: var(--bd-" + (s.nav.font === "mono" ? "mono" : "sans") + ");",
 "--bd-nav-size: " + (s.nav.size ? s.nav.size + "px" : "var(--bd-fs)") + ";",
@@ -1343,8 +1344,12 @@ left: auto;
 .bd-pin .bd-el {
 transition: opacity 0.25s ease;
 }
-.has-menu .bd-pin .bd-el:not(.bd-menubtn) {
+.has-menu .bd-pin .bd-el:not(.bd-menubtn),
+.has-menu .bd-mbrand {
 opacity: var(--bd-nav-fade);
+}
+.bd-mbrand {
+transition: opacity 0.25s ease;
 }
 
 /* BLOG POSTS */
@@ -1871,6 +1876,7 @@ return [R + " {",
 "--bd-head-x: " + s.master.headXM + ";",
 "--bd-head-space: " + s.master.headSpaceM + "px;",
 "--bd-btn-top: " + s.nav.btnTopM + "px;",
+(s.nav.menuTopM !== "" && s.nav.menuTopM != null && !isNaN(parseFloat(s.nav.menuTopM)) ? "--bd-menu-top: " + parseFloat(s.nav.menuTopM) + "px;" : (s.nav.menuTop !== "" && s.nav.menuTop != null && !isNaN(parseFloat(s.nav.menuTop)) ? "--bd-menu-top: " + parseFloat(s.nav.menuTop) + "px;" : "--bd-menu-top: var(--bd-menu-top);")),
 "--bd-btn-side: " + s.nav.btnSideM + "px;",
 "--bd-nav-size: " + (s.nav.sizeM ? s.nav.sizeM + "px" : "var(--bd-fs)") + ";",
 "--bd-nav-lh: " + (s.nav.lhM ? s.nav.lhM + "px" : "var(--bd-lh)") + ";",
@@ -3472,15 +3478,16 @@ h += row(field("Font", seg("site.nav.btnFont", n.btnFont, [["sans", "Main"], ["m
 + row(dpIn("From top", "site.nav.btnTop", "site.nav.btnTopM", n.btnTop, n.btnTopM, "int"), dpIn("From side", "site.nav.btnSide", "site.nav.btnSideM", n.btnSide, n.btnSideM, "int")))
 + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">' + (inBlock ? "Overlay" : "Menu") + "</span>"
++ row(dpIn("Links start from top", "site.nav.menuTop", "site.nav.menuTopM", n.menuTop, n.menuTopM, "blank"))
 + field("Font", seg("site.nav.font", n.font, [["sans", "Main"], ["mono", "Mono"]]))
 + row(dpIn("Size (0 = body)", "site.nav.size", "site.nav.sizeM", n.size, n.sizeM), dpIn("Line", "site.nav.lh", "site.nav.lhM", n.lh, n.lhM))
 + colorIn("Colour", "site.nav.color", n.color, s.colors.ink)
 + row(field("Case", select("site.nav.navCase", n.navCase, [["none", "As typed"], ["uppercase", "UPPER"], ["lowercase", "lower"]])), numIn("Spacing (em)", "site.nav.tracking", n.tracking))
-+ sw("Section headings", "site.nav.headings", n.headings)
++ sw("Show headings from the menu", "site.nav.headings", n.headings)
 + (n.headings ? sw("Fold sections", "site.nav.accordion", n.accordion) : "")
 + numIn("Indent items (px)", "site.nav.indent", n.indent, "int")
 + field("Current page", seg("site.nav.current", n.current, [["dim", "Dim"], ["underline", "Line"], ["strike", "Strike"], ["arrow", "→"]]))
-+ field("Site name", seg("site.nav.title", n.title, [["left", "Left"], ["right", "Right"], ["hide", "Hide"]]))
++ field("Site name inside the overlay", seg("site.nav.title", n.title, [["left", "Left"], ["right", "Right"], ["hide", "Hide"]]))
 + field("Page behind menu · " + Math.round(n.fade * 100) + "%", '<input type="range" min="0" max="1" step="0.02" data-bind="site.nav.fade" data-type="num" value="' + n.fade + '" aria-label="Page opacity behind menu">')
 + colorIn("Backdrop", "site.nav.bg", n.bg, s.colors.panel)
 + (n.bg ? field("Backdrop strength · " + Math.round(n.bgAlpha * 100) + "%", '<input type="range" min="0" max="1" step="0.02" data-bind="site.nav.bgAlpha" data-type="num" value="' + n.bgAlpha + '" aria-label="Backdrop strength">') : "")

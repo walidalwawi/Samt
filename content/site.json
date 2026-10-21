@@ -424,9 +424,10 @@
     "name": "Main menu",
     "items": [
      {
-      "id": "ntnx8cyt",
-      "type": "heading",
-      "label": "a. samt"
+      "id": "cb6tyu4n",
+      "type": "page",
+      "page": "fji5ongj",
+      "label": ""
      },
      {
       "id": "x5d88rg3",
@@ -444,12 +445,6 @@
       "id": "abmvifimc6",
       "type": "page",
       "page": "nsye72w3",
-      "label": ""
-     },
-     {
-      "id": "cb6tyu4n",
-      "type": "page",
-      "page": "fji5ongj",
       "label": ""
      }
     ]
