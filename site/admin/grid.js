@@ -46,6 +46,7 @@ x: '<path d="m5 5 10 10M15 5 5 15"/>',
 chev: '<path d="m6 8 4 4 4-4"/>',
 home: '<path d="M3.5 9.5 10 4l6.5 5.5M5.5 8v8h9V8"/>',
 restack: '<path d="M5 4h10v3H5zM5 9h10v3H5zM5 14h10v3H5z"/>',
+library: '<rect x="3" y="3.5" width="3.5" height="13"/><rect x="8" y="3.5" width="3.5" height="13"/><path d="m13.5 4.5 3.3-.8 2.4 12.2-3.3.8z"/>',
 gallery: '<rect x="2.5" y="3" width="6.5" height="6.5"/><rect x="11" y="3" width="6.5" height="6.5"/><rect x="2.5" y="11.5" width="6.5" height="6"/><rect x="11" y="11.5" width="6.5" height="6"/>',
 pin: '<path d="M7 3h6l-1 5 3 3H5l3-3zM10 11v6"/>'
 };
@@ -272,6 +273,7 @@ text: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 notes: { x: 5, w: 7, xm: 1, wm: 3, space: "", spaceM: "" },
 image: { x: 1, w: 9, xm: 0, wm: 4, space: "", spaceM: "" },
 gallery: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
+library: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 link: { x: 0, w: 4, xm: 0, wm: 4, space: "", spaceM: "" },
 list: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 embed: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
@@ -380,8 +382,8 @@ if (pg.kind === "pin" || pg.ownLayout) pg.colset = fixLayout(pg.colset);
 if (!s.master.types.gallery) s.master.types.gallery = Object.assign({ space: "", spaceM: "" }, s.master.types.image);
 return p;
 }
-var BD_TYPE_CLASS = { text: "bd-text", notes: "bd-notes", image: "bd-figure", gallery: "bd-gallery", link: "bd-link", list: "bd-list", embed: "bd-embed", html: "bd-html", rule: "bd-rule" };
-var BD_TYPE_NAME = { text: "Text", notes: "Notes", image: "Image", gallery: "Gallery", link: "Link", list: "List", embed: "Video", html: "HTML", rule: "Rule" };
+var BD_TYPE_CLASS = { text: "bd-text", notes: "bd-notes", image: "bd-figure", gallery: "bd-gallery", library: "bd-library", link: "bd-link", list: "bd-list", embed: "bd-embed", html: "bd-html", rule: "bd-rule" };
+var BD_TYPE_NAME = { text: "Text", notes: "Notes", image: "Image", gallery: "Gallery", library: "Library", link: "Link", list: "List", embed: "Video", html: "HTML", rule: "Rule" };
 function effPlace(e, phone) {
 var s = S.project.site;
 var t = s.master.types[e.type] || { x: 0, w: 12, xm: 0, wm: 4 };
@@ -400,6 +402,7 @@ function elDefaults(type) {
 var map = {
 text: { w: 12, h: 8, props: { html: "<p>New text. Tap twice to edit.</p>", style: "body", indent: false, align: "left" } },
 gallery: { w: 12, h: 30, props: galleryDefaults() },
+library: { w: 12, h: 40, props: { items: [], cols: 5, colsM: 2, gutter: 30, gutterM: 16, ratio: "2/3", titles: false, filters: true, allLabel: "All" } },
 image: { w: 9, h: 36, x: 1, props: { assetId: "", file: "", alt: "", caption: "", fit: "contain", zoom: true } },
 link: { w: 4, h: 4, props: { text: "Link", href: "/", newTab: false, style: "underline" } },
 notes: { w: 7, h: 6, x: 5, props: { items: ["First note."] } },
@@ -1125,6 +1128,69 @@ display: none;
 cursor: zoom-in;
 }
 
+/* LIBRARY */
+.bd-library {
+--cols: 5;
+--gut: 30px;
+--ratio: 2 / 3;
+}
+.bd-lib-filter {
+display: flex;
+flex-wrap: wrap;
+gap: 4px 10px;
+margin-bottom: 40px;
+font-size: 12px;
+line-height: 18px;
+}
+.bd-lib-filter button {
+padding: 0;
+border: 0;
+border-bottom: 1px solid transparent;
+background: none;
+color: inherit;
+font: inherit;
+cursor: pointer;
+}
+.bd-lib-filter button.is-on,
+.bd-lib-filter button:hover {
+border-bottom-color: currentColor;
+}
+.bd-lib-grid {
+display: grid;
+grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+gap: var(--gut);
+}
+.bd-library .bd-lib-item {
+display: block;
+min-width: 0;
+border-bottom: 0;
+}
+.bd-lib-item img,
+.bd-lib-blank {
+display: block;
+width: 100%;
+aspect-ratio: var(--ratio);
+object-fit: cover;
+background: #eeeeee;
+}
+.bd-lib-blank {
+padding: 12px;
+font-size: 12px;
+line-height: 16px;
+}
+.bd-lib-t {
+display: block;
+margin-top: 8px;
+font-size: 12px;
+line-height: 16px;
+}
+.bd-lib-item.is-hidden {
+display: none;
+}
+a.bd-lib-item:hover img {
+opacity: 0.85;
+}
+
 /* ZOOM */
 .bd-zoom {
 position: fixed;
@@ -1258,6 +1324,11 @@ return Math.round((h + 4) * 100) / 100;
 function galleryRules(page, phone) {
 var out = [];
 page.els.forEach(function (e) {
+if (e.type === "library") {
+var lp = e.props;
+out.push(".bd-e-" + e.id + " {\n--cols: " + (phone ? lp.colsM : lp.cols) + ";\n--gut: " + (phone ? lp.gutterM : lp.gutter) + "px;" + (phone ? "" : "\n--ratio: " + (lp.ratio === "auto" ? "auto" : String(lp.ratio).replace("/", " / ")) + ";") + "\n}");
+}
+}); page.els.forEach(function (e) {
 if (e.type !== "gallery") return;
 var g = e.props;
 var sel = ".bd-e-" + e.id + " .bd-gi";
@@ -1518,6 +1589,20 @@ if (p.size === "small") return "small";
 if (p.size === "large") return "heading";
 return "body";
 }
+function libTopics(p) {
+var seen = {};
+var out = [];
+(p.items || []).forEach(function (b) {
+(b.topics || []).forEach(function (t) {
+t = String(t).trim();
+if (t && !seen[t.toLowerCase()]) {
+seen[t.toLowerCase()] = true;
+out.push(t);
+}
+});
+});
+return out.sort(function (a, b) { return a.localeCompare(b); });
+}
 function galleryDefaults() {
 return { layout: "grid", items: [], cols: 3, colsM: 2, gutter: 16, gutterM: 10, ratio: "auto", align: "start", rowH: 220, rowHM: 140, captions: true, zoom: true, transition: "fade", nav: "arrows", auto: 0, counter: true, snap: 2.5, freeM: "stack" };
 }
@@ -1560,6 +1645,19 @@ var src = imgSrc(it, ctx);
 return '<figure class="bd-i-' + it.id + (p.layout === "slides" && i === 0 ? " is-on" : "") + '"><img src="' + esc(src) + '" alt="' + esc(it.alt) + '"' + (it.w ? ' width="' + it.w + '" height="' + it.h + '"' : "") + (ctx === "export" ? ' loading="lazy"' : ' draggable="false"') + ">" + (it.caption ? "<figcaption>" + it.caption + "</figcaption>" : "") + "</figure>";
 }).join("\n");
 return '<div class="' + base + gc + '"' + attrs + '>\n<div class="bd-gi">\n' + figs + "\n</div>\n</div>";
+}
+if (e.type === "library") {
+var books = p.items || [];
+if (!books.length) return ctx === "export" ? "" : '<div class="' + base + ' bd-library"><div class="bd-ed-gempty">Library · add books in the panel</div></div>';
+var topics = libTopics(p);
+var bar = p.filters !== false && topics.length ? '<nav class="bd-lib-filter" aria-label="Topics">\n<button type="button" class="is-on" data-t="">' + esc(p.allLabel || "All") + "</button>\n" + topics.map(function (t) { return '<button type="button" data-t="' + esc(slugify(t)) + '">' + esc(t) + "</button>"; }).join("\n") + "\n</nav>\n" : "";
+var cells = books.map(function (b) {
+var src = b.assetId ? imgSrc(b, ctx) : "";
+var tags = (b.topics || []).map(slugify).join(" ");
+var inner = (src ? '<img src="' + esc(src) + '" alt="' + esc(b.title || "") + '"' + (ctx === "export" ? ' loading="lazy"' : ' draggable="false"') + ">" : '<span class="bd-lib-blank">' + esc(b.title || "Untitled") + "</span>") + (p.titles ? '<span class="bd-lib-t">' + esc(b.title || "") + (b.author ? '<br><i>' + esc(b.author) + "</i>" : "") + "</span>" : "");
+return b.href ? '<a class="bd-lib-item" href="' + esc(b.href) + '" target="_blank" rel="noopener" data-t="' + esc(tags) + '" title="' + esc(b.title || "") + '">' + inner + "</a>" : '<div class="bd-lib-item" data-t="' + esc(tags) + '">' + inner + "</div>";
+}).join("\n");
+return '<div class="' + base + ' bd-library">\n' + bar + '<div class="bd-lib-grid">\n' + cells + "\n</div>\n</div>";
 }
 if (e.type === "link") {
 var lc = p.style === "underline" ? " is-underline" : p.style === "arrow" ? " is-arrow" : "";
@@ -1797,6 +1895,20 @@ panel.appendChild(pager);
 /* GALLERY RUNTIME (EXPORTED AS-IS) */
 function bdGalleries(root) {
 var host = root.querySelector(".bd-site") || (root.classList && root.classList.contains("bd-site") ? root : document.body);
+root.querySelectorAll(".bd-library").forEach(function (lib) {
+var bar = lib.querySelector(".bd-lib-filter");
+if (!bar) return;
+bar.addEventListener("click", function (ev) {
+var b = ev.target.closest("button");
+if (!b) return;
+var t = b.getAttribute("data-t");
+bar.querySelectorAll("button").forEach(function (x) { x.classList.toggle("is-on", x === b); });
+lib.querySelectorAll(".bd-lib-item").forEach(function (it) {
+var tags = (it.getAttribute("data-t") || "").split(" ");
+it.classList.toggle("is-hidden", !!t && tags.indexOf(t) < 0);
+});
+});
+});
 root.querySelectorAll(".bd-gallery.is-slides").forEach(function (g) {
 var figs = Array.prototype.slice.call(g.querySelectorAll(".bd-gi figure"));
 if (!figs.length) return;
@@ -2133,7 +2245,7 @@ var pg = (pr || S.project).pages[id];
 if (!pg) return;
 pg.els.forEach(function (e) {
 if (e.type === "image" && e.props.file) list.push(e.props);
-if (e.type === "gallery") (e.props.items || []).forEach(function (it) { if (it.file) list.push(it); });
+if (e.type === "gallery" || e.type === "library") (e.props.items || []).forEach(function (it) { if (it.file) list.push(it); });
 });
 });
 return list;
@@ -2474,6 +2586,20 @@ h += '<div class="bd-ed-gthumb"><img src="' + esc(imgSrc(it, "edit")) + '" alt="
 });
 return h;
 }
+function libraryPanel(p) {
+var h = row(dpIn("Columns", "el.cols", "el.colsM", p.cols, p.colsM, "int"), dpIn("Gap", "el.gutter", "el.gutterM", p.gutter, p.gutterM, "int"))
++ row(field("Cover shape", select("el.ratio", p.ratio, [["2/3", "Book 2 : 3"], ["3/4", "3 : 4"], ["1", "Square"], ["auto", "Original"]])), field("All button", input("el.allLabel", p.allLabel)))
++ sw("Topic filter", "el.filters", p.filters !== false) + sw("Titles under covers", "el.titles", !!p.titles);
+var topics = libTopics(p);
+h += '<div class="bd-ed-hint">' + (topics.length ? "Topics: " + topics.map(esc).join(" · ") : "Give books topics to build the filter.") + "</div>";
+h += '<div class="bd-ed-head"><span class="bd-ed-label">' + p.items.length + " book" + (p.items.length === 1 ? "" : "s") + '</span><span class="bd-ed-actions"><button class="bd-ed-btn is-sm" data-act="pick-image">' + I.plus + 'Covers</button><button class="bd-ed-btn is-sm" data-act="lib-add">' + I.plus + "No cover</button></span></div>";
+p.items.forEach(function (b, i) {
+h += '<div class="bd-ed-gthumb">' + (b.assetId ? '<img src="' + esc(imgSrc(b, "edit")) + '" alt="" data-act="lib-cover" data-id="' + b.id + '" title="Replace cover">' : '<button class="bd-ed-x" style="width:44px;height:58px" data-act="lib-cover" data-id="' + b.id + '" aria-label="Add cover">' + I.image + "</button>")
++ '<div class="bd-ed-field" style="gap:4px">' + input("gi." + i + ".title", b.title, "", ' placeholder="Title" aria-label="Title"') + input("gi." + i + ".author", b.author || "", "", ' placeholder="Author" aria-label="Author"') + input("gi." + i + ".href", b.href, "", ' placeholder="Link to PDF" aria-label="Link"') + input("gi." + i + ".topics", (b.topics || []).join(", "), "csv", ' placeholder="Topics, comma separated" aria-label="Topics"') + "</div>"
++ '<div class="bd-ed-gbtns"><button class="bd-ed-x" data-act="gi-up" data-i="' + i + '" aria-label="Earlier">' + I.up + '</button><button class="bd-ed-x" data-act="gi-down" data-i="' + i + '" aria-label="Later">' + I.dn + '</button><button class="bd-ed-x" data-act="gi-del" data-i="' + i + '" aria-label="Remove">' + I.x + "</button></div></div>";
+});
+return h;
+}
 function stylesPanel() {
 var s = S.project.site;
 var h = '<div class="bd-ed-sec"><div class="bd-ed-hint">The type every block uses. Pick a block’s style in its panel; for one-off changes use Style in the block panel.' + (S.mode === "phone" ? " Showing phone sizes." : "") + "</div>"
@@ -2587,6 +2713,7 @@ h += '<button class="bd-ed-btn" data-act="pick-image">' + I.image + (p.assetId ?
 + sw("Click to zoom", "el.zoom", p.zoom !== false);
 }
 if (e.type === "gallery") h += galleryPanel(p);
+if (e.type === "library") h += libraryPanel(p);
 if (e.type === "link") {
 h += field("Text", input("el.text", p.text)) + field("Goes to", input("el.href", p.href, "", ' placeholder="/page or https://"'))
 + row(field("Look", select("el.style", p.style, [["plain", "Plain"], ["underline", "Underline"], ["arrow", "Arrow →"]])))
@@ -2969,7 +3096,7 @@ var IFIELDS = [
 { g: "Box", k: "op", l: "Opacity", p: ["opacity"], c: "opacity" },
 { g: "Box", k: "disp", l: "Show", p: ["display"], c: "display", opts: ["", "block", "inline", "flex", "grid", "none"] }
 ];
-var BD_TYPE_CLASSES = ["bd-text", "bd-notes", "bd-figure", "bd-gallery", "bd-link", "bd-list", "bd-embed", "bd-html", "bd-rule"];
+var BD_TYPE_CLASSES = ["bd-text", "bd-notes", "bd-figure", "bd-gallery", "bd-library", "bd-link", "bd-list", "bd-embed", "bd-html", "bd-rule"];
 var INSPECT_CSS = `
 /* INSPECT */
 .is-inspect * {
@@ -3317,7 +3444,7 @@ insSetProp(insField(t.getAttribute("data-ins")).p, nv);
 function renderRail() {
 var r = $("bd-rail");
 r.hidden = !S.project || S.preview;
-r.innerHTML = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["link", "Link"], ["notes", "Notes"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"]].map(function (t) {
+r.innerHTML = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["notes", "Notes"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"]].map(function (t) {
 return '<button class="bd-ed-tool" data-act="add" data-type="' + t[0] + '" data-tip="' + t[1] + '" aria-label="Add ' + t[1] + '">' + I[t[0]] + "</button>";
 }).join("") + '<span class="bd-ed-rail-sep"></span><button class="bd-ed-tool" data-act="inspect" data-tip="Style anything" aria-label="Style anything">' + I.target + "</button>";
 }
@@ -4084,7 +4211,7 @@ var node = shadow && shadow.querySelector(".bd-e-" + el.id);
 if (node) node.scrollIntoView({ block: "center", behavior: "smooth" });
 });
 if (type === "image" || type === "gallery") {
-$("bd-file").multiple = type === "gallery";
+$("bd-file").multiple = type === "gallery" || type === "library";
 $("bd-file").click();
 }
 if (type === "text") setTimeout(function () { startEdit(el.id); }, 60);
@@ -4197,7 +4324,7 @@ changed();
 }
 function galItem(i, dir) {
 var el = selEl();
-if (!el || el.type !== "gallery") return;
+if (!el || (el.type !== "gallery" && el.type !== "library")) return;
 snap();
 var it = el.props.items[i];
 el.props.items.splice(i, 1);
@@ -4290,7 +4417,7 @@ var taken = {};
 S.project.order.forEach(function (id) {
 S.project.pages[id].els.forEach(function (e) {
 if (e.type === "image" && e.props.file && e.id !== exceptId) taken[e.props.file] = true;
-if (e.type === "gallery") (e.props.items || []).forEach(function (it) { taken[it.file] = true; });
+if (e.type === "gallery" || e.type === "library") (e.props.items || []).forEach(function (it) { if (it.file) taken[it.file] = true; });
 });
 });
 return taken;
@@ -4346,7 +4473,7 @@ $("bd-file").addEventListener("change", async function () {
 var files = Array.prototype.slice.call(this.files || []);
 this.value = "";
 var el = selEl();
-if (!files.length || !el || (el.type !== "image" && el.type !== "gallery")) return;
+if (!files.length || !el || (el.type !== "image" && el.type !== "gallery" && el.type !== "library")) return;
 var taken = takenFiles(el.type === "image" ? el.id : null);
 if (el.type === "image") {
 setStatus("Uploading…");
@@ -4386,7 +4513,8 @@ var sz = await imageSize(files[i]);
 var gid = await storeImage(files[i]);
 if (!gid) continue;
 var n = el.props.items.length + added.length;
-added.push({ id: uid(), assetId: gid, file: uniqueFile(files[i].name, taken), alt: files[i].name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]+/g, " "), caption: "", w: sz.w, h: sz.h, fx: (n * 8) % 60, fy: n * 6, fw: 32 });
+if (el.type === "library") added.push({ id: uid(), assetId: gid, file: uniqueFile(files[i].name, taken), title: files[i].name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]+/g, " "), author: "", topics: [], href: "", w: sz.w, h: sz.h });
+else added.push({ id: uid(), assetId: gid, file: uniqueFile(files[i].name, taken), alt: files[i].name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]+/g, " "), caption: "", w: sz.w, h: sz.h, fx: (n * 8) % 60, fy: n * 6, fw: 32 });
 }
 if (!added.length) {
 setStatus("Not published", true);
@@ -4782,7 +4910,7 @@ location.reload();
 "sel-front": function () { layerEl(true); },
 "sel-back": function () { layerEl(false); },
 "edit-text": function () { if (S.sel) startEdit(S.sel); },
-"pick-image": function () { var se = selEl(); $("bd-file").multiple = !!(se && se.type === "gallery"); $("bd-file").click(); },
+"pick-image": function () { var se = selEl(); $("bd-file").multiple = !!(se && (se.type === "gallery" || se.type === "library")); $("bd-file").click(); },
 "restack": function () { snap(); restackPhone(curPage()); changed(); },
 "add-section": function () {
 snap();
@@ -4843,6 +4971,8 @@ var id = b.getAttribute("data-id");
 pp.stack = b.checked ? (pp.stack || []).concat([id]) : (pp.stack || []).filter(function (x) { return x !== id; });
 changed({ skipRight: true });
 },
+"lib-add": function () { var le = selEl(); if (!le) return; snap(); le.props.items.push({ id: uid(), assetId: "", file: "", title: "Untitled", author: "", topics: [], href: "" }); changed(); },
+"lib-cover": function () { S.replaceItem = b.getAttribute("data-id"); $("bd-file").multiple = false; $("bd-file").click(); },
 "gi-up": function () { galItem(+b.getAttribute("data-i"), -1); },
 "gi-down": function () { galItem(+b.getAttribute("data-i"), 1); },
 "gi-del": function () { galItem(+b.getAttribute("data-i"), 0); },
@@ -4882,7 +5012,7 @@ setPath(pg, rest, v);
 } else if (root === "el" && el) {
 if (el.type === "gallery" && (rest === "snap" || rest === "auto")) v = parseFloat(v) || 0;
 setPath(el.props, rest, v);
-} else if (root === "gi" && el && el.type === "gallery") {
+} else if (root === "gi" && el && (el.type === "gallery" || el.type === "library")) {
 var gp = rest.split(".");
 el.props.items[+gp[0]][gp[1]] = v;
 } else if (root === "own" && el) {
@@ -4955,6 +5085,7 @@ v = String(v).trim() === "" ? "" : parseFloat(v);
 if (v !== "" && isNaN(v)) return;
 }
 if (type === "slug" && !slugify(v)) return;
+if (type === "csv") v = v.split(",").map(function (x) { return x.trim(); }).filter(Boolean);
 if (type === "lines") v = v.split("\n").map(function (x) { return x.trim(); }).filter(Boolean);
 if (type === "rows") v = v.split("\n").filter(function (x) { return x.trim(); }).map(function (x) { var i = x.indexOf("|"); return i < 0 ? ["", x.trim()] : [x.slice(0, i).trim(), x.slice(i + 1).trim()]; });
 if (S.pendingSnap) {
