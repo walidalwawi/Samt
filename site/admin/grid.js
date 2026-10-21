@@ -1004,7 +1004,8 @@ function masterRules(s, phone) {
 var m = s.master;
 var out = [];
 Object.keys(BD_TYPE_CLASS).forEach(function (k) {
-var t = m.types[k];
+var t = m.types[k] || masterDefaults().types[k];
+if (!t) return;
 var cols = phone ? s.colsM : s.cols;
 var w = clamp(phone ? t.wm : t.w, 1, cols);
 var x = clamp(phone ? t.xm : t.x, 0, cols - w);
@@ -2130,6 +2131,7 @@ S.project.site = o.site;
 S.project.order = o.order;
 S.project.pages = o.pages;
 S.project.name = o.site.name;
+normalizeProject(S.project);
 if (!S.project.pages[S.pageId]) S.pageId = S.project.order[0];
 if (!selEl()) S.sel = null;
 }
