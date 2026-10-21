@@ -426,7 +426,6 @@
   "k2b6e868",
   "ap7jj2t4",
   "1bp9xrs5",
-  "yz9k3ab9",
   "b2lr3tkr",
   "zty6iib1",
   "nsye72w3"
@@ -4272,105 +4271,6 @@
     }
    ],
    "kind": "page",
-   "stack": [],
-   "pin": {
-    "place": "top",
-    "fixed": false,
-    "show": "all",
-    "pages": [],
-    "h": "",
-    "hM": "",
-    "gap": "",
-    "gapM": ""
-   }
-  },
-  "yz9k3ab9": {
-   "id": "yz9k3ab9",
-   "title": "New post",
-   "h1": "",
-   "num": "",
-   "slug": "new-post",
-   "section": "",
-   "desc": "",
-   "header": true,
-   "layout": "master",
-   "css": "",
-   "els": [
-    {
-     "id": "jw2y1kl6",
-     "type": "postinfo",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 3
-     },
-     "m": null,
-     "props": {
-      "back": true,
-      "backLabel": "<",
-      "date": false,
-      "words": true,
-      "time": true,
-      "style": "",
-      "size": "",
-      "lh": "",
-      "sizeM": "",
-      "lhM": ""
-     }
-    },
-    {
-     "id": "agwpzrer",
-     "type": "text",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 8
-     },
-     "m": null,
-     "props": {
-      "html": "<p>Write here.</p>",
-      "style": "body",
-      "indent": false,
-      "align": "left"
-     }
-    },
-    {
-     "id": "52x0qv80",
-     "type": "pager",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 3
-     },
-     "m": null,
-     "props": {
-      "num": "num",
-      "line": false,
-      "loop": false,
-      "scope": "blog",
-      "look": "text",
-      "nextLabel": "Next, ",
-      "prevLabel": "",
-      "align": "center",
-      "style": "",
-      "size": "",
-      "sizeM": "",
-      "lh": "",
-      "lhM": ""
-     }
-    }
-   ],
-   "kind": "page",
-   "parent": "fji5ongj",
-   "date": "2026-10-21",
-   "excerpt": "",
-   "featured": false,
    "stack": [],
    "pin": {
     "place": "top",
