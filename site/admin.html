@@ -4,18 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Back office — Samt</title>
+<title>Back office</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap">
 <link rel="stylesheet" href="/admin/grid.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.min.css">
 <script>
-/* SITE — WHICH GITHUB REPO THIS BACK OFFICE PUBLISHES TO */
-window.BD_REPO = {
-owner: "walidalwawi",
-repo: "samt",
-branch: "main",
-domain: "samt.co",
-name: "Samt"
-};
+/* SITES — ONE BACK OFFICE FOR ALL OF THEM. THE KEY NEEDS ACCESS TO EVERY REPO LISTED */
+window.BD_SITES = [
+{ owner: "walidalwawi", repo: "walidalwawi", branch: "main", domain: "walidalwawi.com", name: "Walid Al Wawi" },
+{ owner: "walidalwawi", repo: "samt", branch: "main", domain: "samt.co", name: "Samt" }
+];
+/* THE SITE THIS COPY OF THE BACK OFFICE IS SERVED FROM */
+window.BD_HOST = "samt";
 </script>
 </head>
 <body>
@@ -37,13 +38,15 @@ name: "Samt"
 <div class="bd-ed-pop" id="bd-pop" hidden></div>
 <div class="bd-ed-toast" id="bd-toast" hidden></div>
 <input type="file" id="bd-file" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" hidden>
+
+<input type="file" id="bd-upload" hidden>
 <div class="bd-ed-gate" id="bd-gate" hidden>
 <div class="bd-ed-gate-card">
-<span class="bd-ed-label">Back office · samt.co</span>
+<span class="bd-ed-label">Back office · walidalwawi.com + samt.co</span>
 <h1>Connect your GitHub key</h1>
 <ol>
 <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → new fine-grained token</a></li>
-<li>Repository access: only <b>walidalwawi/samt</b></li>
+<li>Repository access: <b>walidalwawi/walidalwawi</b> and <b>walidalwawi/samt</b> (add more sites here later)</li>
 <li>Permissions: <b>Contents → Read and write</b></li>
 <li>Generate, copy, paste it here. It stays in this browser only.</li>
 </ol>
@@ -55,6 +58,14 @@ name: "Samt"
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/searchcursor.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/search.min.js"></script>
 <script src="/admin/grid.js"></script>
 </body>
 </html>

@@ -5,7 +5,9 @@ Static site for samt.co on Cloudflare Workers (static assets, free plan). Pushin
 Source of truth is `content/site.json`; the back office at /admin renders and publishes it.
 
 ## Back office (site/admin.html + site/admin/grid.*)
-Walid's Site Grid editor, shared with the other grid sites. Same code in every grid repo — change it in one, copy to the others.
+Walid's Site Grid editor — ONE back office for walidalwawi.com and samt.co. Identical files in both repos (site/admin.html differs only in BD_HOST); change one, copy to the other. BD_SITES in admin.html lists the sites; the switcher stores the choice in localStorage bd-site-current. One GitHub key (bd-gh-key) covers both repos.
+- Inspect: picks any element in the canvas; design bar writes rules into site.css or page.css via cssSplit/ruleSet; on Phone into the single @media (max-width: 760px) block, which Publish merges into bd.css's one mobile block.
+- Code drawer is CodeMirror 5 (cdnjs). Files tab edits any non-generated repo file and uploads to site/files/ or site/images/; both ride in the publish commit.
 - Loads content/site.json from GitHub with Walid's fine-grained token (kept in his browser only).
 - Draft autosaves to localStorage (bd-draft-<repo>) until Publish.
 - Publish = one commit: content/site.json, content/manifest.json, every page .html, site/404.html, site/assets/bd.css (stamped "PUBLISHED <id>"), site/assets/bd.js, new images (uploaded earlier as git blobs). Pages in the old manifest but not the new one are deleted. Then polls /assets/bd.css for the stamp.

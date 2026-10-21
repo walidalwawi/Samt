@@ -836,3 +836,110 @@ a.bd-ed-proj {
 color: inherit;
 text-decoration: none;
 }
+
+/* CODE EDITOR */
+.bd-ed-code-body .CodeMirror {
+flex: 1;
+height: auto;
+min-height: 0;
+font-family: var(--e-mono);
+font-size: 12px;
+line-height: 1.55;
+background: var(--e-raise);
+color: var(--e-ink);
+}
+.bd-ed-code-body .CodeMirror-gutters {
+background: var(--e-surface);
+border-right: 1px solid var(--e-line);
+}
+.bd-ed-code-body .CodeMirror-linenumber {
+color: var(--e-mute);
+}
+.bd-ed-code-body .CodeMirror-cursor {
+border-left-color: var(--e-ink);
+}
+.bd-ed-code-body .CodeMirror-selected {
+background: rgba(47, 75, 255, 0.18);
+}
+.bd-ed-code-body .CodeMirror-focused .CodeMirror-selected {
+background: rgba(47, 75, 255, 0.24);
+}
+.bd-ed-code-body {
+position: relative;
+}
+.bd-ed-code-body > .CodeMirror {
+position: absolute;
+inset: 0;
+}
+.bd-ed-code .bd-ed-tabs {
+overflow-x: auto;
+}
+
+/* INSPECT */
+.bd-ed-ins-tag {
+font-family: var(--e-mono);
+font-size: 11px;
+line-height: 1.4;
+word-break: break-all;
+padding: 6px 8px;
+background: var(--e-ink);
+color: var(--e-bg);
+border-radius: 3px;
+}
+.bd-ed-ins-sel {
+font-family: var(--e-mono);
+font-size: 10.5px;
+word-break: break-all;
+margin-top: -4px;
+}
+.bd-ed-ins-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 8px 6px;
+}
+.bd-ed-ins-f {
+display: flex;
+flex-direction: column;
+gap: 3px;
+min-width: 0;
+}
+.bd-ed-ins-f > span:first-child {
+font-family: var(--e-mono);
+font-size: 9.5px;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+color: var(--e-mute);
+}
+.bd-ed-ins-f.is-set > span:first-child {
+color: var(--e-accent);
+}
+.bd-ed-ins-f .bd-ed-input {
+height: 28px;
+font-family: var(--e-mono);
+font-size: 11.5px;
+}
+.bd-ed-ins-f .bd-ed-input::placeholder {
+color: var(--e-mute);
+opacity: 0.7;
+}
+.bd-ed-ins-f .bd-ed-seg button {
+height: 26px;
+flex: 1;
+justify-content: center;
+}
+.bd-ed-ins-f .bd-ed-seg {
+display: flex;
+}
+.bd-ed-ins-row {
+display: flex;
+gap: 4px;
+}
+.bd-ed-ins-row input[type="color"] {
+width: 28px;
+height: 28px;
+flex: none;
+padding: 1px;
+border: 1px solid var(--e-line);
+border-radius: 3px;
+background: var(--e-raise);
+}

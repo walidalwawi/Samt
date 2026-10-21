@@ -23,6 +23,7 @@ phone: '<rect x="6" y="2.5" width="8" height="15" rx="1.5"/><path d="M9 15h2"/>'
 undo: '<path d="M7 5 3.5 8.5 7 12"/><path d="M4 8.5h8a4 4 0 0 1 0 8H9"/>',
 redo: '<path d="m13 5 3.5 3.5L13 12"/><path d="M16 8.5H8a4 4 0 0 0 0 8h3"/>',
 code: '<path d="m7 6-4 4 4 4M13 6l4 4-4 4"/>',
+target: '<circle cx="10" cy="10" r="5.5"/><path d="M10 2v4M10 14v4M2 10h4M14 10h4"/>',
 eye: '<path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10Z"/><circle cx="10" cy="10" r="2.3"/>',
 down: '<path d="M10 3v10M6 9l4 4 4-4M4 17h12"/>',
 text: '<path d="M4 5V4h12v1M10 4v12M7.5 16h5"/>',
@@ -1418,7 +1419,7 @@ loadBlob(p);
 return BLANK_IMG;
 }
 if (p.assetId === "remote") return p.remote || "";
-if (p.assetId) return "/images/" + p.file;
+if (p.assetId) return LIVE_BASE + "/images/" + p.file;
 return "";
 }
 function textStyle(p) {
@@ -1802,12 +1803,14 @@ pages.forEach(function (p) {
 var r = layoutRules(p, false);
 if (r) out.push("/* PAGE: " + (p.title || p.slug).toUpperCase().replace(/\*\//g, "") + " */\n" + r + "\n");
 });
-if (s.css && s.css.trim()) out.push("/* CUSTOM */\n" + s.css.trim() + "\n");
+var cs = cssSplit(s.css);
+if (cs.desk.trim()) out.push("/* CUSTOM */\n" + cs.desk.trim() + "\n");
 var mob = [mobileRules(s, ":root"), "/* MASTER */\n" + masterRules(s, true)];
 pages.forEach(function (p) {
 var r = layoutRules(p, true);
 if (r) mob.push("/* PAGE: " + (p.title || p.slug).toUpperCase().replace(/\*\//g, "") + " */\n" + r);
 });
+if (cs.mob.trim()) mob.push("/* CUSTOM */\n" + cs.mob.trim());
 out.push("/* MOBILE */\n@media (max-width: 760px) {\n" + mob.join("\n") + "\n}\n");
 return out.join("\n");
 }
@@ -1940,10 +1943,16 @@ render(opts);
 }
 
 /* GITHUB */
-var REPO = window.BD_REPO || {};
+var SITES = window.BD_SITES || [];
+var HOST_REPO = window.BD_HOST || "";
+var REPO = (function () {
+var want = lsGet("bd-site-current");
+return SITES.filter(function (x) { return x.repo === want; })[0] || SITES.filter(function (x) { return x.repo === HOST_REPO; })[0] || SITES[0] || {};
+})();
+var LIVE_BASE = REPO.repo === HOST_REPO ? "" : "https://" + REPO.domain;
 var GH_API = "https://api.github.com/repos/" + REPO.owner + "/" + REPO.repo;
 var GH_BRANCH = REPO.branch || "main";
-var GH_KEY_STORE = "bd-gh-key-" + REPO.repo;
+var GH_KEY_STORE = "bd-gh-key";
 var DRAFT_STORE = "bd-draft-" + REPO.repo;
 var SITE_FILE = "content/site.json";
 var MANIFEST_FILE = "content/manifest.json";
@@ -1957,6 +1966,13 @@ S.base = null;
 S.published = "";
 S.liveMem = {};
 S.loadingBlob = {};
+S.files = {};
+S.fileList = null;
+S.filePath = "";
+S.uploads = [];
+S.generated = [];
+S.inspect = false;
+S.ins = null;
 function lsDel(k) {
 try {
 localStorage.removeItem(k);
@@ -2032,6 +2048,24 @@ S.blobTimer = setTimeout(function () { renderCanvas(); if (S.sel) renderRight();
 }).catch(function () {});
 }
 
+function repoImage(img) {
+var m = /\/images\/([^?#]+)$/.exec(img.getAttribute("src") || "");
+if (!m || img.getAttribute("data-bd-tried") || !S.key) return;
+img.setAttribute("data-bd-tried", "1");
+var file = decodeURIComponent(m[1]);
+if (S.liveMem[file]) {
+img.src = S.liveMem[file];
+return;
+}
+gh("GET", "/contents/" + OUT + "images/" + encodeURIComponent(file) + "?ref=" + GH_BRANCH).then(function (j) {
+return j.content ? j.content : gh("GET", "/git/blobs/" + j.sha).then(function (b) { return b.content; });
+}).then(function (b64) {
+var blob = new Blob([b64ToBytes(b64)], { type: guessType(file) || "image/jpeg" });
+S.liveMem[file] = URL.createObjectURL(blob);
+img.src = S.liveMem[file];
+}).catch(function () {});
+}
+
 /* KEY */
 function lock(why) {
 lsDel(GH_KEY_STORE);
@@ -2086,21 +2120,22 @@ S.saveTimer = setTimeout(saveNow, 400);
 async function saveNow() {
 if (!S.project || S.publishing) return;
 clearTimeout(S.saveTimer);
-var j = stateJSON();
-if (j === S.published) {
+if (!hasDraft()) {
 lsDel(DRAFT_STORE);
 if (S.status === "Not published") setStatus("Published");
 return;
 }
+var files = {};
+dirtyFiles().forEach(function (p) { files[p] = S.files[p]; });
 try {
-localStorage.setItem(DRAFT_STORE, JSON.stringify({ base: S.base, at: Date.now(), data: j }));
+localStorage.setItem(DRAFT_STORE, JSON.stringify({ base: S.base, at: Date.now(), data: stateJSON(), files: files, uploads: S.uploads }));
 setStatus("Not published");
 } catch (e) {
 setStatus("Not published · draft too big to keep", true);
 }
 }
 function hasDraft() {
-return !!S.project && stateJSON() !== S.published;
+return !!S.project && (stateJSON() !== S.published || dirtyFiles().length > 0 || S.uploads.length > 0);
 }
 window.addEventListener("beforeunload", function (e) {
 if (hasDraft() && !lsGet(DRAFT_STORE)) {
@@ -2113,10 +2148,20 @@ e.returnValue = "";
 async function loadSite() {
 S.booting = true;
 S.loadError = "";
+S.files = {};
+S.fileList = null;
+S.filePath = "";
+S.uploads = [];
 render();
 var file = null;
 try {
 file = await ghFile(SITE_FILE);
+var man = await ghFile(MANIFEST_FILE);
+try {
+S.generated = man ? (JSON.parse(man.text).pages || []) : [];
+} catch (e) {
+S.generated = [];
+}
 } catch (err) {
 S.booting = false;
 if (err.message === "KEY") {
@@ -2150,9 +2195,12 @@ var draft = null;
 try {
 draft = JSON.parse(lsGet(DRAFT_STORE) || "null");
 } catch (e) {}
-if (draft && draft.data && draft.data !== S.published) {
+var hasFiles = draft && ((draft.files && Object.keys(draft.files).length) || (draft.uploads && draft.uploads.length));
+if (draft && draft.data && (draft.data !== S.published || hasFiles)) {
 if (draft.base === S.base) {
-restore(draft.data);
+if (draft.data !== S.published) restore(draft.data);
+S.files = draft.files || {};
+S.uploads = draft.uploads || [];
 toast("Your unpublished changes are back.");
 } else {
 lsSet(DRAFT_STORE + "-backup", lsGet(DRAFT_STORE));
@@ -2200,7 +2248,7 @@ return;
 var phone = S.mode === "phone";
 t.innerHTML = '<button class="bd-ed-btn is-icon bd-ed-narrow" data-act="toggle-left" aria-label="Pages and site">' + I.panel + '</button>'
 + '<span class="bd-ed-brand">Back office</span>'
-+ '<button class="bd-ed-btn" data-act="projects" aria-haspopup="true"><span class="bd-ed-hide-narrow">' + esc(S.project.site.name) + '</span>' + I.chev + "</button>"
++ '<button class="bd-ed-btn" data-act="projects" aria-haspopup="true"><span class="bd-ed-hide-narrow">' + esc(REPO.domain || S.project.site.name) + '</span>' + I.chev + "</button>"
 + '<div class="bd-ed-top-mid"><div class="bd-ed-seg" role="group" aria-label="Layout">'
 + '<button data-act="mode" data-val="desk" class="' + (phone ? "" : "is-on") + '" aria-pressed="' + !phone + '">' + I.desk + '<span class="bd-ed-hide-narrow">Desktop</span></button>'
 + '<button data-act="mode" data-val="phone" class="' + (phone ? "is-on" : "") + '" aria-pressed="' + phone + '">' + I.phone + '<span class="bd-ed-hide-narrow">Phone</span></button>'
@@ -2208,8 +2256,9 @@ t.innerHTML = '<button class="bd-ed-btn is-icon bd-ed-narrow" data-act="toggle-l
 + '<button class="bd-ed-btn is-icon" data-act="undo" aria-label="Undo"' + (S.undo.length ? "" : " disabled") + ">" + I.undo + "</button>"
 + '<button class="bd-ed-btn is-icon" data-act="redo" aria-label="Redo"' + (S.redo.length ? "" : " disabled") + ">" + I.redo + "</button>"
 + '<button class="bd-ed-btn' + (S.codeOpen ? " is-on" : "") + '" data-act="code">' + I.code + '<span class="bd-ed-hide-narrow">Code</span></button>'
-+ '<button class="bd-ed-btn' + (S.preview ? " is-on" : "") + '" data-act="preview">' + I.eye + '<span class="bd-ed-hide-narrow">Preview</span></button>'
-+ '<button class="bd-ed-btn is-primary" data-act="export"' + (S.publishing ? " disabled" : "") + ">" + I.up + '<span class="bd-ed-hide-narrow">' + (S.publishing ? "Publishing…" : "Publish") + "</span></button>"
++ '<button class="bd-ed-btn' + (S.inspect ? " is-on" : "") + '" data-act="inspect">' + I.target + '<span class="bd-ed-hide-narrow">Inspect</span></button>'
++ '<button class="bd-ed-btn' + (S.preview && !S.inspect ? " is-on" : "") + '" data-act="preview">' + I.eye + '<span class="bd-ed-hide-narrow">Preview</span></button>'
++ '<button class="bd-ed-btn is-primary" data-act="export"' + (S.publishing ? " disabled" : "") + ">" + I.up + '<span class="bd-ed-hide-narrow">' + (S.publishing ? "Publishing…" : "Save & publish") + "</span></button>"
 + '<span class="bd-ed-status bd-ed-hide-narrow"></span>'
 + '<button class="bd-ed-btn is-icon bd-ed-narrow" data-act="toggle-right" aria-label="Inspector">' + I.sliders + "</button>";
 setStatus(S.status || "Saved", S.statusWarn);
@@ -2425,6 +2474,11 @@ if (!S.project) {
 R.innerHTML = "";
 return;
 }
+if (S.inspect) {
+R.innerHTML = insPanel();
+fillIns();
+return;
+}
 var e = selEl();
 var h = "";
 if (S.sel === "__menu" && !S.preview) {
@@ -2547,12 +2601,14 @@ R.innerHTML = h;
 }
 
 /* CODE DRAWER */
+var CODE_TABS = [["site", "Site CSS"], ["page", "Page CSS"], ["head", "Head HTML"], ["el", "Block"], ["files", "Files"], ["out", "Output"]];
 function codeValue(tab) {
 var pg = curPage();
 var e = selEl();
 if (tab === "site") return S.project.site.css || "";
 if (tab === "head") return S.project.site.head || "";
 if (tab === "page") return pg.css || "";
+if (tab === "files") return S.filePath && S.files[S.filePath] ? S.files[S.filePath].text : "";
 if (tab === "el") {
 if (!e) return "";
 if (e.type === "text") return e.props.html;
@@ -2566,31 +2622,587 @@ return exportCSS();
 if (S.outTab === "js") return exportJS();
 return exportPage(pg);
 }
+function fileMode(p) {
+if (/\.css$/.test(p)) return "css";
+if (/\.(js|json|webmanifest)$/.test(p)) return "javascript";
+if (/\.(html|svg|xml)$/.test(p)) return "htmlmixed";
+return "text/plain";
+}
+function codeMode(tab) {
+var e = selEl();
+if (tab === "site" || tab === "page") return "css";
+if (tab === "head") return "htmlmixed";
+if (tab === "files") return fileMode(S.filePath);
+if (tab === "el") return e && (e.type === "text" || e.type === "html") ? "htmlmixed" : "javascript";
+return S.outTab === "css" ? "css" : S.outTab === "js" ? "javascript" : "htmlmixed";
+}
+function codeReadOnly(tab) {
+if (tab === "out") return true;
+if (tab === "el") return !selEl();
+if (tab === "files") return !S.filePath;
+return false;
+}
+function filesSide() {
+var h = '<span class="bd-ed-label">Repo files</span>';
+if (!S.fileList) {
+loadFileList();
+return h + '<div class="bd-ed-hint">Loading the file list…</div>';
+}
+h += '<select class="bd-ed-input" id="bd-file-pick" aria-label="File"><option value="">Choose a file…</option>' + S.fileList.concat(Object.keys(S.files).filter(function (p) { return S.fileList.indexOf(p) < 0; })).sort().map(function (p) {
+var f = S.files[p];
+var dirty = f && f.text !== f.orig;
+return '<option value="' + esc(p) + '"' + (p === S.filePath ? " selected" : "") + ">" + esc(p.replace(/^site\//, "")) + (dirty ? " •" : "") + "</option>";
+}).join("") + "</select>"
++ '<div class="bd-ed-actions"><button class="bd-ed-btn" data-act="file-new">' + I.plus + 'New</button><button class="bd-ed-btn" data-act="file-upload">' + I.up + "Upload</button></div>";
+if (S.fileNew) h += '<div class="bd-ed-list-row" style="grid-template-columns:minmax(0,1fr) auto"><input class="bd-ed-input" id="bd-file-name" placeholder="files/notes.txt" aria-label="New file path"><button class="bd-ed-btn" data-act="file-create">Add</button></div>';
+if (S.uploads.length) {
+h += '<span class="bd-ed-label">Uploaded · goes live on publish</span>';
+S.uploads.forEach(function (u) {
+h += '<div class="bd-ed-hint" style="font-family:var(--e-mono);font-size:10.5px;word-break:break-all">/' + esc(u.path.replace(/^site\//, "")) + "</div>";
+});
+}
+h += '<div class="bd-ed-hint">Pages, bd.css and bd.js are written by Publish, so they aren’t listed. PDFs and other files go to /files/.</div>';
+return h;
+}
 function renderCode() {
 var C = $("bd-code");
 $("bd-app").classList.toggle("has-code", S.codeOpen && !!S.project);
+S.cm = null;
 if (!S.codeOpen || !S.project) {
 C.innerHTML = "";
 return;
 }
-var tabs = [["site", "Site CSS"], ["page", "Page CSS"], ["head", "Head HTML"], ["el", "Selected block"], ["out", "Output"]];
-var ro = S.codeTab === "out";
+var tab = S.codeTab;
 var e = selEl();
 var side = "";
-if (S.codeTab === "site") side = "CSS for every page. Lands in assets/bd.css before the mobile block. Changes show live.";
-if (S.codeTab === "page") side = "CSS for this page only. Published inside the page’s &lt;head&gt;.";
-if (S.codeTab === "head") side = "HTML added to the &lt;head&gt; of every page: fonts, favicon, analytics, meta tags. Scripts run on the live site only.";
-if (S.codeTab === "el") side = e ? (e.type === "text" ? "The block’s HTML. Use &lt;p&gt;, &lt;em&gt;, &lt;a&gt;, &lt;sup&gt;." : e.type === "html" ? "Raw HTML for this block." : "This block’s settings as JSON. Edits apply when the JSON is valid.") + '<div class="bd-ed-hint" id="bd-code-msg"></div>' : "Select a block on the canvas to edit its code.";
-if (ro) side = 'Read-only. This is what Publish writes.<div class="bd-ed-seg" style="flex-direction:column;align-self:stretch">' + [["page", curPage().slug ? curPage().slug + ".html" : "index.html"], ["css", "assets/bd.css"], ["js", "assets/bd.js"]].map(function (o) {
+if (tab === "site") side = "CSS for every page. Inspect writes here too. Phone rules go in the one <b>@media (max-width: 760px)</b> block at the end.";
+if (tab === "page") side = "CSS for this page only. Published inside the page’s &lt;head&gt;.";
+if (tab === "head") side = "HTML in the &lt;head&gt; of every page: fonts, favicon, analytics, meta tags. Scripts run on the live site only.";
+if (tab === "el") side = e ? (e.type === "text" ? "The block’s HTML. Use &lt;p&gt;, &lt;em&gt;, &lt;a&gt;, &lt;sup&gt;." : e.type === "html" ? "Raw HTML for this block." : "This block’s settings as JSON. Edits apply when the JSON is valid.") + '<div class="bd-ed-hint" id="bd-code-msg"></div>' : "Select a block on the canvas to edit its code.";
+if (tab === "files") side = filesSide();
+if (tab === "out") side = 'Read-only. This is what Publish writes.<div class="bd-ed-seg" style="flex-direction:column;align-self:stretch">' + [["page", curPage().slug ? curPage().slug + ".html" : "index.html"], ["css", "assets/bd.css"], ["js", "assets/bd.js"]].map(function (o) {
 return '<button data-act="out-tab" data-val="' + o[0] + '" class="' + (S.outTab === o[0] ? "is-on" : "") + '" style="justify-content:flex-start">' + esc(o[1]) + "</button>";
 }).join("") + '</div><button class="bd-ed-btn" data-act="copy-out">' + I.copy + "Copy</button>";
-var disabled = S.codeTab === "el" && !e;
-C.innerHTML = '<div style="display:flex;flex-direction:column;flex:1;min-width:0"><div class="bd-ed-tabs" role="tablist">' + tabs.map(function (t) {
-return '<button data-act="code-tab" data-val="' + t[0] + '" class="' + (S.codeTab === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
-}).join("") + '</div><div class="bd-ed-code-body"><textarea id="bd-code-ta" spellcheck="false" aria-label="Code" data-code="' + S.codeTab + '"' + (ro || disabled ? " readonly" : "") + "></textarea></div></div>"
+var ro = codeReadOnly(tab);
+C.innerHTML = '<div style="display:flex;flex-direction:column;flex:1;min-width:0"><div class="bd-ed-tabs" role="tablist">' + CODE_TABS.map(function (t) {
+return '<button data-act="code-tab" data-val="' + t[0] + '" class="' + (tab === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
+}).join("") + '</div><div class="bd-ed-code-body" id="bd-code-host"></div></div>'
 + '<div class="bd-ed-code-side bd-ed-hint">' + side + "</div>";
-$("bd-code-ta").value = disabled ? "" : codeValue(S.codeTab);
+var host = $("bd-code-host");
+var val = ro && tab !== "out" ? "" : codeValue(tab);
+if (window.CodeMirror) {
+var cm = CodeMirror(host, {
+value: val,
+mode: codeMode(tab),
+lineNumbers: true,
+lineWrapping: true,
+smartIndent: false,
+electricChars: false,
+indentUnit: 2,
+tabSize: 2,
+readOnly: ro,
+extraKeys: { "Cmd-S": function () { publish(); }, "Ctrl-S": function () { publish(); }, "Cmd-F": "findPersistent", "Ctrl-F": "findPersistent" }
+});
+S.cm = cm;
+cm.on("focus", function () { S.pendingSnap = true; });
+cm.on("change", function (inst, ch) {
+if (ch.origin === "setValue") return;
+clearTimeout(S.codeTimer);
+S.codeTimer = setTimeout(function () { applyCodeValue(tab, cm.getValue()); }, 220);
+});
+setTimeout(function () {
+cm.refresh();
+jumpCode();
+}, 0);
+} else {
+host.innerHTML = '<textarea id="bd-code-ta" spellcheck="false" aria-label="Code" data-code="' + tab + '"' + (ro ? " readonly" : "") + "></textarea>";
+$("bd-code-ta").value = val;
 }
+var fp = $("bd-file-pick");
+if (fp) fp.addEventListener("change", function () { openFile(fp.value); });
+}
+function jumpCode() {
+var j = S.codeJump;
+if (!j || !S.cm || j.tab !== S.codeTab) return;
+S.codeJump = null;
+var lines = S.cm.getValue().split("\n");
+var want = j.sel.replace(/\s+/g, " ").trim();
+for (var i = 0; i < lines.length; i++) {
+var t = lines[i].replace(/\s*\{\s*$/, "").replace(/\s+/g, " ").trim();
+if (t === want && /\{\s*$/.test(lines[i])) {
+if (j.phone && !S.cm.getValue().split("\n").slice(0, i).some(function (l) { return l.indexOf("@media") === 0; })) continue;
+S.cm.setSelection({ line: i, ch: 0 }, { line: i, ch: lines[i].length });
+S.cm.scrollIntoView({ line: i, ch: 0 }, 80);
+return;
+}
+}
+}
+function applyCodeValue(tab, v) {
+var e = selEl();
+if (S.pendingSnap && tab !== "files") {
+snap();
+S.pendingSnap = false;
+}
+if (tab === "site") S.project.site.css = v;
+if (tab === "page") curPage().css = v;
+if (tab === "head") S.project.site.head = v;
+if (tab === "files") {
+if (S.filePath && S.files[S.filePath]) S.files[S.filePath].text = v;
+scheduleSave();
+renderTop();
+return;
+}
+if (tab === "el" && e) {
+var msg = $("bd-code-msg");
+if (e.type === "text") e.props.html = v;
+else if (e.type === "html") e.props.code = v;
+else {
+try {
+e.props = JSON.parse(v);
+if (msg) msg.textContent = "";
+} catch (err) {
+if (msg) msg.textContent = "Waiting for valid JSON…";
+return;
+}
+}
+}
+scheduleSave();
+renderTop();
+renderCanvas();
+if (S.inspect) fillIns();
+else renderRight();
+}
+function applyCode(t) {
+applyCodeValue(t.getAttribute("data-code"), t.value);
+}
+
+/* FILES — ANY TEXT FILE IN THE REPO, PLUS UPLOADS TO /files */
+async function loadFileList() {
+if (S.fileListLoading) return;
+S.fileListLoading = true;
+try {
+var ref = await gh("GET", "/git/ref/heads/" + GH_BRANCH);
+var c = await gh("GET", "/git/commits/" + ref.object.sha);
+var t = await gh("GET", "/git/trees/" + c.tree.sha + "?recursive=1");
+S.fileList = (t.tree || []).filter(function (x) { return x.type === "blob" && editableFile(x.path); }).map(function (x) { return x.path; });
+} catch (err) {
+S.fileList = [];
+toast("Couldn't list the repo files: " + err.message);
+}
+S.fileListLoading = false;
+if (S.codeOpen && S.codeTab === "files") renderCode();
+}
+function editableFile(p) {
+if (!/^site\//.test(p)) return /^(README\.md|CLAUDE\.md|wrangler\.jsonc)$/.test(p);
+if (/^site\/(admin\.html|admin\/|assets\/bd\.(css|js)$)/.test(p)) return false;
+if (S.generated.indexOf(p) > -1) return false;
+return /\.(html|css|js|json|txt|xml|svg|md|webmanifest)$|\/_headers$|\/_redirects$/.test(p);
+}
+async function openFile(p) {
+if (!p) {
+S.filePath = "";
+renderCode();
+return;
+}
+if (!S.files[p]) {
+try {
+var f = await ghFile(p);
+S.files[p] = { sha: f ? f.sha : null, orig: f ? f.text : "", text: f ? f.text : "" };
+} catch (err) {
+toast("Couldn't open " + p + ": " + err.message);
+return;
+}
+}
+S.filePath = p;
+renderCode();
+}
+function dirtyFiles() {
+return Object.keys(S.files).filter(function (p) { return S.files[p].text !== S.files[p].orig; });
+}
+async function uploadFile(file) {
+var isImg = /^image\//.test(file.type);
+var name = slugify(file.name.replace(/\.[^.]+$/, "")) || "file";
+var ext = (file.name.split(".").pop() || "").toLowerCase();
+var path = "site/" + (isImg ? "images/" : "files/") + name + (ext ? "." + ext : "");
+if (file.size > 50 * 1024 * 1024) {
+toast(file.name + " is over 50 MB. GitHub won't take it.");
+return;
+}
+setStatus("Uploading…");
+try {
+var j = await gh("POST", "/git/blobs", { content: await blobToB64(file), encoding: "base64" });
+S.uploads = S.uploads.filter(function (u) { return u.path !== path; }).concat([{ path: path, sha: j.sha }]);
+saveNow();
+renderCode();
+toast("Uploaded. Link to it as /" + path.replace(/^site\//, "") + " — live after you publish.");
+} catch (err) {
+if (err.message === "KEY") lock("That GitHub key no longer works. Make a new one.");
+else toast(file.name + " didn't upload: " + err.message);
+setStatus("Not published", true);
+}
+}
+
+/* INSPECT — PICK ANY ELEMENT, STYLE IT IN SITE CSS OR PAGE CSS (PHONE WRITES TO THE ONE MOBILE BLOCK) */
+var MOBILE_Q = "@media (max-width: 760px)";
+var IFIELDS = [
+{ g: "Text", k: "size", l: "Size", p: ["font-size"], c: "fontSize" },
+{ g: "Text", k: "lh", l: "Line", p: ["line-height"], c: "lineHeight" },
+{ g: "Text", k: "track", l: "Spacing", p: ["letter-spacing"], c: "letterSpacing" },
+{ g: "Text", k: "weight", l: "Weight", p: ["font-weight"], c: "fontWeight", opts: ["", "300", "400", "500", "700"] },
+{ g: "Text", k: "style", l: "Style", p: ["font-style"], c: "fontStyle", opts: ["", "normal", "italic"] },
+{ g: "Text", k: "case", l: "Case", p: ["text-transform"], c: "textTransform", opts: ["", "none", "uppercase", "lowercase"] },
+{ g: "Text", k: "color", l: "Colour", p: ["color"], c: "color", col: true },
+{ g: "Text", k: "align", l: "Align", p: ["text-align"], c: "textAlign", seg: ["left", "center", "right"] },
+{ g: "Text", k: "indent", l: "Indent", p: ["text-indent"], c: "textIndent" },
+{ g: "Box", k: "bg", l: "Fill", p: ["background-color", "background"], c: "backgroundColor", col: true },
+{ g: "Box", k: "mt", l: "Space above", p: ["margin-top"], c: "marginTop" },
+{ g: "Box", k: "mb", l: "Space below", p: ["margin-bottom"], c: "marginBottom" },
+{ g: "Box", k: "pad", l: "Padding", p: ["padding"], c: "padding" },
+{ g: "Box", k: "w", l: "Width", p: ["width"], c: "width" },
+{ g: "Box", k: "maxw", l: "Max width", p: ["max-width"], c: "maxWidth" },
+{ g: "Box", k: "border", l: "Border", p: ["border"], c: "borderTop" },
+{ g: "Box", k: "rad", l: "Round", p: ["border-radius"], c: "borderTopLeftRadius" },
+{ g: "Box", k: "op", l: "Opacity", p: ["opacity"], c: "opacity" },
+{ g: "Box", k: "disp", l: "Show", p: ["display"], c: "display", opts: ["", "block", "inline", "flex", "grid", "none"] }
+];
+var BD_TYPE_CLASSES = ["bd-text", "bd-notes", "bd-figure", "bd-gallery", "bd-link", "bd-list", "bd-embed", "bd-html", "bd-rule"];
+var INSPECT_CSS = `
+/* INSPECT */
+.is-inspect * {
+cursor: crosshair !important;
+}
+.is-inspect .bd-ins-hover {
+outline: 1px dashed rgba(47, 75, 255, 0.7);
+outline-offset: -1px;
+}
+.is-inspect .bd-ins-on {
+outline: 2px solid #2f4bff;
+outline-offset: -1px;
+}
+`;
+
+/* CSS TEXT — SPLIT THE MOBILE BLOCK OFF, FIND AND CHANGE ONE RULE */
+function cssSplit(css) {
+css = String(css || "");
+var re = /@media\s*\(\s*max-width\s*:\s*760px\s*\)\s*\{/g;
+var m;
+var last = null;
+while ((m = re.exec(css))) last = m;
+if (!last) return { desk: css, mob: "" };
+var open = last.index + last[0].length - 1;
+var close = matchClose(css, open);
+var desk = (css.slice(0, last.index) + css.slice(close + 1)).replace(/\/\*\s*MOBILE\s*\*\/\s*$/, "").replace(/\s+$/, "");
+return { desk: desk, mob: css.slice(open + 1, close).replace(/^\s*\n/, "").replace(/\s+$/, "") };
+}
+function cssJoin(desk, mob) {
+desk = String(desk || "").replace(/\s+$/, "");
+mob = String(mob || "").replace(/^\s+|\s+$/g, "");
+if (!mob) return desk ? desk + "\n" : "";
+return (desk ? desk + "\n\n" : "") + "/* MOBILE */\n" + MOBILE_Q + " {\n" + mob + "\n}\n";
+}
+function matchClose(css, open) {
+var d = 0;
+for (var i = open; i < css.length; i++) {
+if (css[i] === "{") d++;
+else if (css[i] === "}") {
+d--;
+if (d === 0) return i;
+}
+}
+return css.length - 1;
+}
+function normSel(s) {
+return String(s).replace(/\/\*[\s\S]*?\*\//g, "").replace(/\s+/g, " ").replace(/\s*,\s*/g, ", ").trim();
+}
+function cssRules(css) {
+var out = [];
+var i = 0;
+while (i < css.length) {
+var open = css.indexOf("{", i);
+if (open < 0) break;
+var head = css.slice(i, open);
+var close = matchClose(css, open);
+var sel = normSel(head);
+if (sel.charAt(0) !== "@") out.push({ start: i, open: open, close: close, sel: sel, body: css.slice(open + 1, close) });
+i = close + 1;
+}
+return out;
+}
+function declList(body) {
+return body.replace(/\/\*[\s\S]*?\*\//g, "").split(";").map(function (d) {
+var k = d.indexOf(":");
+if (k < 0) return null;
+return { prop: d.slice(0, k).trim().toLowerCase(), val: d.slice(k + 1).trim() };
+}).filter(function (d) { return d && d.prop; });
+}
+function ruleGet(css, sel, props) {
+var r = cssRules(css).filter(function (x) { return x.sel === normSel(sel); }).pop();
+if (!r) return "";
+var d = declList(r.body).filter(function (x) { return props.indexOf(x.prop) > -1; }).pop();
+return d ? d.val : "";
+}
+function ruleSet(css, sel, props, val) {
+val = String(val == null ? "" : val).trim().replace(/;+$/, "");
+var rules = cssRules(css).filter(function (x) { return x.sel === normSel(sel); });
+var r = rules[rules.length - 1];
+if (!r) {
+if (!val) return css;
+return css.replace(/\s+$/, "") + (css.trim() ? "\n" : "") + sel + " {\n" + props[0] + ": " + val + ";\n}";
+}
+var decls = declList(r.body);
+var done = false;
+decls = decls.filter(function (d) {
+if (props.indexOf(d.prop) < 0) return true;
+if (done || !val) return false;
+d.prop = props[0];
+d.val = val;
+done = true;
+return true;
+});
+if (val && !done) decls.push({ prop: props[0], val: val });
+var leadStart = r.start;
+while (leadStart < r.open && /\s/.test(css[leadStart])) leadStart++;
+var block = decls.length ? sel + " {\n" + decls.map(function (d) { return d.prop + ": " + d.val + ";"; }).join("\n") + "\n}" : "";
+var after = css.slice(r.close + 1);
+if (!block) after = after.replace(/^\n/, "");
+return css.slice(0, leadStart) + block + after;
+}
+
+/* WHAT YOU PICKED */
+function insRoot() {
+return shadow ? shadow.querySelector(".bd-site") : null;
+}
+function insPath(el) {
+var root = insRoot();
+var path = [];
+while (el && el !== root && el.parentElement) {
+path.unshift(Array.prototype.indexOf.call(el.parentElement.children, el));
+el = el.parentElement;
+}
+return el === root ? path : null;
+}
+function insEl() {
+var root = insRoot();
+if (!S.ins || !root) return null;
+var el = root;
+for (var i = 0; i < S.ins.path.length; i++) {
+el = el.children[S.ins.path[i]];
+if (!el) return null;
+}
+return el;
+}
+function insTok(el) {
+var cls = Array.prototype.slice.call(el.classList || []).filter(function (c) {
+return !/^(is|has)-/.test(c) && !/^bd-(e|i)-/.test(c) && c !== "bd-el" && c !== "bd-ins-on" && c !== "bd-ins-hover" && c !== "bd-site";
+});
+var bd = cls.filter(function (c) { return /^bd-/.test(c); });
+if (bd.length) return "." + bd[0];
+if (cls.length) return "." + cls[0];
+return el.tagName.toLowerCase();
+}
+function insBlock(el) {
+return el.closest ? el.closest(".bd-el") : null;
+}
+function insSels(el) {
+var root = insRoot();
+if (el === root) return { one: ".bd-site", all: ".bd-site" };
+var blk = insBlock(el);
+if (blk) {
+var id = idOf(blk);
+var type = BD_TYPE_CLASSES.filter(function (c) { return blk.classList.contains(c); })[0] || "bd-el";
+if (blk === el) return { one: ".bd-e-" + id, all: "." + type };
+var t = insTok(el);
+return { one: ".bd-e-" + id + " " + t, all: "." + type + " " + t };
+}
+var t2 = insTok(el);
+if (/^\.bd-/.test(t2)) return { one: t2, all: t2 };
+var anc = el.parentElement;
+while (anc && anc !== root && !/^\.bd-/.test(insTok(anc))) anc = anc.parentElement;
+var s = (anc && anc !== root ? insTok(anc) + " " : ".bd-site ") + t2;
+return { one: s, all: s };
+}
+function insLabel(el) {
+var t = el.tagName.toLowerCase();
+return t + Array.prototype.slice.call(el.classList || []).filter(function (c) { return c !== "bd-ins-on" && c !== "bd-ins-hover"; }).map(function (c) { return "." + c; }).join("");
+}
+function insSel() {
+var el = insEl();
+if (!el) return "";
+var s = insSels(el);
+return S.ins.scope === "all" ? s.all : s.one;
+}
+function insCSS() {
+return S.ins && S.ins.where === "page" ? (curPage().css || "") : (S.project.site.css || "");
+}
+function insPut(css) {
+if (S.ins && S.ins.where === "page") curPage().css = css;
+else S.project.site.css = css;
+}
+function insGet(props) {
+var sp = cssSplit(insCSS());
+var sel = insSel();
+var phone = S.mode === "phone";
+var v = ruleGet(phone ? sp.mob : sp.desk, sel, props);
+var base = phone ? ruleGet(sp.desk, sel, props) : "";
+return { val: v, base: base };
+}
+function insSetProp(props, val) {
+var sel = insSel();
+if (!sel) return;
+if (S.pendingIns !== sel + props[0]) {
+snap();
+S.pendingIns = sel + props[0];
+}
+var sp = cssSplit(insCSS());
+if (S.mode === "phone") sp.mob = ruleSet(sp.mob, sel, props, val);
+else sp.desk = ruleSet(sp.desk, sel, props, val);
+insPut(cssJoin(sp.desk, sp.mob));
+scheduleSave();
+renderTop();
+renderCanvas();
+setTimeout(fillIns, 20);
+if (S.codeOpen && (S.codeTab === "site" || S.codeTab === "page")) {
+S.codeJump = { tab: S.ins.where === "page" ? "page" : "site", sel: sel, phone: S.mode === "phone" };
+renderCode();
+}
+}
+function pickIns(el) {
+var root = insRoot();
+if (!el || !root || !root.contains(el)) return;
+var p = insPath(el);
+if (!p) return;
+S.ins = { path: p, scope: S.ins ? S.ins.scope : "one", where: S.ins ? S.ins.where : "site" };
+S.pendingIns = "";
+var blk = insBlock(el);
+S.sel = blk ? idOf(blk) : null;
+markIns();
+renderRight();
+if (S.codeOpen && S.codeTab === "el") renderCode();
+}
+function markIns() {
+var root = insRoot();
+if (!root) return;
+root.querySelectorAll(".bd-ins-on").forEach(function (n) { n.classList.remove("bd-ins-on"); });
+var el = insEl();
+if (el) el.classList.add("bd-ins-on");
+}
+function stepVal(v, d) {
+var m = /^(-?\d*\.?\d+)([a-z%]*)$/i.exec(String(v).trim());
+if (!m) return null;
+var n = Math.round((parseFloat(m[1]) + d) * 100) / 100;
+return n + (m[2] || "px");
+}
+function toHex(c) {
+if (!c) return "#000000";
+if (/^#[0-9a-f]{6}$/i.test(c)) return c;
+if (/^#[0-9a-f]{3}$/i.test(c)) return "#" + c[1] + c[1] + c[2] + c[2] + c[3] + c[3];
+var m = /rgba?\(\s*(\d+)[ ,]+(\d+)[ ,]+(\d+)/.exec(c);
+if (!m) return "#000000";
+return "#" + [m[1], m[2], m[3]].map(function (x) { return ("0" + (+x).toString(16)).slice(-2); }).join("");
+}
+function insPanel() {
+var el = insEl();
+var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">Inspect</span><button class="bd-ed-btn" style="height:26px" data-act="inspect">Done</button></div>';
+if (!el) return h + '<div class="bd-ed-hint">Tap anything on the page — a word, a heading, an image, the menu button — to style it. ' + (S.mode === "phone" ? "You’re on Phone, so changes go in the mobile block." : "Switch to Phone to style the phone layout separately.") + "</div></div>";
+var s = insSels(el);
+var blk = insBlock(el);
+var model = blk ? selEl() : null;
+var hasImg = el.tagName === "IMG" || !!el.querySelector && !!el.querySelector("img");
+h += '<div class="bd-ed-ins-tag">' + esc(insLabel(el)) + "</div>"
++ '<div class="bd-ed-actions">' + (el.parentElement && el !== insRoot() ? '<button class="bd-ed-btn" data-act="ins-parent">' + I.up + "Parent</button>" : "") + '<button class="bd-ed-btn" data-act="ins-code">' + I.code + "Show rule</button>" + '<button class="bd-ed-btn" data-act="ins-clear">' + I.x + "Clear</button></div>"
++ field("Style", seg("ins.scope", S.ins.scope, [["one", "Just this"], ["all", s.all === s.one ? "Same" : "All like it"]]))
++ '<div class="bd-ed-hint bd-ed-ins-sel">' + esc(S.ins.scope === "all" ? s.all : s.one) + "</div>"
++ field("Saved in", seg("ins.where", S.ins.where, [["site", "Site CSS"], ["page", "This page"]]))
++ '<div class="bd-ed-hint">' + (S.mode === "phone" ? "Phone · writes to the mobile block. Grey values come from desktop." : "Desktop · switch to Phone to set phone values.") + "</div></div>";
+var groups = {};
+IFIELDS.forEach(function (f) {
+if (!groups[f.g]) groups[f.g] = [];
+groups[f.g].push(f);
+});
+Object.keys(groups).forEach(function (g) {
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">' + g + '</span><div class="bd-ed-ins-grid">';
+groups[g].forEach(function (f) {
+h += '<label class="bd-ed-ins-f" data-k="' + f.k + '"><span>' + f.l + "</span>";
+if (f.seg) h += '<span class="bd-ed-seg">' + f.seg.map(function (v) { return '<button data-act="ins-seg" data-k="' + f.k + '" data-val="' + v + '">' + (v === "left" ? "L" : v === "center" ? "C" : "R") + "</button>"; }).join("") + "</span>";
+else if (f.opts) h += '<select class="bd-ed-input" data-ins="' + f.k + '">' + f.opts.map(function (v) { return '<option value="' + v + '">' + (v || "—") + "</option>"; }).join("") + "</select>";
+else h += '<span class="bd-ed-ins-row">' + (f.col ? '<input type="color" data-ins-col="' + f.k + '" aria-label="' + f.l + ' colour">' : "") + '<input class="bd-ed-input" data-ins="' + f.k + '" autocomplete="off" spellcheck="false" autocapitalize="off"></span>';
+h += "</label>";
+});
+h += "</div></div>";
+});
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Block</span><div class="bd-ed-actions">';
+if (model) {
+h += '<button class="bd-ed-btn" data-act="sel-up">' + I.up + 'Up</button><button class="bd-ed-btn" data-act="sel-down">' + I.dn + "Down</button>";
+if (model.type === "text" || model.type === "html") h += '<button class="bd-ed-btn" data-act="ins-html">' + I.html + "Edit HTML</button>";
+if (model.type === "image" || (model.type === "gallery" && el.tagName === "IMG")) h += '<button class="bd-ed-btn" data-act="ins-img">' + I.image + "Replace image</button>";
+h += '<button class="bd-ed-btn" data-act="ins-block">' + I.sliders + "Block settings</button>";
+} else h += '<div class="bd-ed-hint">Not inside a block — this is the page frame, header or menu. Style it here; its content comes from the Site and Menu tabs.</div>';
+h += "</div></div>";
+return h;
+}
+function fillIns() {
+var R = $("bd-right");
+var el = insEl();
+if (!el || !R) return;
+markIns();
+var cs = getComputedStyle(el);
+IFIELDS.forEach(function (f) {
+var w = R.querySelector('[data-k="' + f.k + '"]');
+if (!w) return;
+var v = insGet(f.p);
+var now = cs[f.c] || "";
+w.classList.toggle("is-set", !!v.val);
+if (f.seg) {
+w.querySelectorAll("button").forEach(function (b) { b.classList.toggle("is-on", b.getAttribute("data-val") === v.val); });
+return;
+}
+var inp = w.querySelector("[data-ins]");
+if (inp && document.activeElement !== inp) {
+inp.value = v.val;
+if (inp.tagName === "INPUT") inp.placeholder = v.base || now;
+}
+var sw = w.querySelector("[data-ins-col]");
+if (sw) sw.value = toHex(/^#|rgb/.test(v.val) ? v.val : now);
+});
+}
+function insField(k) {
+return IFIELDS.filter(function (f) { return f.k === k; })[0];
+}
+document.addEventListener("input", function (e) {
+var t = e.target;
+if (!S.inspect || !t.closest || !t.closest("#bd-right")) return;
+var k = t.getAttribute("data-ins");
+var kc = t.getAttribute("data-ins-col");
+if (kc) {
+var inp = $("bd-right").querySelector('[data-ins="' + kc + '"]');
+if (inp) inp.value = t.value;
+clearTimeout(S.insT);
+S.insT = setTimeout(function () { insSetProp(insField(kc).p, t.value); }, 120);
+e.stopImmediatePropagation();
+return;
+}
+if (!k) return;
+e.stopImmediatePropagation();
+clearTimeout(S.insT);
+var f = insField(k);
+S.insT = setTimeout(function () { insSetProp(f.p, t.value); }, t.tagName === "SELECT" ? 0 : 450);
+}, true);
+document.addEventListener("keydown", function (e) {
+var t = e.target;
+if (!S.inspect || !t.getAttribute || !t.getAttribute("data-ins") || t.tagName !== "INPUT") return;
+if (e.key === "Enter") {
+t.blur();
+return;
+}
+if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+var nv = stepVal(t.value || t.placeholder, (e.key === "ArrowUp" ? 1 : -1) * (e.shiftKey ? 10 : 1));
+if (nv == null) return;
+e.preventDefault();
+e.stopPropagation();
+t.value = nv;
+clearTimeout(S.insT);
+insSetProp(insField(t.getAttribute("data-ins")).p, nv);
+}, true);
 
 /* INSERT RAIL */
 function renderRail() {
@@ -2649,7 +3261,7 @@ sheet.style.width = sheetW + "px";
 var ruler = $("bd-ruler");
 ruler.className = "bd-ed-ruler" + (phone ? " is-phone" : "");
 ruler.style.maxWidth = sheetW + "px";
-ruler.innerHTML = "<span>" + (S.preview ? "Preview · menu and arrows work" : (phone ? "Phone" : "Desktop") + " · " + sheetW + 'px · <span id="bd-zoom">100%</span>') + "</span><span>" + (master ? "Follows master · " : "Free grid · ") + (phone ? s.colsM : s.cols) + " columns</span>";
+ruler.innerHTML = "<span>" + (S.inspect ? "Inspect · tap anything to style it · " + (phone ? "phone" : "desktop") : S.preview ? "Preview · menu and arrows work" : (phone ? "Phone" : "Desktop") + " · " + sheetW + 'px · <span id="bd-zoom">100%</span>') + "</span><span>" + (master ? "Follows master · " : "Free grid · ") + (phone ? s.colsM : s.cols) + " columns</span>";
 if (!shadow) {
 shadow = sheet.attachShadow({ mode: "open" });
 bindCanvas();
@@ -2660,8 +3272,10 @@ if (phone && !isMaster(p) && p !== page && ensurePhone(p)) scheduleSave();
 });
 var layout = masterRules(s, false) + "\n" + shown.map(function (p) { return layoutRules(p, false); }).join("\n");
 if (phone) layout += "\n" + mobileRules(s, ".bd-site") + "\n" + masterRules(s, true) + "\n" + shown.map(function (p) { return layoutRules(p, true); }).join("\n");
-var css = baseCSS(s, "edit") + "\n" + layout + "\n" + (s.css || "") + "\n" + (page.css || "") + "\n" + (S.preview ? "" : EDIT_CSS);
-shadow.innerHTML = "<style>" + css + '</style><div class="bd-site' + (phone ? " is-phone" : "") + (S.preview ? "" : " is-editing") + '" data-bd-page="' + esc(page.slug) + '">' + pageHTML(page, "edit") + "</div>";
+var sc = cssSplit(s.css);
+var pc = cssSplit(page.css);
+var css = baseCSS(s, "edit") + "\n" + layout + "\n" + sc.desk + "\n" + pc.desk + "\n" + (phone ? sc.mob + "\n" + pc.mob + "\n" : "") + (S.inspect ? INSPECT_CSS : S.preview ? "" : EDIT_CSS);
+shadow.innerHTML = "<style>" + css + '</style><div class="bd-site' + (phone ? " is-phone" : "") + (S.inspect ? " is-inspect" : S.preview ? "" : " is-editing") + '" data-bd-page="' + esc(page.slug) + '">' + pageHTML(page, "edit") + "</div>";
 var data = chromeData(page.slug);
 data.open = !!S.menuOpen;
 data.onToggle = function (o) { S.menuOpen = o; };
@@ -2672,6 +3286,7 @@ if (id) goPage(id);
 requestAnimationFrame(fitSheet);
 if (S.preview) {
 bdGalleries(shadow.querySelector(".bd-site"));
+if (S.inspect) markIns();
 return;
 }
 var grid = shadow.querySelector(".bd-main > .bd-grid, .bd-main > .bd-flow");
@@ -2800,7 +3415,29 @@ renderRight();
 if (S.codeOpen && S.codeTab === "el") renderCode();
 }
 function bindCanvas() {
+shadow.addEventListener("pointermove", function (e) {
+if (!S.inspect || e.pointerType === "touch") return;
+var t = e.target;
+if (S.insHover === t) return;
+if (S.insHover) S.insHover.classList.remove("bd-ins-hover");
+S.insHover = t && t.classList && !t.classList.contains("bd-site") ? t : null;
+if (S.insHover) S.insHover.classList.add("bd-ins-hover");
+});
+shadow.addEventListener("click", function (e) {
+if (!S.inspect) return;
+e.preventDefault();
+e.stopPropagation();
+}, true);
+shadow.addEventListener("error", function (e) {
+var t = e.target;
+if (t && t.tagName === "IMG") repoImage(t);
+}, true);
 shadow.addEventListener("pointerdown", function (e) {
+if (S.inspect) {
+e.preventDefault();
+pickIns(e.target);
+return;
+}
 if (S.preview || !S.project) return;
 var t = e.target;
 if (t.closest(".bd-burger")) {
@@ -3530,7 +4167,7 @@ setStatus("Uploading…");
 var size = await imageSize(files[0]);
 var id = await storeImage(files[0]);
 if (!id) {
-setStatus("Unsaved", true);
+setStatus("Not published", true);
 return;
 }
 snap();
@@ -3539,6 +4176,22 @@ el.props.file = uniqueFile(files[0].name, taken);
 el.props.w = size.w;
 el.props.h = size.h;
 if (!el.props.alt) el.props.alt = files[0].name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]+/g, " ");
+} else if (S.replaceItem) {
+var item = el.props.items.filter(function (x) { return x.id === S.replaceItem; })[0];
+S.replaceItem = null;
+if (!item) return;
+setStatus("Uploading…");
+var rs = await imageSize(files[0]);
+var rid = await storeImage(files[0]);
+if (!rid) {
+setStatus("Not published", true);
+return;
+}
+snap();
+item.assetId = rid;
+item.file = uniqueFile(files[0].name, taken);
+item.w = rs.w;
+item.h = rs.h;
 } else {
 var added = [];
 for (var i = 0; i < files.length; i++) {
@@ -3550,13 +4203,18 @@ var n = el.props.items.length + added.length;
 added.push({ id: uid(), assetId: gid, file: uniqueFile(files[i].name, taken), alt: files[i].name.replace(/\.[a-z0-9]+$/i, "").replace(/[-_]+/g, " "), caption: "", w: sz.w, h: sz.h, fx: (n * 8) % 60, fy: n * 6, fw: 32 });
 }
 if (!added.length) {
-setStatus("Unsaved", true);
+setStatus("Not published", true);
 return;
 }
 snap();
 el.props.items = el.props.items.concat(added);
 }
 changed();
+});
+$("bd-upload").addEventListener("change", function () {
+var f = this.files && this.files[0];
+this.value = "";
+if (f) uploadFile(f);
 });
 
 /* PUBLISH — ONE COMMIT: PAGES, CSS, JS, NEW IMAGES, site.json */
@@ -3615,6 +4273,11 @@ var pages = Object.keys(files).filter(function (p) { return p.indexOf(OUT) === 0
 files[MANIFEST_FILE] = JSON.stringify({ pages: pages, published: new Date().toISOString() }, null, 1);
 var now = await ghFile(SITE_FILE);
 if ((now ? now.sha : null) !== S.base) throw new Error("CHANGED");
+var dirty = dirtyFiles();
+for (var di = 0; di < dirty.length; di++) {
+var cur = await ghFile(dirty[di]);
+if ((cur ? cur.sha : null) !== S.files[dirty[di]].sha) throw new Error("CHANGED:" + dirty[di]);
+}
 var old = await ghFile(MANIFEST_FILE);
 var oldPages = [];
 try {
@@ -3636,6 +4299,12 @@ if (seen[path]) return;
 seen[path] = true;
 tree.push({ path: path, mode: "100644", type: "blob", sha: p.assetId.slice(4) });
 });
+dirty.forEach(function (p) {
+tree.push({ path: p, mode: "100644", type: "blob", content: S.files[p].text });
+});
+S.uploads.forEach(function (u) {
+tree.push({ path: u.path, mode: "100644", type: "blob", sha: u.sha });
+});
 var gone = oldPages.filter(function (p) { return pages.indexOf(p) < 0 && KEEP.indexOf(p) < 0 && existing[p]; });
 gone.forEach(function (p) {
 tree.push({ path: p, mode: "100644", type: "blob", sha: null });
@@ -3649,6 +4318,17 @@ p.assetId = "live";
 });
 var after = await gh("GET", "/contents/" + SITE_FILE + "?ref=" + nc.sha);
 S.base = after.sha;
+for (var fi = 0; fi < dirty.length; fi++) {
+var nf = S.files[dirty[fi]];
+nf.orig = nf.text;
+try {
+nf.sha = (await gh("GET", "/contents/" + dirty[fi] + "?ref=" + nc.sha)).sha;
+} catch (e) {}
+}
+S.uploads.forEach(function (u) { if (S.fileList && /\.(txt|html|css|js|json|svg|xml|md)$/.test(u.path) && S.fileList.indexOf(u.path) < 0) S.fileList.push(u.path); });
+S.uploads = [];
+S.generated = pages;
+if (S.codeOpen && S.codeTab === "files") renderCode();
 S.published = stateJSON();
 lsDel(DRAFT_STORE);
 S.publishing = false;
@@ -3663,6 +4343,12 @@ renderTop();
 var m = String(err && err.message || err);
 if (m === "KEY") {
 lock("That GitHub key no longer works. Make a new one.");
+return;
+}
+if (m.indexOf("CHANGED:") === 0) {
+setStatus("Not published", true);
+toast(m.slice(8) + " was changed on GitHub since you opened it. Copy your edit, reload, then paste it back.");
+saveNow();
 return;
 }
 if (m === "CHANGED") {
@@ -3680,7 +4366,7 @@ function watchLive(stamp) {
 clearInterval(S.liveT);
 var t0 = Date.now();
 S.liveT = setInterval(function () {
-fetch("/assets/bd.css?v=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.text(); }).then(function (t) {
+fetch(LIVE_BASE + "/assets/bd.css?v=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.text(); }).then(function (t) {
 if (t.indexOf("PUBLISHED " + stamp) > -1) {
 clearInterval(S.liveT);
 S.liveT = null;
@@ -3750,7 +4436,9 @@ S.confirm = S.confirm === "discard" ? null : S.confirm;
 function openPop() {
 var pop = $("bd-pop");
 var live = REPO.domain ? "https://" + REPO.domain : location.origin;
-var h = '<div class="bd-ed-sec"><span class="bd-ed-label">Site</span>'
+var h = '<div class="bd-ed-sec"><span class="bd-ed-label">Sites · one back office</span>' + SITES.map(function (x) {
+return '<button class="bd-ed-proj' + (x.repo === REPO.repo ? " is-on" : "") + '" data-act="site-switch" data-repo="' + esc(x.repo) + '"><span>' + esc(x.domain) + "</span><small>" + (x.repo === REPO.repo ? "editing" : "switch") + "</small></button>";
+}).join("") + '</div><div class="bd-ed-sec"><span class="bd-ed-label">This site</span>'
 + '<a class="bd-ed-proj" href="' + esc(live) + '" target="_blank" rel="noopener"><span>' + esc(REPO.domain || location.host) + "</span><small>Open ↗</small></a>"
 + '<a class="bd-ed-proj" href="https://github.com/' + esc(REPO.owner + "/" + REPO.repo) + '" target="_blank" rel="noopener"><span>' + esc(REPO.owner + "/" + REPO.repo) + "</span><small>GitHub ↗</small></a>"
 + '<div class="bd-ed-hint">' + (hasDraft() ? "You have changes that aren’t on the live site yet. They’re kept in this browser until you publish." : "Everything here is on the live site.") + "</div></div>"
@@ -3797,7 +4485,71 @@ ta.select();
 toast("Selected. Press Copy on your keyboard.");
 }
 },
-"preview": function () { if (S.live) endEdit(); S.preview = !S.preview; S.sel = null; render(); },
+"preview": function () { if (S.live) endEdit(); S.inspect = false; S.preview = !S.preview; S.sel = null; render(); },
+"inspect": function () {
+if (S.live) endEdit();
+S.inspect = !S.inspect;
+S.preview = S.inspect;
+S.ins = null;
+S.sel = null;
+if (S.inspect && window.innerWidth <= 980) {
+S.rightOpen = true;
+S.leftOpen = false;
+}
+render();
+},
+"ins-parent": function () { var el = insEl(); if (el && el.parentElement) pickIns(el.parentElement); },
+"ins-clear": function () { S.ins = null; markIns(); renderRight(); },
+"ins-seg": function () {
+var f = insField(b.getAttribute("data-k"));
+var cur = insGet(f.p).val;
+insSetProp(f.p, cur === val ? "" : val);
+},
+"ins-code": function () {
+var sel = insSel();
+if (!sel) return;
+S.codeOpen = true;
+S.codeTab = S.ins.where === "page" ? "page" : "site";
+S.codeJump = { tab: S.codeTab, sel: sel, phone: S.mode === "phone" };
+renderCode();
+renderTop();
+if (!S.cm) toast("Look for " + sel);
+},
+"ins-html": function () { S.codeOpen = true; S.codeTab = "el"; renderCode(); renderTop(); },
+"ins-img": function () {
+var el = insEl();
+var m = selEl();
+if (!m) return;
+S.replaceItem = null;
+if (m.type === "gallery") {
+var fig = el.closest("figure");
+var id = fig && (fig.className.match(/bd-i-([a-z0-9]+)/) || [])[1];
+if (!id) return;
+S.replaceItem = id;
+}
+$("bd-file").multiple = false;
+$("bd-file").click();
+},
+"ins-block": function () { var id = S.sel; S.inspect = false; S.preview = false; S.ins = null; S.sel = id; render(); },
+"file-new": function () { S.fileNew = !S.fileNew; renderCode(); var n = $("bd-file-name"); if (n) n.focus(); },
+"file-create": function () {
+var n = $("bd-file-name");
+var p = n ? n.value.trim().replace(/^\/+/, "") : "";
+if (!p || /\.\.|\s/.test(p)) { toast("Type a path like files/notes.txt"); return; }
+p = "site/" + p.replace(/^site\//, "");
+if (!S.files[p]) S.files[p] = { sha: null, orig: "", text: "" };
+S.fileNew = false;
+S.filePath = p;
+renderCode();
+},
+"file-upload": function () { $("bd-upload").click(); },
+"site-switch": function () {
+var r = b.getAttribute("data-repo");
+if (r === REPO.repo) { closePop(); return; }
+saveNow();
+lsSet("bd-site-current", r);
+location.reload();
+},
 "export": publish,
 "toggle-left": function () { S.leftOpen = !S.leftOpen; S.rightOpen = false; renderLeft(); renderRight(); },
 "toggle-right": function () { S.rightOpen = !S.rightOpen; S.leftOpen = false; renderLeft(); renderRight(); },
@@ -3882,6 +4634,11 @@ changed({ skipRight: true });
 "set": function () {
 var path = b.getAttribute("data-path");
 var v = b.getAttribute("data-vtype") === "bool" ? val === "true" : val;
+if (path.indexOf("ins.") === 0) {
+if (S.ins) S.ins[path.slice(4)] = v;
+renderRight();
+return;
+}
 if (path === "ui.menuOpen") {
 S.menuOpen = v;
 render();
@@ -3974,36 +4731,6 @@ renderCanvas();
 if (!inRight) renderRight();
 if (S.codeOpen) renderCode();
 });
-function applyCode(t) {
-var tab = t.getAttribute("data-code");
-var v = t.value;
-var e = selEl();
-if (S.pendingSnap) {
-snap();
-S.pendingSnap = false;
-}
-if (tab === "site") S.project.site.css = v;
-if (tab === "page") curPage().css = v;
-if (tab === "head") S.project.site.head = v;
-if (tab === "el" && e) {
-var msg = $("bd-code-msg");
-if (e.type === "text") e.props.html = v;
-else if (e.type === "html") e.props.code = v;
-else {
-try {
-e.props = JSON.parse(v);
-if (msg) msg.textContent = "";
-} catch (err) {
-if (msg) msg.textContent = "Waiting for valid JSON…";
-return;
-}
-}
-}
-scheduleSave();
-renderTop();
-renderCanvas();
-renderRight();
-}
 document.addEventListener("keydown", function (e) {
 if (!S.project) return;
 var t = e.composedPath()[0];
@@ -4016,6 +4743,11 @@ return;
 }
 if (typing) return;
 var k = e.key.toLowerCase();
+if (mod && k === "s") {
+e.preventDefault();
+publish();
+return;
+}
 if (mod && k === "z") {
 e.preventDefault();
 if (e.shiftKey) doRedo();

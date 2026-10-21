@@ -5,6 +5,8 @@
   Cache-Control: no-store
   X-Robots-Tag: noindex, nofollow
 /assets/*
+  Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=0, must-revalidate
 /images/*
+  Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=86400
