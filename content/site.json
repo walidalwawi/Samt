@@ -311,7 +311,6 @@
  },
  "order": [
   "f0kgkfxt",
-  "fjy3q6ss",
   "fji5ongj",
   "aj2hm4y8",
   "ipk7ns57",
@@ -513,6 +512,10 @@
       "style": "body",
       "indent": false,
       "align": "left"
+     },
+     "own": {
+      "x": 0,
+      "w": 9
      }
     },
     {
@@ -3915,60 +3918,6 @@
     "hM": "",
     "gap": "",
     "gapM": ""
-   }
-  },
-  "fjy3q6ss": {
-   "id": "fjy3q6ss",
-   "title": "Footer",
-   "h1": "",
-   "num": "",
-   "slug": "footer",
-   "section": "",
-   "desc": "",
-   "header": true,
-   "layout": "master",
-   "css": "",
-   "els": [
-    {
-     "id": "bj3jiu3a",
-     "type": "text",
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "html": "<p>Samt</p>",
-      "font": "sans",
-      "size": "body",
-      "indent": false,
-      "align": "left"
-     }
-    }
-   ],
-   "kind": "pin",
-   "stack": [],
-   "pin": {
-    "place": "bottom",
-    "fixed": false,
-    "show": "all",
-    "pages": [],
-    "h": "",
-    "hM": "",
-    "gap": "",
-    "gapM": ""
-   },
-   "colset": {
-    "cols": 1,
-    "align": "center",
-    "spans": [
-     12
-    ],
-    "colsM": 1,
-    "gutter": 30,
-    "gutterM": 20
    }
   }
  }
