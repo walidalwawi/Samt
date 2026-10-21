@@ -1348,6 +1348,35 @@
      }
     },
     {
+     "id": "1i1l34qx",
+     "type": "quote",
+     "d": {
+      "x": 0,
+      "y": 33,
+      "w": 12,
+      "h": 10
+     },
+     "m": null,
+     "props": {
+      "html": "When Handala exposes the plots and conspiracy of the enemies of the people, his role is positive. – Naji al-Ali",
+      "style": "",
+      "align": "",
+      "pad": "",
+      "padX": "",
+      "padM": "",
+      "padXM": "",
+      "bg": "",
+      "shadow": "",
+      "line": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": "",
+      "ink": ""
+     },
+     "col": 2
+    },
+    {
      "id": "d4h0llkl",
      "type": "text",
      "col": 2,
@@ -1359,7 +1388,7 @@
      },
      "m": null,
      "props": {
-      "html": "<p><em>When Handala exposes the plots and conspiracy of the enemies of the people, his role is positive. – Naji al-Ali</em></p>",
+      "html": "<p></p>",
       "style": "small",
       "indent": false,
       "align": "left"
