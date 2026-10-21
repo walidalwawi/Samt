@@ -1,4 +1,4 @@
-/* PUBLISHED build */
+/* PUBLISHED mvi06uxy */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -707,7 +707,7 @@ line-height: 19px;
 /* COLUMNS */
 .bd-main .bd-cols {
 grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
-column-gap: 80px;
+column-gap: 40px;
 }
 .bd-cols.bd-cl-fji5ongj {
 grid-template-columns: minmax(0, 4fr) minmax(0, 4fr) minmax(0, 4fr);

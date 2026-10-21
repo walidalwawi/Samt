@@ -1,6 +1,5 @@
 /* DATA */
 var BD_DATA = {"site":"Samt","menu":false,"pager":false,"nav":{"icon":"lines","label":"☰","openLabel":"","corner":"right","headings":true,"accordion":true,"current":"dim","title":"right"},"sections":[{"key":"a","label":"a. samt"}],"pages":[{"section":"a","slug":"","num":"","title":"Journal"},
-{"section":"a","slug":"the-colonial-scissors","num":"","title":"The Colonial Scissors"},
 {"section":"a","slug":"how-to-deseed-a-watermelon","num":"","title":"How To Deseed A Watermelon For Safe Consumption"},
 {"section":"a","slug":"handala-and-the-freeze-point","num":"","title":"Handala And The Freeze Point"},
 {"section":"a","slug":"militant-improvisation","num":"","title":"Militant Improvisation"},

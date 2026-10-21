@@ -227,14 +227,13 @@
     6
    ],
    "colsM": 1,
-   "gutter": 80,
+   "gutter": 40,
    "gutterM": 24
   }
  },
  "order": [
   "f0kgkfxt",
   "fji5ongj",
-  "xvis31th",
   "aj2hm4y8",
   "ipk7ns57",
   "k2b6e868",
@@ -304,41 +303,6 @@
    "layout": "master",
    "css": "/* CARD IMAGES SIT INSIDE THE GREY CARD */\n.bd-col > .bd-html + .bd-figure {\nmargin-top: 0;\npadding: 0 18px 18px;\nbackground: #eeeeee;\n}",
    "els": [
-    {
-     "id": "vts2lu15",
-     "type": "html",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "code": "<a class=\"sm-card\" href=\"/the-colonial-scissors\">\n<span class=\"sm-card-t\">The Colonial Scissors: Cutting Art from Craft</span>\n<span class=\"sm-card-m\">706 words ~ 4 min</span>\n</a>"
-     }
-    },
-    {
-     "id": "sxk3v250",
-     "type": "image",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 30
-     },
-     "m": null,
-     "props": {
-      "assetId": "",
-      "file": "",
-      "alt": "Illustration for The Colonial Scissors: Cutting Art from Craft",
-      "caption": "",
-      "fit": "contain",
-      "zoom": false
-     }
-    },
     {
      "id": "gti6hctf",
      "type": "html",
@@ -535,97 +499,6 @@
     "colsM": 1,
     "gutter": 40,
     "gutterM": 24
-   }
-  },
-  "xvis31th": {
-   "id": "xvis31th",
-   "title": "The Colonial Scissors",
-   "h1": "",
-   "num": "",
-   "slug": "the-colonial-scissors",
-   "section": "a",
-   "desc": "The Colonial Scissors: Cutting Art from Craft",
-   "header": false,
-   "layout": "master",
-   "css": "",
-   "els": [
-    {
-     "id": "vx6rab4t",
-     "type": "text",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "html": "<p>The Colonial Scissors: Cutting Art from Craft</p>",
-      "style": "body",
-      "indent": false,
-      "align": "left"
-     }
-    },
-    {
-     "id": "j2fjvs2r",
-     "type": "text",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "html": "<p class=\"sm-meta\"><a href=\"/\">&lt;</a>  706 words ~ 4 min</p>",
-      "style": "body",
-      "indent": false,
-      "align": "left"
-     }
-    },
-    {
-     "id": "prmaoy1e",
-     "type": "text",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "html": "<p>Paste this essay’s text here.</p>",
-      "style": "small",
-      "indent": false,
-      "align": "left"
-     }
-    },
-    {
-     "id": "5k1ff6mz",
-     "type": "html",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "code": "<p class=\"sm-next\"><a href=\"/how-to-deseed-a-watermelon\">Next, How To Deseed A Watermelon For Safe Consumption: On the domestication of danger</a></p>"
-     }
-    }
-   ],
-   "kind": "page",
-   "stack": [],
-   "pin": {
-    "place": "top",
-    "fixed": false,
-    "show": "all",
-    "pages": []
    }
   },
   "aj2hm4y8": {
