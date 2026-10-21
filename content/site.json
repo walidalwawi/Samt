@@ -1055,10 +1055,10 @@
       "look": "text",
       "nextLabel": "Next, ",
       "prevLabel": "",
-      "align": "",
+      "align": "left",
       "style": "",
-      "size": "",
-      "lh": "",
+      "size": 15,
+      "lh": 20,
       "sizeM": "",
       "lhM": ""
      }
