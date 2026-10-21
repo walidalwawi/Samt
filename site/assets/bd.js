@@ -1,5 +1,5 @@
 /* DATA */
-var BD_DATA = {"site":"Samt","menu":true,"groups":[{"label":"","items":[{"title":"Journal","slug":""},
+var BD_DATA = {"site":"Samt","menu":false,"groups":[{"label":"","items":[{"title":"Journal","slug":""},
 {"title":"Library","slug":"library"},
 {"title":"Supply","slug":"supply"},
 {"title":"About","slug":"about"}]}],"pager":false,"nav":{"icon":"text","label":"ص مت","openLabel":"×","corner":"right","headings":false,"accordion":true,"current":"arrow","title":"hide"},"sections":[{"key":"a","label":"a. samt"}],"pages":[{"section":"","slug":"","num":"","title":"Journal"},
