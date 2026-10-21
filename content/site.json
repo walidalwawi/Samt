@@ -41,7 +41,7 @@
    }
   ],
   "externals": [],
-  "css": "/* TEXT */\n.bd-text a {\nborder-bottom: 1px solid currentColor;\n}\n",
+  "css": "/* TEXT */\n.bd-text a {\nborder-bottom: 1px solid currentColor;\n}\n.bd-e-lb31qsc3 {\nbackground-color: #00c817;\nmargin-bottom: 0;\n}\n\n/* MOBILE */\n@media (max-width: 760px) {\n.bd-e-lb31qsc3 {\nmax-width: 100%!Important;\nwidth: 100%important;\n}\n}\n",
   "head": "<script>\n/* NAV — UNDERLINE THE CURRENT PAGE */\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nvar here = location.pathname.replace(/\\/$/, \"\") || \"/\";\ndocument.querySelectorAll(\".sm-nav a\").forEach(function (a) {\nvar to = a.getAttribute(\"href\").replace(/\\/$/, \"\") || \"/\";\nif (to === here || (to !== \"/\" && here.indexOf(to + \"-\") === 0)) a.classList.add(\"is-current\");\n});\n});\n</script>",
   "showNum": false,
   "zoom": false,
@@ -305,9 +305,9 @@
   "mt": 80,
   "mr": 80,
   "mb": 80,
-  "mtM": 32,
+  "mtM": 30,
   "mrM": 20,
-  "mbM": 32
+  "mbM": 30
  },
  "order": [
   "f0kgkfxt",
@@ -3653,14 +3653,18 @@
         "src": ""
        }
       ],
-      "cols": 5,
+      "cols": 6,
       "colsM": 2,
       "gutter": 30,
-      "gutterM": 16,
+      "gutterM": 15,
       "ratio": "2/3",
-      "titles": false,
+      "titles": true,
       "filters": true,
       "allLabel": "All"
+     },
+     "own": {
+      "xm": 0,
+      "wm": 4
      }
     }
    ],
