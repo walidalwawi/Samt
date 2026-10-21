@@ -41,7 +41,7 @@
    }
   ],
   "externals": [],
-  "css": "/* HEADER */\n.sm-nav {\nfont-size: 13px;\nline-height: 19px;\n}\n.sm-nav .sm-logo {\ndisplay: block;\nmargin-bottom: 26px;\nfont-size: 13px;\n}\n.sm-nav a {\ndisplay: table;\nborder-bottom: 1px solid transparent;\n}\n.sm-nav a.is-current,\n.sm-nav a:hover {\nborder-bottom-color: currentColor;\n}\n\n/* TEXT */\n.bd-text a {\nborder-bottom: 1px solid currentColor;\n}\n.bd-site .sm-meta {\nfont-size: 11px;\nline-height: 16px;\n}\n.sm-meta a {\nborder-bottom: 0;\n}\n\n/* PULL QUOTE */\n.bd-site .sm-pull {\nmargin: 0;\npadding: 40px 46px;\nfont-size: 13px;\nline-height: 19px;\ntext-align: center;\nbox-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);\n}\n\n/* JOURNAL CARDS */\n.sm-card {\ndisplay: block;\nmin-height: 120px;\npadding: 18px;\nbackground: #eeeeee;\nborder-bottom: 0;\n}\n.sm-card-t {\ndisplay: block;\nfont-size: 15px;\nline-height: 22px;\n}\n.sm-card-m {\ndisplay: block;\nmargin-top: 12px;\nfont-size: 11px;\nline-height: 16px;\n}\n\n/* CONTRIBUTORS */\n.sm-who summary {\nlist-style: none;\ncursor: pointer;\n}\n.sm-who summary::-webkit-details-marker {\ndisplay: none;\n}\n.sm-who summary::before {\ncontent: \"+\";\ndisplay: inline-block;\nwidth: 27px;\n}\n.sm-who[open] summary::before {\ncontent: \"—\";\n}\n.sm-who ul {\nmargin-top: 18px;\npadding-left: 6px;\n}\n.sm-who li {\nline-height: 31px;\n}\n\n/* NEXT */\n.bd-site .sm-next {\npadding-top: 120px;\nfont-size: 11px;\ntext-align: center;\n}\n.sm-next a {\nborder-bottom: 0;\n}\n\n/* SHOP */\n.bd-site .sm-product {\nfont-size: 11px;\nline-height: 18px;\ntext-align: center;\n}\n\n/* MOBILE */\n@media (max-width: 760px) {\n.bd-site .sm-pull {\npadding: 28px 22px;\n}\n}",
+  "css": "/* TEXT */\n.bd-text a {\nborder-bottom: 1px solid currentColor;\n}\n",
   "head": "<script>\n/* NAV — UNDERLINE THE CURRENT PAGE */\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nvar here = location.pathname.replace(/\\/$/, \"\") || \"/\";\ndocument.querySelectorAll(\".sm-nav a\").forEach(function (a) {\nvar to = a.getAttribute(\"href\").replace(/\\/$/, \"\") || \"/\";\nif (to === here || (to !== \"/\" && here.indexOf(to + \"-\") === 0)) a.classList.add(\"is-current\");\n});\n});\n</script>",
   "showNum": false,
   "zoom": false,
@@ -246,6 +246,46 @@
      "w": 12,
      "xm": 0,
      "wm": 6,
+     "space": 120,
+     "spaceM": 80
+    },
+    "posts": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 6,
+     "space": "",
+     "spaceM": ""
+    },
+    "postinfo": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 6,
+     "space": "",
+     "spaceM": ""
+    },
+    "quote": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 6,
+     "space": "",
+     "spaceM": ""
+    },
+    "toggle": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 6,
+     "space": "",
+     "spaceM": ""
+    },
+    "product": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 6,
      "space": "",
      "spaceM": ""
     }
@@ -297,23 +337,43 @@
    "els": [
     {
      "id": "83zud23g",
-     "type": "html",
+     "type": "menubtn",
      "col": 1,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 3
      },
      "m": null,
      "props": {
-      "code": "<nav class=\"sm-nav\" aria-label=\"Main\">\n<a class=\"sm-logo\" href=\"/\" lang=\"ar\">ص مت</a>\n<a href=\"/\">Journal</a>\n<a href=\"/library\">Library</a>\n<a href=\"/supply\">Supply</a>\n<a href=\"/about\">About</a>\n</nav>"
-     },
-     "own": {
-      "x": 0,
-      "w": 1,
-      "xm": 0,
-      "wm": 1
+      "mode": "list",
+      "corner": "",
+      "brand": "custom",
+      "brandText": "ص مت",
+      "brandPos": "above",
+      "brandStyle": "body",
+      "brandSize": 13,
+      "brandLh": 19,
+      "brandGap": 26,
+      "brandGapM": "",
+      "align": "start",
+      "dir": "vertical",
+      "group": "flat",
+      "style": "body",
+      "size": 13,
+      "sizeM": "",
+      "lh": 19,
+      "lhM": "",
+      "textCase": "none",
+      "tracking": "",
+      "itemGap": 0,
+      "itemGapM": "",
+      "groupGap": 20,
+      "groupGapM": "",
+      "headGap": 4,
+      "current": "underline",
+      "hover": "underline"
      }
     }
    ],
@@ -350,26 +410,11 @@
    "desc": "Samt journal: essays on art, resistance and the institution.",
    "header": false,
    "layout": "master",
-   "css": "/* CARD IMAGES SIT INSIDE THE GREY CARD */\n.bd-col > .bd-html + .bd-figure {\nmargin-top: 0;\npadding: 0 18px 18px;\nbackground: #eeeeee;\n}",
+   "css": "",
    "els": [
     {
-     "id": "gti6hctf",
-     "type": "html",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "code": "<a class=\"sm-card\" href=\"/militant-improvisation\">\n<span class=\"sm-card-t\">Militant Improvisation: Urgency and Refusal In the Militant Cultural Front</span>\n<span class=\"sm-card-m\">738 words ~ 4 min</span>\n</a>"
-     }
-    },
-    {
-     "id": "nhbht1ov",
-     "type": "image",
+     "id": "5ygn83c2",
+     "type": "posts",
      "col": 1,
      "d": {
       "x": 0,
@@ -379,152 +424,39 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
-      "alt": "Illustration for Militant Improvisation: Urgency and Refusal In the Militant Cultural Front",
-      "caption": "",
-      "fit": "contain",
-      "zoom": false
-     }
-    },
-    {
-     "id": "ej6gei4s",
-     "type": "html",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "code": "<a class=\"sm-card\" href=\"/how-to-deseed-a-watermelon\">\n<span class=\"sm-card-t\">How To Deseed A Watermelon For Safe Consumption: On the domestication of danger</span>\n<span class=\"sm-card-m\">949 words ~ 5 min</span>\n</a>"
-     }
-    },
-    {
-     "id": "f2i1jgvd",
-     "type": "image",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 30
-     },
-     "m": null,
-     "props": {
-      "assetId": "",
-      "file": "",
-      "alt": "Illustration for How To Deseed A Watermelon For Safe Consumption: On the domestication of danger",
-      "caption": "",
-      "fit": "contain",
-      "zoom": false
-     }
-    },
-    {
-     "id": "zu7jdfec",
-     "type": "html",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "code": "<a class=\"sm-card\" href=\"/the-bourgeoi-rtist\">\n<span class=\"sm-card-t\">The Bourgeoi’rtist</span>\n<span class=\"sm-card-m\">197 words ~ 1 min</span>\n</a>"
-     }
-    },
-    {
-     "id": "cnwom5ax",
-     "type": "image",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 30
-     },
-     "m": null,
-     "props": {
-      "assetId": "",
-      "file": "",
-      "alt": "Illustration for The Bourgeoi’rtist",
-      "caption": "",
-      "fit": "contain",
-      "zoom": false
-     }
-    },
-    {
-     "id": "qtyqx2ab",
-     "type": "html",
-     "col": 3,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "code": "<a class=\"sm-card\" href=\"/handala-and-the-freeze-point\">\n<span class=\"sm-card-t\">Handala And The Freeze Point: How To Disable A Militant Icon</span>\n<span class=\"sm-card-m\">578 words ~ 3 min</span>\n</a>"
-     }
-    },
-    {
-     "id": "7e3z5nxv",
-     "type": "image",
-     "col": 3,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 30
-     },
-     "m": null,
-     "props": {
-      "assetId": "",
-      "file": "",
-      "alt": "Illustration for Handala And The Freeze Point: How To Disable A Militant Icon",
-      "caption": "",
-      "fit": "contain",
-      "zoom": false
-     }
-    },
-    {
-     "id": "331bn6ow",
-     "type": "html",
-     "col": 3,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "code": "<a class=\"sm-card\" href=\"/art-in-times-of-crisis\">\n<span class=\"sm-card-t\">Art In Times Of Crisis: The Culture Of Suffering.</span>\n<span class=\"sm-card-m\">478 words ~ 3 min</span>\n</a>"
-     }
-    },
-    {
-     "id": "b6nr6gut",
-     "type": "image",
-     "col": 3,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 30
-     },
-     "m": null,
-     "props": {
-      "assetId": "",
-      "file": "",
-      "alt": "Illustration for Art In Times Of Crisis: The Culture Of Suffering.",
-      "caption": "",
-      "fit": "contain",
-      "zoom": false
+      "blog": "",
+      "layout": "grid",
+      "cols": 3,
+      "colsM": 1,
+      "gap": 40,
+      "gapM": 24,
+      "rowGap": 40,
+      "rowGapM": 24,
+      "sort": "order",
+      "limit": "",
+      "featured": "none",
+      "fLayout": "stack",
+      "fTitleStyle": "heading",
+      "showImage": true,
+      "showTitle": true,
+      "showDate": false,
+      "showMeta": true,
+      "showExcerpt": false,
+      "imagePos": "bottom",
+      "ratio": "auto",
+      "imgGap": 18,
+      "cardBg": "#eeeeee",
+      "cardPad": 18,
+      "cardPadM": "",
+      "minH": 84,
+      "titleStyle": "body",
+      "titleSize": 15,
+      "titleLh": 22,
+      "metaStyle": "small",
+      "metaSize": 11,
+      "metaLh": 16,
+      "metaGap": 12,
+      "hover": "none"
      }
     }
    ],
@@ -542,25 +474,24 @@
     "gapM": ""
    },
    "colset": {
-    "cols": 3,
-    "align": "center",
+    "cols": 1,
+    "align": "spread",
     "spans": [
-     4,
-     4,
-     4
+     12
     ],
     "colsM": 1,
-    "gutter": 40,
-    "gutterM": 24
-   }
+    "gutter": 30,
+    "gutterM": 20
+   },
+   "blog": true
   },
   "aj2hm4y8": {
    "id": "aj2hm4y8",
    "title": "How To Deseed A Watermelon For Safe Consumption",
-   "h1": "",
+   "h1": "How To Deseed A Watermelon For Safe Consumption: On the domestication of danger",
    "num": "",
    "slug": "how-to-deseed-a-watermelon",
-   "section": "a",
+   "section": "",
    "desc": "How To Deseed A Watermelon For Safe Consumption: On the domestication of danger",
    "header": false,
    "layout": "master",
@@ -586,20 +517,24 @@
     },
     {
      "id": "ating08e",
-     "type": "text",
+     "type": "postinfo",
      "col": 1,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 3
      },
      "m": null,
      "props": {
-      "html": "<p class=\"sm-meta\"><a href=\"/\">&lt;</a>  949 words ~ 5 min</p>",
-      "style": "body",
-      "indent": false,
-      "align": "left"
+      "back": true,
+      "backLabel": "<",
+      "date": false,
+      "words": true,
+      "time": true,
+      "style": "small",
+      "size": 11,
+      "lh": 16
      }
     },
     {
@@ -622,17 +557,26 @@
     },
     {
      "id": "5mxm3w9z",
-     "type": "html",
+     "type": "quote",
      "col": 2,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 10
      },
      "m": null,
      "props": {
-      "code": "<blockquote class=\"sm-pull\">But how did a symbol that claims to empower the prohibited come to eclipse it? The answer lies not in the curated gallery walls or carefully written statements at public events, but in another watermelon, one carried by a mother in Haifa in the early 1970s.</blockquote>"
+      "html": "<p>But how did a symbol that claims to empower the prohibited come to eclipse it? The answer lies not in the curated gallery walls or carefully written statements at public events, but in another watermelon, one carried by a mother in Haifa in the early 1970s.</p>",
+      "style": "small",
+      "align": "center",
+      "pad": 40,
+      "padX": 46,
+      "padM": 28,
+      "padXM": 22,
+      "bg": "",
+      "shadow": true,
+      "line": false
      }
     },
     {
@@ -789,17 +733,26 @@
     },
     {
      "id": "wa12r3y2",
-     "type": "html",
+     "type": "quote",
      "col": 2,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 10
      },
      "m": null,
      "props": {
-      "code": "<blockquote class=\"sm-pull\">A lazy and cowardly infantilization of the Palestinian struggle sold as radical ingenuity, designed to satisfy performative dissent yet survive within empire’s optics.</blockquote>"
+      "html": "<p>A lazy and cowardly infantilization of the Palestinian struggle sold as radical ingenuity, designed to satisfy performative dissent yet survive within empire’s optics.</p>",
+      "style": "small",
+      "align": "center",
+      "pad": 40,
+      "padX": 46,
+      "padM": 28,
+      "padXM": 22,
+      "bg": "",
+      "shadow": true,
+      "line": false
      }
     },
     {
@@ -842,17 +795,26 @@
     },
     {
      "id": "eiirm6n4",
-     "type": "html",
+     "type": "quote",
      "col": 2,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 10
      },
      "m": null,
      "props": {
-      "code": "<blockquote class=\"sm-pull\">Born in Haifa in 1945, Zakia Shamut was one of the first Palestinian women in the ’48 territories to join the armed resistance. By the early 1970s she had carried out seven operations against settlers and soldiers alike. For years she eluded capture, only later arrested mid-pregnancy along with her family and sentenced by an Israeli military court to 1,188 years in prison.</blockquote>"
+      "html": "<p>Born in Haifa in 1945, Zakia Shamut was one of the first Palestinian women in the ’48 territories to join the armed resistance. By the early 1970s she had carried out seven operations against settlers and soldiers alike. For years she eluded capture, only later arrested mid-pregnancy along with her family and sentenced by an Israeli military court to 1,188 years in prison.</p>",
+      "style": "small",
+      "align": "center",
+      "pad": 40,
+      "padX": 46,
+      "padM": 28,
+      "padXM": 22,
+      "bg": "",
+      "shadow": true,
+      "line": false
      }
     },
     {
@@ -895,17 +857,27 @@
     },
     {
      "id": "m8huukvm",
-     "type": "html",
+     "type": "pager",
      "col": 2,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 3
      },
      "m": null,
      "props": {
-      "code": "<p class=\"sm-next\"><a href=\"/handala-and-the-freeze-point\">Next, Handala And The Freeze Point: How To Disable A Militant Icon</a></p>"
+      "num": "num",
+      "line": false,
+      "loop": false,
+      "scope": "blog",
+      "look": "text",
+      "nextLabel": "Next, ",
+      "prevLabel": "",
+      "align": "center",
+      "style": "small",
+      "size": 11,
+      "lh": 16
      }
     }
    ],
@@ -920,15 +892,19 @@
     "hM": "",
     "gap": "",
     "gapM": ""
-   }
+   },
+   "parent": "fji5ongj",
+   "date": "",
+   "excerpt": "",
+   "featured": false
   },
   "ipk7ns57": {
    "id": "ipk7ns57",
    "title": "Handala And The Freeze Point",
-   "h1": "",
+   "h1": "Handala And The Freeze Point: How To Disable A Militant Icon",
    "num": "",
    "slug": "handala-and-the-freeze-point",
-   "section": "a",
+   "section": "",
    "desc": "Handala And The Freeze Point: How To Disable A Militant Icon",
    "header": false,
    "layout": "master",
@@ -954,20 +930,24 @@
     },
     {
      "id": "9rdic408",
-     "type": "text",
+     "type": "postinfo",
      "col": 1,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 3
      },
      "m": null,
      "props": {
-      "html": "<p class=\"sm-meta\"><a href=\"/\">&lt;</a>  578 words ~ 3 min</p>",
-      "style": "body",
-      "indent": false,
-      "align": "left"
+      "back": true,
+      "backLabel": "<",
+      "date": false,
+      "words": true,
+      "time": true,
+      "style": "small",
+      "size": 11,
+      "lh": 16
      }
     },
     {
@@ -1234,17 +1214,27 @@
     },
     {
      "id": "37cykksj",
-     "type": "html",
+     "type": "pager",
      "col": 2,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 3
      },
      "m": null,
      "props": {
-      "code": "<p class=\"sm-next\"><a href=\"/militant-improvisation\">Next, Militant Improvisation: Urgency and Refusal In the Militant Cultural Front</a></p>"
+      "num": "num",
+      "line": false,
+      "loop": false,
+      "scope": "blog",
+      "look": "text",
+      "nextLabel": "Next, ",
+      "prevLabel": "",
+      "align": "center",
+      "style": "small",
+      "size": 11,
+      "lh": 16
      }
     }
    ],
@@ -1259,15 +1249,19 @@
     "hM": "",
     "gap": "",
     "gapM": ""
-   }
+   },
+   "parent": "fji5ongj",
+   "date": "",
+   "excerpt": "",
+   "featured": false
   },
   "k2b6e868": {
    "id": "k2b6e868",
    "title": "Militant Improvisation",
-   "h1": "",
+   "h1": "Militant Improvisation: Urgency and Refusal In the Militant Cultural Front",
    "num": "",
    "slug": "militant-improvisation",
-   "section": "a",
+   "section": "",
    "desc": "Militant Improvisation: Urgency and Refusal In the Militant Cultural Front",
    "header": false,
    "layout": "master",
@@ -1293,20 +1287,24 @@
     },
     {
      "id": "fl97b2lk",
-     "type": "text",
+     "type": "postinfo",
      "col": 1,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 3
      },
      "m": null,
      "props": {
-      "html": "<p class=\"sm-meta\"><a href=\"/\">&lt;</a>  738 words ~ 4 min</p>",
-      "style": "body",
-      "indent": false,
-      "align": "left"
+      "back": true,
+      "backLabel": "<",
+      "date": false,
+      "words": true,
+      "time": true,
+      "style": "small",
+      "size": 11,
+      "lh": 16
      }
     },
     {
@@ -1387,17 +1385,26 @@
     },
     {
      "id": "675bn26y",
-     "type": "html",
+     "type": "quote",
      "col": 2,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 10
      },
      "m": null,
      "props": {
-      "code": "<blockquote class=\"sm-pull\">Improvisation becomes a necessity when the structures meant to preserve life are the same ones dismantling it.</blockquote>"
+      "html": "<p>Improvisation becomes a necessity when the structures meant to preserve life are the same ones dismantling it.</p>",
+      "style": "small",
+      "align": "center",
+      "pad": 40,
+      "padX": 46,
+      "padM": 28,
+      "padXM": 22,
+      "bg": "",
+      "shadow": true,
+      "line": false
      }
     },
     {
@@ -1478,17 +1485,26 @@
     },
     {
      "id": "o03ntekz",
-     "type": "html",
+     "type": "quote",
      "col": 2,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 10
      },
      "m": null,
      "props": {
-      "code": "<blockquote class=\"sm-pull\">Militant improvisation cannot be disciplined into institutional logic, where visibility is often weaponised and “militancy” becomes a strategy performed within the sanctioned violence of art spaces.</blockquote>"
+      "html": "<p>Militant improvisation cannot be disciplined into institutional logic, where visibility is often weaponised and “militancy” becomes a strategy performed within the sanctioned violence of art spaces.</p>",
+      "style": "small",
+      "align": "center",
+      "pad": 40,
+      "padX": 46,
+      "padM": 28,
+      "padXM": 22,
+      "bg": "",
+      "shadow": true,
+      "line": false
      }
     },
     {
@@ -1531,17 +1547,26 @@
     },
     {
      "id": "lwaxrbru",
-     "type": "html",
+     "type": "quote",
      "col": 2,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 10
      },
      "m": null,
      "props": {
-      "code": "<blockquote class=\"sm-pull\">Improvisation allows movement in shadows, avoiding the traps of co-optation and spectacle. By refusing to ask for entry, it appears uninvited, knowing that inclusion is not solidarity, but the final act of neutralisation.</blockquote>"
+      "html": "<p>Improvisation allows movement in shadows, avoiding the traps of co-optation and spectacle. By refusing to ask for entry, it appears uninvited, knowing that inclusion is not solidarity, but the final act of neutralisation.</p>",
+      "style": "small",
+      "align": "center",
+      "pad": 40,
+      "padX": 46,
+      "padM": 28,
+      "padXM": 22,
+      "bg": "",
+      "shadow": true,
+      "line": false
      }
     },
     {
@@ -1582,17 +1607,27 @@
     },
     {
      "id": "jvxwreue",
-     "type": "html",
+     "type": "pager",
      "col": 2,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 3
      },
      "m": null,
      "props": {
-      "code": "<p class=\"sm-next\"><a href=\"/the-bourgeoi-rtist\">Next, The Bourgeoi’rtist</a></p>"
+      "num": "num",
+      "line": false,
+      "loop": false,
+      "scope": "blog",
+      "look": "text",
+      "nextLabel": "Next, ",
+      "prevLabel": "",
+      "align": "center",
+      "style": "small",
+      "size": 11,
+      "lh": 16
      }
     }
    ],
@@ -1607,15 +1642,19 @@
     "hM": "",
     "gap": "",
     "gapM": ""
-   }
+   },
+   "parent": "fji5ongj",
+   "date": "",
+   "excerpt": "",
+   "featured": false
   },
   "ap7jj2t4": {
    "id": "ap7jj2t4",
    "title": "The Bourgeoi’rtist",
-   "h1": "",
+   "h1": "The Bourgeoi’rtist",
    "num": "",
    "slug": "the-bourgeoi-rtist",
-   "section": "a",
+   "section": "",
    "desc": "The Bourgeoi’rtist",
    "header": false,
    "layout": "master",
@@ -1641,20 +1680,24 @@
     },
     {
      "id": "tzmj17f5",
-     "type": "text",
+     "type": "postinfo",
      "col": 1,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 3
      },
      "m": null,
      "props": {
-      "html": "<p class=\"sm-meta\"><a href=\"/\">&lt;</a>  197 words ~ 1 min</p>",
-      "style": "body",
-      "indent": false,
-      "align": "left"
+      "back": true,
+      "backLabel": "<",
+      "date": false,
+      "words": true,
+      "time": true,
+      "style": "small",
+      "size": 11,
+      "lh": 16
      }
     },
     {
@@ -1829,17 +1872,27 @@
     },
     {
      "id": "4dop256w",
-     "type": "html",
+     "type": "pager",
      "col": 2,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 3
      },
      "m": null,
      "props": {
-      "code": "<p class=\"sm-next\"><a href=\"/art-in-times-of-crisis\">Next, Art In Times Of Crisis: The Culture Of Suffering.</a></p>"
+      "num": "num",
+      "line": false,
+      "loop": false,
+      "scope": "blog",
+      "look": "text",
+      "nextLabel": "Next, ",
+      "prevLabel": "",
+      "align": "center",
+      "style": "small",
+      "size": 11,
+      "lh": 16
      }
     }
    ],
@@ -1854,15 +1907,19 @@
     "hM": "",
     "gap": "",
     "gapM": ""
-   }
+   },
+   "parent": "fji5ongj",
+   "date": "",
+   "excerpt": "",
+   "featured": false
   },
   "1bp9xrs5": {
    "id": "1bp9xrs5",
    "title": "Art In Times Of Crisis",
-   "h1": "",
+   "h1": "Art In Times Of Crisis: The Culture Of Suffering.",
    "num": "",
    "slug": "art-in-times-of-crisis",
-   "section": "a",
+   "section": "",
    "desc": "Art In Times Of Crisis: The Culture Of Suffering.",
    "header": false,
    "layout": "master",
@@ -1888,20 +1945,24 @@
     },
     {
      "id": "302epmue",
-     "type": "text",
+     "type": "postinfo",
      "col": 1,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 3
      },
      "m": null,
      "props": {
-      "html": "<p class=\"sm-meta\"><a href=\"/\">&lt;</a>  478 words ~ 3 min</p>",
-      "style": "body",
-      "indent": false,
-      "align": "left"
+      "back": true,
+      "backLabel": "<",
+      "date": false,
+      "words": true,
+      "time": true,
+      "style": "small",
+      "size": 11,
+      "lh": 16
      }
     },
     {
@@ -1982,17 +2043,26 @@
     },
     {
      "id": "sx3aj3f0",
-     "type": "html",
+     "type": "quote",
      "col": 2,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 10
      },
      "m": null,
      "props": {
-      "code": "<blockquote class=\"sm-pull\">*Capital is material gain that can be interpreted through fame, status, opportunity, and all forms of wealth.</blockquote>"
+      "html": "<p>*Capital is material gain that can be interpreted through fame, status, opportunity, and all forms of wealth.</p>",
+      "style": "small",
+      "align": "center",
+      "pad": 40,
+      "padX": 46,
+      "padM": 28,
+      "padXM": 22,
+      "bg": "",
+      "shadow": true,
+      "line": false
      }
     },
     {
@@ -2091,17 +2161,26 @@
     },
     {
      "id": "n957q76z",
-     "type": "html",
+     "type": "quote",
      "col": 2,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 10
      },
      "m": null,
      "props": {
-      "code": "<blockquote class=\"sm-pull\">Inspiration is the first step of mobilisation, not an indulgent state that ends once the initial engagement is over. It must ignite a continuous burn.</blockquote>"
+      "html": "<p>Inspiration is the first step of mobilisation, not an indulgent state that ends once the initial engagement is over. It must ignite a continuous burn.</p>",
+      "style": "small",
+      "align": "center",
+      "pad": 40,
+      "padX": 46,
+      "padM": 28,
+      "padXM": 22,
+      "bg": "",
+      "shadow": true,
+      "line": false
      }
     },
     {
@@ -2126,17 +2205,27 @@
     },
     {
      "id": "hox6tjmi",
-     "type": "html",
+     "type": "pager",
      "col": 2,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 3
      },
      "m": null,
      "props": {
-      "code": "<p class=\"sm-next\"><a href=\"/the-colonial-scissors\">Next, The Colonial Scissors: Cutting Art from Craft</a></p>"
+      "num": "num",
+      "line": false,
+      "loop": false,
+      "scope": "blog",
+      "look": "text",
+      "nextLabel": "Next, ",
+      "prevLabel": "",
+      "align": "center",
+      "style": "small",
+      "size": 11,
+      "lh": 16
      }
     }
    ],
@@ -2151,7 +2240,11 @@
     "hM": "",
     "gap": "",
     "gapM": ""
-   }
+   },
+   "parent": "fji5ongj",
+   "date": "",
+   "excerpt": "",
+   "featured": false
   },
   "b2lr3tkr": {
    "id": "b2lr3tkr",
@@ -3602,7 +3695,7 @@
    "els": [
     {
      "id": "2xkm99iq",
-     "type": "image",
+     "type": "product",
      "col": 1,
      "d": {
       "x": 0,
@@ -3615,29 +3708,19 @@
       "assetId": "",
       "file": "",
       "alt": "The Silent Ones Embroidery on white t-shirt",
-      "caption": "",
-      "fit": "contain",
-      "zoom": false
-     }
-    },
-    {
-     "id": "sg5627p6",
-     "type": "html",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "code": "<p class=\"sm-product\">The Silent Ones Embroidery on white t-shirt<br>£20.00</p>"
+      "title": "The Silent Ones Embroidery on white t-shirt",
+      "price": "£20.00",
+      "note": "",
+      "href": "",
+      "style": "small",
+      "align": "center",
+      "size": 11,
+      "lh": 18
      }
     },
     {
      "id": "pw5i8g5x",
-     "type": "image",
+     "type": "product",
      "col": 2,
      "d": {
       "x": 0,
@@ -3650,24 +3733,14 @@
       "assetId": "",
       "file": "",
       "alt": "Yoni Clay white incense holder",
-      "caption": "",
-      "fit": "contain",
-      "zoom": false
-     }
-    },
-    {
-     "id": "jqmkjioy",
-     "type": "html",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "code": "<p class=\"sm-product\">Yoni Clay white incense holder<br>£55.00<br>Sold out</p>"
+      "title": "Yoni Clay white incense holder",
+      "price": "£55.00",
+      "note": "Sold out",
+      "href": "",
+      "style": "small",
+      "align": "center",
+      "size": 11,
+      "lh": 18
      }
     }
    ],
@@ -3716,17 +3789,82 @@
     },
     {
      "id": "cjjty14h",
-     "type": "html",
+     "type": "toggle",
      "col": 1,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 6
      },
      "m": null,
      "props": {
-      "code": "<details class=\"sm-who\">\n<summary>Contributors:</summary>\n<ul>\n<li>Aya Atoui</li>\n<li>Andrew Riad</li>\n<li>Amal Waqar</li>\n<li>Sulaiman Al-Omar</li>\n<li>Reed Ghunaim</li>\n<li>Aya Atoui</li>\n<li>Salmah Al Mansoori</li>\n<li>Tamara Kalo</li>\n<li>Khadeeja Hamid</li>\n<li>Eman Dakhil Al-Ghamdi</li>\n<li>Andrew Riad</li>\n<li>Mai Al Moataz</li>\n<li>Amna Ilyas</li>\n<li>Maryam Alhuraiz</li>\n<li>Naser AL (Firas S)</li>\n<li>Shaima Shamsi</li>\n<li>Mashael Alsaie</li>\n<li>Magali El Haddad</li>\n<li>VOYYYD</li>\n<li>Aya Afaneh</li>\n<li>Taus Makhacheva</li>\n<li>Abdulrahim Alkindi</li>\n<li>Anood Al Obaidly</li>\n<li>Antony Crossfield</li>\n<li>Areej Kaoud</li>\n<li>Bu Yousif</li>\n<li>Collect.ive</li>\n<li>Dinkha Latchin</li>\n<li>Fadi Zumot</li>\n<li>Hadil Moufti</li>\n<li>Hussein Hassan</li>\n<li>Karam Natour</li>\n<li>Kareem Samara</li>\n<li>Mahmoud Safadi</li>\n<li>Mays Albeik</li>\n<li>Mazen Al Ashkar</li>\n<li>Mohamed Khalid</li>\n<li>Moza Almatrooshi</li>\n<li>Mustafa Boga</li>\n<li>Reem Falaknaz</li>\n<li>Reem Kelain</li>\n<li>Saif Mhaisen</li>\n<li>Sara Masinae</li>\n<li>Sarah Alagroobi</li>\n<li>Sarah Brahim</li>\n<li>Tara Aldughaither</li>\n<li>Tulip Hazbar</li>\n<li>Aya Afaneh</li>\n<li>Mashael Al Saie</li>\n<li>Shaima Shamsi</li>\n<li>Fatima Uzdenova</li>\n<li>Behnoosh Feiz</li>\n<li>Yervant</li>\n<li>Vedika Kushalappa</li>\n<li>Layal Berberi</li>\n<li>Dania Al Tamimi</li>\n<li>Rawd Halawani</li>\n<li>Yal Solan</li>\n</ul>\n</details>"
+      "title": "Contributors:",
+      "items": [
+       "Aya Atoui",
+       "Andrew Riad",
+       "Amal Waqar",
+       "Sulaiman Al-Omar",
+       "Reed Ghunaim",
+       "Aya Atoui",
+       "Salmah Al Mansoori",
+       "Tamara Kalo",
+       "Khadeeja Hamid",
+       "Eman Dakhil Al-Ghamdi",
+       "Andrew Riad",
+       "Mai Al Moataz",
+       "Amna Ilyas",
+       "Maryam Alhuraiz",
+       "Naser AL (Firas S)",
+       "Shaima Shamsi",
+       "Mashael Alsaie",
+       "Magali El Haddad",
+       "VOYYYD",
+       "Aya Afaneh",
+       "Taus Makhacheva",
+       "Abdulrahim Alkindi",
+       "Anood Al Obaidly",
+       "Antony Crossfield",
+       "Areej Kaoud",
+       "Bu Yousif",
+       "Collect.ive",
+       "Dinkha Latchin",
+       "Fadi Zumot",
+       "Hadil Moufti",
+       "Hussein Hassan",
+       "Karam Natour",
+       "Kareem Samara",
+       "Mahmoud Safadi",
+       "Mays Albeik",
+       "Mazen Al Ashkar",
+       "Mohamed Khalid",
+       "Moza Almatrooshi",
+       "Mustafa Boga",
+       "Reem Falaknaz",
+       "Reem Kelain",
+       "Saif Mhaisen",
+       "Sara Masinae",
+       "Sarah Alagroobi",
+       "Sarah Brahim",
+       "Tara Aldughaither",
+       "Tulip Hazbar",
+       "Aya Afaneh",
+       "Mashael Al Saie",
+       "Shaima Shamsi",
+       "Fatima Uzdenova",
+       "Behnoosh Feiz",
+       "Yervant",
+       "Vedika Kushalappa",
+       "Layal Berberi",
+       "Dania Al Tamimi",
+       "Rawd Halawani",
+       "Yal Solan"
+      ],
+      "open": false,
+      "marker": "plus",
+      "style": "body",
+      "itemGap": 9,
+      "indent": 6
      }
     },
     {

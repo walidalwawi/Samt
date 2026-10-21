@@ -1083,3 +1083,28 @@ padding: 0 6px;
 font-family: var(--e-mono);
 font-size: 10.5px;
 }
+
+/* BLOG IN PAGES LIST */
+.bd-ed-pg.is-post {
+padding-left: 16px;
+}
+.bd-ed-pg.is-post b {
+color: var(--e-mute);
+}
+.bd-ed-pg.is-add {
+color: var(--e-mute);
+}
+
+/* POSTS LIST IN BLOCK PANEL */
+.bd-ed-plist {
+display: grid;
+grid-template-columns: 28px minmax(0, 1fr) 28px 28px;
+gap: 4px;
+align-items: center;
+}
+.bd-ed-x.is-on {
+color: var(--e-accent);
+}
+.bd-ed-x.is-on svg {
+fill: currentColor;
+}

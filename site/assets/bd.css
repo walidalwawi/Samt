@@ -470,7 +470,88 @@ text-align: right;
 position: relative;
 }
 .bd-menubtn {
+display: flex;
+flex-wrap: wrap;
+align-items: baseline;
+gap: var(--mgap, 16px);
 min-height: 1px;
+}
+.bd-menubtn.is-al-center {
+justify-content: center;
+}
+.bd-menubtn.is-al-end {
+justify-content: flex-end;
+}
+.bd-menubtn.is-al-spread {
+justify-content: space-between;
+}
+.bd-menubtn.is-brand-after .bd-mbrand {
+order: 2;
+}
+.bd-menubtn.is-brand-above {
+flex-direction: column;
+align-items: flex-start;
+}
+.bd-menubtn.is-brand-above.is-al-center {
+align-items: center;
+}
+.bd-menubtn.is-brand-above.is-al-end {
+align-items: flex-end;
+}
+.bd-mbrand {
+display: block;
+}
+.bd-mlist ul {
+margin: 0;
+padding: 0;
+list-style: none;
+}
+.bd-mlist a {
+display: inline-block;
+border-bottom: 1px solid transparent;
+}
+.bd-mlist.is-vertical li + li {
+margin-top: var(--igap, 0px);
+}
+.bd-mlist.is-vertical .bd-mgroup + .bd-mgroup {
+margin-top: var(--ggap, 20px);
+}
+.bd-mlist.is-horizontal,
+.bd-mlist.is-horizontal ul {
+display: flex;
+flex-wrap: wrap;
+}
+.bd-mlist.is-horizontal {
+gap: var(--ggap, 20px);
+}
+.bd-mlist.is-horizontal ul {
+gap: var(--igap, 16px);
+}
+.bd-mlist.is-horizontal.has-heads .bd-mgroup {
+display: flex;
+gap: var(--igap, 16px);
+}
+.bd-mhead {
+display: block;
+margin-bottom: var(--hgap, 4px);
+}
+.bd-mlist.is-horizontal .bd-mhead {
+margin-bottom: 0;
+}
+.bd-mlist.is-hov-underline a:hover,
+.bd-mlist.is-cur-underline a.is-current {
+border-bottom-color: currentColor;
+}
+.bd-mlist.is-hov-dim a:hover,
+.bd-mlist.is-cur-dim a.is-current {
+opacity: 0.4;
+}
+.bd-mlist.is-cur-strike a.is-current {
+text-decoration: line-through;
+text-decoration-thickness: 1px;
+}
+.bd-mlist.is-cur-arrow a.is-current::before {
+content: "\2192\00a0";
 }
 .bd-flow > .bd-menubtn.is-corner-right,
 .bd-flow > .bd-menubtn.is-corner-left {
@@ -501,6 +582,163 @@ transition: opacity 0.25s ease;
 opacity: var(--bd-nav-fade);
 }
 
+/* BLOG POSTS */
+.bd-posts {
+display: grid;
+grid-template-columns: repeat(var(--pcols, 3), minmax(0, 1fr));
+column-gap: var(--pgap, 40px);
+row-gap: var(--prow, 40px);
+align-items: start;
+}
+.bd-posts.is-list {
+grid-template-columns: minmax(0, 1fr);
+}
+.bd-posts.is-masonry {
+display: block;
+columns: var(--pcols, 3);
+column-gap: var(--pgap, 40px);
+}
+.bd-posts.is-masonry .bd-post {
+break-inside: avoid;
+margin-bottom: var(--prow, 40px);
+}
+.bd-post-txt {
+min-height: var(--pminh, 0px);
+}
+.bd-post {
+display: flex;
+flex-direction: column;
+padding: var(--ppad, 0px);
+background: var(--pbg, transparent);
+transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.bd-post-img {
+display: block;
+margin-bottom: var(--pimg-gap, 12px);
+}
+.bd-posts.is-img-bottom .bd-post-img {
+order: 2;
+margin: var(--pimg-gap, 12px) 0 0;
+}
+.bd-post img {
+width: 100%;
+aspect-ratio: var(--pratio, auto);
+object-fit: cover;
+}
+.bd-post-txt,
+.bd-post-t,
+.bd-post-d,
+.bd-post-m,
+.bd-post-x {
+display: block;
+}
+.bd-post-d,
+.bd-post-m,
+.bd-post-x {
+margin-top: var(--pmgap, 8px);
+}
+.bd-post.is-featured {
+grid-column: 1 / -1;
+column-span: all;
+}
+.bd-post.is-featured.is-f-side {
+display: grid;
+grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+column-gap: var(--pgap, 40px);
+align-items: start;
+}
+.bd-post.is-featured.is-f-side .bd-post-img {
+margin: 0;
+}
+.bd-posts.is-hov-dim .bd-post:hover {
+opacity: 0.6;
+}
+.bd-posts.is-hov-lift .bd-post:hover {
+transform: translateY(-3px);
+}
+
+/* POST INFO */
+.bd-postinfo-back {
+margin-right: 0.6em;
+}
+
+/* QUOTE */
+.bd-quote {
+margin: 0;
+}
+.bd-quote.is-al-center {
+text-align: center;
+}
+.bd-quote.is-al-right {
+text-align: right;
+}
+.bd-quote.has-shadow {
+box-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);
+}
+.bd-quote.has-line {
+border-left: 1px solid currentColor;
+}
+.bd-quote p + p {
+margin-top: var(--bd-lh);
+}
+
+/* FOLD-OUT LIST */
+.bd-toggle summary {
+list-style: none;
+cursor: pointer;
+}
+.bd-toggle summary::-webkit-details-marker {
+display: none;
+}
+.bd-toggle.is-mark-plus summary::before {
+content: "+";
+display: inline-block;
+width: 1.8em;
+}
+.bd-toggle.is-mark-plus[open] summary::before {
+content: "\2014";
+}
+.bd-toggle.is-mark-arrow summary::before {
+content: "\2192";
+display: inline-block;
+width: 1.8em;
+}
+.bd-toggle.is-mark-arrow[open] summary::before {
+content: "\2193";
+}
+.bd-toggle ul {
+margin: var(--bd-lh) 0 0;
+padding: 0 0 0 var(--tind, 0px);
+list-style: none;
+}
+.bd-toggle li + li {
+margin-top: var(--tgap, 0px);
+}
+
+/* PRODUCT */
+.bd-product {
+display: block;
+margin: 0;
+}
+.bd-product img {
+width: 100%;
+}
+.bd-product-t {
+margin-top: 12px;
+}
+.bd-product.is-al-center {
+text-align: center;
+}
+.bd-product.is-al-right {
+text-align: right;
+}
+.bd-product-empty {
+display: block;
+padding: 40px 12px;
+background: rgba(0, 0, 0, 0.04);
+text-align: center;
+}
+
 /* PAGE ARROWS BLOCK */
 .bd-pagerbar {
 display: grid;
@@ -522,6 +760,22 @@ height: 22px;
 }
 .bd-pagerbar-next {
 grid-column: 3;
+}
+.bd-pagerbar.is-text {
+display: block;
+}
+.bd-pagerbar.is-text.is-al-center {
+text-align: center;
+}
+.bd-pagerbar.is-text.is-al-right {
+text-align: right;
+}
+.bd-pagerbar.is-text a {
+display: inline;
+width: auto;
+}
+.bd-pagerbar.is-text a + a {
+margin-left: 2em;
 }
 
 
@@ -755,6 +1009,7 @@ margin-top: calc(var(--bd-space) * 2);
 
 /* TYPE STYLES */
 .bd-site,
+.bd-ts-body,
 .bd-list.is-body ul {
 font-family: var(--bd-sans);
 font-weight: 400;
@@ -767,6 +1022,7 @@ line-height: 22px;
 .bd-text.is-heading,
 .bd-text.is-large,
 .bd-ptitle.is-heading,
+.bd-ts-heading,
 .bd-list.is-heading ul {
 font-family: var(--bd-sans);
 font-weight: 400;
@@ -778,6 +1034,7 @@ line-height: 22px;
 }
 .bd-text.is-small,
 .bd-ptitle.is-small,
+.bd-ts-small,
 .bd-list.is-small ul {
 font-family: var(--bd-sans);
 font-weight: 400;
@@ -789,6 +1046,7 @@ line-height: 19px;
 }
 .bd-text.is-caption,
 .bd-ptitle.is-caption,
+.bd-ts-caption,
 .bd-figure figcaption,
 .bd-gi figcaption,
 .bd-zoom-cap,
@@ -803,6 +1061,7 @@ line-height: 19px;
 }
 .bd-text.is-mono,
 .bd-ptitle.is-mono,
+.bd-ts-mono,
 .bd-notes,
 .bd-list.is-mono ul {
 font-family: var(--bd-sans);
@@ -867,14 +1126,33 @@ line-height: 19px;
 --x: 0;
 --w: 12;
 }
+.bd-flow > .bd-el + .bd-pagerbar {
+margin-top: 120px;
+}
+.bd-flow > .bd-posts {
+--x: 0;
+--w: 12;
+}
+.bd-flow > .bd-postinfo {
+--x: 0;
+--w: 12;
+}
+.bd-flow > .bd-quote {
+--x: 0;
+--w: 12;
+}
+.bd-flow > .bd-toggle {
+--x: 0;
+--w: 12;
+}
+.bd-flow > .bd-product {
+--x: 0;
+--w: 12;
+}
 
 /* COLUMNS */
 .bd-main .bd-cols {
 grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
-column-gap: 40px;
-}
-.bd-cols.bd-cl-fji5ongj {
-grid-template-columns: minmax(0, 4fr) minmax(0, 4fr) minmax(0, 4fr);
 column-gap: 40px;
 }
 
@@ -884,9 +1162,121 @@ margin-bottom: 200px;
 }
 
 /* PAGE: HEADER */
-.bd-flow > .bd-e-83zud23g {
---x: 0;
---w: 1;
+
+.bd-e-83zud23g {
+--mgap: 26px;
+--igap: 0px;
+--ggap: 20px;
+--hgap: 4px;
+}
+.bd-e-83zud23g .bd-mlist {
+font-size: 13px;
+line-height: 19px;
+}
+.bd-e-83zud23g .bd-mbrand {
+font-size: 13px;
+line-height: 19px;
+}
+
+/* PAGE: JOURNAL */
+
+.bd-e-5ygn83c2 {
+--pcols: 3;
+--pgap: 40px;
+--prow: 40px;
+--ppad: 18px;
+--pminh: 84px;
+--pimg-gap: 18px;
+--pmgap: 12px;
+--pbg: #eeeeee;
+}
+.bd-e-5ygn83c2 .bd-post:not(.is-featured) .bd-post-t {
+font-size: 15px;
+line-height: 22px;
+}
+.bd-e-5ygn83c2 .bd-post-m,
+.bd-e-5ygn83c2 .bd-post-d {
+font-size: 11px;
+line-height: 16px;
+}
+
+/* PAGE: HOW TO DESEED A WATERMELON FOR SAFE CONSUMPTION */
+
+.bd-e-ating08e {
+font-size: 11px;
+line-height: 16px;
+}
+.bd-e-5mxm3w9z {
+padding: 40px 46px;
+}
+.bd-e-wa12r3y2 {
+padding: 40px 46px;
+}
+.bd-e-eiirm6n4 {
+padding: 40px 46px;
+}
+.bd-e-m8huukvm {
+font-size: 11px;
+line-height: 16px;
+}
+
+/* PAGE: HANDALA AND THE FREEZE POINT */
+
+.bd-e-9rdic408 {
+font-size: 11px;
+line-height: 16px;
+}
+.bd-e-37cykksj {
+font-size: 11px;
+line-height: 16px;
+}
+
+/* PAGE: MILITANT IMPROVISATION */
+
+.bd-e-fl97b2lk {
+font-size: 11px;
+line-height: 16px;
+}
+.bd-e-675bn26y {
+padding: 40px 46px;
+}
+.bd-e-o03ntekz {
+padding: 40px 46px;
+}
+.bd-e-lwaxrbru {
+padding: 40px 46px;
+}
+.bd-e-jvxwreue {
+font-size: 11px;
+line-height: 16px;
+}
+
+/* PAGE: THE BOURGEOI’RTIST */
+
+.bd-e-tzmj17f5 {
+font-size: 11px;
+line-height: 16px;
+}
+.bd-e-4dop256w {
+font-size: 11px;
+line-height: 16px;
+}
+
+/* PAGE: ART IN TIMES OF CRISIS */
+
+.bd-e-302epmue {
+font-size: 11px;
+line-height: 16px;
+}
+.bd-e-sx3aj3f0 {
+padding: 40px 46px;
+}
+.bd-e-n957q76z {
+padding: 40px 46px;
+}
+.bd-e-hox6tjmi {
+font-size: 11px;
+line-height: 16px;
 }
 
 /* PAGE: LIBRARY */
@@ -897,107 +1287,28 @@ margin-bottom: 200px;
 --ratio: 2 / 3;
 }
 
-/* CUSTOM */
-/* HEADER */
-.sm-nav {
-font-size: 13px;
-line-height: 19px;
+/* PAGE: SUPPLY */
+
+.bd-e-2xkm99iq .bd-product-t {
+font-size: 11px;
+line-height: 18px;
 }
-.sm-nav .sm-logo {
-display: block;
-margin-bottom: 26px;
-font-size: 13px;
-}
-.sm-nav a {
-display: table;
-border-bottom: 1px solid transparent;
-}
-.sm-nav a.is-current,
-.sm-nav a:hover {
-border-bottom-color: currentColor;
+.bd-e-pw5i8g5x .bd-product-t {
+font-size: 11px;
+line-height: 18px;
 }
 
+/* PAGE: ABOUT */
+
+.bd-e-cjjty14h {
+--tgap: 9px;
+--tind: 6px;
+}
+
+/* CUSTOM */
 /* TEXT */
 .bd-text a {
 border-bottom: 1px solid currentColor;
-}
-.bd-site .sm-meta {
-font-size: 11px;
-line-height: 16px;
-}
-.sm-meta a {
-border-bottom: 0;
-}
-
-/* PULL QUOTE */
-.bd-site .sm-pull {
-margin: 0;
-padding: 40px 46px;
-font-size: 13px;
-line-height: 19px;
-text-align: center;
-box-shadow: 0 24px 60px rgba(0, 0, 0, 0.09);
-}
-
-/* JOURNAL CARDS */
-.sm-card {
-display: block;
-min-height: 120px;
-padding: 18px;
-background: #eeeeee;
-border-bottom: 0;
-}
-.sm-card-t {
-display: block;
-font-size: 15px;
-line-height: 22px;
-}
-.sm-card-m {
-display: block;
-margin-top: 12px;
-font-size: 11px;
-line-height: 16px;
-}
-
-/* CONTRIBUTORS */
-.sm-who summary {
-list-style: none;
-cursor: pointer;
-}
-.sm-who summary::-webkit-details-marker {
-display: none;
-}
-.sm-who summary::before {
-content: "+";
-display: inline-block;
-width: 27px;
-}
-.sm-who[open] summary::before {
-content: "—";
-}
-.sm-who ul {
-margin-top: 18px;
-padding-left: 6px;
-}
-.sm-who li {
-line-height: 31px;
-}
-
-/* NEXT */
-.bd-site .sm-next {
-padding-top: 120px;
-font-size: 11px;
-text-align: center;
-}
-.sm-next a {
-border-bottom: 0;
-}
-
-/* SHOP */
-.bd-site .sm-product {
-font-size: 11px;
-line-height: 18px;
-text-align: center;
 }
 
 /* MOBILE */
@@ -1069,6 +1380,7 @@ margin-top: 80px;
 padding: 16px;
 }
 .bd-site,
+.bd-ts-body,
 .bd-list.is-body ul {
 font-size: 14px;
 line-height: 20px;
@@ -1076,18 +1388,21 @@ line-height: 20px;
 .bd-text.is-heading,
 .bd-text.is-large,
 .bd-ptitle.is-heading,
+.bd-ts-heading,
 .bd-list.is-heading ul {
 font-size: 14px;
 line-height: 20px;
 }
 .bd-text.is-small,
 .bd-ptitle.is-small,
+.bd-ts-small,
 .bd-list.is-small ul {
 font-size: 12px;
 line-height: 17px;
 }
 .bd-text.is-caption,
 .bd-ptitle.is-caption,
+.bd-ts-caption,
 .bd-figure figcaption,
 .bd-gi figcaption,
 .bd-zoom-cap,
@@ -1097,6 +1412,7 @@ line-height: 17px;
 }
 .bd-text.is-mono,
 .bd-ptitle.is-mono,
+.bd-ts-mono,
 .bd-notes,
 .bd-list.is-mono ul {
 font-size: 12px;
@@ -1155,12 +1471,31 @@ line-height: 17px;
 --x: 0;
 --w: 6;
 }
+.bd-flow > .bd-el + .bd-pagerbar {
+margin-top: 80px;
+}
+.bd-flow > .bd-posts {
+--x: 0;
+--w: 6;
+}
+.bd-flow > .bd-postinfo {
+--x: 0;
+--w: 6;
+}
+.bd-flow > .bd-quote {
+--x: 0;
+--w: 6;
+}
+.bd-flow > .bd-toggle {
+--x: 0;
+--w: 6;
+}
+.bd-flow > .bd-product {
+--x: 0;
+--w: 6;
+}
 /* COLUMNS */
 .bd-main .bd-cols {
-grid-template-columns: minmax(0, 1fr);
-column-gap: 24px;
-}
-.bd-cols.bd-cl-fji5ongj {
 grid-template-columns: minmax(0, 1fr);
 column-gap: 24px;
 }
@@ -1169,9 +1504,111 @@ column-gap: 24px;
 margin-bottom: 64px;
 }
 /* PAGE: HEADER */
-.bd-flow > .bd-e-83zud23g {
---x: 0;
---w: 1;
+
+.bd-e-83zud23g {
+--mgap: 26px;
+--igap: 0px;
+--ggap: 20px;
+}
+.bd-e-83zud23g .bd-mlist {
+font-size: 13px;
+line-height: 19px;
+}
+.bd-e-83zud23g .bd-mbrand {
+font-size: 13px;
+line-height: 19px;
+}
+/* PAGE: JOURNAL */
+
+.bd-e-5ygn83c2 {
+--pcols: 1;
+--pgap: 24px;
+--prow: 24px;
+--ppad: 18px;
+--pminh: 84px;
+}
+.bd-e-5ygn83c2 .bd-post:not(.is-featured) .bd-post-t {
+font-size: 15px;
+line-height: 22px;
+}
+.bd-e-5ygn83c2 .bd-post-m,
+.bd-e-5ygn83c2 .bd-post-d {
+font-size: 11px;
+line-height: 16px;
+}
+/* PAGE: HOW TO DESEED A WATERMELON FOR SAFE CONSUMPTION */
+
+.bd-e-ating08e {
+font-size: 11px;
+line-height: 16px;
+}
+.bd-e-5mxm3w9z {
+padding: 28px 22px;
+}
+.bd-e-wa12r3y2 {
+padding: 28px 22px;
+}
+.bd-e-eiirm6n4 {
+padding: 28px 22px;
+}
+.bd-e-m8huukvm {
+font-size: 11px;
+line-height: 16px;
+}
+/* PAGE: HANDALA AND THE FREEZE POINT */
+
+.bd-e-9rdic408 {
+font-size: 11px;
+line-height: 16px;
+}
+.bd-e-37cykksj {
+font-size: 11px;
+line-height: 16px;
+}
+/* PAGE: MILITANT IMPROVISATION */
+
+.bd-e-fl97b2lk {
+font-size: 11px;
+line-height: 16px;
+}
+.bd-e-675bn26y {
+padding: 28px 22px;
+}
+.bd-e-o03ntekz {
+padding: 28px 22px;
+}
+.bd-e-lwaxrbru {
+padding: 28px 22px;
+}
+.bd-e-jvxwreue {
+font-size: 11px;
+line-height: 16px;
+}
+/* PAGE: THE BOURGEOI’RTIST */
+
+.bd-e-tzmj17f5 {
+font-size: 11px;
+line-height: 16px;
+}
+.bd-e-4dop256w {
+font-size: 11px;
+line-height: 16px;
+}
+/* PAGE: ART IN TIMES OF CRISIS */
+
+.bd-e-302epmue {
+font-size: 11px;
+line-height: 16px;
+}
+.bd-e-sx3aj3f0 {
+padding: 28px 22px;
+}
+.bd-e-n957q76z {
+padding: 28px 22px;
+}
+.bd-e-hox6tjmi {
+font-size: 11px;
+line-height: 16px;
 }
 /* PAGE: LIBRARY */
 
@@ -1179,8 +1616,14 @@ margin-bottom: 64px;
 --cols: 2;
 --gut: 16px;
 }
-/* CUSTOM */
-.bd-site .sm-pull {
-padding: 28px 22px;
+/* PAGE: SUPPLY */
+
+.bd-e-2xkm99iq .bd-product-t {
+font-size: 11px;
+line-height: 18px;
+}
+.bd-e-pw5i8g5x .bd-product-t {
+font-size: 11px;
+line-height: 18px;
 }
 }
