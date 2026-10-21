@@ -2891,12 +2891,19 @@ localStorage.removeItem(k);
 } catch (e) {}
 }
 function gh(method, url, body) {
+var ctl = method === "GET" && window.AbortController ? new AbortController() : null;
+var timer = ctl ? setTimeout(function () { ctl.abort(); }, 30000) : null;
 return fetch(url.indexOf("http") === 0 ? url : GH_API + url, {
 method: method,
 headers: { "Authorization": "Bearer " + S.key, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" },
 body: body ? JSON.stringify(body) : undefined,
-cache: "no-store"
+cache: "no-store",
+signal: ctl ? ctl.signal : undefined
+}).catch(function (err) {
+if (timer) clearTimeout(timer);
+throw new Error(err && err.name === "AbortError" ? "GitHub didn't answer in 30 seconds. Check the connection and try again." : "Couldn't reach GitHub (" + (err && err.message ? err.message : "network") + ").");
 }).then(function (r) {
+if (timer) clearTimeout(timer);
 if (r.status === 401) throw new Error("KEY");
 return r.json().then(function (j) {
 if (!r.ok) {
@@ -3095,6 +3102,15 @@ render();
 return;
 }
 }
+try {
+await openLoaded(file, data);
+} catch (err) {
+S.booting = false;
+S.loadError = "Couldn't open the site: " + (err && err.message ? err.message : err);
+render();
+}
+}
+async function openLoaded(file, data) {
 var p = data ? { id: data.id || "site", name: data.name || (data.site && data.site.name) || REPO.name, site: data.site, order: data.order || [], pages: data.pages || {} } : blankProject();
 if (!data) {
 p.site.name = REPO.name || p.site.name;
@@ -3110,10 +3126,18 @@ draft = JSON.parse(lsGet(DRAFT_STORE) || "null");
 var hasFiles = draft && ((draft.files && Object.keys(draft.files).length) || (draft.uploads && draft.uploads.length));
 if (draft && draft.data && (draft.data !== S.published || hasFiles)) {
 if (draft.base === S.base) {
+try {
 if (draft.data !== S.published) restore(draft.data);
 S.files = draft.files || {};
 S.uploads = draft.uploads || [];
 toast("Your unpublished changes are back.");
+} catch (err) {
+var fresh = JSON.parse(file.text);
+setProject({ id: fresh.id || "site", name: fresh.name || (fresh.site && fresh.site.name) || REPO.name, site: fresh.site, order: fresh.order || [], pages: fresh.pages || {} });
+lsSet(DRAFT_STORE + "-backup", lsGet(DRAFT_STORE));
+lsDel(DRAFT_STORE);
+toast("Couldn't reopen your last draft, so the published version is open. The draft is kept as a backup.");
+}
 } else {
 lsSet(DRAFT_STORE + "-backup", lsGet(DRAFT_STORE));
 lsDel(DRAFT_STORE);
