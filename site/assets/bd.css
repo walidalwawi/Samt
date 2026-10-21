@@ -1,4 +1,4 @@
-/* PUBLISHED mvie4emu */
+/* PUBLISHED mvie786l */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1226,12 +1226,12 @@ line-height: 19px;
 
 .bd-e-5ygn83c2 .bd-post:not(.is-featured) .bd-post-t {
 font-size: 15px;
-line-height: 22px;
+line-height: 20px;
 }
 .bd-e-5ygn83c2 .bd-post-m,
 .bd-e-5ygn83c2 .bd-post-d {
-font-size: 11px;
-line-height: 16px;
+font-size: 12px;
+line-height: 15px;
 }
 .bd-e-5ygn83c2 {
 --pcols: 3;
@@ -1239,7 +1239,7 @@ line-height: 16px;
 --prow: 40px;
 --ppad: 0px;
 --pminh: 80px;
---pimg-gap: 10px;
+--pimg-gap: 0px;
 --pmgap: 10px;
 --pbg: #ffffff;
 --pratio: 1;
@@ -1629,12 +1629,12 @@ line-height: 19px;
 
 .bd-e-5ygn83c2 .bd-post:not(.is-featured) .bd-post-t {
 font-size: 15px;
-line-height: 22px;
+line-height: 20px;
 }
 .bd-e-5ygn83c2 .bd-post-m,
 .bd-e-5ygn83c2 .bd-post-d {
-font-size: 11px;
-line-height: 16px;
+font-size: 12px;
+line-height: 15px;
 }
 .bd-e-5ygn83c2 {
 --pcols: 1;
