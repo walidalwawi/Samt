@@ -1174,6 +1174,10 @@ aspect-ratio: var(--ratio);
 object-fit: cover;
 background: #eeeeee;
 }
+.bd-lib-item img {
+color: transparent;
+font-size: 0;
+}
 .bd-lib-blank {
 padding: 12px;
 font-size: 12px;
@@ -1590,6 +1594,16 @@ if (p.size === "small") return "small";
 if (p.size === "large") return "heading";
 return "body";
 }
+function driveId(u) {
+var m = String(u || "").match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)([\w-]{20,})/);
+return m ? m[1] : "";
+}
+function libCover(b, ctx) {
+if (b.assetId) return imgSrc(b, ctx);
+if (b.src) return b.src;
+var id = driveId(b.href);
+return id ? "https://drive.google.com/thumbnail?id=" + id + "&sz=w600" : "";
+}
 function libTopics(p) {
 var seen = {};
 var out = [];
@@ -1653,7 +1667,7 @@ if (!books.length) return ctx === "export" ? "" : '<div class="' + base + ' bd-l
 var topics = libTopics(p);
 var bar = p.filters !== false && topics.length ? '<nav class="bd-lib-filter" aria-label="Topics">\n<button type="button" class="is-on" data-t="">' + esc(p.allLabel || "All") + "</button>\n" + topics.map(function (t) { return '<button type="button" data-t="' + esc(slugify(t)) + '">' + esc(t) + "</button>"; }).join("\n") + "\n</nav>\n" : "";
 var cells = books.map(function (b) {
-var src = b.assetId ? imgSrc(b, ctx) : "";
+var src = libCover(b, ctx);
 var tags = (b.topics || []).map(slugify).join(" ");
 var inner = (src ? '<img src="' + esc(src) + '" alt="' + esc(b.title || "") + '"' + (ctx === "export" ? ' loading="lazy"' : ' draggable="false"') + ">" : '<span class="bd-lib-blank">' + esc(b.title || "Untitled") + "</span>") + (p.titles ? '<span class="bd-lib-t">' + esc(b.title || "") + (b.author ? '<br><i>' + esc(b.author) + "</i>" : "") + "</span>" : "");
 return b.href ? '<a class="bd-lib-item" href="' + esc(b.href) + '" target="_blank" rel="noopener" data-t="' + esc(tags) + '" title="' + esc(b.title || "") + '">' + inner + "</a>" : '<div class="bd-lib-item" data-t="' + esc(tags) + '">' + inner + "</div>";
@@ -2596,8 +2610,8 @@ var topics = libTopics(p);
 h += '<div class="bd-ed-hint">' + (topics.length ? "Topics: " + topics.map(esc).join(" · ") : "Give books topics to build the filter.") + "</div>";
 h += '<div class="bd-ed-head"><span class="bd-ed-label">' + p.items.length + " book" + (p.items.length === 1 ? "" : "s") + '</span><span class="bd-ed-actions"><button class="bd-ed-btn is-sm" data-act="pick-image">' + I.plus + 'Covers</button><button class="bd-ed-btn is-sm" data-act="lib-add">' + I.plus + "No cover</button></span></div>";
 p.items.forEach(function (b, i) {
-h += '<div class="bd-ed-gthumb">' + (b.assetId ? '<img src="' + esc(imgSrc(b, "edit")) + '" alt="" data-act="lib-cover" data-id="' + b.id + '" title="Replace cover">' : '<button class="bd-ed-x" style="width:44px;height:58px" data-act="lib-cover" data-id="' + b.id + '" aria-label="Add cover">' + I.image + "</button>")
-+ '<div class="bd-ed-field" style="gap:4px">' + input("gi." + i + ".title", b.title, "", ' placeholder="Title" aria-label="Title"') + input("gi." + i + ".author", b.author || "", "", ' placeholder="Author" aria-label="Author"') + input("gi." + i + ".href", b.href, "", ' placeholder="Link to PDF" aria-label="Link"') + input("gi." + i + ".topics", (b.topics || []).join(", "), "csv", ' placeholder="Topics, comma separated" aria-label="Topics"') + "</div>"
+h += '<div class="bd-ed-gthumb">' + (libCover(b, "edit") ? '<img src="' + esc(libCover(b, "edit")) + '" alt="" data-act="lib-cover" data-id="' + b.id + '" title="Replace cover">' : '<button class="bd-ed-x" style="width:44px;height:58px" data-act="lib-cover" data-id="' + b.id + '" aria-label="Add cover">' + I.image + "</button>")
++ '<div class="bd-ed-field" style="gap:4px">' + input("gi." + i + ".title", b.title, "", ' placeholder="Title" aria-label="Title"') + input("gi." + i + ".author", b.author || "", "", ' placeholder="Author" aria-label="Author"') + input("gi." + i + ".href", b.href, "", ' placeholder="Link to PDF" aria-label="Link"') + (b.assetId ? "" : input("gi." + i + ".src", b.src || "", "", ' placeholder="Cover image URL (Drive links fill this in)" aria-label="Cover URL"')) + input("gi." + i + ".topics", (b.topics || []).join(", "), "csv", ' placeholder="Topics, comma separated" aria-label="Topics"') + "</div>"
 + '<div class="bd-ed-gbtns"><button class="bd-ed-x" data-act="gi-up" data-i="' + i + '" aria-label="Earlier">' + I.up + '</button><button class="bd-ed-x" data-act="gi-down" data-i="' + i + '" aria-label="Later">' + I.dn + '</button><button class="bd-ed-x" data-act="gi-del" data-i="' + i + '" aria-label="Remove">' + I.x + "</button></div></div>";
 });
 return h;

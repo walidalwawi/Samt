@@ -1,4 +1,4 @@
-/* PUBLISHED mvi06uxy */
+/* PUBLISHED build */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -554,6 +554,73 @@ display: none;
 cursor: zoom-in;
 }
 
+/* LIBRARY */
+.bd-library {
+--cols: 5;
+--gut: 30px;
+--ratio: 2 / 3;
+}
+.bd-lib-filter {
+display: flex;
+flex-wrap: wrap;
+gap: 4px 10px;
+margin-bottom: 40px;
+font-size: 12px;
+line-height: 18px;
+}
+.bd-lib-filter button {
+padding: 0;
+border: 0;
+border-bottom: 1px solid transparent;
+background: none;
+color: inherit;
+font: inherit;
+cursor: pointer;
+}
+.bd-lib-filter button.is-on,
+.bd-lib-filter button:hover {
+border-bottom-color: currentColor;
+}
+.bd-lib-grid {
+display: grid;
+grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+gap: var(--gut);
+}
+.bd-library .bd-lib-item {
+display: block;
+min-width: 0;
+border-bottom: 0;
+}
+.bd-lib-item img,
+.bd-lib-blank {
+display: block;
+width: 100%;
+aspect-ratio: var(--ratio);
+object-fit: cover;
+background: #eeeeee;
+}
+.bd-lib-item img {
+color: transparent;
+font-size: 0;
+}
+.bd-lib-blank {
+padding: 12px;
+font-size: 12px;
+line-height: 16px;
+}
+.bd-lib-t {
+display: block;
+margin-top: 8px;
+font-size: 12px;
+line-height: 16px;
+}
+.bd-lib-item.is-hidden {
+display: none;
+}
+a.bd-lib-item:hover img {
+opacity: 0.85;
+}
+
 /* ZOOM */
 .bd-zoom {
 position: fixed;
@@ -683,6 +750,10 @@ line-height: 19px;
 --x: 0;
 --w: 12;
 }
+.bd-flow > .bd-library {
+--x: 0;
+--w: 12;
+}
 .bd-flow > .bd-link {
 --x: 0;
 --w: 12;
@@ -712,6 +783,14 @@ column-gap: 40px;
 .bd-cols.bd-cl-fji5ongj {
 grid-template-columns: minmax(0, 4fr) minmax(0, 4fr) minmax(0, 4fr);
 column-gap: 40px;
+}
+
+/* PAGE: LIBRARY */
+
+.bd-e-lb31qsc3 {
+--cols: 5;
+--gut: 30px;
+--ratio: 2 / 3;
 }
 
 /* CUSTOM */
@@ -936,6 +1015,10 @@ line-height: 17px;
 --x: 0;
 --w: 6;
 }
+.bd-flow > .bd-library {
+--x: 0;
+--w: 4;
+}
 .bd-flow > .bd-link {
 --x: 0;
 --w: 6;
@@ -964,6 +1047,12 @@ column-gap: 24px;
 .bd-cols.bd-cl-fji5ongj {
 grid-template-columns: minmax(0, 1fr);
 column-gap: 24px;
+}
+/* PAGE: LIBRARY */
+
+.bd-e-lb31qsc3 {
+--cols: 2;
+--gut: 16px;
 }
 /* CUSTOM */
 .bd-panel {

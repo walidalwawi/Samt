@@ -155,6 +155,20 @@ panel.appendChild(pager);
 /* GALLERIES */
 function bdGalleries(root) {
 var host = root.querySelector(".bd-site") || (root.classList && root.classList.contains("bd-site") ? root : document.body);
+root.querySelectorAll(".bd-library").forEach(function (lib) {
+var bar = lib.querySelector(".bd-lib-filter");
+if (!bar) return;
+bar.addEventListener("click", function (ev) {
+var b = ev.target.closest("button");
+if (!b) return;
+var t = b.getAttribute("data-t");
+bar.querySelectorAll("button").forEach(function (x) { x.classList.toggle("is-on", x === b); });
+lib.querySelectorAll(".bd-lib-item").forEach(function (it) {
+var tags = (it.getAttribute("data-t") || "").split(" ");
+it.classList.toggle("is-hidden", !!t && tags.indexOf(t) < 0);
+});
+});
+});
 root.querySelectorAll(".bd-gallery.is-slides").forEach(function (g) {
 var figs = Array.prototype.slice.call(g.querySelectorAll(".bd-gi figure"));
 if (!figs.length) return;

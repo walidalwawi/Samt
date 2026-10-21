@@ -177,6 +177,14 @@
      "space": "",
      "spaceM": ""
     },
+    "library": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 4,
+     "space": "",
+     "spaceM": ""
+    },
     "link": {
      "x": 0,
      "w": 12,
@@ -2093,39 +2101,1401 @@
    "css": "",
    "els": [
     {
-     "id": "7yzw4ty2",
-     "type": "text",
+     "id": "lb31qsc3",
+     "type": "library",
      "col": 1,
      "d": {
       "x": 0,
       "y": 0,
       "w": 12,
-      "h": 4
+      "h": 40
      },
      "m": null,
      "props": {
-      "html": "<p>Library</p>",
-      "style": "body",
-      "indent": false,
-      "align": "left"
-     }
-    },
-    {
-     "id": "6szcvv5x",
-     "type": "text",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 4
-     },
-     "m": null,
-     "props": {
-      "html": "<p>Paste the library here.</p>",
-      "style": "small",
-      "indent": false,
-      "align": "left"
+      "items": [
+       {
+        "id": "lb1gey1",
+        "assetId": "",
+        "file": "",
+        "title": "The New Art of Making Books",
+        "author": "Ulises Carrión",
+        "topics": [
+         "Art",
+         "Poetry"
+        ],
+        "href": "https://drive.google.com/file/d/18eqx0P_jFrHIWytK9fiPCKpnhBDSVu8y/view",
+        "src": ""
+       },
+       {
+        "id": "lb2moqy",
+        "assetId": "",
+        "file": "",
+        "title": "Ways of Seeing",
+        "author": "John Berger",
+        "topics": [
+         "Art",
+         "Poetry"
+        ],
+        "href": "https://drive.google.com/file/d/1GlL_S_ss77-PRQmB8VH1IM4rzqD2DPSQ/view",
+        "src": ""
+       },
+       {
+        "id": "lb3le7c",
+        "assetId": "",
+        "file": "",
+        "title": "The Poetics of Space",
+        "author": "Gaston Bachelard",
+        "topics": [
+         "Art",
+         "Poetry",
+         "Philosophy"
+        ],
+        "href": "https://drive.google.com/file/d/1W5bkD9fZEX1GqhNSnJ4NvlHKhM8VAH7k/view",
+        "src": ""
+       },
+       {
+        "id": "lb418s0",
+        "assetId": "",
+        "file": "",
+        "title": "Lessness",
+        "author": "Samuel Beckett",
+        "topics": [
+         "Art",
+         "Poetry"
+        ],
+        "href": "https://drive.google.com/file/d/1zIllGGM_cNQA2VsAqzxPir8_5rwKD7sq/view",
+        "src": ""
+       },
+       {
+        "id": "lb5pfsv",
+        "assetId": "",
+        "file": "",
+        "title": "Art Education: A Glossary",
+        "author": "",
+        "topics": [
+         "Art",
+         "Poetry"
+        ],
+        "href": "https://drive.google.com/file/d/1Fj3C94l1PN99n0piyFDhPOqwwRzBw5BQ/view",
+        "src": ""
+       },
+       {
+        "id": "lb6wdw6",
+        "assetId": "",
+        "file": "",
+        "title": "The Death of the Author",
+        "author": "Roland Barthes",
+        "topics": [
+         "Art",
+         "Philosophy"
+        ],
+        "href": "https://drive.google.com/file/d/1Y9wDw96AuTcQRTOE72YZVvJ1HENBogRa/view",
+        "src": ""
+       },
+       {
+        "id": "lb7n3t7",
+        "assetId": "",
+        "file": "",
+        "title": "A Plea for Visual Thinking",
+        "author": "Rudolf Arnheim",
+        "topics": [
+         "Art",
+         "Poetry"
+        ],
+        "href": "https://drive.google.com/file/d/1YMLhQHbBjd08rdD_5bf3Ua64uvjBvIK5/view",
+        "src": ""
+       },
+       {
+        "id": "lb8anm5",
+        "assetId": "",
+        "file": "",
+        "title": "Poems",
+        "author": "Yvonne Rainer",
+        "topics": [
+         "Art",
+         "Poetry"
+        ],
+        "href": "https://drive.google.com/file/d/1tWK_04Fuo_AbcYiHbENtdgqWLJFTZFdi/view",
+        "src": ""
+       },
+       {
+        "id": "lb90dt3",
+        "assetId": "",
+        "file": "",
+        "title": "A Journey Through Symbols",
+        "author": "",
+        "topics": [
+         "Art",
+         "Poetry"
+        ],
+        "href": "https://drive.google.com/file/d/1XOAqhtcykRrlx9CWpjXWbzEzPp3M9tx_/view",
+        "src": ""
+       },
+       {
+        "id": "lba11fx",
+        "assetId": "",
+        "file": "",
+        "title": "Lecture on Nothing",
+        "author": "John Cage",
+        "topics": [
+         "Art",
+         "Poetry"
+        ],
+        "href": "https://drive.google.com/file/d/1Tu9BD4QMAUQv9N6EsSgOL0IwMXQlLoDg/view",
+        "src": ""
+       },
+       {
+        "id": "lbboun9",
+        "assetId": "",
+        "file": "",
+        "title": "Species of Spaces and Other Pieces",
+        "author": "Georges Perec",
+        "topics": [
+         "Art",
+         "Literature"
+        ],
+        "href": "https://drive.google.com/file/d/1yuubuUFsWxoMl_qcpxja1DCOyTJibXe6/view",
+        "src": ""
+       },
+       {
+        "id": "lbce1fz",
+        "assetId": "",
+        "file": "",
+        "title": "A Pattern Language",
+        "author": "Christopher Alexander et al.",
+        "topics": [
+         "Community",
+         "Art"
+        ],
+        "href": "https://drive.google.com/file/d/1DIsYqDvk1PDMSGj1ZGAJ4xosVMWxJok6/view",
+        "src": ""
+       },
+       {
+        "id": "lbd9et5",
+        "assetId": "",
+        "file": "",
+        "title": "Meta Touch Town",
+        "author": "",
+        "topics": [
+         "Art"
+        ],
+        "href": "https://drive.google.com/file/d/1Ge2LbQ23dt-VRpSHkSFZ6sXuOjYx9dEA/view",
+        "src": ""
+       },
+       {
+        "id": "lbe7rx7",
+        "assetId": "",
+        "file": "",
+        "title": "Telling is Listening",
+        "author": "",
+        "topics": [
+         "Art"
+        ],
+        "href": "https://drive.google.com/file/d/1t_oEIHspBYaYS4YPIqkopg2o3O__Htge/view",
+        "src": ""
+       },
+       {
+        "id": "lbf7r8c",
+        "assetId": "",
+        "file": "",
+        "title": "Black Skin, White Masks",
+        "author": "Frantz Fanon",
+        "topics": [
+         "Race",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1I_ihMyr4Z8_uw-noO1zSbTkxq-8XZBbL/view",
+        "src": ""
+       },
+       {
+        "id": "lbgwo42",
+        "assetId": "",
+        "file": "",
+        "title": "Decolonizing Methodologies",
+        "author": "Linda Tuhiwai Smith",
+        "topics": [
+         "Race",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1r6JTp0P2Bwdjs0kV9IS4MK9P-nznPqIE/view",
+        "src": ""
+       },
+       {
+        "id": "lbhy915",
+        "assetId": "",
+        "file": "",
+        "title": "Indigeneity and Political Theory",
+        "author": "Karena Shaw",
+        "topics": [
+         "Race",
+         "Decolonisation",
+         "Politics"
+        ],
+        "href": "https://drive.google.com/file/d/19Dw4CJQjx5UXI4aewhD2FdWgG8yp_oOO/view",
+        "src": ""
+       },
+       {
+        "id": "lbi8o27",
+        "assetId": "",
+        "file": "",
+        "title": "Decolonizing Archives",
+        "author": "",
+        "topics": [
+         "Race",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1Sl6gVV78Y6i0_kYrtxCc91yYybiRl8_B/view",
+        "src": ""
+       },
+       {
+        "id": "lbjknf5",
+        "assetId": "",
+        "file": "",
+        "title": "Decolonising Museums",
+        "author": "",
+        "topics": [
+         "Race",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1JgxtPxa5jHPGlRlN1d1Eb_LN-GhIR6Gb/view",
+        "src": ""
+       },
+       {
+        "id": "lbkrpxj",
+        "assetId": "",
+        "file": "",
+        "title": "Some of Us Are Brave",
+        "author": "Gloria T. Hull et al.",
+        "topics": [
+         "Race",
+         "Decolonisation",
+         "Gender"
+        ],
+        "href": "https://drive.google.com/file/d/11-8MUUSM1GH3csywadC7l5DFA-EHCJcD/view",
+        "src": ""
+       },
+       {
+        "id": "lbl62i3",
+        "assetId": "",
+        "file": "",
+        "title": "The Colonial Present",
+        "author": "Derek Gregory",
+        "topics": [
+         "Race",
+         "Decolonisation",
+         "Politics"
+        ],
+        "href": "https://drive.google.com/file/d/1ilXS4iM_ph5iMK4IuOEtSEjb3gpNt8qe/view",
+        "src": ""
+       },
+       {
+        "id": "lbm8a8v",
+        "assetId": "",
+        "file": "",
+        "title": "More Beautiful and More Terrible",
+        "author": "Imani Perry",
+        "topics": [
+         "Race",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1Ny0rYai_gw-ovIbdDa_-aq0TsH2IANVu/view",
+        "src": ""
+       },
+       {
+        "id": "lbnxk80",
+        "assetId": "",
+        "file": "",
+        "title": "Slavery by Another Name",
+        "author": "Douglas A. Blackmon",
+        "topics": [
+         "Race",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1WX4st7blvcJbfl3uk3ogeTBZSalPapeG/view",
+        "src": ""
+       },
+       {
+        "id": "lbol638",
+        "assetId": "",
+        "file": "",
+        "title": "How Capitalism Underdeveloped Black America",
+        "author": "Manning Marable",
+        "topics": [
+         "Race",
+         "Decolonisation",
+         "Economy"
+        ],
+        "href": "https://drive.google.com/file/d/14gueY1ASnV0UNwzpjfh0Q-2uEh_oMbXz/view",
+        "src": ""
+       },
+       {
+        "id": "lbpx77f",
+        "assetId": "",
+        "file": "",
+        "title": "Digitizing Race",
+        "author": "Lisa Nakamura",
+        "topics": [
+         "Race",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1silOTIhKBueha4u1b_ot4SVkXQcnk9OQ/view",
+        "src": ""
+       },
+       {
+        "id": "lbq1fma",
+        "assetId": "",
+        "file": "",
+        "title": "White Fragility",
+        "author": "Robin DiAngelo",
+        "topics": [
+         "Race",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1Ewdt7yfze-PEEYaM9O87HUWRaWEzqASM/view",
+        "src": ""
+       },
+       {
+        "id": "lbrt3sg",
+        "assetId": "",
+        "file": "",
+        "title": "The Question of Palestine",
+        "author": "Edward Said",
+        "topics": [
+         "Politics",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1oJsAO9FLz_UtUCEJIXDC3Twc4G5Sttra/view",
+        "src": ""
+       },
+       {
+        "id": "lbs1fty",
+        "assetId": "",
+        "file": "",
+        "title": "Will Postcolonialism Travel?",
+        "author": "Gayatri Chakravorty Spivak",
+        "topics": [
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1UdZQuu_oKlGPh_C1-C4TM8c_lYMksfHi/view",
+        "src": ""
+       },
+       {
+        "id": "lbtymqy",
+        "assetId": "",
+        "file": "",
+        "title": "Decolonizing Resistance",
+        "author": "Sharma & Wright",
+        "topics": [
+         "Decolonisation",
+         "Politics"
+        ],
+        "href": "https://drive.google.com/file/d/1tfmG9gkww5MN6nF9ylEGmwLHccE2I2wN/view",
+        "src": ""
+       },
+       {
+        "id": "lbuoubv",
+        "assetId": "",
+        "file": "",
+        "title": "Israel: A Colonial-Settler State?",
+        "author": "Maxime Rodinson",
+        "topics": [
+         "Politics",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1JA90TEPGjQL5SjiZC4JxjT53wHGVJ4ps/view",
+        "src": ""
+       },
+       {
+        "id": "lbv5xah",
+        "assetId": "",
+        "file": "",
+        "title": "Imperial Israel and the Palestinians",
+        "author": "Nur Masalha",
+        "topics": [
+         "Politics",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1pEMhdbQ5LfXFwLRmGLBjgfgI5F4H_m-c/view",
+        "src": ""
+       },
+       {
+        "id": "lbwk907",
+        "assetId": "",
+        "file": "",
+        "title": "The New Crusades: Constructing the Muslim Enemy",
+        "author": "Qureshi & Sells",
+        "topics": [
+         "Politics",
+         "Race"
+        ],
+        "href": "https://drive.google.com/file/d/1be5enUGU732FldshQojyfcjM-i4UaAnR/view",
+        "src": ""
+       },
+       {
+        "id": "lbxm80i",
+        "assetId": "",
+        "file": "",
+        "title": "Concentration Camps on the Home Front",
+        "author": "John Howard",
+        "topics": [
+         "Race",
+         "Politics"
+        ],
+        "href": "https://drive.google.com/file/d/1LFfV0J6qL2sKoa2lpj3MGXR_z2eUtgC2/view",
+        "src": ""
+       },
+       {
+        "id": "lby1ppp",
+        "assetId": "",
+        "file": "",
+        "title": "Black Looks: Race and Representation",
+        "author": "bell hooks",
+        "topics": [
+         "Race"
+        ],
+        "href": "https://drive.google.com/file/d/1JJaZ9aR4YrwKLzqxWbaJVvNZQrNO6BNm/view",
+        "src": ""
+       },
+       {
+        "id": "lbzih0p",
+        "assetId": "",
+        "file": "",
+        "title": "Critical Race Theory: An Introduction",
+        "author": "Delgado & Stefancic",
+        "topics": [
+         "Race"
+        ],
+        "href": "https://drive.google.com/file/d/1eKVVssLJm_9GgLPW5nFk78n6vGSuJtLO/view",
+        "src": ""
+       },
+       {
+        "id": "lb108xf9",
+        "assetId": "",
+        "file": "",
+        "title": "Blood in My Eye",
+        "author": "George Jackson",
+        "topics": [
+         "Politics",
+         "Race"
+        ],
+        "href": "https://drive.google.com/file/d/13oCBmwtODkefR_1ZMNBO_B87xucW5Go-/view",
+        "src": ""
+       },
+       {
+        "id": "lb11rxls",
+        "assetId": "",
+        "file": "",
+        "title": "Rules for Radicals",
+        "author": "Saul D. Alinsky",
+        "topics": [
+         "Politics",
+         "Community"
+        ],
+        "href": "https://drive.google.com/file/d/19nsOnVIbQYUV8kwSomed_ZekwAnaxGEh/view",
+        "src": ""
+       },
+       {
+        "id": "lb127r9k",
+        "assetId": "",
+        "file": "",
+        "title": "The Shock Doctrine",
+        "author": "Naomi Klein",
+        "topics": [
+         "Economy",
+         "Politics"
+        ],
+        "href": "https://drive.google.com/file/d/1V-Mctcng4K_ghOj3kKmiKgzeSLztxcIN/view",
+        "src": ""
+       },
+       {
+        "id": "lb13omqw",
+        "assetId": "",
+        "file": "",
+        "title": "The Age of Surveillance Capitalism",
+        "author": "Shoshana Zuboff",
+        "topics": [
+         "Economy",
+         "Politics"
+        ],
+        "href": "https://drive.google.com/file/d/1DWqIhbOOfljnxaxGCXj21wtjtm4aV_X1/view",
+        "src": ""
+       },
+       {
+        "id": "lb14nyld",
+        "assetId": "",
+        "file": "",
+        "title": "Commonism",
+        "author": "Nico Dockx & Pascal Gielen",
+        "topics": [
+         "Community",
+         "Economy"
+        ],
+        "href": "https://drive.google.com/file/d/1esrKo1uEY8oy4uqLjtL9vDwftmopjuCg/view",
+        "src": ""
+       },
+       {
+        "id": "lb150sun",
+        "assetId": "",
+        "file": "",
+        "title": "The Time of the Tribes",
+        "author": "Michel Maffesoli",
+        "topics": [
+         "Community"
+        ],
+        "href": "https://drive.google.com/file/d/1LxOggem_kFqOsbrt-5gupQnIa03rk0zt/view",
+        "src": ""
+       },
+       {
+        "id": "lb16st59",
+        "assetId": "",
+        "file": "",
+        "title": "Disconnection Practices",
+        "author": "Max Fowler & Catherine Schmidt",
+        "topics": [
+         "Community"
+        ],
+        "href": "https://drive.google.com/file/d/1RXCciLki2Un1aa2Dejw6muoW-49kMrhd/view",
+        "src": ""
+       },
+       {
+        "id": "lb17m0ra",
+        "assetId": "",
+        "file": "",
+        "title": "Women with Mustaches and Men without Beards",
+        "author": "Afsaneh Najmabadi",
+        "topics": [
+         "Gender",
+         "Sexuality"
+        ],
+        "href": "https://drive.google.com/file/d/1zspV0El8dqZxrNu3POY-QkuytirxnQpc/view",
+        "src": ""
+       },
+       {
+        "id": "lb18i8ze",
+        "assetId": "",
+        "file": "",
+        "title": "Women and the Gift Economy",
+        "author": "Genevieve Vaughan",
+        "topics": [
+         "Gender",
+         "Economy"
+        ],
+        "href": "https://drive.google.com/file/d/1Zq8csVCqURKFS7XvG_haTU5amC_I1WUK/view",
+        "src": ""
+       },
+       {
+        "id": "lb19i3p3",
+        "assetId": "",
+        "file": "",
+        "title": "Queering Herbalism: Monsters",
+        "author": "",
+        "topics": [
+         "Gender",
+         "Sexuality",
+         "Nature"
+        ],
+        "href": "https://drive.google.com/file/d/1VgZSPZ3JDy7v2Ui807jrxj6lo4r_W-f9/view",
+        "src": ""
+       },
+       {
+        "id": "lb1ahkw8",
+        "assetId": "",
+        "file": "",
+        "title": "Space, Place and Gender",
+        "author": "Doreen Massey",
+        "topics": [
+         "Gender",
+         "Sexuality"
+        ],
+        "href": "https://drive.google.com/file/d/1mhZtnDMdqg1g-1sUTvwnMsgvgX7ZcoXb/view",
+        "src": ""
+       },
+       {
+        "id": "lb1b7nah",
+        "assetId": "",
+        "file": "",
+        "title": "Feelings Are Facts: A Life",
+        "author": "Yvonne Rainer",
+        "topics": [
+         "Gender",
+         "Sexuality",
+         "Art"
+        ],
+        "href": "https://drive.google.com/file/d/1o2_sD4vRz1P-uYCc2LhG0bXtm8z5nHjU/view",
+        "src": ""
+       },
+       {
+        "id": "lb1ch9eh",
+        "assetId": "",
+        "file": "",
+        "title": "The Second Sex",
+        "author": "Simone de Beauvoir",
+        "topics": [
+         "Gender",
+         "Sexuality"
+        ],
+        "href": "https://drive.google.com/file/d/1Sh_xDguykb4j4LE2bT0wGG6JRIVy1oZa/view",
+        "src": ""
+       },
+       {
+        "id": "lb1d76fy",
+        "assetId": "",
+        "file": "",
+        "title": "Ba7ithat al Badiya",
+        "author": "",
+        "topics": [
+         "Gender",
+         "Sexuality"
+        ],
+        "href": "https://drive.google.com/file/d/18s3HOc_zkFW1ByikN9d7Yzc7NoLWTHMu/view",
+        "src": ""
+       },
+       {
+        "id": "lb1e031v",
+        "assetId": "",
+        "file": "",
+        "title": "Men Without Women",
+        "author": "Ernest Hemingway",
+        "topics": [
+         "Gender",
+         "Literature"
+        ],
+        "href": "https://drive.google.com/file/d/1vUwtXWgGRkz1Ykg0cZQDp-RVEwywaEH0/view",
+        "src": ""
+       },
+       {
+        "id": "lb1fewet",
+        "assetId": "",
+        "file": "",
+        "title": "Sexual Personae",
+        "author": "Camille Paglia",
+        "topics": [
+         "Gender",
+         "Sexuality",
+         "Art"
+        ],
+        "href": "https://drive.google.com/file/d/1JOyxZXVfRl0_jAzI5hP4BxKlQQiISTJP/view",
+        "src": ""
+       },
+       {
+        "id": "lb1gx56t",
+        "assetId": "",
+        "file": "",
+        "title": "Persepolis 1: The Story of a Childhood",
+        "author": "Marjane Satrapi",
+        "topics": [
+         "Gender",
+         "Sexuality",
+         "Art"
+        ],
+        "href": "https://drive.google.com/file/d/1AcDAZw85i-OeIVY8Q5hMPaL46aUWXjfB/view",
+        "src": ""
+       },
+       {
+        "id": "lb1hzhs4",
+        "assetId": "",
+        "file": "",
+        "title": "Persepolis 2: The Story of a Return",
+        "author": "Marjane Satrapi",
+        "topics": [
+         "Gender",
+         "Sexuality",
+         "Art"
+        ],
+        "href": "https://drive.google.com/file/d/1wY-e8dhLNHe3GtZw_NksmqjIPfn5N43g/view",
+        "src": ""
+       },
+       {
+        "id": "lb1iw909",
+        "assetId": "",
+        "file": "",
+        "title": "Architecture and Feminism",
+        "author": "Coleman, Danze & Henderson",
+        "topics": [
+         "Gender",
+         "Sexuality"
+        ],
+        "href": "https://drive.google.com/file/d/1xJyYjz1tnHwjR3ZseWggmE5NsP4-taqt/view",
+        "src": ""
+       },
+       {
+        "id": "lb1jrvsg",
+        "assetId": "",
+        "file": "",
+        "title": "The Transgender Studies Reader",
+        "author": "",
+        "topics": [
+         "Gender",
+         "Sexuality"
+        ],
+        "href": "https://drive.google.com/file/d/1odS_KjX9z7FOZn6Gp1lg51PWmEkXKCbc/view",
+        "src": ""
+       },
+       {
+        "id": "lb1ke0it",
+        "assetId": "",
+        "file": "",
+        "title": "Heteropatriarchy and the Three Pillars of White Supremacy",
+        "author": "Andrea Smith",
+        "topics": [
+         "Gender",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1Xg5d8onU-cWXqkM6qEzYfPYs-CCOstjD/view",
+        "src": ""
+       },
+       {
+        "id": "lb1lk6w7",
+        "assetId": "",
+        "file": "",
+        "title": "Know Your Enemy: The Saudi Women’s Driving Campaign",
+        "author": "",
+        "topics": [
+         "Gender",
+         "Politics"
+        ],
+        "href": "https://drive.google.com/file/d/16twzU3P6HK4jpXNlWAJu-k9yYau6CNU8/view",
+        "src": ""
+       },
+       {
+        "id": "lb1mlcrm",
+        "assetId": "",
+        "file": "",
+        "title": "Invisible Monsters",
+        "author": "Chuck Palahniuk",
+        "topics": [
+         "Literature",
+         "Gender"
+        ],
+        "href": "https://drive.google.com/file/d/1aP0aSM1pbLO-C5neX88WsRTO2wgdJj9r/view",
+        "src": ""
+       },
+       {
+        "id": "lb1nrm50",
+        "assetId": "",
+        "file": "",
+        "title": "The Great Cosmic Mother",
+        "author": "Monica Sjöö & Barbara Mor",
+        "topics": [
+         "Healing",
+         "Mystic",
+         "Gender"
+        ],
+        "href": "https://drive.google.com/file/d/16ZzPL21yI7b3E5ulO7osUBIy9jnd0TAJ/view",
+        "src": ""
+       },
+       {
+        "id": "lb1oqwy3",
+        "assetId": "",
+        "file": "",
+        "title": "Be Here Now",
+        "author": "Ram Dass",
+        "topics": [
+         "Healing",
+         "Mystic"
+        ],
+        "href": "https://drive.google.com/file/d/11bH4qJEkcfRNrkIStTnGI9t5W-lXxFG5/view",
+        "src": ""
+       },
+       {
+        "id": "lb1p2xc2",
+        "assetId": "",
+        "file": "",
+        "title": "Islam: An Illustrated History",
+        "author": "",
+        "topics": [
+         "Healing",
+         "Mystic"
+        ],
+        "href": "https://drive.google.com/file/d/1MbTN0AMWNjMiaKRohCOqRWWdcV72eQXY/view",
+        "src": ""
+       },
+       {
+        "id": "lb1q25uh",
+        "assetId": "",
+        "file": "",
+        "title": "Death of the Author (essay)",
+        "author": "Roland Barthes",
+        "topics": [
+         "Philosophy"
+        ],
+        "href": "https://drive.google.com/file/d/1qPokWM4y51PhwmFt5_W74WcMCyMDQ7I7/view",
+        "src": ""
+       },
+       {
+        "id": "lb1ry37l",
+        "assetId": "",
+        "file": "",
+        "title": "The Conspiracy Against the Human Race",
+        "author": "Thomas Ligotti",
+        "topics": [
+         "Philosophy"
+        ],
+        "href": "https://drive.google.com/file/d/11EAq2QT5pov79HfayYEI1E-TGb1LHOw0/view",
+        "src": ""
+       },
+       {
+        "id": "lb1shstg",
+        "assetId": "",
+        "file": "",
+        "title": "The Archaeology of Knowledge",
+        "author": "Michel Foucault",
+        "topics": [
+         "Philosophy"
+        ],
+        "href": "https://drive.google.com/file/d/1rSt_kCQ1i9ihzxEh6pcJpUdWxJneNYH8/view",
+        "src": ""
+       },
+       {
+        "id": "lb1tkue9",
+        "assetId": "",
+        "file": "",
+        "title": "A Flexible Anarchy",
+        "author": "The Actual School",
+        "topics": [
+         "Philosophy",
+         "Community"
+        ],
+        "href": "https://drive.google.com/file/d/1I--47iTxtPm4_g5xo-ycbg6o7rQ18d1L/view",
+        "src": ""
+       },
+       {
+        "id": "lb1u7i93",
+        "assetId": "",
+        "file": "",
+        "title": "The Chomsky–Foucault Debate",
+        "author": "",
+        "topics": [
+         "Philosophy",
+         "Politics"
+        ],
+        "href": "https://drive.google.com/file/d/1c73BJBOly21e6GiPKnypUog08pIPk-F-/view",
+        "src": ""
+       },
+       {
+        "id": "lb1vnjd5",
+        "assetId": "",
+        "file": "",
+        "title": "What Is It Like to Be a Bat?",
+        "author": "Thomas Nagel",
+        "topics": [
+         "Philosophy",
+         "Nature"
+        ],
+        "href": "https://drive.google.com/file/d/1KrVPlqfNtA_Unm6b0Zfze5WAZAE6uuXG/view",
+        "src": ""
+       },
+       {
+        "id": "lb1w974n",
+        "assetId": "",
+        "file": "",
+        "title": "Cosmic Pessimism",
+        "author": "Eugene Thacker",
+        "topics": [
+         "Philosophy"
+        ],
+        "href": "https://drive.google.com/file/d/1sJxkh0pVJWwR8smvjcv_mDFzNFd8RUUp/view",
+        "src": ""
+       },
+       {
+        "id": "lb1x1jt9",
+        "assetId": "",
+        "file": "",
+        "title": "Slouching Towards Bethlehem",
+        "author": "Joan Didion",
+        "topics": [
+         "Literature"
+        ],
+        "href": "https://drive.google.com/file/d/1zrM7jsKhMYm1n8qfR-zO_KFFlwbCMfZ_/view",
+        "src": ""
+       },
+       {
+        "id": "lb1ylbrs",
+        "assetId": "",
+        "file": "",
+        "title": "Collected Fictions",
+        "author": "Jorge Luis Borges",
+        "topics": [
+         "Literature"
+        ],
+        "href": "https://drive.google.com/file/d/13xnbM84a3YK2cnmKKrzJP33c7w6jz_dr/view",
+        "src": ""
+       },
+       {
+        "id": "lb1zmuxi",
+        "assetId": "",
+        "file": "",
+        "title": "The Unnamable",
+        "author": "Samuel Beckett",
+        "topics": [
+         "Literature"
+        ],
+        "href": "https://drive.google.com/file/d/1WfcjPCbauHg_v3wNi1muM-fGrdqHlHQM/view",
+        "src": ""
+       },
+       {
+        "id": "lb20cnfy",
+        "assetId": "",
+        "file": "",
+        "title": "Letters to Felice",
+        "author": "Franz Kafka",
+        "topics": [
+         "Literature"
+        ],
+        "href": "https://drive.google.com/file/d/1trBkjtQ8INmtZxA_WnmCfUCn7IqPdDkM/view",
+        "src": ""
+       },
+       {
+        "id": "lb21y4kd",
+        "assetId": "",
+        "file": "",
+        "title": "Group zine",
+        "author": "",
+        "topics": [
+         "Zine"
+        ],
+        "href": "https://drive.google.com/file/d/1MIEP3tjbVprglott1UzEm-ueKx9zQHrR/view",
+        "src": ""
+       },
+       {
+        "id": "lb225he4",
+        "assetId": "",
+        "file": "",
+        "title": "Colonial Hangover",
+        "author": "",
+        "topics": [
+         "Zine",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/10ZIx2YBsJqqG25b7lLKf8sNqayP2YXCB/view",
+        "src": ""
+       },
+       {
+        "id": "lb23jcqf",
+        "assetId": "",
+        "file": "",
+        "title": "Travel Zine",
+        "author": "",
+        "topics": [
+         "Zine"
+        ],
+        "href": "https://drive.google.com/file/d/1GUJAht4aJjhNl_tzBwqGM_sDoA5kedwL/view",
+        "src": ""
+       },
+       {
+        "id": "lb247zwm",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Art",
+         "Poetry"
+        ],
+        "href": "https://drive.google.com/file/d/1zkY6lyPDecHQSwUwm5cAyD1nEaxJcgPN/view",
+        "src": ""
+       },
+       {
+        "id": "lb25k1me",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Art",
+         "Poetry"
+        ],
+        "href": "https://drive.google.com/file/d/1XnGiVH-dpi4NZIXGYTK2UHG5j4BlGCqn/view",
+        "src": ""
+       },
+       {
+        "id": "lb268s7o",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Art",
+         "Poetry"
+        ],
+        "href": "https://drive.google.com/file/d/1kdO2qSNGZc5UGgFRpJUTwvE6nH0VwAir/view",
+        "src": ""
+       },
+       {
+        "id": "lb275uzj",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Art",
+         "Poetry"
+        ],
+        "href": "https://drive.google.com/file/d/1qsMDF6Pu43ltmxN2YYiNuJthkNIkC5vc/view",
+        "src": ""
+       },
+       {
+        "id": "lb282w22",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Art",
+         "Poetry"
+        ],
+        "href": "https://drive.google.com/file/d/10Kwklvm7wLfl71Gsi4QEk1Dbo152zBnp/view",
+        "src": ""
+       },
+       {
+        "id": "lb29g9ta",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Race",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1LTcHnqmmc0qDW68OabrogqJbwvyL6a3e/view",
+        "src": ""
+       },
+       {
+        "id": "lb2a7xl4",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Race",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1SuLfvoOUX_Y965axVRiJ_0ReuIkiKajD/view",
+        "src": ""
+       },
+       {
+        "id": "lb2bkctw",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Race",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/1DsxxGbNS6_UbE04JN_SgxP59pzz97MPO/view",
+        "src": ""
+       },
+       {
+        "id": "lb2cgckl",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Race",
+         "Decolonisation"
+        ],
+        "href": "https://drive.google.com/file/d/178RZNsNaQXZ0ZRSnJo1SNsSjsJhIMvlW/view",
+        "src": ""
+       },
+       {
+        "id": "lb2d4u46",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Community",
+         "Nature"
+        ],
+        "href": "https://drive.google.com/file/d/1LeKhwgJyEusFKfg4sqcRxUiQmjaMPsxD/view",
+        "src": ""
+       },
+       {
+        "id": "lb2e0h4w",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Community",
+         "Nature"
+        ],
+        "href": "https://drive.google.com/file/d/1N3eISEzBOVleNrHFV_CkvmaCQfkEtThi/view",
+        "src": ""
+       },
+       {
+        "id": "lb2fin6z",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Community",
+         "Nature"
+        ],
+        "href": "https://drive.google.com/file/d/17r_4I_GUYYu9x4EtVo5SCbslTV4E14Gy/view",
+        "src": ""
+       },
+       {
+        "id": "lb2gendh",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Community",
+         "Nature"
+        ],
+        "href": "https://drive.google.com/file/d/1IBpyBBdYMTT82GeOV-Rsc1ohZZuHgcKk/view",
+        "src": ""
+       },
+       {
+        "id": "lb2hw42x",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Community",
+         "Nature"
+        ],
+        "href": "https://drive.google.com/file/d/1lMmmyseHhVy25UA-pBtF3SVKwCTUcYz2/view",
+        "src": ""
+       },
+       {
+        "id": "lb2iz6eq",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Community",
+         "Nature"
+        ],
+        "href": "https://drive.google.com/file/d/1nE30XulUlsDWXGnyxCvtwock4td6pOGt/view",
+        "src": ""
+       },
+       {
+        "id": "lb2jkg7p",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Community",
+         "Nature"
+        ],
+        "href": "https://drive.google.com/file/d/1gs3M9dyh0fxk1QP_TAOUNC9nb-ez_3j5/view",
+        "src": ""
+       },
+       {
+        "id": "lb2kapl0",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Gender",
+         "Sexuality"
+        ],
+        "href": "https://drive.google.com/file/d/1znLYlkosIeZMWq0td3hcnwJxb39oAKk7/view",
+        "src": ""
+       },
+       {
+        "id": "lb2l7ann",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Healing",
+         "Mystic"
+        ],
+        "href": "https://drive.google.com/file/d/1Z-awxM22Fom50PwiQBhcuNlxCi2RE3SU/view",
+        "src": ""
+       },
+       {
+        "id": "lb2mxozk",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Healing",
+         "Mystic"
+        ],
+        "href": "https://drive.google.com/file/d/1mOvca_QII-lb7EehOJKBNdkByfy75UzQ/view",
+        "src": ""
+       },
+       {
+        "id": "lb2n3zwy",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Healing",
+         "Mystic"
+        ],
+        "href": "https://drive.google.com/file/d/1uqZciy7C46y7m67tQ6QFH8eRTuhYjMRj/view",
+        "src": ""
+       },
+       {
+        "id": "lb2o79ib",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Healing",
+         "Mystic"
+        ],
+        "href": "https://drive.google.com/file/d/1ntzCbZJIdjFBCbWdjFz4XTbSu44Ndiwd/view",
+        "src": ""
+       },
+       {
+        "id": "lb2p7kqd",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Healing",
+         "Mystic"
+        ],
+        "href": "https://drive.google.com/file/d/1DY2tfM7w_Vif771gYzyJbgAGZGT8p3_R/view",
+        "src": ""
+       },
+       {
+        "id": "lb2q8zn1",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Healing",
+         "Mystic"
+        ],
+        "href": "https://drive.google.com/file/d/1StgJyif03WCVJlT3keYC6urp7CbePrOV/view",
+        "src": ""
+       },
+       {
+        "id": "lb2ro6cl",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Healing",
+         "Mystic"
+        ],
+        "href": "https://drive.google.com/file/d/1PzZitkAFHVthgbm5iWq3_U0RXjKfqIsu/view",
+        "src": ""
+       },
+       {
+        "id": "lb2s7qej",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [
+         "Healing",
+         "Mystic"
+        ],
+        "href": "https://drive.google.com/file/d/1R0DYzyHkicxeqyg8gZ54uh5BTjUHIs47/view",
+        "src": ""
+       },
+       {
+        "id": "lb2taurw",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [],
+        "href": "https://drive.google.com/file/d/1rEZ5dKMPaELbOwIGLEyxbJ-Nld4MREDC/view",
+        "src": ""
+       },
+       {
+        "id": "lb2uroj2",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [],
+        "href": "https://drive.google.com/file/d/1CQuuzviR1H1UBp7W1yVgtcoYbVwdTgjR/view",
+        "src": ""
+       },
+       {
+        "id": "lb2vyo20",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [],
+        "href": "https://drive.google.com/file/d/1TWRdY45l5JKq8OnMg-li30Fxu_-1fFMw/view",
+        "src": ""
+       },
+       {
+        "id": "lb2weaiz",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [],
+        "href": "https://drive.google.com/file/d/10P4ySnaQ0NXj0gZVvMLrDhUN7YHT3r3l/view",
+        "src": ""
+       },
+       {
+        "id": "lb2x0svl",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [],
+        "href": "https://drive.google.com/file/d/1BKHJ-cMqkUspzDs2F2uLjO5COOrMwujw/view",
+        "src": ""
+       },
+       {
+        "id": "lb2yf535",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [],
+        "href": "https://drive.google.com/file/d/1hMYhhUmMN_VtRV6TK17Ni8VB8sQEYE3j/view",
+        "src": ""
+       },
+       {
+        "id": "lb2zdt3h",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [],
+        "href": "https://drive.google.com/file/d/1Yc9_bGD-PHyhDMDZB_dMNNHhu78w6mKk/view",
+        "src": ""
+       },
+       {
+        "id": "lb30wtg0",
+        "assetId": "",
+        "file": "",
+        "title": "",
+        "author": "",
+        "topics": [],
+        "href": "https://drive.google.com/file/d/1Yt4Ff3rU8GwpzBFTbayB4iFdF6vdOKLu/view",
+        "src": ""
+       }
+      ],
+      "cols": 5,
+      "colsM": 2,
+      "gutter": 30,
+      "gutterM": 16,
+      "ratio": "2/3",
+      "titles": false,
+      "filters": true,
+      "allLabel": "All"
      }
     }
    ],
@@ -2136,6 +3506,17 @@
     "fixed": false,
     "show": "all",
     "pages": []
+   },
+   "ownLayout": true,
+   "colset": {
+    "cols": 1,
+    "align": "spread",
+    "spans": [
+     12
+    ],
+    "colsM": 1,
+    "gutter": 30,
+    "gutterM": 20
    }
   },
   "zty6iib1": {
