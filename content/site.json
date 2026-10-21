@@ -1123,12 +1123,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5132.png",
       "alt": "Handala throwing a stone",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1891,
+      "h": 1938
      }
     },
     {
@@ -1215,12 +1217,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5141.png",
       "alt": "Handala seized by a hand",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1773,
+      "h": 1773
      }
     },
     {
@@ -1253,12 +1257,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5140.png",
       "alt": "A man holding Freeze Point glue behind Handala",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1773,
+      "h": 1773
      }
     },
     {
@@ -1291,12 +1297,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5139.png",
       "alt": "Freeze Point glue fixing Handala’s hands",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1772,
+      "h": 1773
      }
     },
     {
@@ -1329,12 +1337,14 @@
      },
      "m": null,
      "props": {
-      "assetId": "",
-      "file": "",
+      "assetId": "live",
+      "file": "img-5138.png",
       "alt": "Handala in a frame held by hands",
       "caption": "",
       "fit": "contain",
-      "zoom": false
+      "zoom": false,
+      "w": 1772,
+      "h": 1773
      }
     },
     {
