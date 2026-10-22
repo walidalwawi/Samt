@@ -69,7 +69,7 @@ var BS_ALIGN = [["left", "Left"], ["center", "Centre"], ["right", "Right"]];
 var BS_CASE = [["none", "As typed"], ["uppercase", "UPPER"], ["lowercase", "lower"]];
 var BLOCK_STYLE = {
 quote: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align", "sel", "center", BS_ALIGN], ["pad", "Padding top/bottom", "dp", 40, null, 28], ["padX", "Padding sides", "dp", 46, null, 22], ["bg", "Background", "color", ""], ["ink", "Text colour", "color", ""], ["shadow", "Soft shadow", "bool", "1"], ["line", "Line on the left", "bool", "0"]],
-posts: [["titleStyle", "Title style", "style", "body"], ["titleSize", "Title size", "dp", ""], ["titleLh", "Title line", "dp", ""], ["metaStyle", "Info style", "style", "small"], ["metaSize", "Info size", "dp", ""], ["metaLh", "Info line", "dp", ""], ["metaGap", "Gap above info", "px", 8], ["cardBg", "Card colour", "color", ""], ["cardPad", "Card padding", "dp", 0], ["minH", "Text min height", "px", ""], ["imgGap", "Image gap", "px", 12], ["imagePos", "Image", "sel", "top", [["top", "Above text"], ["bottom", "Below text"]]], ["ratio", "Crop", "sel", "auto", [["auto", "Original"], ["1", "Square"], ["4/3", "4 : 3"], ["3/2", "3 : 2"], ["16/9", "16 : 9"], ["3/4", "3 : 4"]]], ["hover", "Hover", "sel", "dim", [["none", "None"], ["dim", "Dim"], ["lift", "Lift"]]], ["fTitleStyle", "Featured title", "style", "heading"]],
+posts: [["titleStyle", "Title style", "style", "body"], ["titleSize", "Title size", "dp", ""], ["titleLh", "Title line", "dp", ""], ["metaStyle", "Info style", "style", "small"], ["metaSize", "Info size", "dp", ""], ["metaLh", "Info line", "dp", ""], ["metaGap", "Gap above info", "px", 8], ["cardBg", "Card colour", "color", ""], ["cardPad", "Card padding", "dp", 0], ["minH", "Text min height", "px", ""], ["imgGap", "Image gap", "px", 12], ["imagePos", "Image", "sel", "top", [["top", "Above text"], ["bottom", "Below text"]]], ["ratio", "Crop", "sel", "auto", [["auto", "Original"], ["1", "Square"], ["4/3", "4 : 3"], ["3/2", "3 : 2"], ["16/9", "16 : 9"], ["3/4", "3 : 4"]]], ["hover", "Hover", "sel", "dim", [["none", "None"], ["dim", "Dim"], ["lift", "Lift"], ["open", "Open (cover swings)"]]], ["fTitleStyle", "Featured title", "style", "heading"], ["zine", "Zine look (staples + page)", "bool", "0"], ["staple", "Staple colour", "color", ""], ["pageBg", "Inside page colour", "color", ""]],
 library: [["book", "Book look", "bool", "1"], ["spine", "Spine colour", "color", "#8a8a8a"], ["spineW", "Spine width", "px", 10], ["shadow", "Shadow", "bool", "1"], ["radius", "Page corner", "px", 2], ["hover", "Hover", "sel", "tilt", [["none", "None"], ["tilt", "Open (perspective)"], ["lift", "Lift"]]]],
 toggle: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["marker", "Marker", "sel", "plus", [["plus", "+ / —"], ["arrow", "→ / ↓"], ["none", "None"]]], ["itemGap", "Between items", "px", 0], ["indent", "Indent items", "px", 0]],
 product: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align", "sel", "left", BS_ALIGN]],
@@ -1427,6 +1427,79 @@ opacity: 0.6;
 transform: translateY(-3px);
 }
 
+/* ZINE CARDS — DEADPAN GESTURE: THE COVER SWINGS OPEN ON ITS STAPLED SPINE */
+.bd-posts.is-zine .bd-post {
+position: relative;
+padding: 0;
+background: none;
+perspective: 900px;
+}
+.bd-post-cover {
+display: contents;
+}
+.bd-posts.is-zine .bd-post-cover {
+position: relative;
+z-index: 1;
+display: flex;
+flex-direction: column;
+height: 100%;
+padding: var(--ppad, 0px);
+background: var(--pbg, #eeeeee);
+box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.12);
+transform-origin: left center;
+transition: transform 0.45s ease, box-shadow 0.45s ease;
+}
+.bd-posts.is-zine.is-img-bottom .bd-post-cover .bd-post-img {
+order: 2;
+margin: var(--pimg-gap, 12px) 0 0;
+}
+.bd-post-page {
+position: absolute;
+inset: 0;
+z-index: 0;
+overflow: hidden;
+padding: var(--ppad, 18px);
+background: var(--ppage, #ffffff);
+box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+.bd-posts.has-staples .bd-post-cover::before,
+.bd-posts.has-staples .bd-post-cover::after {
+content: "";
+position: absolute;
+left: 5px;
+width: 2px;
+height: 14px;
+background: var(--pstaple, #555555);
+}
+.bd-posts.has-staples .bd-post-cover::before {
+top: 22%;
+}
+.bd-posts.has-staples .bd-post-cover::after {
+bottom: 22%;
+}
+.bd-posts.is-zine a.bd-post:hover {
+opacity: 1;
+transform: none;
+}
+@media (hover: hover) {
+.bd-posts.is-zine a.bd-post:hover .bd-post-cover {
+transform: rotateY(-8deg);
+box-shadow: 5px 4px 0 rgba(0, 0, 0, 0.12);
+}
+}
+.bd-posts.is-zine a.bd-post.is-open .bd-post-cover {
+transform: rotateY(-24deg);
+box-shadow: 10px 6px 0 rgba(0, 0, 0, 0.12);
+}
+.bd-posts.is-zine .bd-post.is-featured.is-f-side {
+display: block;
+}
+.bd-posts.is-zine .bd-post.is-featured.is-f-side .bd-post-cover {
+display: grid;
+grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+column-gap: var(--pgap, 40px);
+}
+
 /* POST INFO */
 .bd-postinfo-back {
 margin-right: 0.6em;
@@ -1783,11 +1856,20 @@ background: linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent);
 .bd-library.has-shadow .bd-lib-cover {
 box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.16);
 }
+@media (hover: hover) {
 .bd-library.is-hov-tilt a.bd-lib-item:hover .bd-lib-cover {
+transform: rotateY(-8deg);
+box-shadow: 6px 5px 12px rgba(0, 0, 0, 0.18);
+}
+.bd-library.is-hov-lift a.bd-lib-item:hover .bd-lib-cover {
+transform: translateY(-2px);
+}
+}
+.bd-library.is-hov-tilt a.bd-lib-item.is-open .bd-lib-cover {
 transform: rotateY(-24deg);
 box-shadow: 14px 8px 18px rgba(0, 0, 0, 0.22);
 }
-.bd-library.is-hov-lift a.bd-lib-item:hover .bd-lib-cover {
+.bd-library.is-hov-lift a.bd-lib-item.is-open .bd-lib-cover {
 transform: translateY(-6px);
 box-shadow: 4px 12px 18px rgba(0, 0, 0, 0.2);
 }
@@ -2006,6 +2088,8 @@ px("--pminh", "minH");
 px("--pimg-gap", "imgGap");
 px("--pmgap", "metaGap");
 if (E(e, "cardBg")) d.push("--pbg: " + E(e, "cardBg") + ";");
+if (E(e, "staple")) d.push("--pstaple: " + E(e, "staple") + ";");
+if (E(e, "pageBg")) d.push("--ppage: " + E(e, "pageBg") + ";");
 var ra = E(e, "ratio");
 if (ra && ra !== "auto") d.push("--pratio: " + String(ra).replace("/", " / ") + ";");
 }
@@ -2391,12 +2475,28 @@ txt.push('<span class="bd-post-m bd-ts-' + (E(e, "metaStyle") || "small") + '">'
 }
 if (p.showExcerpt && q.excerpt) txt.push('<span class="bd-post-x">' + esc(q.excerpt) + "</span>");
 parts.push('<span class="bd-post-txt">' + txt.join("") + "</span>");
-return '<a class="bd-post' + (feat ? " is-featured is-f-" + (p.fLayout || "stack") : "") + '" href="/' + esc(q.slug || "") + '">' + parts.join("") + "</a>";
+var zine = ON(e, "zine") || E(e, "hover") === "open";
+var body = zine ? '<span class="bd-post-page bd-ts-' + (E(e, "metaStyle") || "small") + '">' + esc(postPeek(q)) + '</span><span class="bd-post-cover">' + parts.join("") + "</span>" : parts.join("");
+return '<a class="bd-post' + (feat ? " is-featured is-f-" + (p.fLayout || "stack") : "") + '" href="/' + esc(q.slug || "") + '">' + body + "</a>";
+}
+function postPeek(q) {
+if (q.excerpt) return q.excerpt;
+var title = String(q.h1 || q.title || "").trim();
+var paras = [];
+(q.els || []).forEach(function (e) {
+if (e.type !== "text") return;
+String(e.props.html || "").split(/<\/p>/i).forEach(function (h) {
+var t = h.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
+if (t && t !== title && t.length > 60) paras.push(t);
+});
+});
+var t = paras[0] || "";
+return t.length > 240 ? t.slice(0, 237).replace(/\s+\S*$/, "") + "…" : t;
 }
 function postsHTML(e, ctx) {
 var p = e.props;
 var L = postsList(p);
-var cls = "bd-el bd-e-" + e.id + " bd-posts is-" + (p.layout || "grid") + " is-img-" + (E(e, "imagePos") || "top") + " is-hov-" + (E(e, "hover") || "none");
+var cls = "bd-el bd-e-" + e.id + " bd-posts is-" + (p.layout || "grid") + " is-img-" + (E(e, "imagePos") || "top") + " is-hov-" + (E(e, "hover") || "none") + (ON(e, "zine") || E(e, "hover") === "open" ? " is-zine" : "") + (ON(e, "zine") ? " has-staples" : "");
 if (!L.blog) return ctx === "export" ? "" : '<div class="' + cls + '"><div class="bd-ed-gempty">Blog posts · add a blog in the Pages tab</div></div>';
 if (!L.feat && !L.list.length) return ctx === "export" ? "" : '<div class="' + cls + '"><div class="bd-ed-gempty">No posts yet · add one with + Post</div></div>';
 return '<div class="' + cls + '">\n' + (L.feat ? postCard(L.feat, e, ctx, true) + "\n" : "") + L.list.map(function (q) { return postCard(q, e, ctx, false); }).join("\n") + "\n</div>";
@@ -2789,6 +2889,26 @@ panel.appendChild(pager);
 /* GALLERY RUNTIME (EXPORTED AS-IS) */
 function bdGalleries(root) {
 var host = root.querySelector(".bd-site") || (root.classList && root.classList.contains("bd-site") ? root : document.body);
+/* GESTURES — HOVER TEASES, A TAP OR CLICK PLAYS THE FULL MOVE, THEN THE LINK OPENS */
+if (!root.__bdGesture) {
+root.__bdGesture = true;
+root.addEventListener("click", function (ev) {
+var a = ev.target.closest && ev.target.closest(".bd-library.is-hov-tilt a.bd-lib-item, .bd-library.is-hov-lift a.bd-lib-item, .bd-posts.is-zine a.bd-post");
+if (!a || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey || ev.defaultPrevented) return;
+if (host.classList.contains("is-editing")) return;
+var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+a.classList.add("is-open");
+if (a.target === "_blank" || still || (root.getRootNode && root.getRootNode() !== document)) {
+setTimeout(function () { a.classList.remove("is-open"); }, 1100);
+return;
+}
+ev.preventDefault();
+setTimeout(function () { window.location.href = a.href; }, 520);
+});
+window.addEventListener("pageshow", function () {
+root.querySelectorAll(".is-open").forEach(function (x) { if (x.matches("a.bd-lib-item, a.bd-post")) x.classList.remove("is-open"); });
+});
+}
 root.querySelectorAll(".bd-library").forEach(function (lib) {
 var bar = lib.querySelector(".bd-lib-filter");
 if (!bar) return;

@@ -1,4 +1,4 @@
-/* PUBLISHED mviiotfu */
+/* PUBLISHED build */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -666,6 +666,79 @@ opacity: 0.6;
 transform: translateY(-3px);
 }
 
+/* ZINE CARDS — DEADPAN GESTURE: THE COVER SWINGS OPEN ON ITS STAPLED SPINE */
+.bd-posts.is-zine .bd-post {
+position: relative;
+padding: 0;
+background: none;
+perspective: 900px;
+}
+.bd-post-cover {
+display: contents;
+}
+.bd-posts.is-zine .bd-post-cover {
+position: relative;
+z-index: 1;
+display: flex;
+flex-direction: column;
+height: 100%;
+padding: var(--ppad, 0px);
+background: var(--pbg, #eeeeee);
+box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.12);
+transform-origin: left center;
+transition: transform 0.45s ease, box-shadow 0.45s ease;
+}
+.bd-posts.is-zine.is-img-bottom .bd-post-cover .bd-post-img {
+order: 2;
+margin: var(--pimg-gap, 12px) 0 0;
+}
+.bd-post-page {
+position: absolute;
+inset: 0;
+z-index: 0;
+overflow: hidden;
+padding: var(--ppad, 18px);
+background: var(--ppage, #ffffff);
+box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+.bd-posts.has-staples .bd-post-cover::before,
+.bd-posts.has-staples .bd-post-cover::after {
+content: "";
+position: absolute;
+left: 5px;
+width: 2px;
+height: 14px;
+background: var(--pstaple, #555555);
+}
+.bd-posts.has-staples .bd-post-cover::before {
+top: 22%;
+}
+.bd-posts.has-staples .bd-post-cover::after {
+bottom: 22%;
+}
+.bd-posts.is-zine a.bd-post:hover {
+opacity: 1;
+transform: none;
+}
+@media (hover: hover) {
+.bd-posts.is-zine a.bd-post:hover .bd-post-cover {
+transform: rotateY(-8deg);
+box-shadow: 5px 4px 0 rgba(0, 0, 0, 0.12);
+}
+}
+.bd-posts.is-zine a.bd-post.is-open .bd-post-cover {
+transform: rotateY(-24deg);
+box-shadow: 10px 6px 0 rgba(0, 0, 0, 0.12);
+}
+.bd-posts.is-zine .bd-post.is-featured.is-f-side {
+display: block;
+}
+.bd-posts.is-zine .bd-post.is-featured.is-f-side .bd-post-cover {
+display: grid;
+grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+column-gap: var(--pgap, 40px);
+}
+
 /* POST INFO */
 .bd-postinfo-back {
 margin-right: 0.6em;
@@ -990,11 +1063,20 @@ background: linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent);
 .bd-library.has-shadow .bd-lib-cover {
 box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.16);
 }
+@media (hover: hover) {
 .bd-library.is-hov-tilt a.bd-lib-item:hover .bd-lib-cover {
+transform: rotateY(-8deg);
+box-shadow: 6px 5px 12px rgba(0, 0, 0, 0.18);
+}
+.bd-library.is-hov-lift a.bd-lib-item:hover .bd-lib-cover {
+transform: translateY(-2px);
+}
+}
+.bd-library.is-hov-tilt a.bd-lib-item.is-open .bd-lib-cover {
 transform: rotateY(-24deg);
 box-shadow: 14px 8px 18px rgba(0, 0, 0, 0.22);
 }
-.bd-library.is-hov-lift a.bd-lib-item:hover .bd-lib-cover {
+.bd-library.is-hov-lift a.bd-lib-item.is-open .bd-lib-cover {
 transform: translateY(-6px);
 box-shadow: 4px 12px 18px rgba(0, 0, 0, 0.2);
 }

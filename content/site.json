@@ -346,8 +346,11 @@
     "imgGap": 0,
     "imagePos": "bottom",
     "ratio": "1",
-    "hover": "lift",
-    "fTitleStyle": "heading"
+    "hover": "open",
+    "fTitleStyle": "heading",
+    "zine": "1",
+    "staple": "",
+    "pageBg": ""
    },
    "library": {
     "book": "1",
@@ -598,7 +601,10 @@
       "titleSizeM": "",
       "titleLhM": "",
       "metaSizeM": "",
-      "metaLhM": ""
+      "metaLhM": "",
+      "zine": "",
+      "staple": "",
+      "pageBg": ""
      }
     }
    ],

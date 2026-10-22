@@ -160,6 +160,26 @@ panel.appendChild(pager);
 /* GALLERIES */
 function bdGalleries(root) {
 var host = root.querySelector(".bd-site") || (root.classList && root.classList.contains("bd-site") ? root : document.body);
+/* GESTURES — HOVER TEASES, A TAP OR CLICK PLAYS THE FULL MOVE, THEN THE LINK OPENS */
+if (!root.__bdGesture) {
+root.__bdGesture = true;
+root.addEventListener("click", function (ev) {
+var a = ev.target.closest && ev.target.closest(".bd-library.is-hov-tilt a.bd-lib-item, .bd-library.is-hov-lift a.bd-lib-item, .bd-posts.is-zine a.bd-post");
+if (!a || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey || ev.defaultPrevented) return;
+if (host.classList.contains("is-editing")) return;
+var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+a.classList.add("is-open");
+if (a.target === "_blank" || still || (root.getRootNode && root.getRootNode() !== document)) {
+setTimeout(function () { a.classList.remove("is-open"); }, 1100);
+return;
+}
+ev.preventDefault();
+setTimeout(function () { window.location.href = a.href; }, 520);
+});
+window.addEventListener("pageshow", function () {
+root.querySelectorAll(".is-open").forEach(function (x) { if (x.matches("a.bd-lib-item, a.bd-post")) x.classList.remove("is-open"); });
+});
+}
 root.querySelectorAll(".bd-library").forEach(function (lib) {
 var bar = lib.querySelector(".bd-lib-filter");
 if (!bar) return;
