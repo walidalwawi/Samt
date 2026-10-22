@@ -1759,7 +1759,12 @@
    "libAuthors": true,
    "libRowGap": 30,
    "libGap": 30,
-   "libCols": 5
+   "libCols": 5,
+   "fit": "contain",
+   "ratio": "1/1",
+   "rowGap": 30,
+   "gap": 30,
+   "cols": 3
   },
   "post": {
    "quoteBg": "#FFFFFF"
@@ -1767,6 +1772,19 @@
   "color": {
    "ground": "#FFFFFF",
    "paper": "#FFFFFF"
+  },
+  "motion": {
+   "ease": "paper",
+   "dur": 520,
+   "menuDur": 520,
+   "tilt": 0,
+   "lift": true,
+   "stagger": true,
+   "step": 35,
+   "thumb": "trace",
+   "book": "lift",
+   "reveal": "rise",
+   "focusBlur": 3
   }
  },
  "css": ""
