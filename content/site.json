@@ -692,7 +692,7 @@
       "showDate": false,
       "showMeta": true,
       "showExcerpt": false,
-      "imagePos": "bottom",
+      "imagePos": "top",
       "ratio": "1",
       "imgGap": "",
       "cardBg": "",
@@ -730,7 +730,7 @@
       "slideTap": "",
       "imgBlur": "",
       "imgTone": "",
-      "imgBlend": "multiply",
+      "imgBlend": "difference",
       "imgBackdrop": ""
      }
     }
