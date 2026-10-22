@@ -289,11 +289,10 @@
    "libFix": 1
   },
   "layout": {
-   "cols": 2,
-   "align": "center",
+   "cols": 1,
+   "align": "spread",
    "spans": [
-    6,
-    6
+    12
    ],
    "colsM": 1,
    "gutter": 40,
@@ -362,16 +361,18 @@
     "slideTap": 62,
     "imgBlur": 0,
     "imgTone": "color",
-    "imgBlend": "normal"
+    "imgBlend": "normal",
+    "imgBackdrop": ""
    },
    "library": {
     "book": "1",
-    "spine": "#8a8a8a",
+    "spine": "#0ec800",
     "spineW": 10,
     "shadow": "1",
     "radius": 2,
     "hover": "tilt",
-    "blend": "normal"
+    "blend": "difference",
+    "backdrop": ""
    },
    "toggle": {
     "style": "body",
@@ -443,17 +444,19 @@
     "measure": ""
    },
    "image": {
-    "blend": "screen",
+    "blend": "exclusion",
     "tone": "color",
     "opacity": 100,
     "radius": 0,
-    "hard": "1"
+    "hard": "1",
+    "backdrop": ""
    },
    "gallery": {
     "blend": "normal",
     "tone": "color",
     "opacity": 100,
-    "radius": 0
+    "radius": 0,
+    "backdrop": ""
    },
    "notes": {
     "size": "",
@@ -502,7 +505,7 @@
       "label": ""
      },
      {
-      "id": "abmvifimc6",
+      "id": "gaxxsh8k",
       "type": "page",
       "page": "nsye72w3",
       "label": ""
@@ -720,11 +723,12 @@
       "slideTap": "",
       "imgBlur": "",
       "imgTone": "",
-      "imgBlend": ""
+      "imgBlend": "",
+      "imgBackdrop": ""
      }
     }
    ],
-   "ownLayout": true,
+   "ownLayout": false,
    "kind": "page",
    "stack": [],
    "pin": {
@@ -1195,7 +1199,19 @@
    "parent": "fji5ongj",
    "date": "",
    "excerpt": "",
-   "featured": true
+   "featured": true,
+   "ownLayout": true,
+   "colset": {
+    "cols": 2,
+    "align": "spread",
+    "spans": [
+     6,
+     6
+    ],
+    "colsM": 1,
+    "gutter": 40,
+    "gutterM": 24
+   }
   },
   "ipk7ns57": {
    "id": "ipk7ns57",
@@ -4258,27 +4274,73 @@
    "section": "",
    "desc": "Samt — Arabic for silence — a virtual platform for art and research founded by Walid Al Wawi in 2017.",
    "header": false,
-   "layout": "free",
+   "layout": "master",
    "css": "",
    "els": [
+    {
+     "id": "u2gfdifq",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": {
+      "x": 0,
+      "y": 0,
+      "w": 6,
+      "h": 4
+     },
+     "props": {
+      "html": "<p>Arabic for silence, Samt is a virtual platform for art and research that functions in periodic volumes, and mainly exists online through Samt.co</p><p>Founded by Walid Al Wawi in 2017, Samt’s mission centres around challenging the political economy and institutional hierarchy of the art system, by shifting the receptivity of art discourse from the conventional state of physical geographies to a fluid and contemporary techno-digital approach.</p><p>In 2022 Samt further expanded on its mission with the creation of Samt Alternative Art School (SAAS); an experimental rethinking of creative resistance as mode of authentic production; combating the colonialist Eurocentric academia, capitalistic frameworks and patriarchal dominance of the historical and contemporary art canon.</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
     {
      "id": "3w6oxzyq",
      "type": "text",
      "col": 1,
      "d": {
       "x": 0,
-      "y": 1,
-      "w": 5,
-      "h": 3
+      "y": 0,
+      "w": 12,
+      "h": 4
      },
      "m": {
       "x": 0,
-      "y": 0,
+      "y": 7,
       "w": 6,
-      "h": 3
+      "h": 4
      },
      "props": {
       "html": "<p>Samt n.– Making no sound; quiet; still</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left"
+     }
+    },
+    {
+     "id": "owa05vjv",
+     "type": "text",
+     "col": 2,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 4
+     },
+     "m": {
+      "x": 0,
+      "y": 14,
+      "w": 6,
+      "h": 4
+     },
+     "props": {
+      "html": "<p>Founding Director:<br><a href=\"https://walidalwawi.com\">Walid Al Wawi</a></p>\n<p>Guest educators:<br>Ragini Nagu</p>\n<p>Guest curators:<br>Sarah Al Agroobi<br>Tara Aldughaither<br>Areej Kaoud</p>\n<p>Previous collaborators:<br><a href=\"https://daratalfunun.org\" target=\"_blank\" rel=\"noopener\">Darat Al Funun, Amman</a><br><a href=\"https://www.tate.org.uk\" target=\"_blank\" rel=\"noopener\">TATE Exchange, London</a><br><a href=\"https://greynoise.org\" target=\"_blank\" rel=\"noopener\">Grey Noise Gallery, Dubai</a><br><a href=\"#\">Satellite Art Space, Dubai</a></p>",
       "style": "body",
       "indent": false,
       "align": "left"
@@ -4290,15 +4352,15 @@
      "col": 1,
      "d": {
       "x": 0,
-      "y": 82,
-      "w": 5,
-      "h": 1
+      "y": 0,
+      "w": 12,
+      "h": 4
      },
      "m": {
       "x": 0,
-      "y": 57,
+      "y": 21,
       "w": 6,
-      "h": 3
+      "h": 4
      },
      "props": {
       "title": "Contributors:",
@@ -4371,52 +4433,6 @@
       "sizeM": "",
       "lh": "",
       "lhM": ""
-     }
-    },
-    {
-     "id": "u2gfdifq",
-     "type": "text",
-     "col": 2,
-     "d": {
-      "x": 6,
-      "y": 0,
-      "w": 6,
-      "h": 36
-     },
-     "m": {
-      "x": 0,
-      "y": 6,
-      "w": 6,
-      "h": 38
-     },
-     "props": {
-      "html": "<p>Arabic for silence, Samt is a virtual platform for art and research that functions in periodic volumes, and mainly exists online through Samt.co</p><p>Founded by Walid Al Wawi in 2017, Samt’s mission centres around challenging the political economy and institutional hierarchy of the art system, by shifting the receptivity of art discourse from the conventional state of physical geographies to a fluid and contemporary techno-digital approach.</p><p>In 2022 Samt further expanded on its mission with the creation of Samt Alternative Art School (SAAS); an experimental rethinking of creative resistance as mode of authentic production; combating the colonialist Eurocentric academia, capitalistic frameworks and patriarchal dominance of the historical and contemporary art canon.</p>",
-      "style": "body",
-      "indent": false,
-      "align": "left"
-     }
-    },
-    {
-     "id": "owa05vjv",
-     "type": "text",
-     "col": 2,
-     "d": {
-      "x": 6,
-      "y": 41,
-      "w": 6,
-      "h": 44
-     },
-     "m": {
-      "x": 0,
-      "y": 48,
-      "w": 6,
-      "h": 5
-     },
-     "props": {
-      "html": "<p>Founding Director:<br><a href=\"https://walidalwawi.com\">Walid Al Wawi</a></p>\n<p>Guest educators:<br>Ragini Nagu</p>\n<p>Guest curators:<br>Sarah Al Agroobi<br>Tara Aldughaither<br>Areej Kaoud</p>\n<p>Previous collaborators:<br><a href=\"https://daratalfunun.org\" target=\"_blank\" rel=\"noopener\">Darat Al Funun, Amman</a><br><a href=\"https://www.tate.org.uk\" target=\"_blank\" rel=\"noopener\">TATE Exchange, London</a><br><a href=\"https://greynoise.org\" target=\"_blank\" rel=\"noopener\">Grey Noise Gallery, Dubai</a><br><a href=\"#\">Satellite Art Space, Dubai</a></p>",
-      "style": "body",
-      "indent": false,
-      "align": "left"
      }
     }
    ],
