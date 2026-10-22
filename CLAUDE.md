@@ -35,4 +35,5 @@ Ask before assuming.
 - Timing ~0.45s ease; angles small enough to read as cheeky, not as a 3D effect.
 - Reference implementation: library "Book look" (.bd-library.is-book, hover "Open (perspective)").
 - Mobile first: hover only teases (~8°, desktop with real hover); a tap/click plays the full gesture (~24°) and the link opens after ~0.5s. New-tab links open immediately while the gesture plays.
-- Journal cards use the zine variant of the same gesture: staples on the spine, cover swings to reveal the inside page.
+- Journal cards use the tracing-paper variant (Posts block → Card look → Tracing paper): a frosted sheet with the post info lies on the poster image; hover nudges it, a tap slides it most of the way off, then the post opens. The zine variant (cover swings) is still available as a Card look.
+- Each post can set its own card image: mark an image block "Use as card image", pick one under Page → Card image, or upload an own image there (cards only, not shown in the post).

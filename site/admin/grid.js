@@ -69,7 +69,7 @@ var BS_ALIGN = [["left", "Left"], ["center", "Centre"], ["right", "Right"]];
 var BS_CASE = [["none", "As typed"], ["uppercase", "UPPER"], ["lowercase", "lower"]];
 var BLOCK_STYLE = {
 quote: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align", "sel", "center", BS_ALIGN], ["pad", "Padding top/bottom", "dp", 40, null, 28], ["padX", "Padding sides", "dp", 46, null, 22], ["bg", "Background", "color", ""], ["ink", "Text colour", "color", ""], ["shadow", "Soft shadow", "bool", "1"], ["line", "Line on the left", "bool", "0"]],
-posts: [["titleStyle", "Title style", "style", "body"], ["titleSize", "Title size", "dp", ""], ["titleLh", "Title line", "dp", ""], ["metaStyle", "Info style", "style", "small"], ["metaSize", "Info size", "dp", ""], ["metaLh", "Info line", "dp", ""], ["metaGap", "Gap above info", "px", 8], ["cardBg", "Card colour", "color", ""], ["cardPad", "Card padding", "dp", 0], ["minH", "Text min height", "px", ""], ["imgGap", "Image gap", "px", 12], ["imagePos", "Image", "sel", "top", [["top", "Above text"], ["bottom", "Below text"]]], ["ratio", "Crop", "sel", "auto", [["auto", "Original"], ["1", "Square"], ["4/3", "4 : 3"], ["3/2", "3 : 2"], ["16/9", "16 : 9"], ["3/4", "3 : 4"]]], ["hover", "Hover", "sel", "dim", [["none", "None"], ["dim", "Dim"], ["lift", "Lift"], ["open", "Open (cover swings)"]]], ["fTitleStyle", "Featured title", "style", "heading"], ["zine", "Zine look (staples + page)", "bool", "0"], ["staple", "Staple colour", "color", ""], ["pageBg", "Inside page colour", "color", ""]],
+posts: [["titleStyle", "Title style", "style", "body"], ["titleSize", "Title size", "dp", ""], ["titleLh", "Title line", "dp", ""], ["metaStyle", "Info style", "style", "small"], ["metaSize", "Info size", "dp", ""], ["metaLh", "Info line", "dp", ""], ["metaGap", "Gap above info", "px", 8], ["cardBg", "Card colour", "color", ""], ["cardPad", "Card padding", "dp", 0], ["minH", "Text min height", "px", ""], ["imgGap", "Image gap", "px", 12], ["imagePos", "Image", "sel", "top", [["top", "Above text"], ["bottom", "Below text"]]], ["ratio", "Crop", "sel", "auto", [["auto", "Original"], ["1", "Square"], ["4/3", "4 : 3"], ["3/2", "3 : 2"], ["16/9", "16 : 9"], ["3/4", "3 : 4"]]], ["hover", "Hover", "sel", "dim", [["none", "None"], ["dim", "Dim"], ["lift", "Lift"], ["open", "Open (cover swings)"]]], ["look", "Card look", "sel", "plain", [["plain", "Plain"], ["zine", "Zine (cover swings)"], ["trace", "Tracing paper"]]], ["fTitleStyle", "Featured title", "style", "heading"], ["zine", "Zine look (staples + page)", "bool", "0"], ["staple", "Staple colour", "color", ""], ["pageBg", "Inside page colour", "color", ""], ["paperBg", "Paper colour", "color", ""], ["paperInk", "Paper text colour", "color", ""], ["paperAlpha", "Paper opacity %", "px", 72], ["paperFrost", "Paper frost (blur)", "px", 8], ["paperPad", "Paper padding", "dp", 16], ["paperInset", "Paper inset", "px", 0], ["paperLine", "Paper edge line", "color", ""], ["paperTilt", "Paper tilt (deg)", "px", 0], ["textPos", "Text on paper", "sel", "bottom", [["top", "Top"], ["center", "Middle"], ["bottom", "Bottom"]]], ["slideDir", "Paper slides", "sel", "up", [["up", "Up"], ["down", "Down"], ["left", "Left"], ["right", "Right"]]], ["slideHover", "Slide on hover %", "px", 12], ["slideTap", "Slide on tap %", "px", 62], ["imgBlur", "Extra image blur", "px", 0], ["imgTone", "Image tone", "sel", "color", [["color", "Colour"], ["grey", "Greyscale"], ["dark", "Darker"], ["light", "Lighter"]]]],
 library: [["book", "Book look", "bool", "1"], ["spine", "Spine colour", "color", "#8a8a8a"], ["spineW", "Spine width", "px", 10], ["shadow", "Shadow", "bool", "1"], ["radius", "Page corner", "px", 2], ["hover", "Hover", "sel", "tilt", [["none", "None"], ["tilt", "Open (perspective)"], ["lift", "Lift"]]]],
 toggle: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["marker", "Marker", "sel", "plus", [["plus", "+ / —"], ["arrow", "→ / ↓"], ["none", "None"]]], ["itemGap", "Between items", "px", 0], ["indent", "Indent items", "px", 0]],
 product: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align", "sel", "left", BS_ALIGN]],
@@ -1521,6 +1521,65 @@ grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 column-gap: var(--pgap, 40px);
 }
 
+/* TRACING PAPER CARDS — DEADPAN GESTURE: A FROSTED SHEET LIES ON THE POSTER, HOVER NUDGES IT, A TAP SLIDES IT AWAY */
+.bd-posts.is-trace .bd-post {
+position: relative;
+display: block;
+overflow: hidden;
+aspect-ratio: var(--pratio, 3 / 4);
+padding: 0;
+background: var(--pbg, #e6e5e1);
+}
+.bd-posts.is-trace .bd-post.is-featured.is-f-side {
+display: block;
+}
+.bd-posts.is-trace .bd-post-img {
+position: absolute;
+inset: 0;
+margin: 0;
+}
+.bd-posts.is-trace .bd-post-img img {
+width: 100%;
+height: 100%;
+aspect-ratio: auto;
+object-fit: cover;
+filter: blur(var(--tp-imgblur, 0px)) var(--tp-tone, brightness(1));
+transform: scale(1.03);
+}
+.bd-post-paper {
+position: absolute;
+inset: var(--tp-inset, 0px);
+z-index: 1;
+display: flex;
+flex-direction: column;
+justify-content: var(--tp-just, flex-end);
+padding: var(--tp-pad, 16px);
+color: var(--tp-ink, #111111);
+background: color-mix(in srgb, var(--tp-bg, #f4f3ef) var(--tp-a, 72%), transparent);
+-webkit-backdrop-filter: blur(var(--tp-frost, 8px));
+backdrop-filter: blur(var(--tp-frost, 8px));
+box-shadow: inset 0 0 0 1px var(--tp-line, rgba(0, 0, 0, 0.08));
+transform: rotate(var(--tp-tilt, 0deg));
+transition: transform 0.55s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+.bd-posts.is-trace a.bd-post:hover {
+opacity: 1;
+transform: none;
+}
+@media (hover: hover) {
+.bd-posts.is-trace a.bd-post:hover .bd-post-paper {
+transform: var(--tp-hover, translate(0%, -12%)) rotate(var(--tp-tilt, 0deg));
+}
+}
+.bd-posts.is-trace a.bd-post.is-open .bd-post-paper {
+transform: var(--tp-tap, translate(0%, -62%)) rotate(var(--tp-tilt, 0deg));
+}
+@media (prefers-reduced-motion: reduce) {
+.bd-post-paper {
+transition: none;
+}
+}
+
 /* POST INFO */
 .bd-postinfo-back {
 margin-right: 0.6em;
@@ -2104,6 +2163,7 @@ if (pc != null) d.push("--pcols: " + pc + ";");
 if (pg2 != null) d.push("--pgap: " + pg2 + "px;");
 if (pr != null) d.push("--prow: " + pr + "px;");
 px("--ppad", "cardPad");
+if (postLook(e) === "trace") px("--tp-pad", "paperPad");
 if (!phone) {
 px("--pminh", "minH");
 px("--pimg-gap", "imgGap");
@@ -2111,6 +2171,28 @@ px("--pmgap", "metaGap");
 if (E(e, "cardBg")) d.push("--pbg: " + E(e, "cardBg") + ";");
 if (E(e, "staple")) d.push("--pstaple: " + E(e, "staple") + ";");
 if (E(e, "pageBg")) d.push("--ppage: " + E(e, "pageBg") + ";");
+/* TRACING PAPER — COLOUR, SEE-THROUGH, FROST, SLIDE */
+if (postLook(e) === "trace") {
+if (E(e, "paperBg")) d.push("--tp-bg: " + E(e, "paperBg") + ";");
+if (E(e, "paperInk")) d.push("--tp-ink: " + E(e, "paperInk") + ";");
+if (E(e, "paperLine")) d.push("--tp-line: " + E(e, "paperLine") + ";");
+var tpa = N(e, "paperAlpha", false);
+if (tpa != null) d.push("--tp-a: " + Math.max(0, Math.min(100, tpa)) + "%;");
+px("--tp-frost", "paperFrost");
+px("--tp-inset", "paperInset");
+px("--tp-imgblur", "imgBlur");
+var tpt = N(e, "paperTilt", false);
+if (tpt != null) d.push("--tp-tilt: " + tpt + "deg;");
+var tdir = E(e, "slideDir") || "up";
+var tmv = function (n) { var v = (tdir === "up" || tdir === "left" ? -1 : 1) * n; return tdir === "up" || tdir === "down" ? "translate(0%, " + v + "%)" : "translate(" + v + "%, 0%)"; };
+var th = N(e, "slideHover", false), tt = N(e, "slideTap", false);
+d.push("--tp-hover: " + tmv(th != null ? th : 12) + ";");
+d.push("--tp-tap: " + tmv(tt != null ? tt : 62) + ";");
+var ttp = E(e, "textPos") || "bottom";
+d.push("--tp-just: " + (ttp === "top" ? "flex-start" : ttp === "center" ? "center" : "flex-end") + ";");
+var tone = E(e, "imgTone") || "color";
+if (tone !== "color") d.push("--tp-tone: " + (tone === "grey" ? "grayscale(1)" : tone === "dark" ? "brightness(0.7)" : "brightness(1.2) saturate(0.8)") + ";");
+}
 var ra = E(e, "ratio");
 if (ra && ra !== "auto") d.push("--pratio: " + String(ra).replace("/", " / ") + ";");
 }
@@ -2445,6 +2527,17 @@ var w = t.split(/\s+/).filter(function (x) { return /[\w\u0600-\u06ff]/.test(x);
 return w;
 }
 function postCover(q) {
+/* 1 YOUR OWN CARD IMAGE, 2 THE IMAGE YOU MARKED, 3 THE FIRST IMAGE IN THE POST */
+if (q.cover && (q.cover.assetId || q.cover.file)) return q.cover;
+if (q.thumb) {
+var tk = String(q.thumb).split(":");
+var te = (q.els || []).filter(function (e) { return e.id === tk[0]; })[0];
+if (te && te.type === "image" && (te.props.assetId || te.props.file)) return te.props;
+if (te && te.type === "gallery" && te.props.items) {
+var ti = te.props.items.filter(function (it) { return it.id === tk[1]; })[0];
+if (ti) return ti;
+}
+}
 var im = (q.els || []).filter(function (e) { return e.type === "image" && e.props.assetId; })[0];
 if (im) return im.props;
 var g = (q.els || []).filter(function (e) { return e.type === "gallery" && e.props.items && e.props.items.length; })[0];
@@ -2495,10 +2588,21 @@ var w = postWords(q);
 txt.push('<span class="bd-post-m bd-ts-' + (E(e, "metaStyle") || "small") + '">' + w + " words ~ " + Math.max(1, Math.ceil(w / 200)) + " min</span>");
 }
 if (p.showExcerpt && q.excerpt) txt.push('<span class="bd-post-x">' + esc(q.excerpt) + "</span>");
+var look = postLook(e);
+if (look === "trace") {
+var ttxt = '<span class="bd-post-paper"><span class="bd-post-txt">' + txt.join("") + "</span></span>";
+return '<a class="bd-post' + (feat ? " is-featured" : "") + (parts.length ? "" : " is-noimg") + '" href="/' + esc(q.slug || "") + '">' + parts.join("") + ttxt + "</a>";
+}
 parts.push('<span class="bd-post-txt">' + txt.join("") + "</span>");
-var zine = ON(e, "zine") || E(e, "hover") === "open";
+var zine = look === "zine";
 var body = zine ? '<span class="bd-post-page bd-ts-' + (E(e, "metaStyle") || "small") + '">' + esc(postPeek(q)) + '</span><span class="bd-post-cover">' + parts.join("") + "</span>" : parts.join("");
 return '<a class="bd-post' + (feat ? " is-featured is-f-" + (p.fLayout || "stack") : "") + '" href="/' + esc(q.slug || "") + '">' + body + "</a>";
+}
+/* WHICH CARD LOOK — "Card look" WINS; OLDER SITES WITH THE ZINE SWITCH OR "OPEN" HOVER STAY ZINES */
+function postLook(e) {
+var l = E(e, "look");
+if (l === "trace" || l === "zine") return l;
+return ON(e, "zine") || E(e, "hover") === "open" ? "zine" : "plain";
 }
 function postPeek(q) {
 if (q.excerpt) return q.excerpt;
@@ -2517,7 +2621,7 @@ return t.length > 240 ? t.slice(0, 237).replace(/\s+\S*$/, "") + "…" : t;
 function postsHTML(e, ctx) {
 var p = e.props;
 var L = postsList(p);
-var cls = "bd-el bd-e-" + e.id + " bd-posts is-" + (p.layout || "grid") + " is-img-" + (E(e, "imagePos") || "top") + " is-hov-" + (E(e, "hover") || "none") + (ON(e, "zine") || E(e, "hover") === "open" ? " is-zine" : "") + (ON(e, "zine") ? " has-staples" : "");
+var cls = "bd-el bd-e-" + e.id + " bd-posts is-" + (p.layout || "grid") + " is-img-" + (E(e, "imagePos") || "top") + (postLook(e) === "trace" ? " is-trace is-hov-none" : " is-hov-" + (E(e, "hover") || "none") + (postLook(e) === "zine" ? " is-zine" + (ON(e, "zine") ? " has-staples" : "") : ""));
 if (!L.blog) return ctx === "export" ? "" : '<div class="' + cls + '"><div class="bd-ed-gempty">Blog posts · add a blog in the Pages tab</div></div>';
 if (!L.feat && !L.list.length) return ctx === "export" ? "" : '<div class="' + cls + '"><div class="bd-ed-gempty">No posts yet · add one with + Post</div></div>';
 return '<div class="' + cls + '">\n' + (L.feat ? postCard(L.feat, e, ctx, true) + "\n" : "") + L.list.map(function (q) { return postCard(q, e, ctx, false); }).join("\n") + "\n</div>";
@@ -2914,7 +3018,7 @@ var host = root.querySelector(".bd-site") || (root.classList && root.classList.c
 if (!root.__bdGesture) {
 root.__bdGesture = true;
 root.addEventListener("click", function (ev) {
-var a = ev.target.closest && ev.target.closest(".bd-library.is-hov-tilt a.bd-lib-item, .bd-library.is-hov-lift a.bd-lib-item, .bd-posts.is-zine a.bd-post");
+var a = ev.target.closest && ev.target.closest(".bd-library.is-hov-tilt a.bd-lib-item, .bd-library.is-hov-lift a.bd-lib-item, .bd-posts.is-zine a.bd-post, .bd-posts.is-trace a.bd-post");
 if (!a || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey || ev.defaultPrevented) return;
 if (host.classList.contains("is-editing")) return;
 var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -2926,6 +3030,11 @@ return;
 ev.preventDefault();
 if (!a.matches(".bd-post")) {
 setTimeout(function () { window.location.href = a.href; }, 520);
+return;
+}
+/* TRACING PAPER: THE SHEET SLIDES OFF THE POSTER, THEN THE POST OPENS */
+if (a.closest(".is-trace")) {
+setTimeout(function () { window.location.href = a.href; }, 620);
 return;
 }
 /* ZINE: COVER SWINGS FULLY AWAY, THE INSIDE PAGE GROWS INTO THE NEXT PAGE */
@@ -3329,6 +3438,7 @@ var list = [];
 (pr || S.project).order.forEach(function (id) {
 var pg = (pr || S.project).pages[id];
 if (!pg) return;
+if (pg.cover && pg.cover.file) list.push(pg.cover);
 pg.els.forEach(function (e) {
 if ((e.type === "image" || e.type === "product") && e.props.file) list.push(e.props);
 if (e.type === "gallery" || e.type === "library") (e.props.items || []).forEach(function (it) { if (it.file) list.push(it); });
@@ -3831,6 +3941,11 @@ h += '<button class="bd-ed-btn" data-act="pick-image">' + I.image + (p.assetId ?
 + field("Caption", input("el.caption", p.caption))
 + row(field("Fit", select("el.fit", p.fit, [["contain", "Whole image"], ["cover", "Fill the box"]])))
 + sw("Click to zoom", "el.zoom", p.zoom !== false);
+var cpg0 = curPage();
+if (cpg0 && cpg0.parent && p.assetId) {
+var isCard = !(cpg0.cover && (cpg0.cover.assetId || cpg0.cover.file)) && postCover(cpg0) === p;
+h += '<button class="bd-ed-btn" data-act="post-thumb"' + (isCard ? ' disabled' : "") + ">" + (isCard ? "★ Card image for this post" : "☆ Use as card image") + "</button>";
+}
 }
 if (e.type === "gallery") h += galleryPanel(p);
 if (e.type === "library") h += libraryPanel(p, e);
@@ -3949,6 +4064,26 @@ var h = "";
 for (var i = 0; i < cells.length; i += 2) h += row(cells[i], cells[i + 1] || "");
 return h;
 }
+/* CARD IMAGE — AUTO, ONE OF THE POST'S IMAGES, OR YOUR OWN UPLOAD */
+function coverOpts(pg) {
+var o = [["", "Auto · first image"]];
+var n = 0;
+(pg.els || []).forEach(function (e) {
+if (e.type === "image" && (e.props.assetId || e.props.file)) { n++; o.push([e.id, "Image " + n + " · " + (e.props.alt || e.props.file || "untitled").slice(0, 32)]); }
+if (e.type === "gallery") (e.props.items || []).forEach(function (it, i) { if (it.assetId || it.file) o.push([e.id + ":" + it.id, "Gallery · " + (i + 1) + " · " + (it.alt || it.file || "").slice(0, 26)]); });
+});
+return o;
+}
+function coverField(pg) {
+var own = pg.cover && (pg.cover.assetId || pg.cover.file);
+var cv = postCover(pg);
+var src = cv ? imgSrc(cv, "edit") : "";
+return '<span class="bd-ed-label">Card image</span>'
++ (src ? '<img src="' + esc(src) + '" alt="" style="display:block;width:100%;max-height:150px;object-fit:cover;margin:0 0 8px;background:#eee">' : "")
++ (own ? '<div class="bd-ed-hint">Using your own card image · ' + esc(pg.cover.file || "") + "</div>" : field("Use", select("page.thumb", pg.thumb || "", coverOpts(pg))))
++ row('<button class="bd-ed-btn" data-act="post-cover-up">' + I.plus + (own ? "Replace own image" : "Upload own image") + "</button>", own ? '<button class="bd-ed-btn" data-act="post-cover-x">Remove own</button>' : "")
++ '<div class="bd-ed-hint">Only for the post cards. Not shown inside the post.</div>';
+}
 function lookSection(e) {
 return '<span class="bd-ed-label">Look</span>' + styleFields(e.type, "el", e) + '<div class="bd-ed-hint">Empty or “Site” follows the ' + esc(BD_TYPE_NAME[e.type]) + " style in the Styles tab. Set a value here to change only this one.</div>";
 }
@@ -4042,6 +4177,7 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-title">Page</span>'
 + (pg.blog ? '<div class="bd-ed-hint">This page is a blog. Its posts are listed under it in Pages.</div><button class="bd-ed-btn" data-act="post-add" data-id="' + pg.id + '">' + I.plus + "Post</button>" : "")
 + (pg.parent ? '<span class="bd-ed-label">Post</span>' + row(field("Blog", select("page.parent", pg.parent, blogs().map(function (b) { return [b.id, b.title]; }))), field("Date", '<input type="date" class="bd-ed-input" data-bind="page.date" value="' + esc(pg.date || "") + '">'))
 + field("Excerpt for the card", '<textarea class="bd-ed-input" data-bind="page.excerpt" rows="3">' + esc(pg.excerpt || "") + "</textarea>")
++ coverField(pg)
 + sw("Featured ★", "page.featured", !!pg.featured) : "")
 + field("Description for search", '<textarea class="bd-ed-input" data-bind="page.desc" rows="3" style="font-family:var(--e-sans);font-size:12.5px">' + esc(pg.desc) + "</textarea>")
 + "</div>";
@@ -5710,6 +5846,8 @@ return { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", gif: "image/gi
 function takenFiles(exceptId) {
 var taken = {};
 S.project.order.forEach(function (id) {
+var cvp = S.project.pages[id].cover;
+if (cvp && cvp.file) taken[cvp.file] = true;
 S.project.pages[id].els.forEach(function (e) {
 if ((e.type === "image" || e.type === "product") && e.props.file && e.id !== exceptId) taken[e.props.file] = true;
 if (e.type === "gallery" || e.type === "library") (e.props.items || []).forEach(function (it) { if (it.file) taken[it.file] = true; });
@@ -5767,6 +5905,26 @@ return null;
 $("bd-file").addEventListener("change", async function () {
 var files = Array.prototype.slice.call(this.files || []);
 this.value = "";
+/* OWN CARD IMAGE FOR A POST */
+if (S.coverFor) {
+var cpg = S.project.pages[S.coverFor];
+S.coverFor = null;
+if (!files.length || !cpg) return;
+setStatus("Uploading…");
+var csz = await imageSize(files[0]);
+var cid = await storeImage(files[0]);
+if (!cid) {
+setStatus("Not published", true);
+return;
+}
+snap();
+var ctaken = takenFiles(null);
+if (cpg.cover && cpg.cover.file) delete ctaken[cpg.cover.file];
+cpg.cover = { assetId: cid, file: uniqueFile("card-" + (cpg.slug || "post") + "-" + files[0].name, ctaken), w: csz.w, h: csz.h, alt: cpg.h1 || cpg.title || "" };
+changed();
+renderRight();
+return;
+}
 var el = selEl();
 if (!files.length || !el || (el.type !== "image" && el.type !== "product" && el.type !== "gallery" && el.type !== "library")) return;
 var taken = takenFiles(el.type === "image" || el.type === "product" ? el.id : null);
@@ -6167,6 +6325,30 @@ $("bd-file").multiple = false;
 $("bd-file").click();
 },
 "ins-block": function () { var id = S.sel; S.inspect = false; S.preview = false; S.sel = id; render(); },
+"post-cover-up": function () {
+var cp = curPage();
+if (!cp) return;
+S.coverFor = cp.id;
+$("bd-file").multiple = false;
+$("bd-file").click();
+},
+"post-thumb": function () {
+var cp = curPage(), te = selEl();
+if (!cp || !te) return;
+snap();
+cp.thumb = te.id;
+delete cp.cover;
+changed();
+renderRight();
+},
+"post-cover-x": function () {
+var cp = curPage();
+if (!cp || !cp.cover) return;
+snap();
+delete cp.cover;
+changed();
+renderRight();
+},
 "file-new": function () { S.fileNew = !S.fileNew; renderCode(); var n = $("bd-file-name"); if (n) n.focus(); },
 "file-create": function () {
 var n = $("bd-file-name");
@@ -6320,6 +6502,7 @@ if (rest === "name") S.project.name = v;
 var pg = curPage();
 if (rest === "slug") v = uniqueSlug(v || pg.title, pg.id);
 setPath(pg, rest, v);
+if (rest === "thumb") setTimeout(renderRight, 0);
 } else if (root === "el" && el) {
 if (el.type === "gallery" && (rest === "snap" || rest === "auto")) v = parseFloat(v) || 0;
 setPath(el.props, rest, v);

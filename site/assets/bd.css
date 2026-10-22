@@ -1,4 +1,4 @@
-/* PUBLISHED mvjjqhwz */
+/* PUBLISHED build */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -760,6 +760,65 @@ grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 column-gap: var(--pgap, 40px);
 }
 
+/* TRACING PAPER CARDS — DEADPAN GESTURE: A FROSTED SHEET LIES ON THE POSTER, HOVER NUDGES IT, A TAP SLIDES IT AWAY */
+.bd-posts.is-trace .bd-post {
+position: relative;
+display: block;
+overflow: hidden;
+aspect-ratio: var(--pratio, 3 / 4);
+padding: 0;
+background: var(--pbg, #e6e5e1);
+}
+.bd-posts.is-trace .bd-post.is-featured.is-f-side {
+display: block;
+}
+.bd-posts.is-trace .bd-post-img {
+position: absolute;
+inset: 0;
+margin: 0;
+}
+.bd-posts.is-trace .bd-post-img img {
+width: 100%;
+height: 100%;
+aspect-ratio: auto;
+object-fit: cover;
+filter: blur(var(--tp-imgblur, 0px)) var(--tp-tone, brightness(1));
+transform: scale(1.03);
+}
+.bd-post-paper {
+position: absolute;
+inset: var(--tp-inset, 0px);
+z-index: 1;
+display: flex;
+flex-direction: column;
+justify-content: var(--tp-just, flex-end);
+padding: var(--tp-pad, 16px);
+color: var(--tp-ink, #111111);
+background: color-mix(in srgb, var(--tp-bg, #f4f3ef) var(--tp-a, 72%), transparent);
+-webkit-backdrop-filter: blur(var(--tp-frost, 8px));
+backdrop-filter: blur(var(--tp-frost, 8px));
+box-shadow: inset 0 0 0 1px var(--tp-line, rgba(0, 0, 0, 0.08));
+transform: rotate(var(--tp-tilt, 0deg));
+transition: transform 0.55s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+.bd-posts.is-trace a.bd-post:hover {
+opacity: 1;
+transform: none;
+}
+@media (hover: hover) {
+.bd-posts.is-trace a.bd-post:hover .bd-post-paper {
+transform: var(--tp-hover, translate(0%, -12%)) rotate(var(--tp-tilt, 0deg));
+}
+}
+.bd-posts.is-trace a.bd-post.is-open .bd-post-paper {
+transform: var(--tp-tap, translate(0%, -62%)) rotate(var(--tp-tilt, 0deg));
+}
+@media (prefers-reduced-motion: reduce) {
+.bd-post-paper {
+transition: none;
+}
+}
+
 /* POST INFO */
 .bd-postinfo-back {
 margin-right: 0.6em;
@@ -1350,10 +1409,19 @@ line-height: 15px;
 --pgap: 50px;
 --prow: 50px;
 --ppad: 0px;
+--tp-pad: 16px;
 --pminh: 80px;
 --pimg-gap: 0px;
 --pmgap: 10px;
 --pbg: #ffffff;
+--tp-a: 72%;
+--tp-frost: 8px;
+--tp-inset: 0px;
+--tp-imgblur: 0px;
+--tp-tilt: 0deg;
+--tp-hover: translate(0%, -12%);
+--tp-tap: translate(0%, -62%);
+--tp-just: flex-end;
 --pratio: 1;
 }
 
@@ -1772,6 +1840,7 @@ line-height: 15px;
 --pgap: 24px;
 --prow: 24px;
 --ppad: 0px;
+--tp-pad: 16px;
 }
 /* PAGE: HOW TO DESEED A WATERMELON FOR SAFE CONSUMPTION */
 .bd-flow > .bd-e-el3path8 {

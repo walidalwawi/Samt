@@ -164,7 +164,7 @@ var host = root.querySelector(".bd-site") || (root.classList && root.classList.c
 if (!root.__bdGesture) {
 root.__bdGesture = true;
 root.addEventListener("click", function (ev) {
-var a = ev.target.closest && ev.target.closest(".bd-library.is-hov-tilt a.bd-lib-item, .bd-library.is-hov-lift a.bd-lib-item, .bd-posts.is-zine a.bd-post");
+var a = ev.target.closest && ev.target.closest(".bd-library.is-hov-tilt a.bd-lib-item, .bd-library.is-hov-lift a.bd-lib-item, .bd-posts.is-zine a.bd-post, .bd-posts.is-trace a.bd-post");
 if (!a || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey || ev.defaultPrevented) return;
 if (host.classList.contains("is-editing")) return;
 var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -176,6 +176,11 @@ return;
 ev.preventDefault();
 if (!a.matches(".bd-post")) {
 setTimeout(function () { window.location.href = a.href; }, 520);
+return;
+}
+/* TRACING PAPER: THE SHEET SLIDES OFF THE POSTER, THEN THE POST OPENS */
+if (a.closest(".is-trace")) {
+setTimeout(function () { window.location.href = a.href; }, 620);
 return;
 }
 /* ZINE: COVER SWINGS FULLY AWAY, THE INSIDE PAGE GROWS INTO THE NEXT PAGE */
