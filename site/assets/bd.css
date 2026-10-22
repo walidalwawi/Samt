@@ -730,6 +730,27 @@ box-shadow: 5px 4px 0 rgba(0, 0, 0, 0.12);
 transform: rotateY(-24deg);
 box-shadow: 10px 6px 0 rgba(0, 0, 0, 0.12);
 }
+.bd-posts.is-zine .bd-post-cover {
+backface-visibility: hidden;
+}
+.bd-posts.is-zine a.bd-post.is-unfold {
+z-index: 5;
+}
+.bd-posts.is-zine a.bd-post.is-unfold .bd-post-cover {
+transform: rotateY(-170deg);
+box-shadow: none;
+transition: transform 0.35s ease-in;
+}
+.bd-unfold {
+position: fixed;
+z-index: 100;
+pointer-events: none;
+box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+transition: left 0.38s ease-in-out, top 0.38s ease-in-out, width 0.38s ease-in-out, height 0.38s ease-in-out, background-color 0.38s ease;
+}
+@view-transition {
+navigation: auto;
+}
 .bd-posts.is-zine .bd-post.is-featured.is-f-side {
 display: block;
 }

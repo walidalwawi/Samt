@@ -1491,6 +1491,27 @@ box-shadow: 5px 4px 0 rgba(0, 0, 0, 0.12);
 transform: rotateY(-24deg);
 box-shadow: 10px 6px 0 rgba(0, 0, 0, 0.12);
 }
+.bd-posts.is-zine .bd-post-cover {
+backface-visibility: hidden;
+}
+.bd-posts.is-zine a.bd-post.is-unfold {
+z-index: 5;
+}
+.bd-posts.is-zine a.bd-post.is-unfold .bd-post-cover {
+transform: rotateY(-170deg);
+box-shadow: none;
+transition: transform 0.35s ease-in;
+}
+.bd-unfold {
+position: fixed;
+z-index: 100;
+pointer-events: none;
+box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+transition: left 0.38s ease-in-out, top 0.38s ease-in-out, width 0.38s ease-in-out, height 0.38s ease-in-out, background-color 0.38s ease;
+}
+@view-transition {
+navigation: auto;
+}
 .bd-posts.is-zine .bd-post.is-featured.is-f-side {
 display: block;
 }
@@ -2903,10 +2924,36 @@ setTimeout(function () { a.classList.remove("is-open"); }, 1100);
 return;
 }
 ev.preventDefault();
+if (!a.matches(".bd-post")) {
 setTimeout(function () { window.location.href = a.href; }, 520);
+return;
+}
+/* ZINE: COVER SWINGS FULLY AWAY, THE INSIDE PAGE GROWS INTO THE NEXT PAGE */
+setTimeout(function () { a.classList.add("is-unfold"); }, 280);
+setTimeout(function () {
+var leaf = a.querySelector(".bd-post-page") || a;
+var r = leaf.getBoundingClientRect();
+var panel = document.querySelector(".bd-panel");
+var sheet = document.createElement("div");
+sheet.className = "bd-unfold";
+sheet.style.left = r.left + "px";
+sheet.style.top = r.top + "px";
+sheet.style.width = r.width + "px";
+sheet.style.height = r.height + "px";
+sheet.style.background = getComputedStyle(leaf).backgroundColor;
+document.body.appendChild(sheet);
+void sheet.offsetWidth;
+sheet.style.left = "0px";
+sheet.style.top = "0px";
+sheet.style.width = "100vw";
+sheet.style.height = "100vh";
+if (panel) sheet.style.background = getComputedStyle(panel).backgroundColor;
+}, 600);
+setTimeout(function () { window.location.href = a.href; }, 1000);
 });
 window.addEventListener("pageshow", function () {
-root.querySelectorAll(".is-open").forEach(function (x) { if (x.matches("a.bd-lib-item, a.bd-post")) x.classList.remove("is-open"); });
+root.querySelectorAll(".is-open, .is-unfold").forEach(function (x) { if (x.matches("a.bd-lib-item, a.bd-post")) x.classList.remove("is-open", "is-unfold"); });
+document.querySelectorAll(".bd-unfold").forEach(function (x) { x.remove(); });
 });
 }
 root.querySelectorAll(".bd-library").forEach(function (lib) {
