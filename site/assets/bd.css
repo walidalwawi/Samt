@@ -1,22 +1,22 @@
-/* PUBLISHED mvjiu7kh */
+/* PUBLISHED mvjjm4ot */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
 /* TOKENS */
 :root {
---bd-page: #cbf0ff;
---bd-panel: #cbf0ff;
+--bd-page: #ffffff;
+--bd-panel: #ffffff;
 --bd-ink: #111111;
---bd-rule: #cbf0ff;
+--bd-rule: #ffffff;
 --bd-sans: "Helvetica Neue", "Helvetica Neue", Arial, sans-serif;
 --bd-mono: "IBM Plex Mono", Menlo, Consolas, monospace;
 --bd-w: 100%;
---bd-wt: 80px;
---bd-wr: 80px;
---bd-wb: 80px;
---bd-wl: 80px;
---bd-pad: 80px;
---bd-top: 40px;
+--bd-wt: 10px;
+--bd-wr: 10px;
+--bd-wb: 30px;
+--bd-wl: 10px;
+--bd-pad: 10px;
+--bd-top: 5px;
 --bd-cols: 12;
 --bd-row: 8px;
 --bd-gap: 0px;
@@ -1549,11 +1549,11 @@ margin-bottom: 0;
 @media (max-width: 760px) {
 :root {
 --bd-top: 0px;
---bd-wt: 30px;
---bd-wr: 20px;
+--bd-wt: 10px;
+--bd-wr: 10px;
 --bd-wb: 30px;
---bd-wl: 20px;
---bd-pad: 20px;
+--bd-wl: 10px;
+--bd-pad: 10px;
 --bd-cols: 6;
 --bd-gap: 0px;
 --bd-indent: 0px;

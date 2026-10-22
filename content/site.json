@@ -16,21 +16,21 @@
   "labelW": 100,
   "labelWM": 88,
   "colors": {
-   "page": "#cbf0ff",
-   "panel": "#cbf0ff",
+   "page": "#ffffff",
+   "panel": "#ffffff",
    "ink": "#111111",
-   "rule": "#cbf0ff"
+   "rule": "#ffffff"
   },
   "sans": "Helvetica Neue",
   "mono": "IBM Plex Mono",
   "fs": 23.5,
   "lh": 29.6,
   "ms": 16.5,
-  "ml": 80,
+  "ml": 10,
   "fsM": 18,
   "lhM": 23,
   "msM": 13,
-  "mlM": 20,
+  "mlM": 10,
   "header": false,
   "menu": false,
   "pager": false,
@@ -304,11 +304,11 @@
    "gutter": 40,
    "gutterM": 24
   },
-  "mt": 80,
-  "mr": 80,
-  "mb": 80,
-  "mtM": 30,
-  "mrM": 20,
+  "mt": 10,
+  "mr": 10,
+  "mb": 30,
+  "mtM": 10,
+  "mrM": 10,
   "mbM": 30,
   "blockStyles": {
    "quote": {
