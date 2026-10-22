@@ -26,7 +26,11 @@ Site tab → Paper sheets. When on, Publish/Preview wrap every page into three s
 - Preview with layers on renders the real export in an iframe inside the canvas.
 
 ## Looks: master + override for every block type
-Styles → Blocks sets the default look per block type (BLOCK_STYLE); a block's own Look fields override it ("Site" = follow the master). Now covers text, image, gallery, notes, list, link, video, rule, quote, posts, library, toggle, product, pager, post info, menu, page title. Images, galleries, library covers and post card images have a blend mode (mix-blend-mode) plus tone/opacity/corners.
+Styles → Blocks sets the default look per block type (BLOCK_STYLE); a block's own Look fields override it ("Site" = follow the master). Now covers text, image, gallery, notes, list, link, video, rule, quote, posts, library, toggle, product, pager, post info, menu, page title. Images, galleries, library covers and post card images have a blend mode (mix-blend-mode) plus a "blend against colour" backdrop (a blend shows nothing on white otherwise), tone/opacity/corners.
+- BS_WHEN hides fields that do nothing in the current state (tracing-paper fields only with Card look = Tracing paper, staples only with Zine, spine only with Book look, backdrop only with a blend, etc.).
+- Every block with a master shows Look in its own panel; if Site/Page CSS has rules for that block (.bd-e-<id>, usually from Inspect) Look warns and offers "Remove the code overrides". The CSS fine-tuner (Inspect bar) sits folded under Look.
+- Layers mode hides what a layered site doesn't use: + Header/Footer, floating menu button, page arrows at the end, Continue with other pages, the Menu block in the rail. The Layers panel picks which menu the sheet shows (site.nav.menu).
+- Audit: /home-style test sets every BLOCK_STYLE field as master and as override and checks canvas + export change (see session notes); keep new fields wired in blockRules.
 - Code drawer: Full output tab (page HTML, bd.css, bd.js) is always there; editor fills the drawer and scrolls.
 - Editor theme: monochrome warm greys, mono tabs, black for what's on.
 

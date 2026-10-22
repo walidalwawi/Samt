@@ -71,16 +71,16 @@ var BS_BLEND = [["normal", "Normal"], ["multiply", "Multiply"], ["darken", "Dark
 var BS_TONE = [["color", "Colour"], ["grey", "Greyscale"], ["dark", "Darker"], ["light", "Lighter"]];
 var BLOCK_STYLE = {
 text: [["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["ink", "Text colour", "color", ""], ["tracking", "Spacing (em)", "px", ""], ["measure", "Max width", "px", ""]],
-image: [["blend", "Blend mode", "sel", "normal", BS_BLEND], ["tone", "Tone", "sel", "color", BS_TONE], ["opacity", "Opacity %", "px", 100], ["radius", "Corners", "px", 0], ["hard", "Hard shadow", "bool", "0"]],
-gallery: [["blend", "Blend mode", "sel", "normal", BS_BLEND], ["tone", "Tone", "sel", "color", BS_TONE], ["opacity", "Opacity %", "px", 100], ["radius", "Corners", "px", 0]],
+image: [["blend", "Blend mode", "sel", "normal", BS_BLEND], ["backdrop", "Blend against colour", "color", ""], ["tone", "Tone", "sel", "color", BS_TONE], ["opacity", "Opacity %", "px", 100], ["radius", "Corners", "px", 0], ["hard", "Hard shadow", "bool", "0"]],
+gallery: [["blend", "Blend mode", "sel", "normal", BS_BLEND], ["backdrop", "Blend against colour", "color", ""], ["tone", "Tone", "sel", "color", BS_TONE], ["opacity", "Opacity %", "px", 100], ["radius", "Corners", "px", 0]],
 notes: [["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["ink", "Text colour", "color", ""]],
 list: [["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["ink", "Text colour", "color", ""]],
 link: [["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["ink", "Text colour", "color", ""]],
 embed: [["radius", "Corners", "px", 0]],
 rule: [["ink", "Colour", "color", ""], ["weight", "Thickness", "px", 1]],
 quote: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align", "sel", "center", BS_ALIGN], ["pad", "Padding top/bottom", "dp", 40, null, 28], ["padX", "Padding sides", "dp", 46, null, 22], ["bg", "Background", "color", ""], ["ink", "Text colour", "color", ""], ["shadow", "Soft shadow", "bool", "1"], ["line", "Line on the left", "bool", "0"]],
-posts: [["titleStyle", "Title style", "style", "body"], ["titleSize", "Title size", "dp", ""], ["titleLh", "Title line", "dp", ""], ["metaStyle", "Info style", "style", "small"], ["metaSize", "Info size", "dp", ""], ["metaLh", "Info line", "dp", ""], ["metaGap", "Gap above info", "px", 8], ["cardBg", "Card colour", "color", ""], ["cardPad", "Card padding", "dp", 0], ["minH", "Text min height", "px", ""], ["imgGap", "Image gap", "px", 12], ["imagePos", "Image", "sel", "top", [["top", "Above text"], ["bottom", "Below text"]]], ["ratio", "Crop", "sel", "auto", [["auto", "Original"], ["1", "Square"], ["4/3", "4 : 3"], ["3/2", "3 : 2"], ["16/9", "16 : 9"], ["3/4", "3 : 4"]]], ["hover", "Hover", "sel", "dim", [["none", "None"], ["dim", "Dim"], ["lift", "Lift"], ["open", "Open (cover swings)"]]], ["look", "Card look", "sel", "plain", [["plain", "Plain"], ["zine", "Zine (cover swings)"], ["trace", "Tracing paper"]]], ["fTitleStyle", "Featured title", "style", "heading"], ["zine", "Zine look (staples + page)", "bool", "0"], ["staple", "Staple colour", "color", ""], ["pageBg", "Inside page colour", "color", ""], ["paperBg", "Paper colour", "color", ""], ["paperInk", "Paper text colour", "color", ""], ["paperAlpha", "Paper opacity %", "px", 72], ["paperFrost", "Paper frost (blur)", "px", 8], ["paperPad", "Paper padding", "dp", 16], ["paperInset", "Paper inset", "px", 0], ["paperLine", "Paper edge line", "color", ""], ["paperTilt", "Paper tilt (deg)", "px", 0], ["textPos", "Text on paper", "sel", "bottom", [["top", "Top"], ["center", "Middle"], ["bottom", "Bottom"]]], ["slideDir", "Paper slides", "sel", "up", [["up", "Up"], ["down", "Down"], ["left", "Left"], ["right", "Right"]]], ["slideHover", "Slide on hover %", "px", 12], ["slideTap", "Slide on tap %", "px", 62], ["imgBlur", "Extra image blur", "px", 0], ["imgTone", "Image tone", "sel", "color", [["color", "Colour"], ["grey", "Greyscale"], ["dark", "Darker"], ["light", "Lighter"]]], ["imgBlend", "Image blend mode", "sel", "normal", BS_BLEND]],
-library: [["blend", "Cover blend mode", "sel", "normal", BS_BLEND], ["book", "Book look", "bool", "1"], ["spine", "Spine colour", "color", "#8a8a8a"], ["spineW", "Spine width", "px", 10], ["shadow", "Shadow", "bool", "1"], ["radius", "Page corner", "px", 2], ["hover", "Hover", "sel", "tilt", [["none", "None"], ["tilt", "Open (perspective)"], ["lift", "Lift"]]]],
+posts: [["titleStyle", "Title style", "style", "body"], ["titleSize", "Title size", "dp", ""], ["titleLh", "Title line", "dp", ""], ["metaStyle", "Info style", "style", "small"], ["metaSize", "Info size", "dp", ""], ["metaLh", "Info line", "dp", ""], ["metaGap", "Gap above info", "px", 8], ["cardBg", "Card colour", "color", ""], ["cardPad", "Card padding", "dp", 0], ["minH", "Text min height", "px", ""], ["imgGap", "Image gap", "px", 12], ["imagePos", "Image", "sel", "top", [["top", "Above text"], ["bottom", "Below text"]]], ["ratio", "Crop", "sel", "auto", [["auto", "Original"], ["1", "Square"], ["4/3", "4 : 3"], ["3/2", "3 : 2"], ["16/9", "16 : 9"], ["3/4", "3 : 4"]]], ["hover", "Hover", "sel", "dim", [["none", "None"], ["dim", "Dim"], ["lift", "Lift"]]], ["look", "Card look", "sel", "plain", [["plain", "Plain"], ["zine", "Zine (cover swings)"], ["trace", "Tracing paper"]]], ["fTitleStyle", "Featured title", "style", "heading"], ["zine", "Staples", "bool", "0"], ["staple", "Staple colour", "color", ""], ["pageBg", "Inside page colour", "color", ""], ["paperBg", "Paper colour", "color", ""], ["paperInk", "Paper text colour", "color", ""], ["paperAlpha", "Paper opacity %", "px", 72], ["paperFrost", "Paper frost (blur)", "px", 8], ["paperPad", "Paper padding", "dp", 16], ["paperInset", "Paper inset", "px", 0], ["paperLine", "Paper edge line", "color", ""], ["paperTilt", "Paper tilt (deg)", "px", 0], ["textPos", "Text on paper", "sel", "bottom", [["top", "Top"], ["center", "Middle"], ["bottom", "Bottom"]]], ["slideDir", "Paper slides", "sel", "up", [["up", "Up"], ["down", "Down"], ["left", "Left"], ["right", "Right"]]], ["slideHover", "Slide on hover %", "px", 12], ["slideTap", "Slide on tap %", "px", 62], ["imgBlur", "Extra image blur", "px", 0], ["imgTone", "Image tone", "sel", "color", [["color", "Colour"], ["grey", "Greyscale"], ["dark", "Darker"], ["light", "Lighter"]]], ["imgBlend", "Image blend mode", "sel", "normal", BS_BLEND], ["imgBackdrop", "Blend against colour", "color", ""]],
+library: [["blend", "Cover blend mode", "sel", "normal", BS_BLEND], ["backdrop", "Blend against colour", "color", ""], ["book", "Book look", "bool", "1"], ["spine", "Spine colour", "color", "#8a8a8a"], ["spineW", "Spine width", "px", 10], ["shadow", "Shadow", "bool", "1"], ["radius", "Page corner", "px", 2], ["hover", "Hover", "sel", "tilt", [["none", "None"], ["tilt", "Open (perspective)"], ["lift", "Lift"]]]],
 toggle: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["marker", "Marker", "sel", "plus", [["plus", "+ / —"], ["arrow", "→ / ↓"], ["none", "None"]]], ["itemGap", "Between items", "px", 0], ["indent", "Indent items", "px", 0]],
 product: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align", "sel", "left", BS_ALIGN]],
 pager: [["style", "Text style (words)", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align (words)", "sel", "left", BS_ALIGN]],
@@ -88,6 +88,30 @@ postinfo: [["style", "Text style", "style", "small"], ["size", "Size", "dp", ""]
 menubtn: [["style", "Link style", "style", "body"], ["size", "Link size", "dp", ""], ["lh", "Link line", "dp", ""], ["textCase", "Case", "sel", "none", BS_CASE], ["tracking", "Spacing (em)", "px", ""], ["itemGap", "Between links", "dp", 0], ["groupGap", "Between groups", "dp", 20], ["headGap", "Under heading", "px", 4], ["current", "Current page", "sel", "underline", [["underline", "Line"], ["dim", "Dim"], ["strike", "Strike"], ["arrow", "→"], ["none", "None"]]], ["hover", "Hover", "sel", "underline", [["underline", "Line"], ["dim", "Dim"], ["none", "None"]]], ["brandStyle", "Name style", "style", "body"], ["brandSize", "Name size", "dp", ""], ["brandLh", "Name line", "dp", ""], ["brandGap", "Name gap", "dp", 16]],
 ptitle: [["style", "Text style", "style", "body"], ["align", "Align", "sel", "left", BS_ALIGN]]
 };
+/* A FIELD ONLY SHOWS WHEN IT DOES SOMETHING: v(k) READS THE CURRENT VALUE (THIS BLOCK, OR THE MASTER) */
+var BS_WHEN = {
+"posts.hover": function (v) { return (v("look") || "plain") === "plain"; },
+"posts.zine": function (v) { return v("look") === "zine"; },
+"posts.staple": function (v) { return v("look") === "zine" && (v("zine") === "1" || v("zine") === 1 || v("zine") === true); },
+"posts.pageBg": function (v) { return v("look") === "zine"; },
+"posts.fTitleStyle": function (v, e) { return !e || (e.props.featured || "none") !== "none"; },
+"library.spine": function (v) { return v("book") === "1" || v("book") === 1 || v("book") === true; },
+"library.spineW": function (v) { return v("book") === "1" || v("book") === 1 || v("book") === true; },
+"library.radius": function (v) { return v("book") === "1" || v("book") === 1 || v("book") === true; },
+"menubtn.brandStyle": function (v, e) { return !e || (e.props.brand || "none") !== "none"; },
+"menubtn.brandSize": function (v, e) { return !e || (e.props.brand || "none") !== "none"; },
+"menubtn.brandLh": function (v, e) { return !e || (e.props.brand || "none") !== "none"; },
+"menubtn.brandGap": function (v, e) { return !e || (e.props.brand || "none") !== "none"; },
+"menubtn.groupGap": function (v, e) { return !e || e.props.group === "sections"; },
+"menubtn.headGap": function (v, e) { return !e || e.props.group === "sections"; }
+};
+["paperBg", "paperInk", "paperAlpha", "paperFrost", "paperPad", "paperInset", "paperLine", "paperTilt", "textPos", "slideDir", "slideHover", "slideTap", "imgBlur", "imgTone"].forEach(function (k) {
+BS_WHEN["posts." + k] = function (v) { return v("look") === "trace"; };
+});
+BS_WHEN["image.backdrop"] = function (v) { return (v("blend") || "normal") !== "normal"; };
+BS_WHEN["gallery.backdrop"] = function (v) { return (v("blend") || "normal") !== "normal"; };
+BS_WHEN["library.backdrop"] = function (v) { return (v("blend") || "normal") !== "normal"; };
+BS_WHEN["posts.imgBackdrop"] = function (v) { return (v("imgBlend") || "normal") !== "normal"; };
 function bsKeys(f) {
 return f[2] === "dp" ? [f[0], f[0] + "M"] : [f[0]];
 }
@@ -2246,9 +2270,9 @@ font(sel + " .bd-product-t", "size", "lh");
 if (e.type === "pager" || e.type === "postinfo") font(sel, "size", "lh");
 /* MASTER + OVERRIDE LOOKS FOR TEXT-LIKE BLOCKS */
 if (e.type === "text" || e.type === "notes" || e.type === "list" || e.type === "link") {
-font(sel, "size", "lh");
+font(e.type === "notes" ? sel + ",\n" + sel + " li" : e.type === "list" ? sel + ",\n" + sel + " h2,\n" + sel + " li" : sel, "size", "lh");
+if (!phone && E(e, "ink")) out.push(".bd-site " + sel + (e.type === "link" ? "" : ",\n.bd-site " + sel + " a") + " {\ncolor: " + E(e, "ink") + ";\n}");
 if (!phone) {
-if (E(e, "ink")) d.push("color: " + E(e, "ink") + ";");
 if (e.type === "text" && N(e, "tracking", false) != null) d.push("letter-spacing: " + N(e, "tracking", false) + "em;");
 if (e.type === "text" && N(e, "measure", false) != null) d.push("max-width: " + N(e, "measure", false) + "px;");
 }
@@ -2268,8 +2292,10 @@ if (rd) im.push("border-radius: " + rd + "px;");
 if (e.type === "image" && ON(e, "hard")) im.push("box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.12);");
 }
 if (im.length) out.push(sel + " img {\n" + im.join("\n") + "\n}");
+var bk = E(e, e.type === "posts" ? "imgBackdrop" : "backdrop");
+if (bl && bl !== "normal" && bk) out.push((e.type === "image" ? sel : e.type === "gallery" ? sel + " figure" : e.type === "library" ? sel + " .bd-lib-cover" : sel + " .bd-post-cover,\n" + sel + " .bd-post-img") + " {\nbackground-color: " + bk + ";\n}");
 }
-if (e.type === "embed" && !phone && N(e, "radius", false)) out.push(sel + " iframe {\nborder-radius: " + N(e, "radius", false) + "px;\n}");
+if (e.type === "embed" && !phone && N(e, "radius", false)) out.push(sel + " {\nborder-radius: " + N(e, "radius", false) + "px;\noverflow: hidden;\n}");
 if (e.type === "rule" && !phone) {
 if (E(e, "ink")) d.push("border-color: " + E(e, "ink") + ";");
 if (N(e, "weight", false) != null) d.push("border-top-width: " + N(e, "weight", false) + "px;");
@@ -4201,8 +4227,11 @@ var g = groups.filter(function (x) { return x.key === p.section; })[0] || other;
 g.pages.push(p);
 });
 if (other.pages.length) groups.push(other);
-groups.push(pins);
-var h = '<div class="bd-ed-sec"><div class="bd-ed-actions"><button class="bd-ed-btn" data-act="page-add">' + I.plus + 'Page</button><button class="bd-ed-btn" data-act="blog-add">' + I.plus + 'Blog</button><button class="bd-ed-btn" data-act="pin-add" data-val="top">' + I.plus + 'Header</button><button class="bd-ed-btn" data-act="pin-add" data-val="bottom">' + I.plus + "Footer</button></div>";
+if (layersOn()) {
+pins.label = "Header & footer · not shown with paper sheets";
+if (pins.pages.length) groups.push(pins);
+} else groups.push(pins);
+var h = '<div class="bd-ed-sec"><div class="bd-ed-actions"><button class="bd-ed-btn" data-act="page-add">' + I.plus + 'Page</button><button class="bd-ed-btn" data-act="blog-add">' + I.plus + 'Blog</button>' + (layersOn() ? "" : '<button class="bd-ed-btn" data-act="pin-add" data-val="top">' + I.plus + 'Header</button><button class="bd-ed-btn" data-act="pin-add" data-val="bottom">' + I.plus + "Footer</button>") + "</div>";
 groups.forEach(function (g) {
 if (!g.pages.length && !g.pins) return;
 h += '<div class="bd-ed-group"><div class="bd-ed-group-label">' + esc(g.label) + "</div>";
@@ -4240,7 +4269,7 @@ var opts = [["", "Automatic"]].concat(S.project.order.map(function (id) { return
 h += row(field("Journal (top of index)", select("site.layers.journal", Lz.journal, opts)), field("Library (bottom)", select("site.layers.library", Lz.library, opts)))
 + field("About (on the menu sheet)", select("site.layers.about", Lz.about, opts))
 + '<div class="bd-ed-hint">Now: ' + esc([r.journal ? "journal = " + r.journal.title : "", r.library ? "library = " + r.library.title : "", r.about ? "about = " + r.about.title : ""].filter(Boolean).join(" · ")) + ". The menu lists the site menu; other pages open underneath like posts.</div>"
-+ field("Mark on the menu sheet", input("site.layers.mark", Lz.mark, "", ' placeholder="' + esc(s.name) + '"')) + "</div>";
++ row(field("Menu on the sheet", select("site.nav.menu", s.nav.menu, s.menus.map(function (m) { return [m.id, m.name]; }))), field("Mark on the sheet", input("site.layers.mark", Lz.mark, "", ' placeholder="' + esc(s.name) + '"'))) + "</div>";
 h += '<div class="bd-ed-sec">' + adv("ly-menu", "Menu sheet", colorIn("Colour", "site.layers.menuColor", Lz.menuColor, "#D2CEC6")
 + row(numIn("See-through %", "site.layers.menuAlpha", Lz.menuAlpha), numIn("Blur below", "site.layers.menuBlur", Lz.menuBlur))
 + row(dpIn(S.mode === "phone" ? "Band height" : "Column width", "site.layers.menuW", "site.layers.menuBand", Lz.menuW, Lz.menuBand), dpIn("Side padding", "site.layers.menuPad", "site.layers.menuPadM", Lz.menuPad, Lz.menuPadM), dpIn("Between links", "site.layers.menuGap", "site.layers.menuGapM", Lz.menuGap, Lz.menuGapM))
@@ -4277,7 +4306,8 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-label">Page frame</span>'
 + row(dpIn("Top", "site.mt", "site.mtM", s.mt, s.mtM, "int"), dpIn("Right", "site.mr", "site.mrM", s.mr, s.mrM, "int"), dpIn("Bottom", "site.mb", "site.mbM", s.mb, s.mbM, "int"), dpIn("Left", "site.ml", "site.mlM", s.ml, s.mlM, "int"))
 + row(dpIn("Paragraph indent", "site.indent", "site.indentM", s.indent, s.indentM, "int"))
 + '<div class="bd-ed-hint">Columns are set in the bar above the canvas.</div></div>';
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title", "site.header", s.header) + (s.header ? sw("Number above the title", "site.showNum", s.showNum) : "") + sw("Floating menu button", "site.menu", s.menu) + sw("Page arrows at the end", "site.pager", s.pager) + sw("Click images to zoom", "site.zoom", s.zoom)
+if (layersOn()) h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title", "site.header", s.header) + (s.header ? sw("Number above the title", "site.showNum", s.showNum) : "") + sw("Click images to zoom", "site.zoom", s.zoom) + '<div class="bd-ed-hint">The menu sheet is the menu, so the floating menu button, page arrows at the end, header and footer are off.</div></div>';
+else h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title", "site.header", s.header) + (s.header ? sw("Number above the title", "site.showNum", s.showNum) : "") + sw("Floating menu button", "site.menu", s.menu) + sw("Page arrows at the end", "site.pager", s.pager) + sw("Click images to zoom", "site.zoom", s.zoom)
 + (s.menu || hasMenuButton() ? '<button class="bd-ed-btn" data-act="menu-style">' + I.sliders + "Style the menu</button>" : "") + '<div class="bd-ed-hint">Or add Menu, Page title and Page arrows blocks to the header and footer.</div></div>';
 var secs = s.sections.map(function (x, i) {
 return '<div class="bd-ed-list-row">' + input("site.sections." + i + ".key", x.key, "", ' aria-label="Section key"') + input("site.sections." + i + ".label", x.label, "", ' aria-label="Section label"') + '<button class="bd-ed-x" data-act="del-section" data-i="' + i + '" aria-label="Remove section">' + I.x + "</button></div>";
@@ -4394,6 +4424,7 @@ h += '<button class="bd-ed-btn" data-act="pick-image">' + I.image + (p.assetId ?
 + field("Alt text", input("el.alt", p.alt)) + lookSection(e);
 }
 if (e.type === "posts") h += postsPanel(e);
+if (BLOCK_STYLE[e.type] && h.indexOf("bd-ed-look") < 0) h += lookSection(e);
 return h;
 }
 function postsPanel(e) {
@@ -4415,6 +4446,10 @@ h += '<div class="bd-ed-plist"><button class="bd-ed-x' + (q.featured ? " is-on" 
 });
 return h + '<div class="bd-ed-hint">Each post is its own page. Click one to open it. Cards use the post’s title, first image and text.</div>';
 }
+function styleOpts() {
+var st = S.project.site.styles;
+return BD_STYLES.map(function (k) { var x = st[k[0]]; return [k[0], k[1] + (x ? " · " + x.size + "/" + x.lh + (x.font === "mono" ? " mono" : "") : "")]; });
+}
 function bsOptName(opts, v) {
 for (var i = 0; i < opts.length; i++) if (String(opts[i][0]) === String(v)) return opts[i][1];
 return v === "" || v == null ? "none" : String(v);
@@ -4423,13 +4458,17 @@ function styleFields(type, scope, e) {
 var site = bsSite(type);
 var el = scope === "el";
 var ph = S.mode === "phone";
-var cells = BLOCK_STYLE[type].map(function (f) {
+var val = function (k) { return el ? E(e, k) : site[k]; };
+var cells = BLOCK_STYLE[type].filter(function (f) {
+var w = BS_WHEN[type + "." + f[0]];
+return !w || w(val, el ? e : null);
+}).map(function (f) {
 var k = f[0], kind = f[2];
 var path = el ? "el." + k : "site.blockStyles." + type + "." + k;
 var cur = el ? e.props[k] : site[k];
 var sv = site[k];
 if (kind === "style" || kind === "sel" || kind === "bool") {
-var opts = kind === "style" ? BD_STYLES : kind === "bool" ? [["1", "On"], ["0", "Off"]] : f[4];
+var opts = kind === "style" ? styleOpts() : kind === "bool" ? [["1", "On"], ["0", "Off"]] : f[4];
 var inh = el ? [["", "Site · " + bsOptName(opts, sv)]] : [];
 return field(f[1], select(path, cur == null ? "" : String(cur), inh.concat(opts)));
 }
@@ -4466,8 +4505,40 @@ return '<span class="bd-ed-label">Card image</span>'
 + row('<button class="bd-ed-btn" data-act="post-cover-up">' + I.plus + (own ? "Replace own image" : "Upload own image") + "</button>", own ? '<button class="bd-ed-btn" data-act="post-cover-x">Remove own</button>' : "")
 + '<div class="bd-ed-hint">Only for the post cards. Not shown inside the post.</div>';
 }
+/* CODE THAT OVERRIDES A BLOCK — RULES IN SITE CSS / PAGE CSS THAT TARGET THIS BLOCK (INSPECT WRITES THESE) */
+function elCssOverrides(e) {
+var found = [];
+var key = ".bd-e-" + e.id;
+[["site", S.project.site.css], ["page", curPage().css]].forEach(function (w) {
+var sp = cssSplit(w[1]);
+[sp.desk, sp.mob].forEach(function (part, i) {
+cssRules(part).forEach(function (r) {
+if (r.sel.indexOf(key) > -1) found.push({ where: w[0], phone: i === 1, props: declList(r.body).map(function (d) { return d.prop; }) });
+});
+});
+});
+return found;
+}
+function clearElCss(e) {
+var key = ".bd-e-" + e.id;
+var strip = function (css) {
+var sp = cssSplit(css);
+var cut = function (part) {
+var rules = cssRules(part).filter(function (r) { return r.sel.indexOf(key) > -1; });
+for (var i = rules.length - 1; i >= 0; i--) part = part.slice(0, rules[i].start) + part.slice(rules[i].close + 1);
+return part.replace(/\n{3,}/g, "\n\n");
+};
+return cssJoin(cut(sp.desk), cut(sp.mob));
+};
+S.project.site.css = strip(S.project.site.css);
+curPage().css = strip(curPage().css);
+}
 function lookSection(e) {
-return '<span class="bd-ed-label">Look</span>' + styleFields(e.type, "el", e) + '<div class="bd-ed-hint">Empty or “Site” follows the ' + esc(BD_TYPE_NAME[e.type]) + " style in the Styles tab. Set a value here to change only this one.</div>";
+var ov = elCssOverrides(e);
+var props = [];
+ov.forEach(function (o) { o.props.forEach(function (x) { if (props.indexOf(x) < 0) props.push(x); }); });
+var warn = ov.length ? '<div class="bd-ed-hint" style="color:var(--e-warn)">Code overrides this block (' + esc(props.join(", ")) + ") in " + esc(ov.map(function (o) { return (o.where === "site" ? "Site CSS" : "Page CSS") + (o.phone ? " · phone" : ""); }).filter(function (x, i, a) { return a.indexOf(x) === i; }).join(", ")) + '), so those win over the fields below.</div><button class="bd-ed-btn is-sm" data-act="el-css-clear">Remove the code overrides</button>' : "";
+return '<span class="bd-ed-label bd-ed-look">Look</span>' + warn + styleFields(e.type, "el", e) + '<div class="bd-ed-hint">Empty or “Site” follows the ' + esc(BD_TYPE_NAME[e.type]) + " master in Styles → Blocks. Set a value here to change only this one.</div>";
 }
 function blockPlace(e) {
 var pg = curPage();
@@ -4517,7 +4588,7 @@ syncInsToBlock(e);
 var n = nCols(pg);
 h += '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">' + BD_TYPE_NAME[e.type] + '</span><button class="bd-ed-btn" style="height:26px" data-act="deselect">Done</button></div>'
 + blockContent(e) + "</div>";
-h += insPanel(true);
+h += '<div class="bd-ed-sec">' + adv("blk-fine", "Fine-tune any part (writes CSS)", '<div class="bd-ed-hint">For what Look doesn’t cover: pick a word, link or image inside the block and set any property. It’s saved as code and wins over Look.</div>' + insPanel(true)) + "</div>";
 h += '<div class="bd-ed-sec">'
 + (n > 1 ? field("Column", '<div class="bd-ed-seg">' + Array.apply(null, Array(n)).map(function (x, i) { return '<button data-act="set-col" data-val="' + (i + 1) + '" class="' + (colOf(e, pg) === i + 1 ? "is-on" : "") + '">' + (i + 1) + "</button>"; }).join("") + "</div>") : "")
 + '<div class="bd-ed-actions">'
@@ -4569,7 +4640,7 @@ var q = S.project.pages[id];
 if (q.kind === "pin" || q.id === pg.id) return;
 stack += '<label class="bd-ed-check"><input type="checkbox" data-act="stack-page" data-id="' + q.id + '"' + ((pg.stack || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc((q.num ? q.num + "  " : "") + q.title) + "</label>";
 });
-h += '<div class="bd-ed-sec">' + adv("pg-stack", "Continue with other pages", '<div class="bd-ed-hint">Chosen pages scroll on below this one, like one long page.</div>' + stack) + "</div>";
+if (!layersOn()) h += '<div class="bd-ed-sec">' + adv("pg-stack", "Continue with other pages", '<div class="bd-ed-hint">Chosen pages scroll on below this one, like one long page.</div>' + stack) + "</div>";
 }
 var free = '<div class="bd-ed-seg"><button data-act="layout" data-val="master" class="' + (isMaster(pg) ? "is-on" : "") + '">Columns</button><button data-act="layout" data-val="free" class="' + (isMaster(pg) ? "" : "is-on") + '">Free grid</button></div><div class="bd-ed-hint">' + (isMaster(pg) ? "Blocks stack in columns. Free grid lets you place them anywhere, row by row." : "Blocks sit anywhere on the grid. Columns stacks them again in order.") + "</div>"
 + (S.mode === "phone" && !isMaster(pg) ? '<button class="bd-ed-btn" data-act="restack">' + I.restack + "Restack phone from desktop</button>" : "");
@@ -5196,7 +5267,7 @@ insSetProp(insField(t.getAttribute("data-ins")).p, nv);
 function renderRail() {
 var r = $("bd-rail");
 r.hidden = !S.project || S.preview;
-r.innerHTML = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["notes", "Notes"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"], ["quote", "Quote"], ["toggle", "Fold-out list"], ["product", "Product"], ["sep"], ["menubtn", "Menu"], ["ptitle", "Page title"], ["pager", "Page arrows"], ["sep"], ["posts", "Blog posts"], ["postinfo", "Post info"]].map(function (t) {
+r.innerHTML = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["notes", "Notes"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"], ["quote", "Quote"], ["toggle", "Fold-out list"], ["product", "Product"], ["sep"], ["menubtn", "Menu"], ["ptitle", "Page title"], ["pager", "Page arrows"], ["sep"], ["posts", "Blog posts"], ["postinfo", "Post info"]].filter(function (t) { return !(layersOn() && t[0] === "menubtn"); }).map(function (t) {
 if (t[0] === "sep") return '<span class="bd-ed-rail-sep"></span>';
 return '<button class="bd-ed-tool" data-act="add" data-type="' + t[0] + '" data-tip="' + t[1] + '" aria-label="Add ' + t[1] + '">' + I[t[0]] + "</button>";
 }).join("") + '<span class="bd-ed-rail-sep"></span><button class="bd-ed-tool" data-act="inspect" data-tip="Style anything" aria-label="Style anything">' + I.target + "</button>";
@@ -6636,6 +6707,7 @@ var A = {
 "discard-yes": discardDraft,
 "sign-out": function () { closePop(); lock("Key forgotten on this device."); },
 "reload": loadSite,
+"el-css-clear": function () { var e = selEl(); if (!e) return; snap(); clearElCss(e); changed(); },
 "ly-preset": function () { var v = b.getAttribute("data-val"); if (!LAYER_PRESETS[v]) return; snap(); Object.assign(S.project.site.layers, clone(LAYER_PRESETS[v])); changed(); },
 "confirm-no": function () { var was = S.confirm; S.confirm = null; if (was === "discard") openPop(); else renderLeft(); },
 "mode": function () { if (S.live) endEdit(); S.mode = val; render(); },
