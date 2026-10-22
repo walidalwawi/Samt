@@ -5,7 +5,7 @@ var R = window.SAMT_RENDER;
 
 /* REPO */
 var OWNER = "walidalwawi";
-var REPO = "samt";
+var REPO = "Samt";
 var BRANCH = "main";
 var API = "https://api.github.com/repos/" + OWNER + "/" + REPO;
 var DATA_FILE = "content/samt.json";
@@ -192,7 +192,7 @@ $("bd-gate").hidden = true;
 load();
 } catch (err) {
 S.key = "";
-$("bd-gate-msg").textContent = err.message === "KEY" ? "GitHub didn't accept that key." : (err.status === 404 ? "That key can't see walidalwawi/samt. Add the repo to the key." : err.message);
+$("bd-gate-msg").textContent = err.message === "KEY" ? "GitHub didn't accept that key." : (err.status === 404 ? "That key can't see walidalwawi/Samt. Add the repo to the key." : err.message);
 }
 }
 
