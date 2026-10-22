@@ -1,4 +1,4 @@
-/* PUBLISHED mvjzxhmh */
+/* PUBLISHED mvjzyph4 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1367,7 +1367,7 @@ margin-top: 120px;
 
 /* COLUMNS */
 .bd-main .bd-cols {
-grid-template-columns: minmax(0, 12fr);
+grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
 column-gap: 40px;
 }
 .bd-cols.bd-cl-aj2hm4y8 {

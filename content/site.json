@@ -289,10 +289,11 @@
    "libFix": 1
   },
   "layout": {
-   "cols": 1,
+   "cols": 2,
    "align": "spread",
    "spans": [
-    12
+    6,
+    6
    ],
    "colsM": 1,
    "gutter": 40,
@@ -728,7 +729,7 @@
      }
     }
    ],
-   "ownLayout": false,
+   "ownLayout": true,
    "kind": "page",
    "stack": [],
    "pin": {
