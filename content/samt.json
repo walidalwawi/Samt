@@ -1744,6 +1744,14 @@
    ]
   }
  ],
- "look": {},
+ "look": {
+  "menu": {
+   "color": "#F3F1EC",
+   "align": "right",
+   "edge": false,
+   "aboutPad": 40,
+   "aboutW": 600
+  }
+ },
  "css": ""
 }
