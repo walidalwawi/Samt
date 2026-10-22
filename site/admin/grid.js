@@ -2938,6 +2938,41 @@ return '<div class="bd-ly is-v-' + st.view + " is-h-" + st.half + '" id="bd-ly" 
 + '<section class="bd-ly-sheet bd-ly-index" id="bd-ly-index" aria-label="Index">\n<div class="bd-ly-half is-journal">\n' + (r.journal ? layerBody(r.journal, ctx) : "") + '\n</div>\n<div class="bd-ly-half is-library">\n' + (r.library ? layerBody(r.library, ctx) : "") + "\n</div>\n</section>\n"
 + '<nav class="bd-ly-sheet bd-ly-menu" id="bd-ly-menu" aria-label="Menu">\n<div class="bd-ly-about">\n' + (r.about ? layerBody(r.about, ctx) : "") + '\n</div>\n<ul class="bd-ly-list bd-ts-' + esc(Ls.menuStyle || "heading") + '">\n' + items.join("\n") + '\n</ul>\n<div class="bd-ly-mark bd-ts-' + esc(Ls.menuStyle || "heading") + '">' + esc(mark) + "</div>\n</nav>\n</div>";
 }
+/* CANVAS IN LAYERS MODE — THE PAGE AS IT SITS IN ITS SHEET, WITH THE MENU SHEET BESIDE IT (STATIC) */
+function layerEditCSS(page, phone) {
+var Ls = S.project.site.layers;
+var st = layerState(page);
+var sheet = st.view === "journal" || st.view === "library" ? hexAlpha(Ls.indexColor, 100) : st.view === "about" ? hexAlpha(Ls.menuColor, 100) : "var(--bd-page)";
+var w = phone ? 0 : Ls.menuW;
+var band = phone ? Ls.menuBand : 0;
+return [
+":host {\nposition: relative;\n}",
+".bd-site.is-layered {\nbackground: " + sheet + ";\n}",
+".bd-site.is-layered .bd-panel {\nbackground: transparent;\npadding-left: calc(" + w + "px + var(--bd-wl));\npadding-top: calc(" + band + "px + var(--bd-wt));\n}",
+".bd-ly-edit {\nposition: absolute;\nz-index: 5;\ntop: 0;\nleft: 0;\n" + (phone ? "right: 0;\nheight: " + band + "px;\nflex-direction: row;\nalign-items: center;\njustify-content: space-between;\npadding: 0 " + Ls.menuPadM + "px;\n" : "bottom: 0;\nwidth: " + w + "px;\nflex-direction: column;\nalign-items: " + (Ls.menuAlign === "left" ? "flex-start" : "flex-end") + ";\njustify-content: space-between;\npadding: var(--bd-wt) " + Ls.menuPad + "px;\n") + "display: flex;\nbackground: " + hexAlpha(Ls.menuColor, Ls.menuAlpha) + ";\n-webkit-backdrop-filter: blur(" + Ls.menuBlur + "px);\nbackdrop-filter: blur(" + Ls.menuBlur + "px);\npointer-events: none;\nfont-family: var(--bd-sans);\ncolor: var(--bd-ink);\n" + (Ls.menuEdge ? (phone ? "box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);\n" : "box-shadow: 1px 0 0 rgba(0, 0, 0, 0.12);\n") : "") + "}",
+".bd-ly-edit ul {\ndisplay: flex;\nflex-direction: " + (phone ? "row" : "column") + ";\nalign-items: inherit;\ngap: " + (phone ? Ls.menuGapM : Ls.menuGap) + "px;\nmargin: 0;\npadding: 0;\nlist-style: none;\n}",
+".bd-ly-edit li {\ndisplay: flex;\ngap: 10px;\nwhite-space: nowrap;\n}",
+".bd-ly-edit .bd-ly-mk {\nvisibility: hidden;\n}",
+".bd-ly-edit .is-current .bd-ly-mk {\nvisibility: visible;\n}",
+phone ? ".bd-ly-edit ul {\norder: 2;\n}" : ""
+].filter(Boolean).join("\n");
+}
+function layerEditChrome(page) {
+var s = S.project.site;
+var Ls = s.layers;
+var st = layerState(page);
+var r = layerRoles();
+var items = [];
+menuGroups(s.nav.menu).forEach(function (g) {
+g.items.forEach(function (it) {
+var q = it.page ? S.project.pages[it.page] : null;
+var cur = q && (q.id === page.id || (st.view === "post" && page.parent && r.journal && q.id === r.journal.id));
+items.push('<li class="' + (cur ? "is-current" : "") + '"><span class="bd-ly-mk">' + esc(Ls.marker) + "</span>" + esc(it.title) + "</li>");
+});
+});
+var style = "bd-ts-" + esc(Ls.menuStyle || "heading");
+return '<div class="bd-ly-edit ' + style + '"><ul>' + items.join("") + '</ul><span>' + esc(Ls.mark || s.name) + "</span></div>";
+}
 function hexAlpha(hex, pct) {
 var h = String(hex || "#000000").replace("#", "");
 if (h.length === 3) h = h.split("").map(function (c) { return c + c; }).join("");
@@ -3128,6 +3163,7 @@ return out;
 function pageHTMLInner(page, ctx) {
 var s = S.project.site;
 var edit = ctx === "edit";
+if (layersOn() && page.kind !== "pin") return '<div class="bd-panel">\n<main class="bd-main">\n\n' + (headHTML(page) ? "<!-- HEADER -->\n" + headHTML(page) + "\n" : "") + "<!-- CONTENT -->\n" + contentHTML(page, ctx) + "\n\n</main>\n</div>";
 var top = pinsFor(page, "top", false).map(function (p) { return pinHTML(p, ctx); }).join("\n");
 var bottom = pinsFor(page, "bottom", false).map(function (p) { return pinHTML(p, ctx); }).join("\n");
 var fixed = pinsFor(page, "top", true).concat(pinsFor(page, "bottom", true)).map(function (p) { return pinHTML(p, ctx); }).join("\n");
@@ -5237,7 +5273,7 @@ sheet.style.width = sheetW + "px";
 var ruler = $("bd-ruler");
 ruler.className = "bd-ed-ruler" + (phone ? " is-phone" : "");
 ruler.style.maxWidth = sheetW + "px";
-ruler.innerHTML = "<span>" + (S.inspect ? "Inspect · tap anything to style it · " + (phone ? "phone" : "desktop") : S.preview ? "Preview · menu and arrows work" : (phone ? "Phone" : "Desktop") + " · " + sheetW + 'px · <span id="bd-zoom">100%</span>') + "</span>" + (master && !S.preview ? rulerCols(page, phone) : "<span>" + (master ? "Follows master" : "Free grid") + "</span>");
+ruler.innerHTML = "<span>" + (S.inspect ? "Inspect · tap anything to style it · " + (phone ? "phone" : "desktop") : S.preview ? (layersOn() ? "Preview · the sheets move" : "Preview · menu and arrows work") : (phone ? "Phone" : "Desktop") + " · " + sheetW + 'px · <span id="bd-zoom">100%</span>' + (layersOn() && page.kind !== "pin" ? " · layers: Preview to see them move" : "")) + "</span>" + (master && !S.preview ? rulerCols(page, phone) : "<span>" + (master ? "Follows master" : "Free grid") + "</span>");
 if (!shadow) {
 shadow = sheet.attachShadow({ mode: "open" });
 bindCanvas();
@@ -5263,7 +5299,8 @@ var pc = cssSplit(page.css);
 var pinH = page.kind === "pin" ? (phone && page.pin.hM !== "" && page.pin.hM != null ? page.pin.hM : page.pin.h) : "";
 if (pinH !== "" && pinH != null && !isNaN(parseFloat(pinH))) layout += "\n.bd-main {\nflex: none;\nheight: " + parseFloat(pinH) + "px;\nbox-shadow: 0 1px 0 #ff4d00;\n}";
 var css = baseCSS(s, "edit") + "\n" + (!isSpread(s) && isSpreadPage(page) ? ":host {\n--bd-w: 100%;\n}\n" : "") + layout + "\n" + sc.desk + "\n" + pc.desk + "\n" + (phone ? sc.mob + "\n" + pc.mob + "\n" : "") + (S.inspect ? INSPECT_CSS : S.preview ? "" : EDIT_CSS);
-shadow.innerHTML = "<style>" + css + '</style><div class="bd-site' + (phone ? " is-phone" : "") + (S.inspect ? " is-inspect" : S.preview ? "" : " is-editing") + (page.kind === "pin" ? " is-pin-page" : "") + '" data-bd-page="' + esc(page.slug) + '">' + pageHTML(page, "edit") + "</div>";
+if (layersOn() && page.kind !== "pin") css += "\n" + layerEditCSS(page, phone);
+shadow.innerHTML = "<style>" + css + '</style>' + (layersOn() && page.kind !== "pin" ? layerEditChrome(page) : "") + '<div class="bd-site' + (layersOn() && page.kind !== "pin" ? " is-layered" : "") + (phone ? " is-phone" : "") + (S.inspect ? " is-inspect" : S.preview ? "" : " is-editing") + (page.kind === "pin" ? " is-pin-page" : "") + '" data-bd-page="' + esc(page.slug) + '">' + pageHTML(page, "edit") + "</div>";
 var data = chromeData(page.slug);
 data.open = !!S.menuOpen;
 data.onToggle = function (o) { S.menuOpen = o; };
