@@ -1,4 +1,4 @@
-/* PUBLISHED ink1 */
+/* PUBLISHED mvk2rtoy */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -22,8 +22,8 @@
 --bd-gap: 0px;
 --bd-indent: 0px;
 --bd-label: 100px;
---bd-fs: 15px;
---bd-lh: 20px;
+--bd-fs: 13px;
+--bd-lh: 19px;
 --bd-ms: 12px;
 --bd-ml: 18px;
 --bd-ls: 15px;
@@ -1235,8 +1235,8 @@ font-weight: 400;
 font-style: normal;
 text-transform: none;
 letter-spacing: 0em;
-font-size: 15px;
-line-height: 20px;
+font-size: 13px;
+line-height: 19px;
 }
 .bd-text.is-heading,
 .bd-text.is-large,
@@ -1260,8 +1260,8 @@ font-weight: 400;
 font-style: normal;
 text-transform: none;
 letter-spacing: 0em;
-font-size: 15px;
-line-height: 20px;
+font-size: 13px;
+line-height: 19px;
 }
 .bd-text.is-caption,
 .bd-ptitle.is-caption,
