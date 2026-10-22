@@ -138,7 +138,7 @@ var BD_DATA = {"site":"Samt","menu":false,"groups":[{"label":"","items":[{"title
 {"section":"","slug":"art-in-times-of-crisis","num":"","title":"Art In Times Of Crisis"},
 {"section":"","slug":"library","num":"","title":"Library"},
 {"section":"","slug":"about","num":"","title":"About"},
-{"section":"","slug":"supply","num":"","title":"Supply"}],"externals":[]};
+{"section":"","slug":"supply","num":"","title":"Supply"}],"externals":[],"gDur":450};
 
 /* CHROME */
 function bdChrome(root, data, nav) {
@@ -292,6 +292,7 @@ var host = root.querySelector(".bd-site") || (root.classList && root.classList.c
 /* GESTURES — HOVER TEASES, A TAP OR CLICK PLAYS THE FULL MOVE, THEN THE LINK OPENS */
 if (!root.__bdGesture) {
 root.__bdGesture = true;
+var gd = (typeof BD_DATA !== "undefined" && BD_DATA.gDur) || 450;
 var bdOpen = function (u) {
 if (window.bdLayerOpen && window.bdLayerOpen(u)) return;
 window.location.href = u;
@@ -308,16 +309,16 @@ return;
 }
 ev.preventDefault();
 if (!a.matches(".bd-post")) {
-setTimeout(function () { bdOpen(a.href); }, 520);
+setTimeout(function () { bdOpen(a.href); }, gd + 70);
 return;
 }
 /* TRACING PAPER: THE SHEET SLIDES OFF THE POSTER, THEN THE POST OPENS */
 if (a.closest(".is-trace")) {
-setTimeout(function () { bdOpen(a.href); }, 620);
+setTimeout(function () { bdOpen(a.href); }, Math.round(gd * 1.2) + 80);
 return;
 }
 /* ZINE: COVER SWINGS FULLY AWAY, THE INSIDE PAGE GROWS INTO THE NEXT PAGE */
-setTimeout(function () { a.classList.add("is-unfold"); }, 280);
+setTimeout(function () { a.classList.add("is-unfold"); }, Math.round(gd * 0.62));
 setTimeout(function () {
 var leaf = a.querySelector(".bd-post-page") || a;
 var r = leaf.getBoundingClientRect();
@@ -337,7 +338,7 @@ sheet.style.width = "100vw";
 sheet.style.height = "100vh";
 if (panel) sheet.style.background = getComputedStyle(panel).backgroundColor;
 }, 600);
-setTimeout(function () { bdOpen(a.href); }, 1000);
+setTimeout(function () { bdOpen(a.href); }, Math.round(gd * 2.2));
 });
 window.addEventListener("pageshow", function () {
 root.querySelectorAll(".is-open, .is-unfold").forEach(function (x) { if (x.matches("a.bd-lib-item, a.bd-post")) x.classList.remove("is-open", "is-unfold"); });
