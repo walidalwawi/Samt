@@ -2300,7 +2300,7 @@ if (e.type === "text" && N(e, "measure", false) != null) d.push("max-width: " + 
 if ((e.type === "image" || e.type === "gallery" || e.type === "library" || e.type === "posts") && !phone) {
 var im = [];
 var bl = E(e, e.type === "posts" ? "imgBlend" : "blend");
-if (bl === "ink") im.push("mix-blend-mode: multiply;");
+if (bl === "ink") im.push("mix-blend-mode: multiply;", "--bd-ink-img: 1;");
 else if (bl && bl !== "normal") im.push("mix-blend-mode: " + bl + ";");
 if (e.type === "image" || e.type === "gallery") {
 var tn = E(e, "tone");
@@ -3390,6 +3390,62 @@ panel.appendChild(pager);
 }
 
 /* GALLERY RUNTIME (EXPORTED AS-IS) */
+/* LINES ONLY — BAKE THE WHITE OUT OF A DRAWING SO ONLY THE LINES ARE LEFT (WORKS IN EVERY BROWSER, WHATEVER IS BEHIND) */
+function bdInk(root) {
+var cache = window.__bdInkCache = window.__bdInkCache || {};
+var bake = function (img) {
+var src = img.currentSrc || img.src;
+if (!src || src.indexOf("data:") === 0) return;
+var done = function (url) {
+img.removeAttribute("srcset");
+img.src = url;
+img.style.mixBlendMode = "normal";
+};
+if (cache[src]) return done(cache[src]);
+var w = img.naturalWidth;
+var h = img.naturalHeight;
+if (!w || !h) return;
+var k = Math.min(1, 1800 / Math.max(w, h));
+w = Math.round(w * k);
+h = Math.round(h * k);
+var cv = document.createElement("canvas");
+cv.width = w;
+cv.height = h;
+var cx = cv.getContext("2d");
+var px;
+try {
+cx.drawImage(img, 0, 0, w, h);
+px = cx.getImageData(0, 0, w, h);
+} catch (err) {
+return;
+}
+var ink = (getComputedStyle(img).color.match(/\d+(\.\d+)?/g) || [17, 17, 17]).map(Number);
+var d = px.data;
+for (var i = 0; i < d.length; i += 4) {
+var lum = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+var a = Math.max(0, Math.min(1, (232 - lum) / 172)) * (d[i + 3] / 255);
+d[i] = ink[0];
+d[i + 1] = ink[1];
+d[i + 2] = ink[2];
+d[i + 3] = Math.round(a * 255);
+}
+cx.putImageData(px, 0, 0);
+try {
+cache[src] = cv.toDataURL("image/png");
+} catch (err) {
+return;
+}
+done(cache[src]);
+};
+Array.prototype.forEach.call(root.querySelectorAll("img"), function (img) {
+if (img.__bdInk) return;
+if (getComputedStyle(img).getPropertyValue("--bd-ink-img").trim() !== "1") return;
+img.__bdInk = true;
+img.loading = "eager";
+if (img.complete && img.naturalWidth) bake(img);
+else img.addEventListener("load", function () { bake(img); }, { once: true });
+});
+}
 function bdGalleries(root) {
 var host = root.querySelector(".bd-site") || (root.classList && root.classList.contains("bd-site") ? root : document.body);
 /* GESTURES — HOVER TEASES, A TAP OR CLICK PLAYS THE FULL MOVE, THEN THE LINK OPENS */
@@ -3603,7 +3659,7 @@ if (layersOn()) {
 d.menu = false;
 d.pager = false;
 }
-return (layersOn() ? "/* LAYERS */\n" + bdLayers.toString() + "\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nbdLayers(document, !!window.BD_PREVIEW);\n});\n\n" : "") + "/* DATA */\nvar BD_DATA = " + JSON.stringify(d, null, 0).replace(/\},\{/g, "},\n{") + ";\n\n/* CHROME */\n" + bdChrome.toString() + "\n\n/* GALLERIES */\n" + bdGalleries.toString() + "\n\n/* START */\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nvar data = Object.assign({}, BD_DATA, { current: document.body.getAttribute(\"data-bd-page\") || \"\" });\nbdChrome(document, data);\nbdGalleries(document);\n});\n";
+return (layersOn() ? "/* LAYERS */\n" + bdLayers.toString() + "\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nbdLayers(document, !!window.BD_PREVIEW);\n});\n\n" : "") + "/* DATA */\nvar BD_DATA = " + JSON.stringify(d, null, 0).replace(/\},\{/g, "},\n{") + ";\n\n/* CHROME */\n" + bdChrome.toString() + "\n\n/* GALLERIES */\n" + bdGalleries.toString() + "\n\n/* LINES ONLY */\n" + bdInk.toString() + "\n\n/* START */\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nvar data = Object.assign({}, BD_DATA, { current: document.body.getAttribute(\"data-bd-page\") || \"\" });\nbdChrome(document, data);\nbdGalleries(document);\nbdInk(document);\n});\n";
 }
 function exportPage(page) {
 var s = S.project.site;
@@ -5517,6 +5573,7 @@ var id = S.project.order.filter(function (i) { return S.project.pages[i].slug ==
 if (id) goPage(id);
 });
 requestAnimationFrame(fitSheet);
+bdInk(shadow);
 if (S.preview) {
 bdGalleries(shadow.querySelector(".bd-site"));
 if (S.inspect) markIns();
