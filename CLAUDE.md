@@ -27,3 +27,10 @@ Walid's Site Grid editor — ONE back office for walidalwawi.com and samt.co. Id
 
 ## When unsure
 Ask before assuming.
+
+## Samt house style — "deadpan gesture" (fixed, Walid's choice)
+- Interactions mimic one real-life gesture, stripped to a diagram: the library book cover swings open ~24° on hover (flat grey spine, blunt shadow, no textures, no realism).
+- One small physical gesture per element, never decoration: brutalist surfaces, the motion supplies the humour.
+- Keep it flat: solid colours, hard shadows, simple transforms (rotate/translate). No gradients for realism, no bounce, no 3D beyond a single hinge.
+- Timing ~0.45s ease; angles small enough to read as cheeky, not as a 3D effect.
+- Reference implementation: library "Book look" (.bd-library.is-book, hover "Open (perspective)").
