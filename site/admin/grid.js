@@ -67,7 +67,7 @@ I[k] = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width=
 /* BLOCK STYLES — A SITE-WIDE LOOK PER BLOCK TYPE (STYLES TAB); A BLOCK'S OWN VALUE WINS, EMPTY = SITE STYLE */
 var BS_ALIGN = [["left", "Left"], ["center", "Centre"], ["right", "Right"]];
 var BS_CASE = [["none", "As typed"], ["uppercase", "UPPER"], ["lowercase", "lower"]];
-var BS_BLEND = [["normal", "Normal"], ["multiply", "Multiply"], ["darken", "Darken"], ["lighten", "Lighten"], ["screen", "Screen"], ["overlay", "Overlay"], ["soft-light", "Soft light"], ["hard-light", "Hard light"], ["color-burn", "Colour burn"], ["difference", "Difference"], ["exclusion", "Exclusion"], ["luminosity", "Luminosity"]];
+var BS_BLEND = [["normal", "Normal"], ["ink", "Lines only · drop the white"], ["multiply", "Multiply"], ["darken", "Darken"], ["lighten", "Lighten"], ["screen", "Screen"], ["overlay", "Overlay"], ["soft-light", "Soft light"], ["hard-light", "Hard light"], ["color-burn", "Colour burn"], ["difference", "Difference"], ["exclusion", "Exclusion"], ["luminosity", "Luminosity"]];
 var BS_TONE = [["color", "Colour"], ["grey", "Greyscale"], ["dark", "Darker"], ["light", "Lighter"]];
 var BLOCK_STYLE = {
 text: [["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["ink", "Text colour", "color", ""], ["tracking", "Spacing (em)", "px", ""], ["measure", "Max width", "px", ""]],
@@ -108,10 +108,12 @@ var BS_WHEN = {
 ["paperBg", "paperInk", "paperAlpha", "paperFrost", "paperPad", "paperInset", "paperLine", "paperTilt", "textPos", "slideDir", "slideHover", "slideTap", "imgBlur", "imgTone"].forEach(function (k) {
 BS_WHEN["posts." + k] = function (v) { return v("look") === "trace"; };
 });
-BS_WHEN["image.backdrop"] = function (v) { return (v("blend") || "normal") !== "normal"; };
-BS_WHEN["gallery.backdrop"] = function (v) { return (v("blend") || "normal") !== "normal"; };
-BS_WHEN["library.backdrop"] = function (v) { return (v("blend") || "normal") !== "normal"; };
-BS_WHEN["posts.imgBackdrop"] = function (v) { return (v("imgBlend") || "normal") !== "normal"; };
+BS_WHEN["image.backdrop"] = function (v) { return ["normal", "ink", ""].indexOf(v("blend") || "") < 0; };
+BS_WHEN["gallery.backdrop"] = function (v) { return ["normal", "ink", ""].indexOf(v("blend") || "") < 0; };
+BS_WHEN["library.backdrop"] = function (v) { return ["normal", "ink", ""].indexOf(v("blend") || "") < 0; };
+BS_WHEN["posts.imgBackdrop"] = function (v) { return ["normal", "ink", ""].indexOf(v("imgBlend") || "") < 0; };
+BS_WHEN["image.tone"] = function (v) { return v("blend") !== "ink"; };
+BS_WHEN["gallery.tone"] = function (v) { return v("blend") !== "ink"; };
 var BS_GROUPS = {
 posts: [["Text", ["titleStyle", "titleSize", "titleLh", "metaStyle", "metaSize", "metaLh", "metaGap", "fTitleStyle"]], ["Card", ["cardBg", "cardPad", "minH", "imgGap", "imagePos", "ratio"]], ["Card image", ["imgBlend", "imgBackdrop", "imgTone", "imgBlur"]], ["Tracing paper", ["paperBg", "paperInk", "paperAlpha", "paperFrost", "paperPad", "paperInset", "paperLine", "paperTilt", "textPos"]], ["Zine", ["zine", "staple", "pageBg"]], ["Motion", ["look", "hover", "slideDir", "slideHover", "slideTap"]]],
 library: [["Covers", ["blend", "backdrop"]], ["Book", ["book", "spine", "spineW", "shadow", "radius"]], ["Motion", ["hover"]]],
@@ -2296,19 +2298,21 @@ if (e.type === "text" && N(e, "measure", false) != null) d.push("max-width: " + 
 if ((e.type === "image" || e.type === "gallery" || e.type === "library" || e.type === "posts") && !phone) {
 var im = [];
 var bl = E(e, e.type === "posts" ? "imgBlend" : "blend");
-if (bl && bl !== "normal") im.push("mix-blend-mode: " + bl + ";");
+if (bl === "ink") im.push("filter: url(#bd-ink);");
+else if (bl && bl !== "normal") im.push("mix-blend-mode: " + bl + ";");
 if (e.type === "image" || e.type === "gallery") {
 var tn = E(e, "tone");
-if (tn && tn !== "color") im.push("filter: " + (tn === "grey" ? "grayscale(1)" : tn === "dark" ? "brightness(0.7)" : "brightness(1.2) saturate(0.8)") + ";");
+if (tn && tn !== "color" && bl !== "ink") im.push("filter: " + (tn === "grey" ? "grayscale(1)" : tn === "dark" ? "brightness(0.7)" : "brightness(1.2) saturate(0.8)") + ";");
 var op = N(e, "opacity", false);
 if (op != null && op < 100) im.push("opacity: " + Math.max(0, op) / 100 + ";");
 var rd = N(e, "radius", false);
 if (rd) im.push("border-radius: " + rd + "px;");
 if (e.type === "image" && ON(e, "hard")) im.push("box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.12);");
 }
-if (im.length) out.push(sel + " img {\n" + im.join("\n") + "\n}");
+if (e.type === "posts" && bl === "ink") im[im.indexOf("filter: url(#bd-ink);")] = "filter: url(#bd-ink) blur(var(--tp-imgblur, 0px));";
+if (im.length) out.push((e.type === "posts" ? sel + ".bd-posts .bd-post-img img" : e.type === "library" ? sel + " .bd-lib-cover img" : sel + " img") + " {\n" + im.join("\n") + "\n}");
 var bk = E(e, e.type === "posts" ? "imgBackdrop" : "backdrop");
-if (bl && bl !== "normal" && bk) out.push((e.type === "image" ? sel : e.type === "gallery" ? sel + " figure" : e.type === "library" ? sel + " .bd-lib-cover" : sel + " .bd-post-cover,\n" + sel + " .bd-post-img") + " {\nbackground-color: " + bk + ";\n}");
+if (bl && bl !== "normal" && bl !== "ink" && bk) out.push((e.type === "image" ? sel : e.type === "gallery" ? sel + " figure" : e.type === "library" ? sel + " .bd-lib-cover" : sel + " .bd-post-cover,\n" + sel + " .bd-post-img") + " {\nbackground-color: " + bk + ";\n}");
 }
 if (e.type === "embed" && !phone && N(e, "radius", false)) out.push(sel + " {\nborder-radius: " + N(e, "radius", false) + "px;\noverflow: hidden;\n}");
 if (e.type === "rule" && !phone) {
@@ -2974,7 +2978,7 @@ items.push('<li><a class="bd-ly-a' + (cur ? " is-current" : "") + '" href="/' + 
 });
 });
 var mark = Ls.mark || s.name;
-return '<div class="bd-ly is-v-' + st.view + " is-h-" + st.half + '" id="bd-ly" data-view="' + st.view + '" data-half="' + st.half + '" data-post="' + esc(st.post) + '" data-dur="' + Ls.dur + '" data-menu-dur="' + Ls.menuDur + '">\n'
+return inkDefs() + '<div class="bd-ly is-v-' + st.view + " is-h-" + st.half + '" id="bd-ly" data-view="' + st.view + '" data-half="' + st.half + '" data-post="' + esc(st.post) + '" data-dur="' + Ls.dur + '" data-menu-dur="' + Ls.menuDur + '">\n'
 + '<div class="bd-ly-sheet bd-ly-content" id="bd-ly-content" tabindex="-1">\n' + arts + "\n</div>\n"
 + '<section class="bd-ly-sheet bd-ly-index" id="bd-ly-index" aria-label="Index">\n<div class="bd-ly-half is-journal">\n' + (r.journal ? layerBody(r.journal, ctx) : "") + '\n</div>\n<div class="bd-ly-half is-library">\n' + (r.library ? layerBody(r.library, ctx) : "") + "\n</div>\n</section>\n"
 + '<nav class="bd-ly-sheet bd-ly-menu" id="bd-ly-menu" aria-label="Menu">\n<div class="bd-ly-about">\n' + (r.about ? layerBody(r.about, ctx) : "") + '\n</div>\n<ul class="bd-ly-list bd-ts-' + esc(Ls.menuStyle || "heading") + '">\n' + items.join("\n") + '\n</ul>\n<div class="bd-ly-mark bd-ts-' + esc(Ls.menuStyle || "heading") + '">' + esc(mark) + "</div>\n</nav>\n</div>";
@@ -3189,6 +3193,13 @@ go(r.view, r.id, true);
 }
 mark();
 }
+function inkDefs() {
+var h = String(S.project.site.colors.ink || "#111111").replace("#", "");
+if (h.length === 3) h = h.split("").map(function (c) { return c + c; }).join("");
+var n = parseInt(h, 16) || 0;
+var f = function (x) { return (Math.round(x / 255 * 1000) / 1000); };
+return '<svg class="bd-defs" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden"><filter id="bd-ink" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 ' + f((n >> 16) & 255) + " 0 0 0 0 " + f((n >> 8) & 255) + " 0 0 0 0 " + f(n & 255) + ' -0.3333 -0.3333 -0.3333 1 0"/></filter></svg>';
+}
 function relatedPages(page) {
 return S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (p) {
 return p && p.id !== page.id && (p.kind === "pin" || (page.stack || []).indexOf(p.id) > -1);
@@ -3204,7 +3215,7 @@ return out;
 function pageHTMLInner(page, ctx) {
 var s = S.project.site;
 var edit = ctx === "edit";
-if (layersOn() && page.kind !== "pin") return '<div class="bd-panel">\n<main class="bd-main">\n\n' + (headHTML(page) ? "<!-- HEADER -->\n" + headHTML(page) + "\n" : "") + "<!-- CONTENT -->\n" + contentHTML(page, ctx) + "\n\n</main>\n</div>";
+if (layersOn() && page.kind !== "pin") return inkDefs() + '<div class="bd-panel">\n<main class="bd-main">\n\n' + (headHTML(page) ? "<!-- HEADER -->\n" + headHTML(page) + "\n" : "") + "<!-- CONTENT -->\n" + contentHTML(page, ctx) + "\n\n</main>\n</div>";
 var top = pinsFor(page, "top", false).map(function (p) { return pinHTML(p, ctx); }).join("\n");
 var bottom = pinsFor(page, "bottom", false).map(function (p) { return pinHTML(p, ctx); }).join("\n");
 var fixed = pinsFor(page, "top", true).concat(pinsFor(page, "bottom", true)).map(function (p) { return pinHTML(p, ctx); }).join("\n");
@@ -3212,7 +3223,7 @@ var stack = (page.stack || []).map(function (id) { return S.project.pages[id]; }
 return '<section class="bd-stack"' + (edit ? ' data-stack="' + p.id + '"' : "") + ">\n" + headHTML(p) + contentHTML(p, edit ? "view" : ctx) + "\n</section>";
 }).join("\n");
 var head = headHTML(page);
-return (fixed ? fixed + "\n" : "") + '<div class="bd-panel">\n' + (top ? top + "\n" : "") + '<main class="bd-main">\n\n' + (head ? "<!-- HEADER -->\n" + head + "\n" : "") + "<!-- CONTENT -->\n" + contentHTML(page, ctx) + "\n" + (stack ? "\n<!-- STACKED -->\n" + stack + "\n" : "") + "\n</main>" + (bottom ? "\n" + bottom : "") + "\n</div>";
+return inkDefs() + (fixed ? fixed + "\n" : "") + '<div class="bd-panel">\n' + (top ? top + "\n" : "") + '<main class="bd-main">\n\n' + (head ? "<!-- HEADER -->\n" + head + "\n" : "") + "<!-- CONTENT -->\n" + contentHTML(page, ctx) + "\n" + (stack ? "\n<!-- STACKED -->\n" + stack + "\n" : "") + "\n</main>" + (bottom ? "\n" + bottom : "") + "\n</div>";
 }
 function pageHTMLOld(page, ctx) {
 var s = S.project.site;
@@ -4518,6 +4529,8 @@ var gc = cells.filter(function (c) { return g[1].indexOf(c.k) > -1; });
 if (!gc.length) return;
 if (g[0]) h += '<span class="bd-ed-label bd-ed-group">' + esc(g[0]) + "</span>";
 for (var i = 0; i < gc.length; i += 2) h += row(gc[i].html, gc[i + 1] ? gc[i + 1].html : "");
+if (g[0] === "Card image" && val("imgBlend") === "ink" && val("cardBg")) h += '<div class="bd-ed-hint">The card colour (' + esc(val("cardBg")) + ') still sits behind the lines. Clear Card colour above to put the lines straight on the sheet.</div>';
+if (g[0] === "Card image" && val("imgBlend") === "ink" && (val("look") || "plain") === "trace") h += '<div class="bd-ed-hint">The tracing paper (Motion → Card look) lies over the lines and frosts them.</div>';
 });
 return h;
 }
@@ -4787,6 +4800,34 @@ var d = pick(sp.desk);
 var m = pick(sp.mob);
 return "/* EVERY RULE THAT STYLES THIS " + BD_TYPE_NAME[e.type].toUpperCase() + " — READ-ONLY */\n" + d.join("\n") + (m.length ? "\n\n/* PHONE */\n" + m.join("\n") : "");
 }
+/* RULES IN THE PUBLISHED CSS THAT HIT ONE ELEMENT ON THE CANVAS (HOVER/STATE PSEUDO-CLASSES IGNORED) */
+function nodeRules(node) {
+var sp = cssSplit(exportCSS());
+var hits = function (sel) {
+return sel.split(",").some(function (one) {
+var base = one.replace(/::?(before|after|placeholder|marker|selection|-webkit-[a-z-]+)/g, "").replace(/:(hover|focus|focus-visible|active|visited|first-child|last-child|checked|disabled)/g, "").trim();
+if (!base || base.charAt(0) === ":" || base.indexOf("@") === 0) return false;
+try {
+return node.matches(base) || node.matches(base.replace(/^:root\s*/, ""));
+} catch (err) {
+return false;
+}
+});
+};
+var pick = function (css) {
+return cssRules(css).filter(function (r) { return hits(r.sel); }).map(function (r) { return r.sel + " {" + r.body.replace(/\s+$/, "") + "\n}"; });
+};
+var d = pick(sp.desk);
+var m = pick(sp.mob);
+return d.join("\n") + (m.length ? "\n\n/* PHONE */\n" + m.join("\n") : "");
+}
+function nodeLabel(n) {
+var c = (n.getAttribute("class") || "").split(/\s+/).filter(function (x) { return x && x.indexOf("is-selected") < 0; }).slice(0, 4).map(function (x) { return "." + x; }).join("");
+return "<" + n.tagName.toLowerCase() + ">" + c;
+}
+function prettyHTML(h) {
+return String(h).replace(/></g, ">\n<").replace(/ data-bd-[a-z-]+="[^"]*"/g, "").replace(/ is-selected/g, "");
+}
 function codeCM(host, val, mode, ro, onChange) {
 if (!window.CodeMirror) {
 var ta = document.createElement("textarea");
@@ -4836,19 +4877,25 @@ if (cur === "out:js") hint = "The published script. Read-only.";
 if (tab === "site") hint = "Your own CSS for every page. It comes last, so it wins over Styles and Look. Phone rules go in the one @media (max-width: 760px) block at the end.";
 if (tab === "page") hint = "CSS for this page only.";
 if (tab === "head") hint = "HTML in the <head> of every page: fonts, favicon, analytics.";
-if (tab === "el") hint = e ? "Inspecting the selected " + BD_TYPE_NAME[e.type].toLowerCase() + ". Top: its HTML" + (e.type === "text" || e.type === "html" ? " (editable)" : " as published (change it in the panel on the right)") + ". Below: every published rule that styles it. Tap another block to inspect it." : "Tap any block on the page to inspect its code and every rule that styles it.";
+var tapped = S.codeNode && shadow && shadow.contains(S.codeNode) && !(e && S.codeNode.classList && S.codeNode.classList.contains("bd-e-" + e.id) && (e.type === "text" || e.type === "html")) ? S.codeNode : null;
+if (tab === "el") hint = tapped ? "Inspecting " + nodeLabel(tapped) + ". Top: its HTML. Below: every published rule that styles it. Tap anything on the page to inspect it." : e ? "Inspecting the selected " + BD_TYPE_NAME[e.type].toLowerCase() + ". Top: its HTML" + (e.type === "text" || e.type === "html" ? " (editable)" : " as published") + ". Below: every published rule that styles it. Tap anything on the page to inspect it." : "Tap anything on the page to inspect its HTML and every rule that styles it.";
 var html = '<div class="bd-ed-codebar">' + CODE_VIEWS.map(function (t) {
 return '<button data-act="code-tab" data-val="' + t[0] + '" class="' + (cur === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
 }).join("") + '</div><div class="bd-ed-hint bd-ed-codehint">' + esc(hint) + (tab === "out" ? ' <button class="bd-ed-btn is-sm" data-act="copy-out">' + I.copy + "Copy</button>" : "") + "</div>";
 if (tab === "files") html += '<div class="bd-ed-codefiles">' + filesSide() + "</div>";
 html += '<div class="bd-ed-code-body" id="bd-code-host"></div>';
-if (tab === "el" && e) html += '<span class="bd-ed-label bd-ed-codehint">Styles on this block</span><div class="bd-ed-code-body is-rules" id="bd-code-rules"></div>';
+if (tab === "el" && (e || tapped)) html += '<span class="bd-ed-label bd-ed-codehint">Styles on this ' + (tapped ? "element" : "block") + '</span><div class="bd-ed-code-body is-rules" id="bd-code-rules"></div>';
 C.innerHTML = html;
+if (tab === "el" && tapped) {
+S.cm = codeCM($("bd-code-host"), prettyHTML(tapped.outerHTML).slice(0, 60000), "htmlmixed", true, null);
+codeCM($("bd-code-rules"), "/* EVERY PUBLISHED RULE THAT HITS " + nodeLabel(tapped).toUpperCase() + " — READ-ONLY */\n" + nodeRules(tapped), "css", true, null);
+} else {
 var ro = codeReadOnly(tab);
 var val = ro && tab !== "out" && !(tab === "el" && e) ? "" : codeValue(tab);
 S.cm = codeCM($("bd-code-host"), val, codeMode(tab), ro, ro ? null : function (v) { applyCodeValue(tab, v); });
 if (S.cm) setTimeout(jumpCode, 0);
 if (tab === "el" && e) codeCM($("bd-code-rules"), elRules(e), "css", true, null);
+}
 var fp = $("bd-file-pick");
 if (fp) fp.addEventListener("change", function () { openFile(fp.value); });
 }
@@ -5593,6 +5640,29 @@ renderCode();
 }
 }
 function bindCanvas() {
+shadow.addEventListener("pointerdown", function (e) {
+if (!S.codeOpen) return;
+var n = e.composedPath()[0];
+if (!n || n.nodeType !== 1 || !n.closest || !n.closest(".bd-site")) return;
+/* EDITING SWITCHES OFF CLICKS INSIDE BLOCKS, SO FIND THE DEEPEST ELEMENT UNDER THE FINGER BY ITS BOX */
+var deep = n;
+var walk = true;
+while (walk) {
+walk = false;
+var kids = deep.children || [];
+for (var ki = kids.length - 1; ki >= 0; ki--) {
+var kr = kids[ki].getBoundingClientRect();
+if (kr.width && kr.height && e.clientX >= kr.left && e.clientX <= kr.right && e.clientY >= kr.top && e.clientY <= kr.bottom && !/^(svg|filter|style|script)$/i.test(kids[ki].tagName) && !(kids[ki].classList && /bd-ed-/.test(kids[ki].className))) {
+deep = kids[ki];
+walk = true;
+break;
+}
+}
+}
+S.codeNode = deep;
+S.codeTab = "el";
+setTimeout(renderCode, 0);
+}, true);
 shadow.addEventListener("pointermove", function (e) {
 if (!S.inspect || e.pointerType === "touch") return;
 var t = e.target;
@@ -6794,7 +6864,7 @@ var A = {
 "undo": doUndo,
 "redo": doRedo,
 "code": function () { S.codeOpen = !S.codeOpen; S.leftTab = S.codeOpen ? "code" : "pages"; if (S.codeOpen && window.innerWidth <= 980) S.leftOpen = true; render(); },
-"code-tab": function () { if (val.indexOf("out:") === 0) { S.codeTab = "out"; S.outTab = val.slice(4); } else S.codeTab = val; renderCode(); },
+"code-tab": function () { S.codeNode = null; if (val.indexOf("out:") === 0) { S.codeTab = "out"; S.outTab = val.slice(4); } else S.codeTab = val; renderCode(); },
 "out-tab": function () { S.outTab = val; renderCode(); },
 "copy-out": function () {
 var txt = S.cm ? S.cm.getValue() : codeValue("out");
