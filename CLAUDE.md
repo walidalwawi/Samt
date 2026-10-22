@@ -31,7 +31,9 @@ Styles → Blocks sets the default look per block type (BLOCK_STYLE); a block's 
 - Every block with a master shows Look in its own panel; if Site/Page CSS has rules for that block (.bd-e-<id>, usually from Inspect) Look warns and offers "Remove the code overrides". The CSS fine-tuner (Inspect bar) sits folded under Look.
 - Layers mode hides what a layered site doesn't use: + Header/Footer, floating menu button, page arrows at the end, Continue with other pages, the Menu block in the rail. The Layers panel picks which menu the sheet shows (site.nav.menu).
 - Audit: /home-style test sets every BLOCK_STYLE field as master and as override and checks canvas + export change (see session notes); keep new fields wired in blockRules.
-- Code drawer: Full output tab (page HTML, bd.css, bd.js) is always there; editor fills the drawer and scrolls.
+- Left panel tabs: Pages · Styles · Motion · Site · Code. Code is no longer a bottom drawer: it opens as a wide left pane (has-wide-left). Views: Full CSS (default, read-only, exactly what Publish writes), Your CSS (site.css), Page CSS, This block (selected block's published HTML — editable for text/html — plus every published rule that styles it, via elRules), Page HTML, JS, Head, Files. Tapping a block with Code open switches to This block.
+- Motion tab: paper-sheet motion (layers presets/ease/speeds/tilt/shadow/reveal), gestures (site.motion: gDur, gEase, tease, open → --bd-g-* tokens used by zine/trace/library transitions and the gesture delays in bdGalleries), and the master card look/hover/slide for Blog posts and book look/hover for Library. Those motion keys are skipped in Styles → Blocks (BS_GROUPS "Motion" group) but still overridable in a block's Look → Motion.
+- Look fields are grouped (BS_GROUPS): posts Text / Card / Card image / Tracing paper / Zine / Motion; library Covers / Book / Motion; quote Text / Box; menu Links / Name.
 - Editor theme: monochrome warm greys, mono tabs, black for what's on.
 
 ## Delivery format — non-negotiable

@@ -84,12 +84,15 @@ padding-right: max(16px, env(safe-area-inset-right, 0px));
 padding-block: 10px;
 display: grid;
 grid-template-rows: 44px minmax(0, 1fr) auto;
-grid-template-columns: 236px minmax(0, 1fr) 268px;
+grid-template-columns: 264px minmax(0, 1fr) 268px;
 grid-template-areas: "top top top" "left canvas right" "code code code";
 gap: 8px;
 }
 .bd-ed-app.has-code {
 grid-template-rows: 44px minmax(0, 1fr) minmax(180px, 38%);
+}
+.bd-ed-app.has-wide-left {
+grid-template-columns: minmax(420px, 42%) minmax(0, 1fr) 268px;
 }
 
 /* TOP BAR */
@@ -622,6 +625,79 @@ flex: none;
 padding: 0 14px;
 }
 
+/* CODE PANE — LEFT PANEL, FULL HEIGHT */
+.bd-ed-left.has-codepane {
+overflow: hidden;
+}
+.bd-ed-codepane {
+flex: 1;
+display: flex;
+flex-direction: column;
+min-height: 0;
+}
+.bd-ed-codebar {
+display: flex;
+flex-wrap: wrap;
+gap: 2px;
+padding: 6px;
+border-bottom: 1px solid var(--e-line);
+}
+.bd-ed-codebar button {
+height: 26px;
+padding: 0 8px;
+border: 0;
+border-radius: 4px;
+background: none;
+font-family: var(--e-mono);
+font-size: 11px;
+color: var(--e-ink);
+}
+.bd-ed-codebar button:hover {
+background: var(--e-bg);
+}
+.bd-ed-codebar button.is-on {
+background: var(--e-ink);
+color: var(--e-surface);
+}
+.bd-ed-codehint {
+padding: 6px 10px;
+}
+.bd-ed-codefiles {
+padding: 0 10px 8px;
+display: flex;
+flex-direction: column;
+gap: 6px;
+}
+.bd-ed-code-body {
+min-height: 140px;
+}
+.bd-ed-code-body.is-rules {
+flex: 0 0 40%;
+border-top: 1px solid var(--e-line);
+}
+.bd-ed-code-body > textarea {
+flex: 1;
+width: 100%;
+min-height: 0;
+border: 0;
+padding: 10px 12px;
+background: var(--e-raise);
+font-family: var(--e-mono);
+font-size: 12px;
+line-height: 1.55;
+white-space: pre;
+resize: none;
+}
+.bd-ed-group {
+margin-top: 8px;
+padding-top: 8px;
+border-top: 1px dashed var(--e-line);
+}
+.bd-ed-tabs button {
+padding: 0 4px;
+font-size: 11px;
+}
+
 /* POPOVER + TOAST */
 .bd-ed-pop {
 position: fixed;
@@ -769,6 +845,13 @@ right: max(16px, env(safe-area-inset-right, 0px));
 .bd-ed-left.is-open,
 .bd-ed-right.is-open {
 display: flex;
+}
+.bd-ed-left.has-codepane {
+width: calc(100vw - 32px);
+max-width: 720px;
+}
+.bd-ed-app.has-wide-left {
+grid-template-columns: minmax(0, 1fr);
 }
 .bd-ed-brand,
 .bd-ed-hide-narrow {

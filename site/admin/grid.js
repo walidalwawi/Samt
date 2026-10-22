@@ -79,7 +79,7 @@ link: [["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["ink", "Text colou
 embed: [["radius", "Corners", "px", 0]],
 rule: [["ink", "Colour", "color", ""], ["weight", "Thickness", "px", 1]],
 quote: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align", "sel", "center", BS_ALIGN], ["pad", "Padding top/bottom", "dp", 40, null, 28], ["padX", "Padding sides", "dp", 46, null, 22], ["bg", "Background", "color", ""], ["ink", "Text colour", "color", ""], ["shadow", "Soft shadow", "bool", "1"], ["line", "Line on the left", "bool", "0"]],
-posts: [["titleStyle", "Title style", "style", "body"], ["titleSize", "Title size", "dp", ""], ["titleLh", "Title line", "dp", ""], ["metaStyle", "Info style", "style", "small"], ["metaSize", "Info size", "dp", ""], ["metaLh", "Info line", "dp", ""], ["metaGap", "Gap above info", "px", 8], ["cardBg", "Card colour", "color", ""], ["cardPad", "Card padding", "dp", 0], ["minH", "Text min height", "px", ""], ["imgGap", "Image gap", "px", 12], ["imagePos", "Image", "sel", "top", [["top", "Above text"], ["bottom", "Below text"]]], ["ratio", "Crop", "sel", "auto", [["auto", "Original"], ["1", "Square"], ["4/3", "4 : 3"], ["3/2", "3 : 2"], ["16/9", "16 : 9"], ["3/4", "3 : 4"]]], ["hover", "Hover", "sel", "dim", [["none", "None"], ["dim", "Dim"], ["lift", "Lift"]]], ["look", "Card look", "sel", "plain", [["plain", "Plain"], ["zine", "Zine (cover swings)"], ["trace", "Tracing paper"]]], ["fTitleStyle", "Featured title", "style", "heading"], ["zine", "Staples", "bool", "0"], ["staple", "Staple colour", "color", ""], ["pageBg", "Inside page colour", "color", ""], ["paperBg", "Paper colour", "color", ""], ["paperInk", "Paper text colour", "color", ""], ["paperAlpha", "Paper opacity %", "px", 72], ["paperFrost", "Paper frost (blur)", "px", 8], ["paperPad", "Paper padding", "dp", 16], ["paperInset", "Paper inset", "px", 0], ["paperLine", "Paper edge line", "color", ""], ["paperTilt", "Paper tilt (deg)", "px", 0], ["textPos", "Text on paper", "sel", "bottom", [["top", "Top"], ["center", "Middle"], ["bottom", "Bottom"]]], ["slideDir", "Paper slides", "sel", "up", [["up", "Up"], ["down", "Down"], ["left", "Left"], ["right", "Right"]]], ["slideHover", "Slide on hover %", "px", 12], ["slideTap", "Slide on tap %", "px", 62], ["imgBlur", "Extra image blur", "px", 0], ["imgTone", "Image tone", "sel", "color", [["color", "Colour"], ["grey", "Greyscale"], ["dark", "Darker"], ["light", "Lighter"]]], ["imgBlend", "Image blend mode", "sel", "normal", BS_BLEND], ["imgBackdrop", "Blend against colour", "color", ""]],
+posts: [["titleStyle", "Title style", "style", "body"], ["titleSize", "Title size", "dp", ""], ["titleLh", "Title line", "dp", ""], ["metaStyle", "Info style", "style", "small"], ["metaSize", "Info size", "dp", ""], ["metaLh", "Info line", "dp", ""], ["metaGap", "Gap above info", "px", 8], ["cardBg", "Card colour", "color", ""], ["cardPad", "Card padding", "dp", 0], ["minH", "Text min height", "px", ""], ["imgGap", "Image gap", "px", 12], ["imagePos", "Image", "sel", "top", [["top", "Above text"], ["bottom", "Below text"]]], ["ratio", "Crop", "sel", "auto", [["auto", "Original"], ["1", "Square"], ["4/3", "4 : 3"], ["3/2", "3 : 2"], ["16/9", "16 : 9"], ["3/4", "3 : 4"]]], ["hover", "Hover", "sel", "dim", [["none", "None"], ["dim", "Dim"], ["lift", "Lift"]]], ["look", "Card look", "sel", "plain", [["plain", "Plain"], ["zine", "Zine · cover swings open"], ["trace", "Tracing paper · sheet slides off"]]], ["fTitleStyle", "Featured title", "style", "heading"], ["zine", "Staples", "bool", "0"], ["staple", "Staple colour", "color", ""], ["pageBg", "Inside page colour", "color", ""], ["paperBg", "Paper colour", "color", ""], ["paperInk", "Paper text colour", "color", ""], ["paperAlpha", "Paper colour strength %", "px", 72], ["paperFrost", "Paper frost (blurs the image)", "px", 8], ["paperPad", "Paper padding", "dp", 16], ["paperInset", "Paper inset", "px", 0], ["paperLine", "Paper edge line", "color", ""], ["paperTilt", "Paper tilt (deg)", "px", 0], ["textPos", "Text on paper", "sel", "bottom", [["top", "Top"], ["center", "Middle"], ["bottom", "Bottom"]]], ["slideDir", "Paper slides", "sel", "up", [["up", "Up"], ["down", "Down"], ["left", "Left"], ["right", "Right"]]], ["slideHover", "Slide on hover %", "px", 12], ["slideTap", "Slide on tap %", "px", 62], ["imgBlur", "Extra image blur", "px", 0], ["imgTone", "Tone", "sel", "color", [["color", "Colour"], ["grey", "Greyscale"], ["dark", "Darker"], ["light", "Lighter"]]], ["imgBlend", "Blend mode", "sel", "normal", BS_BLEND], ["imgBackdrop", "Blend against colour", "color", ""]],
 library: [["blend", "Cover blend mode", "sel", "normal", BS_BLEND], ["backdrop", "Blend against colour", "color", ""], ["book", "Book look", "bool", "1"], ["spine", "Spine colour", "color", "#8a8a8a"], ["spineW", "Spine width", "px", 10], ["shadow", "Shadow", "bool", "1"], ["radius", "Page corner", "px", 2], ["hover", "Hover", "sel", "tilt", [["none", "None"], ["tilt", "Open (perspective)"], ["lift", "Lift"]]]],
 toggle: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["marker", "Marker", "sel", "plus", [["plus", "+ / —"], ["arrow", "→ / ↓"], ["none", "None"]]], ["itemGap", "Between items", "px", 0], ["indent", "Indent items", "px", 0]],
 product: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align", "sel", "left", BS_ALIGN]],
@@ -112,6 +112,16 @@ BS_WHEN["image.backdrop"] = function (v) { return (v("blend") || "normal") !== "
 BS_WHEN["gallery.backdrop"] = function (v) { return (v("blend") || "normal") !== "normal"; };
 BS_WHEN["library.backdrop"] = function (v) { return (v("blend") || "normal") !== "normal"; };
 BS_WHEN["posts.imgBackdrop"] = function (v) { return (v("imgBlend") || "normal") !== "normal"; };
+var BS_GROUPS = {
+posts: [["Text", ["titleStyle", "titleSize", "titleLh", "metaStyle", "metaSize", "metaLh", "metaGap", "fTitleStyle"]], ["Card", ["cardBg", "cardPad", "minH", "imgGap", "imagePos", "ratio"]], ["Card image", ["imgBlend", "imgBackdrop", "imgTone", "imgBlur"]], ["Tracing paper", ["paperBg", "paperInk", "paperAlpha", "paperFrost", "paperPad", "paperInset", "paperLine", "paperTilt", "textPos"]], ["Zine", ["zine", "staple", "pageBg"]], ["Motion", ["look", "hover", "slideDir", "slideHover", "slideTap"]]],
+library: [["Covers", ["blend", "backdrop"]], ["Book", ["book", "spine", "spineW", "shadow", "radius"]], ["Motion", ["hover"]]],
+quote: [["Text", ["style", "size", "lh", "align", "ink"]], ["Box", ["pad", "padX", "bg", "shadow", "line"]]],
+menubtn: [["Links", ["style", "size", "lh", "textCase", "tracking", "itemGap", "groupGap", "headGap", "current", "hover"]], ["Name", ["brandStyle", "brandSize", "brandLh", "brandGap"]]]
+};
+function bsMotionKeys(type) {
+var g = (BS_GROUPS[type] || []).filter(function (x) { return x[0] === "Motion"; })[0];
+return g ? g[1] : [];
+}
 function bsKeys(f) {
 return f[2] === "dp" ? [f[0], f[0] + "M"] : [f[0]];
 }
@@ -268,8 +278,8 @@ again: false,
 status: "",
 statusWarn: false,
 codeOpen: false,
-codeTab: "site",
-outTab: "page",
+codeTab: "out",
+outTab: "css",
 leftTab: "pages",
 leftOpen: false,
 rightOpen: false,
@@ -565,6 +575,7 @@ var s = p.site;
 if (!s.styles && s.fs) s.styles = stylesFrom(s.fs, s.lh, s.ms || s.fs, s.ml || s.lh, s.fsM || s.fs, s.lhM || s.lh, s.msM || s.ms || s.fs, s.mlM || s.ml || s.lh);
 if (s.showNum === undefined) s.showNum = false;
 s.layers = Object.assign(clone(LAYER_DEFAULTS), s.layers || {});
+s.motion = Object.assign({ gDur: 450, gEase: "ease", tease: 8, open: 24 }, s.motion || {});
 if (s.mt === undefined) {
 var ot = s.top != null ? s.top : 48;
 var op = s.pad != null ? s.pad : 33;
@@ -857,6 +868,10 @@ out.push("/* TOKENS */", R + " {",
 "--bd-nav-indent: " + s.nav.indent + "px;",
 "--bd-nav-fade: " + s.nav.fade + ";",
 "--bd-nav-bg: " + navBg(s.nav) + ";",
+"--bd-g-dur: " + s.motion.gDur + "ms;",
+"--bd-g-ease: " + s.motion.gEase + ";",
+"--bd-g-tease: " + s.motion.tease + "deg;",
+"--bd-g-open: " + s.motion.open + "deg;",
 "}", "");
 out.push(`/* RESET */
 *,
@@ -1498,7 +1513,7 @@ padding: var(--ppad, 0px);
 background: var(--pbg, #eeeeee);
 box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.12);
 transform-origin: left center;
-transition: transform 0.45s ease, box-shadow 0.45s ease;
+transition: transform var(--bd-g-dur, 0.45s) var(--bd-g-ease, ease), box-shadow var(--bd-g-dur, 0.45s) var(--bd-g-ease, ease);
 }
 .bd-posts.is-zine.is-img-bottom .bd-post-cover .bd-post-img {
 order: 2;
@@ -1534,12 +1549,12 @@ transform: none;
 }
 @media (hover: hover) {
 .bd-posts.is-zine a.bd-post:hover .bd-post-cover {
-transform: rotateY(-8deg);
+transform: rotateY(calc(var(--bd-g-tease, 8deg) * -1));
 box-shadow: 5px 4px 0 rgba(0, 0, 0, 0.12);
 }
 }
 .bd-posts.is-zine a.bd-post.is-open .bd-post-cover {
-transform: rotateY(-24deg);
+transform: rotateY(calc(var(--bd-g-open, 24deg) * -1));
 box-shadow: 10px 6px 0 rgba(0, 0, 0, 0.12);
 }
 .bd-posts.is-zine .bd-post-cover {
@@ -1611,7 +1626,7 @@ background: color-mix(in srgb, var(--tp-bg, #f4f3ef) var(--tp-a, 72%), transpare
 backdrop-filter: blur(var(--tp-frost, 8px));
 box-shadow: inset 0 0 0 1px var(--tp-line, rgba(0, 0, 0, 0.08));
 transform: rotate(var(--tp-tilt, 0deg));
-transition: transform 0.55s cubic-bezier(0.3, 0.7, 0.2, 1);
+transition: transform calc(var(--bd-g-dur, 450ms) * 1.2) var(--bd-g-ease, cubic-bezier(0.3, 0.7, 0.2, 1));
 }
 .bd-posts.is-trace a.bd-post:hover {
 opacity: 1;
@@ -1962,7 +1977,7 @@ perspective: 900px;
 overflow: hidden;
 border-radius: 0 var(--lib-r, 2px) var(--lib-r, 2px) 0;
 transform-origin: left center;
-transition: transform 0.45s ease, box-shadow 0.45s ease;
+transition: transform var(--bd-g-dur, 0.45s) var(--bd-g-ease, ease), box-shadow var(--bd-g-dur, 0.45s) var(--bd-g-ease, ease);
 }
 .bd-library.is-book .bd-lib-cover::before {
 content: "";
@@ -1989,7 +2004,7 @@ box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.16);
 }
 @media (hover: hover) {
 .bd-library.is-hov-tilt a.bd-lib-item:hover .bd-lib-cover {
-transform: rotateY(-8deg);
+transform: rotateY(calc(var(--bd-g-tease, 8deg) * -1));
 box-shadow: 6px 5px 12px rgba(0, 0, 0, 0.18);
 }
 .bd-library.is-hov-lift a.bd-lib-item:hover .bd-lib-cover {
@@ -1997,7 +2012,7 @@ transform: translateY(-2px);
 }
 }
 .bd-library.is-hov-tilt a.bd-lib-item.is-open .bd-lib-cover {
-transform: rotateY(-24deg);
+transform: rotateY(calc(var(--bd-g-open, 24deg) * -1));
 box-shadow: 14px 8px 18px rgba(0, 0, 0, 0.22);
 }
 .bd-library.is-hov-lift a.bd-lib-item.is-open .bd-lib-cover {
@@ -3375,6 +3390,7 @@ var host = root.querySelector(".bd-site") || (root.classList && root.classList.c
 /* GESTURES — HOVER TEASES, A TAP OR CLICK PLAYS THE FULL MOVE, THEN THE LINK OPENS */
 if (!root.__bdGesture) {
 root.__bdGesture = true;
+var gd = (typeof BD_DATA !== "undefined" && BD_DATA.gDur) || 450;
 var bdOpen = function (u) {
 if (window.bdLayerOpen && window.bdLayerOpen(u)) return;
 window.location.href = u;
@@ -3391,16 +3407,16 @@ return;
 }
 ev.preventDefault();
 if (!a.matches(".bd-post")) {
-setTimeout(function () { bdOpen(a.href); }, 520);
+setTimeout(function () { bdOpen(a.href); }, gd + 70);
 return;
 }
 /* TRACING PAPER: THE SHEET SLIDES OFF THE POSTER, THEN THE POST OPENS */
 if (a.closest(".is-trace")) {
-setTimeout(function () { bdOpen(a.href); }, 620);
+setTimeout(function () { bdOpen(a.href); }, Math.round(gd * 1.2) + 80);
 return;
 }
 /* ZINE: COVER SWINGS FULLY AWAY, THE INSIDE PAGE GROWS INTO THE NEXT PAGE */
-setTimeout(function () { a.classList.add("is-unfold"); }, 280);
+setTimeout(function () { a.classList.add("is-unfold"); }, Math.round(gd * 0.62));
 setTimeout(function () {
 var leaf = a.querySelector(".bd-post-page") || a;
 var r = leaf.getBoundingClientRect();
@@ -3420,7 +3436,7 @@ sheet.style.width = "100vw";
 sheet.style.height = "100vh";
 if (panel) sheet.style.background = getComputedStyle(panel).backgroundColor;
 }, 600);
-setTimeout(function () { bdOpen(a.href); }, 1000);
+setTimeout(function () { bdOpen(a.href); }, Math.round(gd * 2.2));
 });
 window.addEventListener("pageshow", function () {
 root.querySelectorAll(".is-open, .is-unfold").forEach(function (x) { if (x.matches("a.bd-lib-item, a.bd-post")) x.classList.remove("is-open", "is-unfold"); });
@@ -3577,6 +3593,7 @@ return out.join("\n");
 function exportJS() {
 var d = chromeData("");
 delete d.current;
+d.gDur = S.project.site.motion.gDur;
 if (layersOn()) {
 d.menu = false;
 d.pager = false;
@@ -4207,8 +4224,30 @@ row(dpIn("Size", p + ".size", p + ".sizeM", st.size, st.sizeM), dpIn("Line", p +
 });
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Blocks</span><div class="bd-ed-hint">The look every block of a kind starts with. A block can still change any of these in its own panel.</div></div>';
 Object.keys(BLOCK_STYLE).forEach(function (t) {
-h += '<div class="bd-ed-sec">' + adv("bs-" + t, BD_TYPE_NAME[t], styleFields(t, "site")) + "</div>";
+h += '<div class="bd-ed-sec">' + adv("bs-" + t, BD_TYPE_NAME[t], styleFields(t, "site", null, { skip: bsMotionKeys(t) }) + (bsMotionKeys(t).length ? '<div class="bd-ed-hint">Card looks and gestures are in the Motion tab.</div>' : "")) + "</div>";
 });
+return h;
+}
+function motionPanel() {
+var s = S.project.site;
+var M = s.motion;
+var Lz = s.layers;
+var h = "";
+if (Lz.on) {
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span><div class="bd-ed-hint">How the menu and index sheets slide. Preview to watch.</div><div class="bd-ed-actions">' + [["paper", "Paper"], ["drag", "Heavy drag"], ["stop", "Stop-motion"], ["quiet", "Quiet"], ["still", "Still"]].map(function (x) {
+return '<button class="bd-ed-btn" data-act="ly-preset" data-val="' + x[0] + '">' + x[1] + "</button>";
+}).join("") + "</div>"
++ field("Feel", select("site.layers.ease", Lz.ease, Object.keys(LAYER_EASE).map(function (k) { return [k, LAYER_EASE[k][0]]; })))
++ row(numIn("Index sheet (ms)", "site.layers.dur", Lz.dur), numIn("Menu sheet (ms)", "site.layers.menuDur", Lz.menuDur))
++ row(numIn("Tilt while moving (°)", "site.layers.tilt", Lz.tilt), numIn("Out-of-focus blur", "site.layers.focusBlur", Lz.focusBlur))
++ sw("Hard shadow while moving", "site.layers.lift", Lz.lift)
++ field("The post underneath", seg("site.layers.reveal", Lz.reveal, [["focus", "Comes into focus"], ["rise", "Rises"], ["none", "As is"]])) + "</div>";
+}
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Gestures</span><div class="bd-ed-hint">Every card and book: hover teases the move, a tap plays it fully, then it opens.</div>'
++ row(numIn("Speed (ms)", "site.motion.gDur", M.gDur, "int"), field("Feel", select("site.motion.gEase", M.gEase, [["ease", "Ease"], ["cubic-bezier(.2,.8,.2,1)", "Paper"], ["cubic-bezier(.7,0,.25,1)", "Heavy drag"], ["ease-in-out", "Even"], ["steps(5, end)", "Stop-motion"], ["linear", "Straight"]])))
++ row(numIn("Book hover tease (°)", "site.motion.tease", M.tease), numIn("Book tap opens (°)", "site.motion.open", M.open)) + "</div>";
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Journal cards · every Blog posts block</span>' + styleFields("posts", "site", null, { only: bsMotionKeys("posts"), flat: true }) + "</div>";
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Library books · every Library block</span>' + styleFields("library", "site", null, { only: ["book"].concat(bsMotionKeys("library")), flat: true }) + '<div class="bd-ed-hint">A block can still do its own thing: select it, Look → Motion.</div></div>';
 return h;
 }
 function pagesPanel() {
@@ -4282,14 +4321,7 @@ h += '<div class="bd-ed-sec">' + adv("ly-index", "Index sheet (tracing paper)", 
 + row(dpIn("Edge left showing", "site.layers.sliver", "site.layers.sliverM", Lz.sliver, Lz.sliverM))
 + sw("Hairline edge", "site.layers.indexEdge", Lz.indexEdge)
 + '<div class="bd-ed-hint">Cards and books are the Blog posts and Library blocks on those pages: style them there or in Styles → Blocks.</div>') + "</div>";
-h += '<div class="bd-ed-sec">' + adv("ly-motion", "Motion", '<span class="bd-ed-label">Presets</span><div class="bd-ed-actions">' + [["paper", "Paper"], ["drag", "Heavy drag"], ["stop", "Stop-motion"], ["quiet", "Quiet"], ["still", "Still"]].map(function (x) {
-return '<button class="bd-ed-btn" data-act="ly-preset" data-val="' + x[0] + '">' + x[1] + "</button>";
-}).join("") + "</div>"
-+ field("Feel", select("site.layers.ease", Lz.ease, Object.keys(LAYER_EASE).map(function (k) { return [k, LAYER_EASE[k][0]]; })))
-+ row(numIn("Index speed (ms)", "site.layers.dur", Lz.dur), numIn("Menu speed (ms)", "site.layers.menuDur", Lz.menuDur), numIn("Tilt while moving (°)", "site.layers.tilt", Lz.tilt))
-+ sw("Hard shadow while moving", "site.layers.lift", Lz.lift)
-+ row(field("Post appears", seg("site.layers.reveal", Lz.reveal, [["focus", "Focus"], ["rise", "Rises"], ["none", "As is"]])), numIn("Out-of-focus blur", "site.layers.focusBlur", Lz.focusBlur))
-+ '<div class="bd-ed-hint">Card and book gestures (lift, swing, tracing paper) are in the Blog posts and Library blocks.</div>') + "</div>";
+h += '<div class="bd-ed-sec"><div class="bd-ed-hint">How the sheets move is in the Motion tab.</div></div>';
 return h;
 }
 function sitePanel() {
@@ -4328,12 +4360,23 @@ if (!S.project) {
 L.innerHTML = "";
 return;
 }
-if (["pages", "styles", "site"].indexOf(S.leftTab) < 0) S.leftTab = "pages";
-var h = '<div class="bd-ed-tabs" role="tablist">' + [["pages", "Pages"], ["styles", "Styles"], ["site", "Site"]].map(function (t) {
+if (["pages", "styles", "motion", "site", "code"].indexOf(S.leftTab) < 0) S.leftTab = "pages";
+if (S.codeOpen) S.leftTab = "code";
+else if (S.leftTab === "code") S.leftTab = "pages";
+var h = '<div class="bd-ed-tabs" role="tablist">' + [["pages", "Pages"], ["styles", "Styles"], ["motion", "Motion"], ["site", "Site"], ["code", "Code"]].map(function (t) {
 return '<button data-act="left-tab" data-val="' + t[0] + '" class="' + (S.leftTab === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
 }).join("") + "</div>";
+$("bd-app").classList.toggle("has-wide-left", S.leftTab === "code");
+L.classList.toggle("has-codepane", S.leftTab === "code");
+if (S.leftTab === "code") {
+L.innerHTML = h + '<div class="bd-ed-codepane" id="bd-code-slot"></div>';
+renderCode();
+requestAnimationFrame(fitSheet);
+return;
+}
 if (S.leftTab === "pages") h += pagesPanel();
 else if (S.leftTab === "styles") h += stylesPanel();
+else if (S.leftTab === "motion") h += motionPanel();
 else h += sitePanel();
 L.innerHTML = h;
 }
@@ -4454,15 +4497,31 @@ function bsOptName(opts, v) {
 for (var i = 0; i < opts.length; i++) if (String(opts[i][0]) === String(v)) return opts[i][1];
 return v === "" || v == null ? "none" : String(v);
 }
-function styleFields(type, scope, e) {
+function styleFields(type, scope, e, opt) {
+opt = opt || {};
 var site = bsSite(type);
 var el = scope === "el";
 var ph = S.mode === "phone";
 var val = function (k) { return el ? E(e, k) : site[k]; };
 var cells = BLOCK_STYLE[type].filter(function (f) {
+if (opt.only && opt.only.indexOf(f[0]) < 0) return false;
+if (opt.skip && opt.skip.indexOf(f[0]) > -1) return false;
 var w = BS_WHEN[type + "." + f[0]];
 return !w || w(val, el ? e : null);
 }).map(function (f) {
+return { k: f[0], html: styleCell(type, f, el, e, site, ph) };
+});
+var groups = BS_GROUPS[type] && !opt.flat ? BS_GROUPS[type] : [["", cells.map(function (c) { return c.k; })]];
+var h = "";
+groups.forEach(function (g) {
+var gc = cells.filter(function (c) { return g[1].indexOf(c.k) > -1; });
+if (!gc.length) return;
+if (g[0]) h += '<span class="bd-ed-label bd-ed-group">' + esc(g[0]) + "</span>";
+for (var i = 0; i < gc.length; i += 2) h += row(gc[i].html, gc[i + 1] ? gc[i + 1].html : "");
+});
+return h;
+}
+function styleCell(type, f, el, e, site, ph) {
 var k = f[0], kind = f[2];
 var path = el ? "el." + k : "site.blockStyles." + type + "." + k;
 var cur = el ? e.props[k] : site[k];
@@ -4480,10 +4539,6 @@ var bindK = kind === "dp" && ph ? path + "M" : path;
 var v = kind === "dp" && ph ? (el ? e.props[k + "M"] : site[k + "M"]) : cur;
 var phv = kind === "dp" && ph ? (el ? (site[k + "M"] !== "" && site[k + "M"] != null ? site[k + "M"] : e.props[k] !== "" && e.props[k] != null ? e.props[k] : sv) : sv) : (el ? sv : "");
 return field(f[1] + (kind === "dp" && ph ? ' <b class="bd-ed-ph">phone</b>' : ""), '<input class="bd-ed-input bd-ed-n" inputmode="decimal" data-bind="' + bindK + '" data-type="blank" value="' + esc(v == null ? "" : v) + '"' + (phv !== "" && phv != null ? ' placeholder="' + esc(phv) + '"' : "") + ">");
-});
-var h = "";
-for (var i = 0; i < cells.length; i += 2) h += row(cells[i], cells[i + 1] || "");
-return h;
 }
 /* CARD IMAGE — AUTO, ONE OF THE POST'S IMAGES, OR YOUR OWN UPLOAD */
 function coverOpts(pg) {
@@ -4662,7 +4717,11 @@ if (tab === "el") {
 if (!e) return "";
 if (e.type === "text") return e.props.html;
 if (e.type === "html") return e.props.code;
-return JSON.stringify(e.props, null, 1).replace(/^ +/gm, "");
+var keep = S.renderPage;
+S.renderPage = curPage();
+var out = elHTML(e, "export");
+S.renderPage = keep;
+return out;
 }
 if (S.outTab === "css") {
 ensurePhoneAll();
@@ -4682,12 +4741,12 @@ var e = selEl();
 if (tab === "site" || tab === "page") return "css";
 if (tab === "head") return "htmlmixed";
 if (tab === "files") return fileMode(S.filePath);
-if (tab === "el") return e && (e.type === "text" || e.type === "html") ? "htmlmixed" : "javascript";
+if (tab === "el") return "htmlmixed";
 return S.outTab === "css" ? "css" : S.outTab === "js" ? "javascript" : "htmlmixed";
 }
 function codeReadOnly(tab) {
 if (tab === "out") return true;
-if (tab === "el") return !selEl();
+if (tab === "el") return !selEl() || ["text", "html"].indexOf(selEl().type) < 0;
 if (tab === "files") return !S.filePath;
 return false;
 }
@@ -4713,65 +4772,83 @@ h += '<div class="bd-ed-hint" style="font-family:var(--e-mono);font-size:10.5px;
 h += '<div class="bd-ed-hint">Pages, bd.css and bd.js are written by Publish, so they aren’t listed. PDFs and other files go to /files/.</div>';
 return h;
 }
-function renderCode() {
-var C = $("bd-code");
-$("bd-app").classList.toggle("has-code", S.codeOpen && !!S.project);
-S.cm = null;
-if (!S.codeOpen || !S.project) {
-C.innerHTML = "";
-return;
+var CODE_VIEWS = [["out:css", "Full CSS"], ["site", "Your CSS"], ["page", "Page CSS"], ["el", "This block"], ["out:page", "Page HTML"], ["out:js", "JS"], ["head", "Head"], ["files", "Files"]];
+/* EVERY RULE IN THE PUBLISHED CSS THAT STYLES ONE BLOCK */
+function elRules(e) {
+var keys = ["bd-e-" + e.id, BD_TYPE_CLASS[e.type] || "bd-none"];
+var hit = function (sel) {
+return keys.some(function (k) { return new RegExp("\\." + k.replace(/-/g, "\\-") + "(?![\\w-])").test(sel); });
+};
+var sp = cssSplit(exportCSS());
+var pick = function (css) {
+return cssRules(css).filter(function (r) { return hit(r.sel); }).map(function (r) { return r.sel + " {" + r.body.replace(/\s+$/, "") + "\n}"; });
+};
+var d = pick(sp.desk);
+var m = pick(sp.mob);
+return "/* EVERY RULE THAT STYLES THIS " + BD_TYPE_NAME[e.type].toUpperCase() + " — READ-ONLY */\n" + d.join("\n") + (m.length ? "\n\n/* PHONE */\n" + m.join("\n") : "");
 }
-var tab = S.codeTab;
-var e = selEl();
-var side = "";
-if (tab === "site") side = "CSS for every page. Inspect writes here too. Phone rules go in the one <b>@media (max-width: 760px)</b> block at the end.";
-if (tab === "page") side = "CSS for this page only. Published inside the page’s &lt;head&gt;.";
-if (tab === "head") side = "HTML in the &lt;head&gt; of every page: fonts, favicon, analytics, meta tags. Scripts run on the live site only.";
-if (tab === "el") side = e ? (e.type === "text" ? "The block’s HTML. Use &lt;p&gt;, &lt;em&gt;, &lt;a&gt;, &lt;sup&gt;." : e.type === "html" ? "Raw HTML for this block." : "This block’s settings as JSON. Edits apply when the JSON is valid.") + '<div class="bd-ed-hint" id="bd-code-msg"></div>' : "Select a block on the canvas to edit its code.";
-if (tab === "files") side = filesSide();
-if (tab === "out") side = 'Read-only. This is what Publish writes.<div class="bd-ed-seg" style="flex-direction:column;align-self:stretch">' + [["page", curPage().slug ? curPage().slug + ".html" : "index.html"], ["css", "assets/bd.css"], ["js", "assets/bd.js"]].map(function (o) {
-return '<button data-act="out-tab" data-val="' + o[0] + '" class="' + (S.outTab === o[0] ? "is-on" : "") + '" style="justify-content:flex-start">' + esc(o[1]) + "</button>";
-}).join("") + '</div><button class="bd-ed-btn" data-act="copy-out">' + I.copy + "Copy</button>";
-var ro = codeReadOnly(tab);
-C.innerHTML = '<div style="display:flex;flex-direction:column;flex:1;min-width:0;min-height:0"><div class="bd-ed-tabs" role="tablist">' + CODE_TABS.map(function (t) {
-return '<button data-act="code-tab" data-val="' + t[0] + '" class="' + (tab === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
-}).join("") + "</div>" + (tab === "out" ? '<div class="bd-ed-seg bd-ed-narrow" style="margin:6px 8px;align-self:flex-start">' + [["page", curPage().slug ? curPage().slug + ".html" : "index.html"], ["css", "assets/bd.css"], ["js", "assets/bd.js"]].map(function (o) {
-return '<button data-act="out-tab" data-val="' + o[0] + '" class="' + (S.outTab === o[0] ? "is-on" : "") + '">' + esc(o[1]) + "</button>";
-}).join("") + "</div>" : "") + '<div class="bd-ed-code-body" id="bd-code-host"></div></div>'
-+ '<div class="bd-ed-code-side bd-ed-hint">' + side + "</div>";
-var host = $("bd-code-host");
-var val = ro && tab !== "out" ? "" : codeValue(tab);
-if (window.CodeMirror) {
-var cm = CodeMirror(host, {
-value: val,
-mode: codeMode(tab),
-lineNumbers: true,
-lineWrapping: true,
-smartIndent: false,
-electricChars: false,
-indentUnit: 2,
-tabSize: 2,
-readOnly: ro,
-viewportMargin: 400,
-extraKeys: { "Cmd-S": function () { publish(); }, "Ctrl-S": function () { publish(); }, "Cmd-F": "findPersistent", "Ctrl-F": "findPersistent" }
-});
-S.cm = cm;
+function codeCM(host, val, mode, ro, onChange) {
+if (!window.CodeMirror) {
+var ta = document.createElement("textarea");
+ta.spellcheck = false;
+ta.readOnly = !!ro;
+ta.value = val;
+ta.id = onChange ? "bd-code-ta-live" : "";
+if (onChange) ta.addEventListener("input", function () { clearTimeout(S.codeTimer); S.codeTimer = setTimeout(function () { onChange(ta.value); }, 220); });
+host.appendChild(ta);
+return null;
+}
+var cm = CodeMirror(host, { value: val, mode: mode, lineNumbers: true, lineWrapping: true, smartIndent: false, electricChars: false, indentUnit: 2, tabSize: 2, readOnly: ro, viewportMargin: 400, extraKeys: { "Cmd-S": function () { publish(); }, "Ctrl-S": function () { publish(); }, "Cmd-F": "findPersistent", "Ctrl-F": "findPersistent" } });
+cm.setSize("100%", "100%");
+if (onChange) {
 cm.on("focus", function () { S.pendingSnap = true; });
 cm.on("change", function (inst, ch) {
 if (ch.origin === "setValue") return;
 clearTimeout(S.codeTimer);
-S.codeTimer = setTimeout(function () { applyCodeValue(tab, cm.getValue()); }, 220);
+S.codeTimer = setTimeout(function () { onChange(cm.getValue()); }, 220);
 });
-cm.setSize("100%", "100%");
-setTimeout(function () {
-cm.refresh();
-jumpCode();
-}, 0);
-setTimeout(function () { if (S.cm === cm) cm.refresh(); }, 250);
-} else {
-host.innerHTML = '<textarea id="bd-code-ta" spellcheck="false" aria-label="Code" data-code="' + tab + '"' + (ro ? " readonly" : "") + "></textarea>";
-$("bd-code-ta").value = val;
 }
+setTimeout(function () { cm.refresh(); }, 0);
+setTimeout(function () { cm.refresh(); }, 250);
+return cm;
+}
+function renderCode() {
+$("bd-code").innerHTML = "";
+$("bd-app").classList.remove("has-code");
+S.cm = null;
+var C = $("bd-code-slot");
+if (!S.codeOpen || !S.project) {
+if (C) renderLeft();
+return;
+}
+if (!C) {
+renderLeft();
+return;
+}
+var tab = S.codeTab || "out";
+if (tab === "out" && ["css", "page", "js"].indexOf(S.outTab) < 0) S.outTab = "css";
+var cur = tab === "out" ? "out:" + S.outTab : tab;
+var e = selEl();
+var hint = "";
+if (cur === "out:css") hint = "Everything the site uses, exactly as Publish writes it: base styles, your Styles and Looks, layers, then Your CSS. Read-only: change it with the panels or Your CSS.";
+if (cur === "out:page") hint = "The published HTML of this page. Read-only.";
+if (cur === "out:js") hint = "The published script. Read-only.";
+if (tab === "site") hint = "Your own CSS for every page. It comes last, so it wins over Styles and Look. Phone rules go in the one @media (max-width: 760px) block at the end.";
+if (tab === "page") hint = "CSS for this page only.";
+if (tab === "head") hint = "HTML in the <head> of every page: fonts, favicon, analytics.";
+if (tab === "el") hint = e ? "Inspecting the selected " + BD_TYPE_NAME[e.type].toLowerCase() + ". Top: its HTML" + (e.type === "text" || e.type === "html" ? " (editable)" : " as published (change it in the panel on the right)") + ". Below: every published rule that styles it. Tap another block to inspect it." : "Tap any block on the page to inspect its code and every rule that styles it.";
+var html = '<div class="bd-ed-codebar">' + CODE_VIEWS.map(function (t) {
+return '<button data-act="code-tab" data-val="' + t[0] + '" class="' + (cur === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
+}).join("") + '</div><div class="bd-ed-hint bd-ed-codehint">' + esc(hint) + (tab === "out" ? ' <button class="bd-ed-btn is-sm" data-act="copy-out">' + I.copy + "Copy</button>" : "") + "</div>";
+if (tab === "files") html += '<div class="bd-ed-codefiles">' + filesSide() + "</div>";
+html += '<div class="bd-ed-code-body" id="bd-code-host"></div>';
+if (tab === "el" && e) html += '<span class="bd-ed-label bd-ed-codehint">Styles on this block</span><div class="bd-ed-code-body is-rules" id="bd-code-rules"></div>';
+C.innerHTML = html;
+var ro = codeReadOnly(tab);
+var val = ro && tab !== "out" && !(tab === "el" && e) ? "" : codeValue(tab);
+S.cm = codeCM($("bd-code-host"), val, codeMode(tab), ro, ro ? null : function (v) { applyCodeValue(tab, v); });
+if (S.cm) setTimeout(jumpCode, 0);
+if (tab === "el" && e) codeCM($("bd-code-rules"), elRules(e), "css", true, null);
 var fp = $("bd-file-pick");
 if (fp) fp.addEventListener("change", function () { openFile(fp.value); });
 }
@@ -5510,7 +5587,10 @@ if (node) node.classList.add("is-selected");
 }
 placeSel();
 renderRight();
-if (S.codeOpen && S.codeTab === "el") renderCode();
+if (S.codeOpen && id && id !== "__menu") {
+S.codeTab = "el";
+renderCode();
+}
 }
 function bindCanvas() {
 shadow.addEventListener("pointermove", function (e) {
@@ -6713,17 +6793,17 @@ var A = {
 "mode": function () { if (S.live) endEdit(); S.mode = val; render(); },
 "undo": doUndo,
 "redo": doRedo,
-"code": function () { S.codeOpen = !S.codeOpen; render(); },
-"code-tab": function () { S.codeTab = val; renderCode(); },
+"code": function () { S.codeOpen = !S.codeOpen; S.leftTab = S.codeOpen ? "code" : "pages"; if (S.codeOpen && window.innerWidth <= 980) S.leftOpen = true; render(); },
+"code-tab": function () { if (val.indexOf("out:") === 0) { S.codeTab = "out"; S.outTab = val.slice(4); } else S.codeTab = val; renderCode(); },
 "out-tab": function () { S.outTab = val; renderCode(); },
 "copy-out": function () {
-var ta = $("bd-code-ta");
+var txt = S.cm ? S.cm.getValue() : codeValue("out");
 var done = function () { toast("Copied."); };
+var fail = function () { if (S.cm) S.cm.execCommand("selectAll"); toast("Selected. Press Copy on your keyboard."); };
 try {
-navigator.clipboard.writeText(ta.value).then(done, function () { ta.select(); toast("Selected. Press Copy on your keyboard."); });
+navigator.clipboard.writeText(txt).then(done, fail);
 } catch (err) {
-ta.select();
-toast("Selected. Press Copy on your keyboard.");
+fail();
 }
 },
 "preview": function () { if (S.live) endEdit(); S.inspect = false; S.preview = !S.preview; S.sel = null; render(); },
@@ -6844,7 +6924,7 @@ location.reload();
 "export": publish,
 "toggle-left": function () { S.leftOpen = !S.leftOpen; S.rightOpen = false; renderLeft(); renderRight(); },
 "toggle-right": function () { S.rightOpen = !S.rightOpen; S.leftOpen = false; renderLeft(); renderRight(); },
-"left-tab": function () { S.leftTab = val; renderLeft(); },
+"left-tab": function () { var wasCode = S.codeOpen; S.leftTab = val; S.codeOpen = val === "code"; renderLeft(); renderTop(); if (wasCode !== S.codeOpen) requestAnimationFrame(fitSheet); },
 "page": function () { goPage(b.getAttribute("data-id")); },
 "page-add": function () { addPage("page"); },
 "menu-item-move": function () { var m = S.project.site.menus[+b.getAttribute("data-m")]; var i = +b.getAttribute("data-i"), j = i + (+val); if (j < 0 || j >= m.items.length) return; snap(); var t = m.items[i]; m.items[i] = m.items[j]; m.items[j] = t; changed(); },
