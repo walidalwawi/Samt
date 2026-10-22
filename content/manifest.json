@@ -1,15 +1,15 @@
 {
  "pages": [
   "site/index.html",
+  "site/library.html",
+  "site/about.html",
+  "site/404.html",
   "site/how-to-deseed-a-watermelon.html",
   "site/handala-and-the-freeze-point.html",
   "site/militant-improvisation.html",
   "site/the-bourgeoi-rtist.html",
   "site/art-in-times-of-crisis.html",
-  "site/library.html",
-  "site/about.html",
-  "site/supply.html",
-  "site/404.html"
+  "site/supply.html"
  ],
- "published": "2026-10-22T13:30:26.738Z"
+ "published": "2026-10-22T16:30:00.000Z"
 }
