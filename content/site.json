@@ -16,7 +16,7 @@
   "labelW": 100,
   "labelWM": 88,
   "colors": {
-   "page": "#ffffff",
+   "page": "#fffbe7",
    "panel": "#ffffff",
    "ink": "#111111",
    "rule": "#ffffff"
@@ -34,12 +34,7 @@
   "header": false,
   "menu": false,
   "pager": false,
-  "sections": [
-   {
-    "key": "a",
-    "label": "a. samt"
-   }
-  ],
+  "sections": [],
   "externals": [],
   "css": "/* TEXT */\n.bd-text a {\nborder-bottom: 1px solid currentColor;\n}\n.bd-e-lb31qsc3 {\nmargin-bottom: 0;\n}\n.bd-e-83zud23g .bd-mbrand {\nfont-size: 30px;\n}\n\n/* MOBILE */\n@media (max-width: 760px) {\n.bd-e-lb31qsc3 {\nmax-width: 100%!Important;\nwidth: 100%important;\nbackground-color: transparent;\n}\n}\n",
   "head": "<script>\n/* NAV — UNDERLINE THE CURRENT PAGE */\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nvar here = location.pathname.replace(/\\/$/, \"\") || \"/\";\ndocument.querySelectorAll(\".sm-nav a\").forEach(function (a) {\nvar to = a.getAttribute(\"href\").replace(/\\/$/, \"\") || \"/\";\nif (to === here || (to !== \"/\" && here.indexOf(to + \"-\") === 0)) a.classList.add(\"is-current\");\n});\n});\n</script>",
@@ -452,7 +447,7 @@
     "tone": "color",
     "opacity": 100,
     "radius": 0,
-    "hard": "0"
+    "hard": "1"
    },
    "gallery": {
     "blend": "normal",
@@ -465,7 +460,7 @@
     "sizeM": "",
     "lh": "",
     "lhM": "",
-    "ink": ""
+    "ink": "#002a9b"
    },
    "list": {
     "size": "",
@@ -517,11 +512,11 @@
   ],
   "layers": {
    "on": true,
-   "journal": "fji5ongj",
-   "library": "b2lr3tkr",
+   "journal": "",
+   "library": "",
    "about": "nsye72w3",
    "mark": "صمت",
-   "menuColor": "#F3F1EC",
+   "menuColor": "#ffffff",
    "menuAlpha": 58,
    "menuBlur": 9,
    "menuW": 200,
@@ -530,24 +525,24 @@
    "menuPadM": 16,
    "menuGap": 4,
    "menuGapM": 14,
-   "menuAlign": "right",
+   "menuAlign": "left",
    "marker": ">",
    "menuEdge": false,
    "menuStyle": "heading",
    "aboutW": 600,
    "aboutPad": 40,
    "aboutPadM": 24,
-   "indexColor": "#FBFAF8",
-   "indexAlpha": 55,
-   "indexBlur": 9,
-   "sliver": 44,
+   "indexColor": "#ebebeb",
+   "indexAlpha": 60,
+   "indexBlur": 10,
+   "sliver": 100,
    "sliverM": 14,
    "indexEdge": false,
-   "ease": "straight",
-   "dur": 320,
-   "menuDur": 320,
+   "ease": "paper",
+   "dur": 460,
+   "menuDur": 460,
    "tilt": 0,
-   "lift": false,
+   "lift": true,
    "reveal": "focus",
    "focusBlur": 3.5
   }
