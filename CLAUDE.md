@@ -34,3 +34,5 @@ Ask before assuming.
 - Keep it flat: solid colours, hard shadows, simple transforms (rotate/translate). No gradients for realism, no bounce, no 3D beyond a single hinge.
 - Timing ~0.45s ease; angles small enough to read as cheeky, not as a 3D effect.
 - Reference implementation: library "Book look" (.bd-library.is-book, hover "Open (perspective)").
+- Mobile first: hover only teases (~8°, desktop with real hover); a tap/click plays the full gesture (~24°) and the link opens after ~0.5s. New-tab links open immediately while the gesture plays.
+- Journal cards use the zine variant of the same gesture: staples on the spine, cover swings to reveal the inside page.
