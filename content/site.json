@@ -334,12 +334,12 @@
     "metaLh": 15,
     "metaLhM": "",
     "metaGap": 10,
-    "cardBg": "#eeeeee",
+    "cardBg": "",
     "cardPad": 0,
     "cardPadM": "",
     "minH": 80,
     "imgGap": 0,
-    "imagePos": "bottom",
+    "imagePos": "top",
     "ratio": "1",
     "hover": "none",
     "fTitleStyle": "heading",
@@ -362,7 +362,7 @@
     "slideTap": 62,
     "imgBlur": 0,
     "imgTone": "color",
-    "imgBlend": "normal",
+    "imgBlend": "exclusion",
     "imgBackdrop": ""
    },
    "library": {
@@ -445,11 +445,11 @@
     "measure": ""
    },
    "image": {
-    "blend": "exclusion",
-    "tone": "color",
+    "blend": "normal",
+    "tone": "grey",
     "opacity": 100,
     "radius": 0,
-    "hard": "1",
+    "hard": "0",
     "backdrop": ""
    },
    "gallery": {
@@ -464,7 +464,7 @@
     "sizeM": "",
     "lh": "",
     "lhM": "",
-    "ink": "#002a9b"
+    "ink": ""
    },
    "list": {
     "size": "",
@@ -692,10 +692,10 @@
       "showDate": false,
       "showMeta": true,
       "showExcerpt": false,
-      "imagePos": "",
-      "ratio": "",
+      "imagePos": "bottom",
+      "ratio": "1",
       "imgGap": "",
-      "cardBg": "#ffffff",
+      "cardBg": "",
       "cardPad": "",
       "cardPadM": "",
       "minH": "",
@@ -730,7 +730,7 @@
       "slideTap": "",
       "imgBlur": "",
       "imgTone": "",
-      "imgBlend": "",
+      "imgBlend": "multiply",
       "imgBackdrop": ""
      }
     }
