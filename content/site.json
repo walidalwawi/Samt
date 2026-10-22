@@ -4448,6 +4448,17 @@
     "hM": "",
     "gap": "",
     "gapM": ""
+   },
+   "ownLayout": true,
+   "colset": {
+    "cols": 1,
+    "align": "spread",
+    "spans": [
+     12
+    ],
+    "colsM": 1,
+    "gutter": 40,
+    "gutterM": 24
    }
   }
  }
