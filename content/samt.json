@@ -1774,17 +1774,17 @@
    "paper": "#FFFFFF"
   },
   "motion": {
-   "ease": "slide",
+   "ease": "straight",
    "dur": 320,
    "menuDur": 320,
    "tilt": 0,
    "lift": false,
    "stagger": false,
-   "step": 40,
+   "step": 10,
    "thumb": "nudge",
    "book": "lift",
-   "reveal": "none",
-   "focusBlur": 3
+   "reveal": "focus",
+   "focusBlur": 3.5
   },
   "size": {
    "large": 15,
