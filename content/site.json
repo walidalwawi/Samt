@@ -317,9 +317,9 @@
     "padM": 28,
     "padX": 20,
     "padXM": 22,
-    "bg": "#ffffff",
+    "bg": "",
     "ink": "",
-    "shadow": "1",
+    "shadow": "0",
     "line": "0"
    },
    "posts": {
@@ -362,7 +362,7 @@
     "slideTap": 62,
     "imgBlur": 0,
     "imgTone": "color",
-    "imgBlend": "exclusion",
+    "imgBlend": "ink",
     "imgBackdrop": ""
    },
    "library": {
@@ -445,8 +445,8 @@
     "measure": ""
    },
    "image": {
-    "blend": "normal",
-    "tone": "grey",
+    "blend": "ink",
+    "tone": "color",
     "opacity": 100,
     "radius": 0,
     "hard": "0",
