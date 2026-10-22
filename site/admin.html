@@ -4,42 +4,68 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Samt · Back office</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="/admin/samt-admin.css?v=1">
+<title>Back office</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap">
+<link rel="stylesheet" href="/admin/grid.css?v=1792700000">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.min.css">
+<script>
+/* SITES — ONE BACK OFFICE FOR ALL OF THEM. THE KEY NEEDS ACCESS TO EVERY REPO LISTED */
+window.BD_SITES = [
+{ owner: "walidalwawi", repo: "walidalwawi", branch: "main", domain: "walidalwawi.com", name: "Walid Al Wawi" },
+{ owner: "walidalwawi", repo: "samt", branch: "main", domain: "samt.co", name: "Samt" }
+];
+/* THE SITE THIS COPY OF THE BACK OFFICE IS SERVED FROM */
+window.BD_HOST = "samt";
+</script>
 </head>
 <body>
-<div class="bd-ad" id="bd-ad">
-<header class="bd-ad-top" id="bd-top"></header>
-<nav class="bd-ad-sub" id="bd-sub"></nav>
-<div class="bd-ad-body">
-<aside class="bd-ad-panel" id="bd-panel"></aside>
-<section class="bd-ad-stage" id="bd-stage">
-<div class="bd-ad-frame" id="bd-frame"><iframe id="bd-preview" title="Live preview"></iframe></div>
-<div class="bd-ad-dim" id="bd-dim"></div>
+<div class="bd-ed-app" id="bd-app">
+<header class="bd-ed-top" id="bd-top"></header>
+<aside class="bd-ed-panel bd-ed-left" id="bd-left"></aside>
+<section class="bd-ed-stage" id="bd-stage">
+<div class="bd-ed-rail" id="bd-rail"></div>
+<div id="bd-textbar-slot"></div>
+<div class="bd-ed-sheet-wrap">
+<div class="bd-ed-ruler" id="bd-ruler"></div>
+<div class="bd-ed-fit" id="bd-fit"><div class="bd-ed-sheet is-desk" id="bd-sheet"></div></div>
+</div>
+<div class="bd-ed-empty" id="bd-empty" hidden></div>
 </section>
+<aside class="bd-ed-panel bd-ed-right" id="bd-right"></aside>
+<section class="bd-ed-panel bd-ed-code" id="bd-code"></section>
 </div>
-</div>
-<div class="bd-ad-gate" id="bd-gate" hidden>
-<div class="bd-ad-gate-card">
-<p class="bd-ad-note">Samt · back office</p>
+<div class="bd-ed-pop" id="bd-pop" hidden></div>
+<div class="bd-ed-toast" id="bd-toast" hidden></div>
+<input type="file" id="bd-file" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" hidden>
+
+<input type="file" id="bd-upload" hidden>
+<div class="bd-ed-gate" id="bd-gate" hidden>
+<div class="bd-ed-gate-card">
+<span class="bd-ed-label">Back office · walidalwawi.com + samt.co</span>
 <h1>Connect your GitHub key</h1>
 <ol>
 <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → new fine-grained token</a></li>
-<li>Repository access: <b>walidalwawi/Samt</b></li>
+<li>Repository access: <b>walidalwawi/walidalwawi</b> and <b>walidalwawi/samt</b> (add more sites here later)</li>
 <li>Permissions: <b>Contents → Read and write</b></li>
 <li>Generate, copy, paste it here. It stays in this browser only.</li>
 </ol>
-<div class="bd-ad-gate-row">
-<input class="bd-ad-input" id="bd-gate-key" type="password" autocomplete="off" placeholder="github_pat_…" aria-label="GitHub key">
-<button class="bd-ad-btn is-primary" id="bd-gate-go" type="button">Connect</button>
+<div class="bd-ed-gate-row">
+<input class="bd-ed-input" id="bd-gate-key" type="password" autocomplete="off" placeholder="github_pat_…" aria-label="GitHub key">
+<button class="bd-ed-btn is-primary" id="bd-gate-go">Connect</button>
 </div>
-<div class="bd-ad-gate-msg" id="bd-gate-msg"></div>
+<div class="bd-ed-gate-msg" id="bd-gate-msg"></div>
 </div>
 </div>
-<div class="bd-ad-toast" id="bd-toast" hidden></div>
-<input type="file" id="bd-file" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" hidden>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/searchcursor.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/search.min.js"></script>
 <script>
 /* CRASH NOTICE — SHOW THE ERROR INSTEAD OF A BLANK SCREEN */
 window.addEventListener("unhandledrejection", function (ev) {
@@ -50,13 +76,12 @@ window.addEventListener("error", function (ev) {
 if (document.getElementById("bd-crash")) return;
 var d = document.createElement("div");
 d.id = "bd-crash";
-d.setAttribute("style", "position:fixed;left:16px;right:16px;bottom:16px;z-index:9999;padding:14px 16px;background:#1F1E1C;color:#fff;font:13px/1.45 system-ui,sans-serif;border-radius:6px");
-d.innerHTML = "<b>The back office hit an error.</b> Reload the page. Your draft is saved. If it keeps happening, send Claude this line:<br><code style=\"display:block;margin-top:6px;white-space:pre-wrap;opacity:.8\"></code>";
+d.setAttribute("style", "position:fixed;left:16px;right:16px;bottom:16px;z-index:9999;padding:14px 16px;background:#15161a;color:#fff;font:13px/1.45 system-ui,sans-serif;border-radius:6px");
+d.innerHTML = "<b>The back office hit an error.</b> Reload the page. If it keeps happening, send Claude this line:<br><code style=\"display:block;margin-top:6px;white-space:pre-wrap;opacity:.8\"></code>";
 d.querySelector("code").textContent = (ev.message || "Error") + (ev.filename ? " · " + ev.filename.split("/").pop() + ":" + ev.lineno : "");
 document.body.appendChild(d);
 });
 </script>
-<script src="/admin/samt-render.js?v=1"></script>
-<script src="/admin/samt-admin.js?v=1"></script>
+<script src="/admin/grid.js?v=1792700000"></script>
 </body>
 </html>
