@@ -94,6 +94,22 @@ grid-template-rows: 44px minmax(0, 1fr) minmax(180px, 38%);
 .bd-ed-app.has-wide-left {
 grid-template-columns: minmax(420px, 42%) minmax(0, 1fr) 268px;
 }
+.bd-ed-app.is-no-left {
+grid-template-columns: 0 minmax(0, 1fr) 268px;
+}
+.bd-ed-app.is-no-right {
+grid-template-columns: 264px minmax(0, 1fr) 0;
+}
+.bd-ed-app.has-wide-left.is-no-right {
+grid-template-columns: minmax(420px, 42%) minmax(0, 1fr) 0;
+}
+.bd-ed-app.is-no-left.is-no-right {
+grid-template-columns: 0 minmax(0, 1fr) 0;
+}
+.bd-ed-app.is-no-left .bd-ed-left,
+.bd-ed-app.is-no-right .bd-ed-right {
+display: none;
+}
 
 /* TOP BAR */
 .bd-ed-top {

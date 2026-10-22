@@ -280,6 +280,8 @@ again: false,
 status: "",
 statusWarn: false,
 codeOpen: false,
+hideLeft: false,
+hideRight: false,
 codeTab: "out",
 outTab: "css",
 leftTab: "pages",
@@ -2298,7 +2300,7 @@ if (e.type === "text" && N(e, "measure", false) != null) d.push("max-width: " + 
 if ((e.type === "image" || e.type === "gallery" || e.type === "library" || e.type === "posts") && !phone) {
 var im = [];
 var bl = E(e, e.type === "posts" ? "imgBlend" : "blend");
-if (bl === "ink") im.push("filter: url(#bd-ink);");
+if (bl === "ink") im.push("mix-blend-mode: multiply;");
 else if (bl && bl !== "normal") im.push("mix-blend-mode: " + bl + ";");
 if (e.type === "image" || e.type === "gallery") {
 var tn = E(e, "tone");
@@ -2309,7 +2311,6 @@ var rd = N(e, "radius", false);
 if (rd) im.push("border-radius: " + rd + "px;");
 if (e.type === "image" && ON(e, "hard")) im.push("box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.12);");
 }
-if (e.type === "posts" && bl === "ink") im[im.indexOf("filter: url(#bd-ink);")] = "filter: url(#bd-ink) blur(var(--tp-imgblur, 0px));";
 if (im.length) out.push((e.type === "posts" ? sel + ".bd-posts .bd-post-img img" : e.type === "library" ? sel + " .bd-lib-cover img" : sel + " img") + " {\n" + im.join("\n") + "\n}");
 var bk = E(e, e.type === "posts" ? "imgBackdrop" : "backdrop");
 if (bl && bl !== "normal" && bl !== "ink" && bk) out.push((e.type === "image" ? sel : e.type === "gallery" ? sel + " figure" : e.type === "library" ? sel + " .bd-lib-cover" : sel + " .bd-post-cover,\n" + sel + " .bd-post-img") + " {\nbackground-color: " + bk + ";\n}");
@@ -2978,7 +2979,7 @@ items.push('<li><a class="bd-ly-a' + (cur ? " is-current" : "") + '" href="/' + 
 });
 });
 var mark = Ls.mark || s.name;
-return inkDefs() + '<div class="bd-ly is-v-' + st.view + " is-h-" + st.half + '" id="bd-ly" data-view="' + st.view + '" data-half="' + st.half + '" data-post="' + esc(st.post) + '" data-dur="' + Ls.dur + '" data-menu-dur="' + Ls.menuDur + '">\n'
+return '<div class="bd-ly is-v-' + st.view + " is-h-" + st.half + '" id="bd-ly" data-view="' + st.view + '" data-half="' + st.half + '" data-post="' + esc(st.post) + '" data-dur="' + Ls.dur + '" data-menu-dur="' + Ls.menuDur + '">\n'
 + '<div class="bd-ly-sheet bd-ly-content" id="bd-ly-content" tabindex="-1">\n' + arts + "\n</div>\n"
 + '<section class="bd-ly-sheet bd-ly-index" id="bd-ly-index" aria-label="Index">\n<div class="bd-ly-half is-journal">\n' + (r.journal ? layerBody(r.journal, ctx) : "") + '\n</div>\n<div class="bd-ly-half is-library">\n' + (r.library ? layerBody(r.library, ctx) : "") + "\n</div>\n</section>\n"
 + '<nav class="bd-ly-sheet bd-ly-menu" id="bd-ly-menu" aria-label="Menu">\n<div class="bd-ly-about">\n' + (r.about ? layerBody(r.about, ctx) : "") + '\n</div>\n<ul class="bd-ly-list bd-ts-' + esc(Ls.menuStyle || "heading") + '">\n' + items.join("\n") + '\n</ul>\n<div class="bd-ly-mark bd-ts-' + esc(Ls.menuStyle || "heading") + '">' + esc(mark) + "</div>\n</nav>\n</div>";
@@ -3193,13 +3194,6 @@ go(r.view, r.id, true);
 }
 mark();
 }
-function inkDefs() {
-var h = String(S.project.site.colors.ink || "#111111").replace("#", "");
-if (h.length === 3) h = h.split("").map(function (c) { return c + c; }).join("");
-var n = parseInt(h, 16) || 0;
-var f = function (x) { return (Math.round(x / 255 * 1000) / 1000); };
-return '<svg class="bd-defs" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden"><filter id="bd-ink" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 0 ' + f((n >> 16) & 255) + " 0 0 0 0 " + f((n >> 8) & 255) + " 0 0 0 0 " + f(n & 255) + ' -0.3333 -0.3333 -0.3333 1 0"/></filter></svg>';
-}
 function relatedPages(page) {
 return S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (p) {
 return p && p.id !== page.id && (p.kind === "pin" || (page.stack || []).indexOf(p.id) > -1);
@@ -3215,7 +3209,7 @@ return out;
 function pageHTMLInner(page, ctx) {
 var s = S.project.site;
 var edit = ctx === "edit";
-if (layersOn() && page.kind !== "pin") return inkDefs() + '<div class="bd-panel">\n<main class="bd-main">\n\n' + (headHTML(page) ? "<!-- HEADER -->\n" + headHTML(page) + "\n" : "") + "<!-- CONTENT -->\n" + contentHTML(page, ctx) + "\n\n</main>\n</div>";
+if (layersOn() && page.kind !== "pin") return '<div class="bd-panel">\n<main class="bd-main">\n\n' + (headHTML(page) ? "<!-- HEADER -->\n" + headHTML(page) + "\n" : "") + "<!-- CONTENT -->\n" + contentHTML(page, ctx) + "\n\n</main>\n</div>";
 var top = pinsFor(page, "top", false).map(function (p) { return pinHTML(p, ctx); }).join("\n");
 var bottom = pinsFor(page, "bottom", false).map(function (p) { return pinHTML(p, ctx); }).join("\n");
 var fixed = pinsFor(page, "top", true).concat(pinsFor(page, "bottom", true)).map(function (p) { return pinHTML(p, ctx); }).join("\n");
@@ -3223,7 +3217,7 @@ var stack = (page.stack || []).map(function (id) { return S.project.pages[id]; }
 return '<section class="bd-stack"' + (edit ? ' data-stack="' + p.id + '"' : "") + ">\n" + headHTML(p) + contentHTML(p, edit ? "view" : ctx) + "\n</section>";
 }).join("\n");
 var head = headHTML(page);
-return inkDefs() + (fixed ? fixed + "\n" : "") + '<div class="bd-panel">\n' + (top ? top + "\n" : "") + '<main class="bd-main">\n\n' + (head ? "<!-- HEADER -->\n" + head + "\n" : "") + "<!-- CONTENT -->\n" + contentHTML(page, ctx) + "\n" + (stack ? "\n<!-- STACKED -->\n" + stack + "\n" : "") + "\n</main>" + (bottom ? "\n" + bottom : "") + "\n</div>";
+return (fixed ? fixed + "\n" : "") + '<div class="bd-panel">\n' + (top ? top + "\n" : "") + '<main class="bd-main">\n\n' + (head ? "<!-- HEADER -->\n" + head + "\n" : "") + "<!-- CONTENT -->\n" + contentHTML(page, ctx) + "\n" + (stack ? "\n<!-- STACKED -->\n" + stack + "\n" : "") + "\n</main>" + (bottom ? "\n" + bottom : "") + "\n</div>";
 }
 function pageHTMLOld(page, ctx) {
 var s = S.project.site;
@@ -3762,6 +3756,9 @@ var LIVE_POLL_MS = 4000;
 var LIVE_GIVE_UP_MS = 240000;
 var BLANK_IMG = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 S.key = lsGet(GH_KEY_STORE) || "";
+S.hideLeft = lsGet("bd-hide-left") === "1";
+S.hideRight = lsGet("bd-hide-right") === "1";
+window.addEventListener("resize", function () { applyPanels(); });
 S.base = null;
 S.published = "";
 S.liveMem = {};
@@ -4076,7 +4073,7 @@ t.innerHTML = '<span class="bd-ed-brand">Back office</span><span class="bd-ed-br
 return;
 }
 var phone = S.mode === "phone";
-t.innerHTML = '<button class="bd-ed-btn is-icon bd-ed-narrow" data-act="toggle-left" aria-label="Pages and site">' + I.panel + '</button>'
+t.innerHTML = '<button class="bd-ed-btn is-icon" data-act="toggle-left" aria-label="Left panel" title="Show / hide the left panel">' + I.panel + '</button>'
 + '<span class="bd-ed-brand">Back office</span>'
 + '<button class="bd-ed-btn" data-act="projects" aria-haspopup="true"><span class="bd-ed-hide-narrow">' + esc(REPO.domain || S.project.site.name) + '</span>' + I.chev + "</button>"
 + '<div class="bd-ed-top-mid"><div class="bd-ed-seg" role="group" aria-label="Layout">'
@@ -4089,8 +4086,9 @@ t.innerHTML = '<button class="bd-ed-btn is-icon bd-ed-narrow" data-act="toggle-l
 + '<button class="bd-ed-btn' + (S.preview && !S.inspect ? " is-on" : "") + '" data-act="preview">' + I.eye + '<span class="bd-ed-hide-narrow">Preview</span></button>'
 + '<button class="bd-ed-btn is-primary" data-act="export"' + (S.publishing ? " disabled" : "") + ">" + I.up + '<span class="bd-ed-hide-narrow">' + (S.publishing ? "Publishing…" : "Save & publish") + "</span></button>"
 + '<span class="bd-ed-status bd-ed-hide-narrow"></span>'
-+ '<button class="bd-ed-btn is-icon bd-ed-narrow" data-act="toggle-right" aria-label="Inspector">' + I.sliders + "</button>";
++ '<button class="bd-ed-btn is-icon" data-act="toggle-right" aria-label="Right panel" title="Show / hide the right panel">' + I.sliders + "</button>";
 setStatus(S.status || "Saved", S.statusWarn);
+applyPanels();
 }
 
 /* LEFT PANEL */
@@ -5400,6 +5398,21 @@ return '<button class="bd-ed-tool" data-act="add" data-type="' + t[0] + '" data-
 /* CANVAS */
 var shadow = null;
 S.zoom = 1;
+/* HIDE OR SHOW THE SIDE PANELS ON WIDE SCREENS SO THE PAGE GETS THE ROOM */
+function wideScreen() {
+return window.innerWidth > 980;
+}
+function applyPanels() {
+var app = $("bd-app");
+var wide = wideScreen();
+var hl = wide && S.hideLeft;
+var hr = wide && S.hideRight;
+app.classList.toggle("is-no-left", !!hl);
+app.classList.toggle("is-no-right", !!hr);
+document.querySelectorAll('[data-act="toggle-left"]').forEach(function (b) { b.classList.toggle("is-on", wide ? !hl : !!S.leftOpen); b.setAttribute("aria-label", hl ? "Show left panel" : "Hide left panel"); });
+document.querySelectorAll('[data-act="toggle-right"]').forEach(function (b) { b.classList.toggle("is-on", wide ? !hr : !!S.rightOpen); b.setAttribute("aria-label", hr ? "Show right panel" : "Hide right panel"); });
+requestAnimationFrame(fitSheet);
+}
 function fitSheet() {
 var sheet = $("bd-sheet");
 var fit = $("bd-fit");
@@ -6992,8 +7005,8 @@ lsSet("bd-site-current", r);
 location.reload();
 },
 "export": publish,
-"toggle-left": function () { S.leftOpen = !S.leftOpen; S.rightOpen = false; renderLeft(); renderRight(); },
-"toggle-right": function () { S.rightOpen = !S.rightOpen; S.leftOpen = false; renderLeft(); renderRight(); },
+"toggle-left": function () { if (wideScreen()) { S.hideLeft = !S.hideLeft; lsSet("bd-hide-left", S.hideLeft ? "1" : ""); applyPanels(); return; } S.leftOpen = !S.leftOpen; S.rightOpen = false; renderLeft(); renderRight(); },
+"toggle-right": function () { if (wideScreen()) { S.hideRight = !S.hideRight; lsSet("bd-hide-right", S.hideRight ? "1" : ""); applyPanels(); return; } S.rightOpen = !S.rightOpen; S.leftOpen = false; renderLeft(); renderRight(); },
 "left-tab": function () { var wasCode = S.codeOpen; S.leftTab = val; S.codeOpen = val === "code"; renderLeft(); renderTop(); if (wasCode !== S.codeOpen) requestAnimationFrame(fitSheet); },
 "page": function () { goPage(b.getAttribute("data-id")); },
 "page-add": function () { addPage("page"); },
