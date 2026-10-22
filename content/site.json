@@ -16,10 +16,10 @@
   "labelW": 100,
   "labelWM": 88,
   "colors": {
-   "page": "#ffffff",
-   "panel": "#ffffff",
+   "page": "#cbf0ff",
+   "panel": "#cbf0ff",
    "ink": "#111111",
-   "rule": "#ffffff"
+   "rule": "#cbf0ff"
   },
   "sans": "Helvetica Neue",
   "mono": "IBM Plex Mono",
