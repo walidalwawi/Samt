@@ -1774,17 +1774,26 @@
    "paper": "#FFFFFF"
   },
   "motion": {
-   "ease": "paper",
-   "dur": 520,
-   "menuDur": 520,
+   "ease": "slide",
+   "dur": 320,
+   "menuDur": 320,
    "tilt": 0,
-   "lift": true,
-   "stagger": true,
-   "step": 35,
-   "thumb": "trace",
+   "lift": false,
+   "stagger": false,
+   "step": 40,
+   "thumb": "nudge",
    "book": "lift",
-   "reveal": "rise",
+   "reveal": "none",
    "focusBlur": 3
+  },
+  "size": {
+   "large": 15,
+   "small": 15,
+   "mono": 13,
+   "monoCase": "uppercase"
+  },
+  "font": {
+   "weight": 400
   }
  },
  "css": ""
