@@ -1751,6 +1751,22 @@
    "edge": false,
    "aboutPad": 40,
    "aboutW": 600
+  },
+  "index": {
+   "color": "#FBFAF8",
+   "edge": false,
+   "filters": true,
+   "libAuthors": true,
+   "libRowGap": 30,
+   "libGap": 30,
+   "libCols": 5
+  },
+  "post": {
+   "quoteBg": "#FFFFFF"
+  },
+  "color": {
+   "ground": "#FFFFFF",
+   "paper": "#FFFFFF"
   }
  },
  "css": ""
