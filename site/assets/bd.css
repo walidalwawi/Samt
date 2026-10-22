@@ -1,4 +1,4 @@
-/* PUBLISHED mvk15dr9 */
+/* PUBLISHED mvk1ia5p */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1413,7 +1413,7 @@ font-size: 12px;
 line-height: 15px;
 }
 .bd-e-5ygn83c2.bd-posts .bd-post-img img {
-mix-blend-mode: difference;
+mix-blend-mode: multiply;
 }
 .bd-e-5ygn83c2 {
 --pcols: 3;
