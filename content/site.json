@@ -601,7 +601,7 @@
     "edge": "left",
     "edgeM": "top",
     "rest": "open",
-    "peek": 0,
+    "peek": 1000,
     "peekM": 0,
     "sliver": -70,
     "sliverM": 14,
