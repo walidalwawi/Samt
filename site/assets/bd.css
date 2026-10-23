@@ -1,4 +1,4 @@
-/* PUBLISHED mvkxcyt6 */
+/* PUBLISHED mvkxe8vr */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1681,7 +1681,7 @@ text-align: center;
 
 /* LAYERS */
 :root {
---ly-dur: 120ms;
+--ly-dur: 200ms;
 --ly-ease: linear;
 --ly-tilt: 0deg;
 --ly-focus: 5px;
