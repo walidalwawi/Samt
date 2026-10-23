@@ -840,7 +840,7 @@
     "mr": "10%",
     "ml": "0",
     "shadow": "none",
-    "fit": true,
+    "fit": false,
     "radius": 0,
     "pt": "30",
     "pr": "",
