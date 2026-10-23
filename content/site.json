@@ -548,7 +548,8 @@
    "tilt": 0,
    "lift": true,
    "reveal": "focus",
-   "focusBlur": 3.5
+   "focusBlur": 3.5,
+   "trans": "slide"
   },
   "motion": {
    "gDur": 450,
