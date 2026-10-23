@@ -578,7 +578,7 @@
     "edgeM": "top",
     "rest": "peek",
     "peek": 300,
-    "peekM": 52,
+    "peekM": 70,
     "sliver": 130,
     "sliverM": 14,
     "axis": "y",
@@ -846,8 +846,9 @@
     "pr": "",
     "pb": "",
     "pl": "",
-    "mtM": "90",
-    "card": ""
+    "mtM": "",
+    "card": "",
+    "mrM": "0"
    },
    "sheetBg": ""
   },
@@ -4639,7 +4640,9 @@
    },
    "box": {
     "shadow": "none",
-    "card": ""
+    "card": "",
+    "mtM": "",
+    "fit": false
    },
    "sheetBg": ""
   }
