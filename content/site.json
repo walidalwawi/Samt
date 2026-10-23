@@ -300,8 +300,8 @@
    "cols": 2,
    "align": "spread",
    "spans": [
-    6,
-    6
+    5,
+    7
    ],
    "colsM": 1,
    "gutter": 40,
@@ -584,7 +584,7 @@
     "axis": "y",
     "covers": "all",
     "coverPages": [],
-    "color": "#fff2d5",
+    "color": "#ebebeb",
     "alpha": 90,
     "blur": 0,
     "shadow": "line",
@@ -1305,8 +1305,8 @@
     "cols": 2,
     "align": "spread",
     "spans": [
-     6,
-     6
+     5,
+     7
     ],
     "colsM": 1,
     "gutter": 40,

@@ -1,4 +1,4 @@
-/* PUBLISHED mvld6k4o */
+/* PUBLISHED mvldaere */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1433,11 +1433,11 @@ margin-top: 120px;
 
 /* COLUMNS */
 .bd-main .bd-cols {
-grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
 column-gap: 40px;
 }
 .bd-cols.bd-cl-aj2hm4y8 {
-grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
 column-gap: 40px;
 }
 
@@ -1835,7 +1835,7 @@ left: 0px;
 --k-nudge: 0px;
 box-shadow: 1px 0 0 rgba(0, 0, 0, 0.12);
 z-index: 3;
-background: rgba(255, 242, 213, 0.9);
+background: rgba(235, 235, 235, 0.9);
 -webkit-backdrop-filter: blur(5px);
 backdrop-filter: blur(5px);
 }
