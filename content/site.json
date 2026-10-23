@@ -411,9 +411,9 @@
    },
    "postinfo": {
     "style": "mono",
-    "size": 15,
+    "size": "",
     "sizeM": "",
-    "lh": 25,
+    "lh": "",
     "lhM": ""
    },
    "menubtn": {
