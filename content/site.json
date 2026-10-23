@@ -844,7 +844,8 @@
     "mr": "90",
     "ml": "90",
     "shadow": "soft",
-    "fit": true
+    "fit": true,
+    "radius": 90
    }
   },
   "aj2hm4y8": {

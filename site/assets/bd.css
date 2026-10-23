@@ -1,4 +1,4 @@
-/* PUBLISHED mvkv69rh */
+/* PUBLISHED mvkv7o33 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -2000,6 +2000,7 @@ margin-right: 90px;
 margin-bottom: 90px;
 margin-left: 90px;
 width: auto;
+border-radius: 90px;
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 min-height: 0;
 }
