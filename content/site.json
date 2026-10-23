@@ -835,19 +835,21 @@
    },
    "blog": true,
    "box": {
-    "mt": "0",
+    "mt": "100",
     "mb": "0",
     "mr": "90",
     "ml": "0",
     "shadow": "none",
-    "fit": false,
+    "fit": true,
     "radius": 0,
     "pt": "20",
     "pr": "",
     "pb": "",
     "pl": "",
-    "mtM": "90"
-   }
+    "mtM": "90",
+    "card": ""
+   },
+   "sheetBg": ""
   },
   "aj2hm4y8": {
    "id": "aj2hm4y8",

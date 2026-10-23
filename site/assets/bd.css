@@ -1,4 +1,4 @@
-/* PUBLISHED mvkyts6u */
+/* PUBLISHED mvkyvm4k */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1817,7 +1817,7 @@ background: rgba(235, 235, 235, 0.3);
 backdrop-filter: blur(10px);
 }
 .bd-ly-k[data-k="index"].is-on-fji5ongj {
-top: calc(0px + 0px);
+top: calc(0px + 100px);
 right: calc(0px + 90px);
 bottom: calc(0px + 0px);
 left: calc(300px + 0px);
@@ -2017,6 +2017,7 @@ margin: 0;
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-panel {
 padding-top: 20px;
+min-height: 0;
 }
 .is-t-unfold .bd-ly-art.is-enter {
 transform-origin: 50% 0;
