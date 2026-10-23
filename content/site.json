@@ -587,7 +587,7 @@
     "color": "#fff2d5",
     "alpha": 90,
     "blur": 0,
-    "shadow": "line",
+    "shadow": "none",
     "nudge": 0,
     "dur": ""
    },
@@ -4303,7 +4303,9 @@
    "box": {
     "mt": "0",
     "mr": "10%",
-    "mb": "0"
+    "mb": "0",
+    "mrM": "0",
+    "mtM": "0"
    }
   },
   "zty6iib1": {
@@ -4588,7 +4590,8 @@
     "mr": "20%",
     "shadow": "none",
     "fit": false,
-    "card": ""
+    "card": "",
+    "mrM": "0"
    }
   },
   "56ud3gky": {
@@ -4642,7 +4645,8 @@
     "shadow": "none",
     "card": "",
     "mtM": "",
-    "fit": false
+    "fit": false,
+    "mrM": "0%"
    },
    "sheetBg": ""
   }
