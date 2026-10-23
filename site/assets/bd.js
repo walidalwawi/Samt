@@ -5,6 +5,7 @@ var p = prev && prev[n];
 var pane = p ? p.i : 0;
 var cov = !k.covers || k.covers.indexOf(f.id) > -1 || k.panes.indexOf(f.id) > -1;
 if (f.k === n) return { st: "open", i: f.i };
+if (k.rest === "still") return { st: cov ? "open" : "hidden", i: pane };
 if (f.k > -1 && n > f.k && p) return { st: p.st, i: p.i };
 if (!cov) return { st: "hidden", i: pane };
 if (k.rest === "open") return { st: f.k < 0 || n < f.k ? "tuck" : "open", i: pane };
@@ -95,7 +96,8 @@ function go(id, pop) {
 var f = where(id);
 if (!f) return;
 var pf = where(F) || { id: F, k: -1, i: 0 };
-if (f.k > -1 && model[f.k].rest !== "open" && !(pf.k > -1 && model[pf.k].rest !== "open")) before = F;
+var edgy = function (x) { return model[x].rest === "peek" || model[x].rest === "hidden"; };
+if (f.k > -1 && edgy(f.k) && !(pf.k > -1 && edgy(pf.k))) before = F;
 /* THE WAY OUT OF THE WAY BELONGS TO THE PAGE UNDERNEATH BEING OPENED OR CLOSED */
 var tid = f.k < 0 ? f.id : pf.k < 0 && f.k > -1 && model[f.k].rest === "open" ? pf.id : "";
 if (tid && art(tid)) {
@@ -159,7 +161,7 @@ history.pushState({ bdly: 1 }, "", "/" + slugOf(F));
 function back() {
 var f = where(F);
 if (!f) return;
-if (f.k > -1 && model[f.k].rest !== "open") {
+if (f.k > -1 && (model[f.k].rest === "peek" || model[f.k].rest === "hidden")) {
 go(before && before !== F && where(before) ? before : home);
 return;
 }
@@ -192,7 +194,7 @@ if (!preview && u.origin !== location.origin) return false;
 var id = bySlug(u.pathname);
 if (!id) return false;
 var w = where(id);
-if (id === F && w && w.k > -1 && model[w.k].rest !== "open") back();
+if (id === F && w && w.k > -1 && (model[w.k].rest === "peek" || model[w.k].rest === "hidden")) back();
 else go(id);
 setTimeout(function () {
 doc.querySelectorAll(".bd-unfold").forEach(function (x) { x.remove(); });

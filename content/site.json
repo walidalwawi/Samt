@@ -587,7 +587,8 @@
     "color": "#4482c8",
     "alpha": 100,
     "blur": 0,
-    "line": false,
+    "shadow": "none",
+    "nudge": 0,
     "dur": ""
    },
    {
@@ -611,7 +612,8 @@
     "color": "#ebebeb",
     "alpha": 30,
     "blur": 10,
-    "line": false,
+    "shadow": "none",
+    "nudge": 0,
     "dur": ""
    }
   ],
@@ -626,7 +628,8 @@
    },
    "moved": {},
    "custom": []
-  }
+  },
+  "followV1": true
  },
  "order": [
   "f0kgkfxt",
@@ -731,7 +734,6 @@
    "slug": "",
    "section": "",
    "desc": "Samt journal: essays on art, resistance and the institution.",
-   "header": false,
    "layout": "master",
    "css": "",
    "els": [
@@ -835,11 +837,15 @@
    "box": {
     "mt": "0",
     "mb": "0",
-    "mr": "0",
+    "mr": "90",
     "ml": "0",
     "shadow": "none",
     "fit": false,
-    "radius": 0
+    "radius": 0,
+    "pt": "20",
+    "pr": "",
+    "pb": "",
+    "pl": ""
    }
   },
   "aj2hm4y8": {
@@ -850,7 +856,6 @@
    "slug": "how-to-deseed-a-watermelon",
    "section": "",
    "desc": "How To Deseed A Watermelon For Safe Consumption: On the domestication of danger",
-   "header": false,
    "layout": "master",
    "css": "",
    "els": [
@@ -964,7 +969,7 @@
       "alt": "* How To Deseed A Watermelon For Safe Consumption — drawing",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1550,
       "h": 1259
      }
@@ -1004,7 +1009,7 @@
       "alt": "1. start by cutting a desirable slice",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1550,
       "h": 1259
      }
@@ -1044,7 +1049,7 @@
       "alt": "2. Carefuly pick out the seeds",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1550,
       "h": 1259
      }
@@ -1084,7 +1089,7 @@
       "alt": "3. cut slice into 3 parts",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1550,
       "h": 1259
      }
@@ -1171,7 +1176,7 @@
       "alt": "4. seperate the rend from the flesh",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1550,
       "h": 1259
      }
@@ -1240,7 +1245,7 @@
       "alt": "5. serve cold in a hot day.",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1550,
       "h": 1134
      }
@@ -1317,7 +1322,6 @@
    "slug": "handala-and-the-freeze-point",
    "section": "",
    "desc": "Handala And The Freeze Point: How To Disable A Militant Icon",
-   "header": false,
    "layout": "master",
    "css": "",
    "els": [
@@ -1402,7 +1406,7 @@
       "alt": "Handala throwing a stone",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1891,
       "h": 1938
      }
@@ -1554,7 +1558,7 @@
       "alt": "Handala seized by a hand",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1773,
       "h": 1773
      }
@@ -1594,7 +1598,7 @@
       "alt": "A man holding Freeze Point glue behind Handala",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1773,
       "h": 1773
      }
@@ -1634,7 +1638,7 @@
       "alt": "Freeze Point glue fixing Handala’s hands",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1772,
       "h": 1773
      }
@@ -1674,7 +1678,7 @@
       "alt": "Handala in a frame held by hands",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1772,
       "h": 1773
      }
@@ -1780,7 +1784,6 @@
    "slug": "militant-improvisation",
    "section": "",
    "desc": "Militant Improvisation: Urgency and Refusal In the Militant Cultural Front",
-   "header": false,
    "layout": "master",
    "css": "",
    "els": [
@@ -1861,7 +1864,7 @@
       "alt": "A figure facing a framed portrait",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1772,
       "h": 1772
      }
@@ -1901,7 +1904,7 @@
       "alt": "Two wrists wearing watches",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1773,
       "h": 1773
      }
@@ -1970,7 +1973,7 @@
       "alt": "An arrow through a watermelon",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1773,
       "h": 1773
      }
@@ -2010,7 +2013,7 @@
       "alt": "A figure drawing a bow",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1772,
       "h": 2246
      }
@@ -2079,7 +2082,7 @@
       "alt": "Two framed faces pierced by an arrow",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1772,
       "h": 1773
      }
@@ -2203,7 +2206,6 @@
    "slug": "the-bourgeoi-rtist",
    "section": "",
    "desc": "The Bourgeoi’rtist",
-   "header": false,
    "layout": "master",
    "css": "",
    "els": [
@@ -2284,7 +2286,7 @@
       "alt": "The bourgeoi’rtist at an easel",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1773,
       "h": 1772
      }
@@ -2324,7 +2326,7 @@
       "alt": "Trading a sickle for money",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1773,
       "h": 1772
      }
@@ -2364,7 +2366,7 @@
       "alt": "A framed sickle sold to a collector",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1773,
       "h": 1772
      }
@@ -2404,7 +2406,7 @@
       "alt": "The bourgeoi’rtist eating a gold bar",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1773,
       "h": 1772
      }
@@ -2481,7 +2483,6 @@
    "slug": "art-in-times-of-crisis",
    "section": "",
    "desc": "Art In Times Of Crisis: The Culture Of Suffering.",
-   "header": false,
    "layout": "master",
    "css": "",
    "els": [
@@ -2562,7 +2563,7 @@
       "alt": "Scissors cutting the strings of CRISIS balloons",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1772,
       "h": 1773
      }
@@ -2602,7 +2603,7 @@
       "alt": "A figure holding a dollar-sign balloon",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1773,
       "h": 2599
      }
@@ -2671,7 +2672,7 @@
       "alt": "A figure standing among crayons",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1772,
       "h": 1772
      }
@@ -2711,7 +2712,7 @@
       "alt": "A figure painting a bird piñata",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1773,
       "h": 1771
      }
@@ -2780,7 +2781,7 @@
       "alt": "The piñata broken open by sticks",
       "caption": "",
       "fit": "contain",
-      "zoom": false,
+      "zoom": true,
       "w": 1773,
       "h": 2246
      }
@@ -2869,7 +2870,6 @@
    "slug": "library",
    "section": "",
    "desc": "Samt curated library.",
-   "header": false,
    "layout": "master",
    "css": "",
    "els": [
@@ -4306,7 +4306,6 @@
    "slug": "supply",
    "section": "",
    "desc": "Samt supply store.",
-   "header": false,
    "layout": "master",
    "css": "",
    "els": [
@@ -4387,7 +4386,6 @@
    "slug": "about",
    "section": "",
    "desc": "Samt — Arabic for silence — a virtual platform for art and research founded by Walid Al Wawi in 2017.",
-   "header": false,
    "layout": "master",
    "css": "",
    "els": [

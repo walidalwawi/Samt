@@ -1,4 +1,4 @@
-/* PUBLISHED mvky8fac */
+/* PUBLISHED mvkyo8ay */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1794,6 +1794,7 @@ left: 0px;
 --k-peek: 300px;
 --k-sliver: 130px;
 --k-strip: 300px;
+--k-nudge: 0px;
 box-shadow: none;
 z-index: 3;
 background: rgba(68, 130, 200, 1);
@@ -1808,6 +1809,7 @@ left: 300px;
 --k-peek: 1000px;
 --k-sliver: -70px;
 --k-strip: 0px;
+--k-nudge: 0px;
 box-shadow: none;
 z-index: 2;
 background: rgba(235, 235, 235, 0.3);
@@ -1816,7 +1818,7 @@ backdrop-filter: blur(10px);
 }
 .bd-ly-k[data-k="index"].is-on-fji5ongj {
 top: calc(0px + 0px);
-right: calc(0px + 0px);
+right: calc(0px + 90px);
 bottom: calc(0px + 0px);
 left: calc(300px + 0px);
 }
@@ -1837,6 +1839,17 @@ transform-origin: 0 50%;
 --ksx: 1;
 --ksy: 1;
 transform-origin: 0 50%;
+}
+@media (hover: hover) and (min-width: 761px) {
+.bd-ly .bd-ly-k.is-e-left.is-st-peek:hover:not(:has(a:hover)) {
+--kx: calc((var(--k-peek) + var(--k-nudge)) - 100%);
+--ky: 0px;
+--kfx: 0deg;
+--kfy: 0deg;
+--ksx: 1;
+--ksy: 1;
+transform-origin: 0 50%;
+}
 }
 .bd-ly .bd-ly-k.is-e-left.is-st-hidden {
 --kx: calc(-100% - 24px);
@@ -2001,6 +2014,9 @@ padding-right: 40px;
 padding-left: 40px;
 max-width: 680px;
 margin: 0;
+}
+.bd-ly-pane[data-page="fji5ongj"] > .bd-panel {
+padding-top: 20px;
 }
 .is-t-unfold .bd-ly-art.is-enter {
 transform-origin: 50% 0;
@@ -2387,6 +2403,7 @@ left: 0px;
 --k-peek: 52px;
 --k-sliver: 14px;
 --k-strip: 52px;
+--k-nudge: 0px;
 box-shadow: none;
 }
 .bd-ly-k[data-k="index"] {
@@ -2397,11 +2414,12 @@ left: 0px;
 --k-peek: 0px;
 --k-sliver: 14px;
 --k-strip: 0px;
+--k-nudge: 0px;
 box-shadow: none;
 }
 .bd-ly-k[data-k="index"].is-on-fji5ongj {
 top: calc(52px + 0px);
-right: calc(0px + 0px);
+right: calc(0px + 90px);
 bottom: calc(0px + 0px);
 left: calc(0px + 0px);
 }
@@ -2560,6 +2578,9 @@ padding-right: 24px;
 padding-left: 24px;
 max-width: 680px;
 margin: 0;
+}
+.bd-ly-pane[data-page="fji5ongj"] > .bd-panel {
+padding-top: 20px;
 }
 /* CUSTOM */
 .bd-e-lb31qsc3 {
