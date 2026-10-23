@@ -1,4 +1,4 @@
-/* PUBLISHED mvkz09bf */
+/* PUBLISHED mvkz2pl4 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1720,9 +1720,6 @@ overflow-y: auto;
 overscroll-behavior: contain;
 background: var(--bd-page);
 }
-.bd-ly:not(.is-v-post) .bd-ly-content {
-filter: blur(var(--ly-focus));
-}
 .bd-ly-art {
 display: none;
 }
@@ -1749,6 +1746,9 @@ box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.06);
 }
 .bd-ly.is-t-cut .bd-ly-k.is-r-open {
 transition-duration: 0s;
+}
+.bd-ly-k.is-lift {
+transition-property: transform, box-shadow, right, bottom, left;
 }
 .bd-ly-body,
 .bd-ly-strip {
@@ -1798,8 +1798,8 @@ left: 0px;
 box-shadow: none;
 z-index: 3;
 background: rgba(68, 130, 200, 1);
--webkit-backdrop-filter: blur(0px);
-backdrop-filter: blur(0px);
+-webkit-backdrop-filter: blur(5px);
+backdrop-filter: blur(5px);
 }
 .bd-ly-k[data-k="index"] {
 top: 0px;
@@ -1813,11 +1813,12 @@ left: 300px;
 box-shadow: none;
 z-index: 2;
 background: rgba(235, 235, 235, 0.3);
--webkit-backdrop-filter: blur(10px);
-backdrop-filter: blur(10px);
+-webkit-backdrop-filter: blur(11.2px);
+backdrop-filter: blur(11.2px);
 }
 .bd-ly-k[data-k="index"].is-on-fji5ongj {
-top: calc(0px + 100px);
+--k-mt: 100px;
+top: calc(0px + var(--k-mt) - var(--k-up, 0px));
 right: calc(0px + 90px);
 bottom: calc(0px + 0px);
 left: calc(300px + 0px);
@@ -2419,7 +2420,8 @@ left: 0px;
 box-shadow: none;
 }
 .bd-ly-k[data-k="index"].is-on-fji5ongj {
-top: calc(52px + 90px);
+--k-mt: 90px;
+top: calc(52px + var(--k-mt) - var(--k-up, 0px));
 right: calc(0px + 90px);
 bottom: calc(0px + 0px);
 left: calc(0px + 0px);
