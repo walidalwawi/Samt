@@ -584,10 +584,10 @@
     "axis": "y",
     "covers": "all",
     "coverPages": [],
-    "color": "#4482c8",
+    "color": "#ffab01",
     "alpha": 100,
     "blur": 0,
-    "shadow": "none",
+    "shadow": "line",
     "nudge": 0,
     "dur": ""
    },
@@ -4583,7 +4583,11 @@
     "pl": "40",
     "pr": "40",
     "plM": "24",
-    "prM": "24"
+    "prM": "24",
+    "mr": "20%",
+    "shadow": "none",
+    "fit": false,
+    "card": ""
    }
   },
   "56ud3gky": {
@@ -4633,7 +4637,11 @@
     "gap": "",
     "gapM": ""
    },
-   "box": {}
+   "box": {
+    "shadow": "none",
+    "card": ""
+   },
+   "sheetBg": ""
   }
  }
 }
