@@ -1,10 +1,10 @@
-/* PUBLISHED mvk2v14o */
+/* PUBLISHED mvkl2ggw */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
 /* TOKENS */
 :root {
---bd-page: #4e7a27;
+--bd-page: #ffffff;
 --bd-panel: #ffffff;
 --bd-ink: #111111;
 --bd-rule: #ffffff;
@@ -1674,16 +1674,16 @@ text-align: center;
 
 /* LAYERS */
 :root {
---ly-menu-bg: rgba(0, 0, 0, 0.58);
---ly-menu-blur: 9px;
+--ly-menu-bg: rgba(255, 255, 255, 1);
+--ly-menu-blur: 0px;
 --ly-menu-w: 200px;
 --ly-menu-pad: 40px;
 --ly-menu-gap: 4px;
 --ly-about-w: 600px;
 --ly-about-pad: 40px;
---ly-index-bg: rgba(235, 235, 235, 0.6);
+--ly-index-bg: rgba(235, 235, 235, 0.3);
 --ly-index-blur: 10px;
---ly-sliver: 100px;
+--ly-sliver: 130px;
 --ly-dur: 320ms;
 --ly-menu-dur: 320ms;
 --ly-ease: cubic-bezier(.65,0,.35,1);
