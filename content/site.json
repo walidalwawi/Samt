@@ -297,12 +297,11 @@
    "libFix": 1
   },
   "layout": {
-   "cols": 3,
+   "cols": 2,
    "align": "spread",
    "spans": [
-    4,
-    4,
-    4
+    6,
+    6
    ],
    "colsM": 1,
    "gutter": 40,
@@ -592,33 +591,6 @@
     "paneW": 600,
     "pad": 40,
     "padM": 24
-   },
-   {
-    "id": "index",
-    "name": "Index",
-    "pages": [
-     "fji5ongj",
-     "b2lr3tkr"
-    ],
-    "strip": "aj2hm4y8",
-    "edge": "left",
-    "edgeM": "top",
-    "rest": "peek",
-    "peek": 25,
-    "peekM": 0,
-    "sliver": -70,
-    "sliverM": 14,
-    "axis": "y",
-    "covers": "all",
-    "coverPages": [],
-    "color": "#ebebeb",
-    "alpha": 30,
-    "blur": 10,
-    "line": false,
-    "dur": "",
-    "paneW": "",
-    "pad": "",
-    "padM": ""
    }
   ],
   "editor": {
