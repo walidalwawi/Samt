@@ -3321,6 +3321,13 @@ out.push(".bd-ly-k." + pfx + e + " > .bd-ly-strip {\n" + strip + "\n}");
 });
 return out.join("\n");
 }
+/* A SHEET BLURS ONLY WHAT LIES UNDER IT: ITS OWN BLUR, PLUS THE "COMES INTO FOCUS" BLUR (TWO BLURS ADD AS THE ROOT OF THEIR SQUARES) */
+function sheetBlur(k) {
+var Ls = S.project.site.layers;
+var b = parseFloat(k.blur) || 0;
+var f = Ls.reveal === "focus" ? parseFloat(Ls.focusBlur) || 0 : 0;
+return Math.round(Math.sqrt(b * b + f * f) * 10) / 10;
+}
 function sheetLine(k, phone) {
 var sh = k.shadow || "none";
 if (sh === "none") return "none";
@@ -3339,7 +3346,7 @@ var ins = sheetInsets(n, phone);
 var sel = '.bd-ly-k[data-k="' + k.id + '"]';
 var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
 var d = ["top: " + ins.top + "px;", "right: " + ins.right + "px;", "bottom: " + ins.bottom + "px;", "left: " + ins.left + "px;", "--k-peek: " + peek + "px;", "--k-sliver: " + (parseFloat(phone ? k.sliverM : k.sliver) || 0) + "px;", "--k-strip: " + (sheetStrip(k) ? peek : 0) + "px;", "--k-nudge: " + (parseFloat(k.nudge) || 0) + "px;", "box-shadow: " + sheetLine(k, phone) + ";"];
-if (!phone) d = d.concat(["z-index: " + (2 + K.length - 1 - n) + ";", "background: " + hexAlpha(k.color || "#E4E1DA", k.alpha == null ? 55 : k.alpha) + ";", "-webkit-backdrop-filter: blur(" + (parseFloat(k.blur) || 0) + "px);", "backdrop-filter: blur(" + (parseFloat(k.blur) || 0) + "px);"]);
+if (!phone) d = d.concat(["z-index: " + (2 + K.length - 1 - n) + ";", "background: " + hexAlpha(k.color || "#E4E1DA", k.alpha == null ? 55 : k.alpha) + ";", "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);", "backdrop-filter: blur(" + sheetBlur(k) + "px);"]);
 if (!phone && parseInt(k.dur, 10) > 0) d.push("--k-dur: " + parseInt(k.dur, 10) + "ms;");
 out.push(sel + " {\n" + d.join("\n") + "\n}");
 /* A PAGE'S MARGINS MOVE THE SHEET'S OWN EDGES WHILE IT IS THE PAGE SHOWING */
@@ -3355,7 +3362,8 @@ var b = q.box || {};
 var d = [];
 BOX_SIDES.forEach(function (sd) {
 var M = boxLen(boxVal(b, "m" + sd[0], phone), sd[0]);
-if (M != null) d.push(sd[1] + ": calc(" + (ins[sd[1]] || 0) + "px + " + M + ");");
+if (M != null && sd[0] === "t") d.push("--k-mt: " + M + ";", "top: calc(" + (ins.top || 0) + "px + var(--k-mt) - var(--k-up, 0px));");
+else if (M != null) d.push(sd[1] + ": calc(" + (ins[sd[1]] || 0) + "px + " + M + ");");
 });
 return d.join("\n");
 }
@@ -3433,13 +3441,14 @@ var out = [
 ".bd-ly-sheet.is-moving {\n--lr: var(--ly-tilt);\n}",
 ".bd-ly-sheet .bd-panel {\nmin-height: 0;\nbackground: transparent;\n}",
 ".bd-ly-content {\ninset: 0;\nz-index: 1;\noverflow-y: auto;\n-webkit-overflow-scrolling: touch;\noverscroll-behavior: contain;\nbackground: var(--bd-page);\n}",
-Ls.reveal === "focus" ? ".bd-ly:not(.is-v-post) .bd-ly-content {\nfilter: blur(var(--ly-focus));\n}" : Ls.reveal === "rise" ? ".bd-ly:not(.is-v-post) .bd-ly-content {\n--ly: 18px;\n}" : "",
+Ls.reveal === "rise" ? ".bd-ly:not(.is-v-post) .bd-ly-content {\n--ly: 18px;\n}" : "",
 ".bd-ly-art {\ndisplay: none;\n}",
 ".bd-ly-art.is-shown {\ndisplay: block;\n}",
 contentInsetCSS(false),
 ".bd-ly-k {\n--kx: 0px;\n--ky: 0px;\n--kfx: 0deg;\n--kfy: 0deg;\n--ksx: 1;\n--ksy: 1;\noverflow: hidden;\ntransform: translate3d(var(--kx), var(--ky), 0) rotate(var(--lr)) perspective(2400px) rotateY(var(--kfy)) rotateX(var(--kfx)) scale(var(--ksx), var(--ksy));\ntransition: transform " + KD + " var(--ly-ease), box-shadow " + KD + " var(--ly-ease), top " + KD + " var(--ly-ease), right " + KD + " var(--ly-ease), bottom " + KD + " var(--ly-ease), left " + KD + " var(--ly-ease);\n}",
 Ls.lift ? ".bd-ly-k.is-moving {\nbox-shadow: 8px 8px 0 rgba(0, 0, 0, 0.06);\n}" : "",
 ".bd-ly.is-t-cut .bd-ly-k.is-r-open {\ntransition-duration: 0s;\n}",
+".bd-ly-k.is-lift {\ntransition-property: transform, box-shadow, right, bottom, left;\n}",
 ".bd-ly-body,\n.bd-ly-strip {\nposition: absolute;\noverflow: hidden;\n}",
 ".bd-ly-track {\nposition: absolute;\ntop: 0;\nleft: 0;\ndisplay: flex;\ntransition: transform " + KD + " var(--ly-ease);\nwill-change: transform;\n}",
 ".bd-ly-track.is-ax-y {\nflex-direction: column;\nwidth: 100%;\nheight: calc(var(--n) * 100%);\ntransform: translate3d(0, calc(var(--i) * -100% / var(--n)), 0);\n}",
@@ -3476,6 +3485,7 @@ var st = k.querySelector(".bd-ly-strip > .bd-panel");
 return { el: k, rest: k.getAttribute("data-rest") || "open", covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
 });
 function onPage(m, st, i) {
+m.el.style.removeProperty("--k-up");
 var id = st === "open" ? m.panes[i] : m.strip;
 m.el.className = m.el.className.replace(/\bis-on-\S+/g, "").replace(/\s+/g, " ").trim() + (id ? " is-on-" + id : "");
 }
@@ -3507,6 +3517,67 @@ if (k.offsetHeight) k.style.setProperty("--k-sqy", Math.max(0.01, sl / k.offsetH
 }
 sizes();
 window.addEventListener("resize", sizes);
+/* A SHEET WITH A TOP MARGIN RISES FIRST: SCROLLING USES UP THE MARGIN (THE SHEET'S TOP EDGE CLIMBS), THEN THE PAGE SCROLLS INSIDE IT; BACK AT THE TOP THE MARGIN COMES BACK */
+els.forEach(function (k) {
+var tY = null;
+function room() {
+var v = getComputedStyle(k).getPropertyValue("--k-mt").trim();
+if (!v) return 0;
+var p = doc.createElement("div");
+p.style.cssText = "position:absolute;visibility:hidden;width:0;height:" + v;
+root.appendChild(p);
+var h = p.offsetHeight;
+root.removeChild(p);
+return h > 0 ? h : 0;
+}
+function get() {
+return parseFloat(k.style.getPropertyValue("--k-up")) || 0;
+}
+function put(v) {
+k.classList.add("is-lift");
+clearTimeout(k.bdLift);
+k.bdLift = setTimeout(function () { k.classList.remove("is-lift"); }, 160);
+k.style.setProperty("--k-up", v + "px");
+}
+function eat(e, d) {
+if (!d || !k.classList.contains("is-st-open")) return false;
+var pn = k.querySelector(".bd-ly-pane.is-on");
+if (!pn || !pn.contains(e.target)) return false;
+var m = room();
+if (!m) return false;
+var up = pn.scrollTop > 0 ? m : Math.min(get(), m);
+if (d > 0 && up < m) {
+var n = Math.min(m, up + d);
+put(n);
+pn.scrollTop += d - (n - up);
+return true;
+}
+if (d < 0 && up > 0 && pn.scrollTop <= 0) {
+put(Math.max(0, up + d));
+return true;
+}
+return false;
+}
+k.addEventListener("wheel", function (e) {
+if (eat(e, e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY) && e.cancelable) e.preventDefault();
+}, { passive: false });
+k.addEventListener("touchstart", function (e) {
+tY = e.touches.length === 1 ? e.touches[0].clientY : null;
+}, { passive: true });
+k.addEventListener("touchmove", function (e) {
+if (tY === null) return;
+var y = e.touches[0].clientY;
+var d = tY - y;
+tY = y;
+if (eat(e, d) && e.cancelable) e.preventDefault();
+}, { passive: false });
+k.addEventListener("scroll", function (e) {
+var pn = e.target;
+if (!pn || !pn.classList || !pn.classList.contains("bd-ly-pane") || pn.scrollTop <= 0) return;
+var m = room();
+if (m && get() < m) put(m);
+}, true);
+});
 function moving(m) {
 if (reduce) return;
 m.el.classList.add("is-moving");
