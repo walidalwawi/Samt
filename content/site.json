@@ -600,7 +600,7 @@
     "restPage": "",
     "edge": "left",
     "edgeM": "top",
-    "rest": "open",
+    "rest": "peek",
     "peek": 0,
     "peekM": 0,
     "sliver": -70,
@@ -833,12 +833,12 @@
    },
    "blog": true,
    "box": {
-    "mt": "0",
+    "mt": "90",
     "mb": "0",
-    "mr": "0",
+    "mr": "40",
     "ml": "0",
     "shadow": "none",
-    "fit": false,
+    "fit": true,
     "radius": 90
    }
   },
