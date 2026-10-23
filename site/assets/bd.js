@@ -32,7 +32,7 @@ return { el: k, rest: k.getAttribute("data-rest") || "open", covers: c && c !== 
 });
 function onPage(m, st, i) {
 m.el.style.removeProperty("--k-up");
-var id = st === "open" ? m.panes[i] : m.strip;
+var id = st === "peek" && m.strip ? m.strip : m.panes[i] || m.strip;
 m.el.className = m.el.className.replace(/\bis-on-\S+/g, "").replace(/\s+/g, " ").trim() + (id ? " is-on-" + id : "");
 }
 var cur = model.map(function (m) {
@@ -63,6 +63,49 @@ if (k.offsetHeight) k.style.setProperty("--k-sqy", Math.max(0.01, sl / k.offsetH
 }
 sizes();
 window.addEventListener("resize", sizes);
+/* THE ONE SCROLL LINE, ON THE WINDOW'S RIGHT EDGE, FOR THE PAGE THAT IS SCROLLING */
+var barEl = doc.getElementById("bd-ly-bar");
+var thumb = barEl ? barEl.querySelector("i") : null;
+function scroller() {
+var f = where(F);
+if (f && f.k > -1 && cur[f.k] && cur[f.k].st === "open") return model[f.k].el.querySelector(".bd-ly-pane.is-on");
+return content;
+}
+function bar() {
+if (!thumb) return;
+var sc = scroller();
+var h = root.clientHeight;
+if (!sc || sc.scrollHeight <= sc.clientHeight + 1) {
+barEl.classList.add("is-off");
+return;
+}
+var th = Math.max(28, Math.round(h * sc.clientHeight / sc.scrollHeight));
+var top = Math.round((h - th) * sc.scrollTop / (sc.scrollHeight - sc.clientHeight));
+barEl.classList.remove("is-off");
+thumb.style.setProperty("--bh", th + "px");
+thumb.style.setProperty("--bt", top + "px");
+}
+if (thumb) {
+var drag = null;
+thumb.addEventListener("pointerdown", function (e) {
+var sc = scroller();
+drag = { y: e.clientY, t: sc.scrollTop, sc: sc };
+thumb.setPointerCapture(e.pointerId);
+e.preventDefault();
+});
+thumb.addEventListener("pointermove", function (e) {
+if (!drag) return;
+var h = root.clientHeight;
+var th = Math.max(28, Math.round(h * drag.sc.clientHeight / drag.sc.scrollHeight));
+drag.sc.scrollTop = drag.t + (e.clientY - drag.y) * (drag.sc.scrollHeight - drag.sc.clientHeight) / Math.max(1, h - th);
+});
+thumb.addEventListener("pointerup", function () { drag = null; });
+thumb.addEventListener("pointercancel", function () { drag = null; });
+root.addEventListener("scroll", bar, true);
+window.addEventListener("resize", bar);
+window.addEventListener("load", bar);
+setTimeout(bar, 60);
+}
 /* A SHEET WITH A TOP MARGIN RISES FIRST: SCROLLING USES UP THE MARGIN (THE SHEET'S TOP EDGE CLIMBS), THEN THE PAGE SCROLLS INSIDE IT; BACK AT THE TOP THE MARGIN COMES BACK */
 els.forEach(function (k) {
 var tY = null;
@@ -201,6 +244,10 @@ m.track.classList.remove("is-snap");
 m.track.querySelectorAll(".bd-ly-pane").forEach(function (p, j) { p.classList.toggle("is-on", j === n.i); });
 }
 if (n.st !== c.st) {
+/* A SHEET'S EDGES NEVER MOVE WHILE IT SLIDES: ITS BOX CHANGES INSTANTLY, THE SLIDE IS A STRAIGHT LINE */
+m.el.classList.add("is-snapbox");
+clearTimeout(m.el.bdSb);
+m.el.bdSb = setTimeout(function () { m.el.classList.remove("is-snapbox"); }, dur + 80);
 m.el.classList.remove("is-st-" + c.st);
 m.el.classList.add("is-st-" + n.st);
 moving(m);
@@ -209,6 +256,8 @@ if (n.st !== c.st || n.i !== c.i) onPage(m, n.st, n.i);
 });
 cur = next;
 F = f.id;
+setTimeout(bar, 30);
+setTimeout(bar, dur + 80);
 root.classList.toggle("is-v-post", f.k < 0);
 root.setAttribute("data-focus", F);
 mark();

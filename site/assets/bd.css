@@ -1,4 +1,4 @@
-/* PUBLISHED mvkz2pl4 */
+/* PUBLISHED mvkzm95a */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -26,7 +26,7 @@
 --bd-lh: 19px;
 --bd-ms: 12px;
 --bd-ml: 18px;
---bd-ls: 13px;
+--bd-ls: 15px;
 --bd-ll: 19px;
 --bd-space: 32px;
 --bd-head-x: 2;
@@ -1248,7 +1248,7 @@ font-weight: 400;
 font-style: normal;
 text-transform: none;
 letter-spacing: 0em;
-font-size: 13px;
+font-size: 15px;
 line-height: 19px;
 }
 .bd-text.is-small,
@@ -1290,6 +1290,61 @@ text-transform: uppercase;
 letter-spacing: 0em;
 font-size: 12px;
 line-height: 18px;
+}
+
+/* SCROLLBARS */
+* {
+scrollbar-width: thin;
+scrollbar-color: var(--bd-ink) transparent;
+}
+::-webkit-scrollbar {
+width: 4px;
+height: 4px;
+}
+::-webkit-scrollbar-thumb {
+background: var(--bd-ink);
+}
+::-webkit-scrollbar-track {
+background: transparent;
+}
+.bd-ly-content,
+.bd-ly-pane {
+scrollbar-width: none;
+}
+.bd-ly-content::-webkit-scrollbar,
+.bd-ly-pane::-webkit-scrollbar {
+display: none;
+}
+.bd-ly-bar {
+position: absolute;
+top: 0;
+right: 0;
+bottom: 0;
+width: 18px;
+z-index: 30;
+pointer-events: none;
+}
+.bd-ly-bar.is-off {
+display: none;
+}
+.bd-ly-bar i {
+position: absolute;
+right: 0;
+top: var(--bt, 0px);
+width: 18px;
+height: var(--bh, 40px);
+pointer-events: auto;
+touch-action: none;
+cursor: default;
+}
+.bd-ly-bar i::after {
+content: "";
+position: absolute;
+top: 0;
+right: 0;
+bottom: 0;
+width: 3px;
+background: var(--bd-ink);
 }
 
 /* MASTER */
@@ -1750,6 +1805,9 @@ transition-duration: 0s;
 .bd-ly-k.is-lift {
 transition-property: transform, box-shadow, right, bottom, left;
 }
+.bd-ly-k.is-snapbox {
+transition-property: transform, box-shadow;
+}
 .bd-ly-body,
 .bd-ly-strip {
 position: absolute;
@@ -1817,11 +1875,17 @@ background: rgba(235, 235, 235, 0.3);
 backdrop-filter: blur(11.2px);
 }
 .bd-ly-k[data-k="index"].is-on-fji5ongj {
---k-mt: 100px;
+--k-mt: 0px;
 top: calc(0px + var(--k-mt) - var(--k-up, 0px));
-right: calc(0px + 90px);
+right: calc(0px + 10vw);
 bottom: calc(0px + 0px);
 left: calc(300px + 0px);
+}
+.bd-ly-k[data-k="index"].is-on-b2lr3tkr {
+--k-mt: 0px;
+top: calc(0px + var(--k-mt) - var(--k-up, 0px));
+right: calc(0px + 10vw);
+bottom: calc(0px + 0px);
 }
 .bd-ly .bd-ly-k.is-e-left.is-st-open {
 --kx: 0px;
@@ -2422,9 +2486,15 @@ box-shadow: none;
 .bd-ly-k[data-k="index"].is-on-fji5ongj {
 --k-mt: 90px;
 top: calc(52px + var(--k-mt) - var(--k-up, 0px));
-right: calc(0px + 90px);
+right: calc(0px + 10vw);
 bottom: calc(0px + 0px);
 left: calc(0px + 0px);
+}
+.bd-ly-k[data-k="index"].is-on-b2lr3tkr {
+--k-mt: 0px;
+top: calc(52px + var(--k-mt) - var(--k-up, 0px));
+right: calc(0px + 10vw);
+bottom: calc(0px + 0px);
 }
 .bd-ly .bd-ly-k.is-em-top.is-st-open {
 --kx: 0px;

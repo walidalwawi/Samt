@@ -55,11 +55,11 @@
    },
    "heading": {
     "font": "sans",
-    "size": 13,
+    "size": 15,
     "lh": 19,
     "sizeM": 14,
     "lhM": 20,
-    "weight": 400,
+    "weight": "400",
     "italic": false,
     "textCase": "none",
     "tracking": 0,
@@ -71,7 +71,7 @@
     "lh": 19,
     "sizeM": 12,
     "lhM": 17,
-    "weight": 400,
+    "weight": "400",
     "italic": false,
     "textCase": "none",
     "tracking": 0,
@@ -502,19 +502,19 @@
     "name": "Main menu",
     "items": [
      {
-      "id": "x5d88rg3",
+      "id": "gaxxsh8k",
       "type": "page",
       "page": "fji5ongj",
       "label": ""
      },
      {
-      "id": "gaxxsh8k",
+      "id": "fvg140br",
       "type": "page",
       "page": "b2lr3tkr",
       "label": ""
      },
      {
-      "id": "fvg140br",
+      "id": "7jgh5pes",
       "type": "page",
       "page": "nsye72w3",
       "label": ""
@@ -835,9 +835,9 @@
    },
    "blog": true,
    "box": {
-    "mt": "100",
+    "mt": "0",
     "mb": "0",
-    "mr": "90",
+    "mr": "10%",
     "ml": "0",
     "shadow": "none",
     "fit": true,
@@ -4299,7 +4299,11 @@
     "gutter": 30,
     "gutterM": 20
    },
-   "box": {}
+   "box": {
+    "mt": "0",
+    "mr": "10%",
+    "mb": "0"
+   }
   },
   "zty6iib1": {
    "id": "zty6iib1",
