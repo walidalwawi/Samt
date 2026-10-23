@@ -1,4 +1,4 @@
-/* PUBLISHED mvkm2fm3 */
+/* PUBLISHED mvkt0clt */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -26,8 +26,8 @@
 --bd-lh: 19px;
 --bd-ms: 12px;
 --bd-ml: 18px;
---bd-ls: 15px;
---bd-ll: 20px;
+--bd-ls: 13px;
+--bd-ll: 19px;
 --bd-space: 32px;
 --bd-head-x: 2;
 --bd-head-space: 0px;
@@ -1248,8 +1248,8 @@ font-weight: 400;
 font-style: normal;
 text-transform: none;
 letter-spacing: 0em;
-font-size: 15px;
-line-height: 20px;
+font-size: 13px;
+line-height: 19px;
 }
 .bd-text.is-small,
 .bd-ptitle.is-small,
@@ -1381,7 +1381,7 @@ column-gap: 40px;
 
 /* HEADER + FOOTER */
 .bd-panel > .bd-pin.bd-p-f0kgkfxt {
-margin-bottom: 200px;
+margin-top: 200px;
 }
 
 /* PAGE: HEADER */
@@ -2101,7 +2101,7 @@ column-gap: 24px;
 }
 /* HEADER + FOOTER */
 .bd-panel > .bd-pin.bd-p-f0kgkfxt {
-margin-bottom: 64px;
+margin-top: 64px;
 }
 /* PAGE: HEADER */
 
