@@ -4,6 +4,7 @@
 --e-bg: #EFEDE7;
 --e-surface: #FBFAF8;
 --e-raise: #FFFFFF;
+--e-tint: #F4F2EE;
 --e-ink: #1F1E1C;
 --e-mute: #6B6862;
 --e-line: #DAD6CE;
@@ -19,6 +20,7 @@
 --e-bg: #151413;
 --e-surface: #1C1B19;
 --e-raise: #24221F;
+--e-tint: #211F1D;
 --e-ink: #EDEBE5;
 --e-mute: #A39E94;
 --e-line: #35322D;
@@ -33,6 +35,7 @@ color-scheme: dark;
 --e-bg: #151413;
 --e-surface: #1C1B19;
 --e-raise: #24221F;
+--e-tint: #211F1D;
 --e-ink: #EDEBE5;
 --e-mute: #A39E94;
 --e-line: #35322D;
@@ -921,6 +924,49 @@ padding: 4px 0;
 font-family: var(--e-mono);
 font-size: 11px;
 color: #A33A2A;
+}
+
+/* SHADES — EACH SECTION IS ITS OWN CARD, SO IT'S CLEAR WHERE ONE TOOL ENDS AND THE NEXT STARTS */
+.bd-ed-panel {
+background: var(--e-bg);
+}
+.bd-ed-panel > .bd-ed-sec,
+.bd-ed-pop.is-tools > .bd-ed-sec {
+margin: 8px 8px 0;
+background: var(--e-surface);
+border: 1px solid var(--e-line);
+border-radius: 4px;
+}
+.bd-ed-panel > .bd-ed-sec:last-child,
+.bd-ed-pop.is-tools > .bd-ed-sec:last-child {
+margin-bottom: 8px;
+border-bottom: 1px solid var(--e-line);
+}
+.bd-ed-pop.is-tools {
+background: var(--e-bg);
+}
+.bd-ed-sec .bd-ed-adv[open] {
+background: var(--e-tint);
+}
+.bd-ed-sec .bd-ed-adv[open] > summary {
+color: var(--e-ink);
+}
+.bd-ed-sec .bd-ed-group {
+padding: 8px;
+background: var(--e-tint);
+border: 1px solid var(--e-line);
+border-radius: 3px;
+}
+.bd-ed-sec .bd-ed-group .bd-ed-adv[open] {
+background: var(--e-surface);
+}
+.bd-ed-trow:nth-child(even) {
+background: var(--e-tint);
+}
+.bd-ed-sec > .bd-ed-title {
+display: block;
+padding-bottom: 6px;
+border-bottom: 1px solid var(--e-line);
 }
 
 /* MOBILE */
