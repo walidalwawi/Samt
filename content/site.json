@@ -570,9 +570,10 @@
     "id": "menu",
     "name": "Menu",
     "pages": [
-     "nsye72w3"
+     "nsye72w3",
+     "56ud3gky"
     ],
-    "strip": "56ud3gky",
+    "restPage": "56ud3gky",
     "edge": "left",
     "edgeM": "top",
     "rest": "peek",
@@ -587,10 +588,31 @@
     "alpha": 100,
     "blur": 0,
     "line": false,
-    "dur": "",
-    "paneW": 600,
-    "pad": 40,
-    "padM": 24
+    "dur": ""
+   },
+   {
+    "id": "index",
+    "name": "Index",
+    "pages": [
+     "fji5ongj",
+     "b2lr3tkr"
+    ],
+    "restPage": "",
+    "edge": "left",
+    "edgeM": "top",
+    "rest": "open",
+    "peek": 0,
+    "peekM": 0,
+    "sliver": -70,
+    "sliverM": 14,
+    "axis": "y",
+    "covers": "all",
+    "coverPages": [],
+    "color": "#ebebeb",
+    "alpha": 30,
+    "blur": 10,
+    "line": false,
+    "dur": ""
    }
   ],
   "editor": {
@@ -4546,7 +4568,13 @@
     "gutter": 40,
     "gutterM": 24
    },
-   "box": {}
+   "box": {
+    "maxW": "680",
+    "pl": "40",
+    "pr": "40",
+    "plM": "24",
+    "prM": "24"
+   }
   },
   "56ud3gky": {
    "id": "56ud3gky",

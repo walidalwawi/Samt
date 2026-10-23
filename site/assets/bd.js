@@ -26,8 +26,13 @@ var F = root.getAttribute("data-focus") || home;
 var before = home;
 var model = els.map(function (k) {
 var c = k.getAttribute("data-covers");
-return { el: k, rest: k.getAttribute("data-rest") || "open", covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track") };
+var st = k.querySelector(".bd-ly-strip > .bd-panel");
+return { el: k, rest: k.getAttribute("data-rest") || "open", covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
 });
+function onPage(m, st, i) {
+var id = st === "open" ? m.panes[i] : m.strip;
+m.el.className = m.el.className.replace(/\bis-on-\S+/g, "").replace(/\s+/g, " ").trim() + (id ? " is-on-" + id : "");
+}
 var cur = model.map(function (m) {
 return { st: (m.el.className.match(/\bis-st-([a-z]+)/) || [])[1] || "open", i: parseInt(m.track.style.getPropertyValue("--i"), 10) || 0 };
 });
@@ -136,6 +141,7 @@ m.el.classList.remove("is-st-" + c.st);
 m.el.classList.add("is-st-" + n.st);
 moving(m);
 } else if (n.i !== c.i) moving(m);
+if (n.st !== c.st || n.i !== c.i) onPage(m, n.st, n.i);
 });
 cur = next;
 F = f.id;
@@ -542,14 +548,18 @@ if (window.parent && window.parent !== window && window.parent.__bdInkCache) ret
 return (window.__bdInkCache = window.__bdInkCache || {});
 })();
 var bake = function (img) {
-var src = img.currentSrc || img.src;
-if (!src || src.indexOf("data:") === 0) return;
+var src = img.getAttribute("data-bd-src") || img.currentSrc || img.src;
+if (!src || src.indexOf("data:") === 0 || src.indexOf("blob:") === 0) return;
+var ink = (getComputedStyle(img).color.match(/\d+(\.\d+)?/g) || [17, 17, 17]).map(Number);
+var key = src + "|" + ink.join(",");
 var done = function (url) {
+img.setAttribute("data-bd-src", src);
 img.removeAttribute("srcset");
 img.src = url;
 img.style.mixBlendMode = "normal";
 };
-if (cache[src]) return done(cache[src]);
+if (cache[key] === "…") return;
+if (cache[key]) return done(cache[key]);
 var w = img.naturalWidth;
 var h = img.naturalHeight;
 if (!w || !h) return;
@@ -567,7 +577,6 @@ px = cx.getImageData(0, 0, w, h);
 } catch (err) {
 return;
 }
-var ink = (getComputedStyle(img).color.match(/\d+(\.\d+)?/g) || [17, 17, 17]).map(Number);
 var d = px.data;
 for (var i = 0; i < d.length; i += 4) {
 var lum = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
@@ -578,17 +587,24 @@ d[i + 2] = ink[2];
 d[i + 3] = Math.round(a * 255);
 }
 cx.putImageData(px, 0, 0);
+/* KEPT AS A BLOB URL: CHEAP TO ASSIGN AGAIN AND AGAIN, DECODED ONCE BY THE BROWSER */
+cache[key] = "…";
+var finish = function (url) {
+cache[key] = url;
+done(url);
+};
 try {
-cache[src] = cv.toDataURL("image/png");
+if (cv.toBlob) cv.toBlob(function (bl) { if (bl) finish(URL.createObjectURL(bl)); else delete cache[key]; }, "image/png");
+else finish(cv.toDataURL("image/png"));
 } catch (err) {
-return;
+delete cache[key];
 }
-done(cache[src]);
 };
 Array.prototype.forEach.call(root.querySelectorAll("img"), function (img) {
 if (img.__bdInk) return;
 if (getComputedStyle(img).getPropertyValue("--bd-ink-img").trim() !== "1") return;
 img.__bdInk = true;
+if (img.src.indexOf("blob:") === 0) return;
 img.loading = "eager";
 if (img.complete && img.naturalWidth) bake(img);
 else img.addEventListener("load", function () { bake(img); }, { once: true });
