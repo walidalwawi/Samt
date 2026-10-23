@@ -212,6 +212,9 @@ min-width: 72px;
 text-align: right;
 white-space: nowrap;
 }
+.bd-ed-hint.is-warn {
+color: var(--e-mute);
+}
 .bd-ed-status.is-warn {
 color: var(--e-warn);
 }
