@@ -592,7 +592,29 @@ if (!s.styles && s.fs) s.styles = stylesFrom(s.fs, s.lh, s.ms || s.fs, s.ml || s
 if (s.showNum === undefined) s.showNum = false;
 s.layers = Object.assign(clone(LAYER_DEFAULTS), s.layers || {});
 if (s.layers.on && !s.sheets) migrateSheets(p);
-s.sheets = (s.sheets || []).map(function (k) { return Object.assign(clone(SHEET_DEFAULTS), k); });
+s.sheets = (s.sheets || []).map(function (k) {
+var o = Object.assign(clone(SHEET_DEFAULTS), k);
+/* OLDER: THE EDGE PAGE WAS A SEPARATE "STRIP" FIELD, AND SHEETS CARRIED THEIR PAGES' TEXT WIDTH AND PADDING */
+if (o.strip) {
+if ((o.pages || []).indexOf(o.strip) < 0) o.pages = (o.pages || []).concat([o.strip]);
+o.restPage = o.strip;
+if (o.rest === "open") o.rest = "peek";
+}
+if (o.paneW || o.pad !== "" || o.padM !== "") (o.pages || []).forEach(function (id) {
+var q = p.pages[id];
+if (!q || id === o.strip) return;
+q.box = Object.assign({}, q.box || {});
+var pd = o.pad !== "" && o.pad != null ? parseFloat(o.pad) || 0 : 0;
+if (o.paneW && q.box.maxW == null) q.box.maxW = String(parseFloat(o.paneW) + pd * 2);
+if (o.pad !== "" && o.pad != null && q.box.pl == null) { q.box.pl = String(o.pad); q.box.pr = String(o.pad); }
+if (o.padM !== "" && o.padM != null && q.box.plM == null) { q.box.plM = String(o.padM); q.box.prM = String(o.padM); }
+});
+delete o.strip;
+delete o.paneW;
+delete o.pad;
+delete o.padM;
+return o;
+});
 s.editor = Object.assign({ layout: {}, hidden: [], order: {}, moved: {}, custom: [] }, s.editor || {});
 /* OLD SHEET MARGINS BECOME THE PAGE'S PADDING */
 Object.keys(p.pages || {}).forEach(function (id) {
@@ -2252,14 +2274,14 @@ return m[1] + u;
 function boxVal(b, k, phone) {
 return phone && b[k + "M"] !== "" && b[k + "M"] != null ? b[k + "M"] : b[k];
 }
-function pageBoxCSS(q, phone, sel, ins) {
+function pageBoxCSS(q, phone, sel, ins, noMargin) {
 var b = q.box || {};
 ins = ins || { top: 0, right: 0, bottom: 0, left: 0 };
 var def = { t: "var(--bd-wt)", r: "var(--bd-wr)", b: "var(--bd-wb)", l: "var(--bd-wl)" };
 var d = [];
 var sideM = false;
 BOX_SIDES.forEach(function (sd) {
-var M = boxLen(boxVal(b, "m" + sd[0], phone), sd[0]);
+var M = noMargin ? null : boxLen(boxVal(b, "m" + sd[0], phone), sd[0]);
 var P = boxLen(boxVal(b, "p" + sd[0], phone), sd[0]);
 var I = ins[sd[1]] || 0;
 if (M != null) {
@@ -2272,6 +2294,7 @@ if (P != null) d.push("padding-" + sd[1] + ": " + (I && M == null ? "calc(" + I 
 var w = boxLen(boxVal(b, "maxW", phone), "l");
 if (sideM) d.push("width: auto;");
 if (w) d.push("max-width: " + w + ";");
+if (w && noMargin) d.push("margin: 0;");
 if (!phone) {
 if (b.card) d.push("background: " + b.card + ";");
 var r = parseFloat(b.radius);
@@ -2284,7 +2307,7 @@ if (b.fit) d.push("min-height: 0;");
 return d.length ? sel + " {\n" + d.join("\n") + "\n}" : "";
 }
 /* THE PAGE'S SPACE & CARD FIELDS (RIGHT PANEL) */
-function pageBoxPanel(pg) {
+function pageBoxPanel(pg, tail) {
 var ph = S.mode === "phone";
 var b = pg.box || {};
 var four = function (pre) {
@@ -2293,14 +2316,16 @@ var k = pre + sd[0] + (ph ? "M" : "");
 return '<label class="bd-ed-field"><span class="bd-ed-label">' + sd[1] + '</span><input class="bd-ed-input bd-ed-n" data-bind="page.box.' + k + '" value="' + esc(b[k] == null ? "" : b[k]) + '"' + (ph && b[pre + sd[0]] ? ' placeholder="' + esc(b[pre + sd[0]]) + '"' : "") + "></label>";
 }).join("") + "</div>";
 };
+var onSheet = layersOn() && sheetOf(pg.id).k > -1;
 return '<div class="bd-ed-sec"><span class="bd-ed-title">Space & card' + (ph ? " · phone" : "") + "</span>"
-+ '<span class="bd-ed-label">Margin · outside the page</span>' + four("m")
++ '<span class="bd-ed-label">Margin · ' + (onSheet ? "the sheet shrinks to it, what’s underneath shows around" : "outside the page") + "</span>" + four("m")
 + '<span class="bd-ed-label">Padding · inside the page</span>' + four("p")
 + '<div class="bd-ed-hint">Numbers are px. 20% = a fifth of the window (top and bottom of its height, sides of its width). Blank = the site’s.' + (ph ? " Blank on phone = same as desktop." : "") + "</div>"
 + row(colorIn("Card colour", "page.box.card", b.card || "", "#ffffff", "None"), colorIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site"))
 + row(numIn("Corners", "page.box.radius", b.radius == null ? "" : b.radius, "blank"), field("Max width" + (ph ? " · phone" : ""), input("page.box.maxW" + (ph ? "M" : ""), (ph ? b.maxWM : b.maxW) || "", "", ' placeholder="720 or 60%"')))
 + field("Shadow", seg("page.box.shadow", b.shadow || "none", [["none", "None"], ["line", "Line"], ["hard", "Hard"], ["soft", "Soft"]]))
 + sw("Card only as tall as what’s on it", "page.box.fit", !!b.fit)
++ (tail || "")
 + "</div>";
 }
 function pick(p, k, phone) {
@@ -3035,7 +3060,17 @@ var n = parseInt(h, 16) || 0;
 return "rgba(" + ((n >> 16) & 255) + ", " + ((n >> 8) & 255) + ", " + (n & 255) + ", " + Math.round(pct) / 100 + ")";
 }
 /* SHEETS — ANY PAGE CAN LIE ON A PAPER SHEET; THE SHEETS LIST (TOP → BOTTOM) DECIDES WHAT LIES OVER WHAT */
-var SHEET_DEFAULTS = { id: "", name: "Sheet", pages: [], strip: "", edge: "left", edgeM: "top", rest: "open", peek: 200, peekM: 52, sliver: 44, sliverM: 14, axis: "y", covers: "all", coverPages: [], color: "#E4E1DA", alpha: 55, blur: 9, line: true, dur: "", paneW: "", pad: "", padM: "" };
+var SHEET_DEFAULTS = { id: "", name: "Sheet", pages: [], restPage: "", edge: "left", edgeM: "top", rest: "open", peek: 200, peekM: 52, sliver: 44, sliverM: 14, axis: "y", covers: "all", coverPages: [], color: "#E4E1DA", alpha: 55, blur: 9, line: true, dur: "" };
+/* THE PAGE A PEEKING SHEET SHOWS AT REST — DRAWN ON ITS EDGE, ALWAYS THERE; THE OTHER PAGES SLIDE INTO VIEW */
+function sheetStrip(k) {
+if (!k || k.rest !== "peek") return null;
+var q = sheetPage(k.restPage) || sheetPage((k.pages || [])[0]);
+return q && (k.pages || []).indexOf(q.id) > -1 ? q : null;
+}
+function sheetPanes(k) {
+var st = sheetStrip(k);
+return (k.pages || []).map(sheetPage).filter(function (q) { return q && (!st || q.id !== st.id); });
+}
 var SHEET_EDGES = [["left", "Left"], ["right", "Right"], ["top", "Top"], ["bottom", "Bottom"]];
 function sheetList() {
 var s = S.project.site;
@@ -3049,9 +3084,10 @@ return q && q.kind !== "pin" ? q : null;
 function sheetOf(id) {
 var K = sheetList();
 for (var n = 0; n < K.length; n++) {
-var j = (K[n].pages || []).indexOf(id);
-if (j > -1) return { id: id, k: n, i: j, sheet: K[n] };
-if (K[n].strip === id) return { id: id, k: n, i: -1, strip: true, sheet: K[n] };
+if ((K[n].pages || []).indexOf(id) < 0) continue;
+var st = sheetStrip(K[n]);
+if (st && st.id === id) return { id: id, k: n, i: -1, strip: true, sheet: K[n] };
+return { id: id, k: n, i: sheetPanes(K[n]).map(function (q) { return q.id; }).indexOf(id), sheet: K[n] };
 }
 return { id: id, k: -1, i: 0 };
 }
@@ -3059,7 +3095,6 @@ function sheetUsed() {
 var ids = [];
 sheetList().forEach(function (k) {
 (k.pages || []).forEach(function (id) { ids.push(id); });
-if (k.strip) ids.push(k.strip);
 });
 return ids;
 }
@@ -3072,7 +3107,7 @@ function sheetHome() {
 var K = sheetList();
 for (var n = 0; n < K.length; n++) {
 if (K[n].rest !== "open") continue;
-var q = (K[n].pages || []).map(sheetPage).filter(Boolean)[0];
+var q = sheetPanes(K[n])[0];
 if (q) return q.id;
 }
 var c = sheetContent()[0];
@@ -3082,9 +3117,8 @@ return c ? c.id : "";
 function sheetFeatured() {
 var blog = null;
 sheetList().forEach(function (k) {
-(k.pages || []).forEach(function (id) {
-var q = sheetPage(id);
-if (!blog && q && q.blog) blog = q;
+sheetPanes(k).forEach(function (q) {
+if (!blog && q.blog) blog = q;
 });
 });
 var posts = blog ? postsOf(blog.id) : [];
@@ -3093,7 +3127,7 @@ return f ? f.id : "";
 }
 function sheetModel() {
 return sheetList().map(function (k) {
-return { rest: k.rest || "open", covers: k.covers === "some" ? (k.coverPages || []).slice() : null, panes: (k.pages || []).filter(sheetPage) };
+return { rest: k.rest || "open", covers: k.covers === "some" ? (k.coverPages || []).slice() : null, panes: sheetPanes(k).map(function (q) { return q.id; }) };
 });
 }
 function sheetFocus(page) {
@@ -3102,7 +3136,6 @@ if (!w || w.strip) {
 var h = sheetHome();
 return h ? sheetOf(h) : { id: "", k: -1, i: 0 };
 }
-if (w.k > -1) w.i = sheetModel()[w.k].panes.indexOf(page.id);
 return { id: w.id, k: w.k, i: Math.max(0, w.i) };
 }
 /* THE PLAN (EXPORTED AS-IS, SHARED BY PUBLISH AND THE RUNTIME): WHERE EVERY SHEET GOES WHEN A PAGE OPENS
@@ -3127,7 +3160,7 @@ function layerRoles() {
 var panes = [];
 var about = null;
 sheetList().forEach(function (k) {
-(k.pages || []).map(sheetPage).filter(Boolean).forEach(function (q, j) {
+sheetPanes(k).forEach(function (q) {
 panes.push(q);
 if (!about && k.rest !== "open") about = q;
 });
@@ -3194,9 +3227,10 @@ return '<article class="bd-ly-art' + (q.id === shown ? " is-shown" : "") + '" da
 }).join("\n");
 var sheets = K.map(function (k, n) {
 var pl = plan[n];
-var panes = (k.pages || []).map(sheetPage).filter(Boolean);
-var strip = sheetPage(k.strip);
-return '<section class="bd-ly-sheet bd-ly-k is-e-' + esc(k.edge || "left") + " is-em-" + esc(k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
+var panes = sheetPanes(k);
+var strip = sheetStrip(k);
+var onPage = pl.st === "open" ? panes[pl.i] : strip;
+return '<section class="bd-ly-sheet bd-ly-k is-e-' + esc(k.edge || "left") + " is-em-" + esc(k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + (onPage ? " is-on-" + onPage.id : "") + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
 + '<div class="bd-ly-body">\n<div class="bd-ly-track is-ax-' + (k.axis === "x" ? "x" : "y") + '" style="--n: ' + Math.max(1, panes.length) + "; --i: " + pl.i + ';">\n'
 + panes.map(function (q, j) {
 return '<div class="bd-ly-pane' + (j === pl.i ? " is-on" : "") + '" data-page="' + q.id + '" data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n' + layerBody(q, ctx) + "\n</div>";
@@ -3279,16 +3313,26 @@ K.forEach(function (k, n) {
 var ins = sheetInsets(n, phone);
 var sel = '.bd-ly-k[data-k="' + k.id + '"]';
 var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
-var d = ["top: " + ins.top + "px;", "right: " + ins.right + "px;", "bottom: " + ins.bottom + "px;", "left: " + ins.left + "px;", "--k-peek: " + peek + "px;", "--k-sliver: " + (parseFloat(phone ? k.sliverM : k.sliver) || 0) + "px;", "--k-strip: " + (k.strip && sheetPage(k.strip) ? peek : 0) + "px;", "box-shadow: " + sheetLine(k, phone) + ";"];
+var d = ["top: " + ins.top + "px;", "right: " + ins.right + "px;", "bottom: " + ins.bottom + "px;", "left: " + ins.left + "px;", "--k-peek: " + peek + "px;", "--k-sliver: " + (parseFloat(phone ? k.sliverM : k.sliver) || 0) + "px;", "--k-strip: " + (sheetStrip(k) ? peek : 0) + "px;", "box-shadow: " + sheetLine(k, phone) + ";"];
 if (!phone) d = d.concat(["z-index: " + (2 + K.length - 1 - n) + ";", "background: " + hexAlpha(k.color || "#E4E1DA", k.alpha == null ? 55 : k.alpha) + ";", "-webkit-backdrop-filter: blur(" + (parseFloat(k.blur) || 0) + "px);", "backdrop-filter: blur(" + (parseFloat(k.blur) || 0) + "px);"]);
 if (!phone && parseInt(k.dur, 10) > 0) d.push("--k-dur: " + parseInt(k.dur, 10) + "ms;");
 out.push(sel + " {\n" + d.join("\n") + "\n}");
-var w = parseFloat(k.paneW);
-var pad = parseFloat(phone ? k.padM : k.pad);
-if (!isNaN(pad)) out.push(sel + " .bd-ly-pane {\npadding: 0 " + pad + "px;\n}");
-if (!phone && (w > 0 || !isNaN(parseFloat(k.pad)))) out.push(sel + " .bd-ly-pane > .bd-panel {\n" + (w > 0 ? "max-width: " + w + "px;\n" : "") + "margin: 0;\npadding-left: 0;\npadding-right: 0;\n}");
+/* A PAGE'S MARGINS MOVE THE SHEET'S OWN EDGES WHILE IT IS THE PAGE SHOWING */
+(k.pages || []).map(sheetPage).filter(Boolean).forEach(function (q) {
+var m = sheetMarginCSS(q, phone, ins);
+if (m) out.push(sel + ".is-on-" + q.id + " {\n" + m + "\n}");
+});
 });
 return out.join("\n");
+}
+function sheetMarginCSS(q, phone, ins) {
+var b = q.box || {};
+var d = [];
+BOX_SIDES.forEach(function (sd) {
+var M = boxLen(boxVal(b, "m" + sd[0], phone), sd[0]);
+if (M != null) d.push(sd[1] + ": calc(" + (ins[sd[1]] || 0) + "px + " + M + ");");
+});
+return d.join("\n");
 }
 function sheetEdges(phone) {
 var u = [];
@@ -3310,9 +3354,10 @@ if (bx) out.push(bx);
 });
 sheetList().forEach(function (k) {
 (k.pages || []).map(sheetPage).filter(Boolean).forEach(function (q) {
-var sel = '.bd-ly-pane[data-page="' + q.id + '"]';
+var st = sheetStrip(k);
+var sel = st && st.id === q.id ? '.bd-ly-k[data-k="' + k.id + '"] > .bd-ly-strip' : '.bd-ly-pane[data-page="' + q.id + '"]';
 if (!phone && q.sheetBg) out.push(sel + " {\nbackground: " + q.sheetBg + ";\n}");
-var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", null);
+var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", null, true);
 if (bx) out.push(bx);
 });
 });
@@ -3367,7 +3412,7 @@ Ls.reveal === "focus" ? ".bd-ly:not(.is-v-post) .bd-ly-content {\nfilter: blur(v
 ".bd-ly-art {\ndisplay: none;\n}",
 ".bd-ly-art.is-shown {\ndisplay: block;\n}",
 contentInsetCSS(false),
-".bd-ly-k {\n--kx: 0px;\n--ky: 0px;\n--kfx: 0deg;\n--kfy: 0deg;\n--ksx: 1;\n--ksy: 1;\noverflow: hidden;\ntransform: translate3d(var(--kx), var(--ky), 0) rotate(var(--lr)) perspective(2400px) rotateY(var(--kfy)) rotateX(var(--kfx)) scale(var(--ksx), var(--ksy));\ntransition: transform " + KD + " var(--ly-ease), box-shadow " + KD + " var(--ly-ease);\n}",
+".bd-ly-k {\n--kx: 0px;\n--ky: 0px;\n--kfx: 0deg;\n--kfy: 0deg;\n--ksx: 1;\n--ksy: 1;\noverflow: hidden;\ntransform: translate3d(var(--kx), var(--ky), 0) rotate(var(--lr)) perspective(2400px) rotateY(var(--kfy)) rotateX(var(--kfx)) scale(var(--ksx), var(--ksy));\ntransition: transform " + KD + " var(--ly-ease), box-shadow " + KD + " var(--ly-ease), top " + KD + " var(--ly-ease), right " + KD + " var(--ly-ease), bottom " + KD + " var(--ly-ease), left " + KD + " var(--ly-ease);\n}",
 Ls.lift ? ".bd-ly-k.is-moving {\nbox-shadow: 8px 8px 0 rgba(0, 0, 0, 0.06);\n}" : "",
 ".bd-ly.is-t-cut .bd-ly-k.is-r-open {\ntransition-duration: 0s;\n}",
 ".bd-ly-body,\n.bd-ly-strip {\nposition: absolute;\noverflow: hidden;\n}",
@@ -3402,8 +3447,13 @@ var F = root.getAttribute("data-focus") || home;
 var before = home;
 var model = els.map(function (k) {
 var c = k.getAttribute("data-covers");
-return { el: k, rest: k.getAttribute("data-rest") || "open", covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track") };
+var st = k.querySelector(".bd-ly-strip > .bd-panel");
+return { el: k, rest: k.getAttribute("data-rest") || "open", covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
 });
+function onPage(m, st, i) {
+var id = st === "open" ? m.panes[i] : m.strip;
+m.el.className = m.el.className.replace(/\bis-on-\S+/g, "").replace(/\s+/g, " ").trim() + (id ? " is-on-" + id : "");
+}
 var cur = model.map(function (m) {
 return { st: (m.el.className.match(/\bis-st-([a-z]+)/) || [])[1] || "open", i: parseInt(m.track.style.getPropertyValue("--i"), 10) || 0 };
 });
@@ -3512,6 +3562,7 @@ m.el.classList.remove("is-st-" + c.st);
 m.el.classList.add("is-st-" + n.st);
 moving(m);
 } else if (n.i !== c.i) moving(m);
+if (n.st !== c.st || n.i !== c.i) onPage(m, n.st, n.i);
 });
 cur = next;
 F = f.id;
@@ -3633,7 +3684,7 @@ var e = (phone ? k.edgeM : k.edge) || "left";
 var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
 var ins = sheetInsets(n, phone);
 var pos = e === "left" ? "top:" + ins.top + "px;bottom:" + ins.bottom + "px;left:" + ins.left + "px;width:" + peek + "px" : e === "right" ? "top:" + ins.top + "px;bottom:" + ins.bottom + "px;right:" + ins.right + "px;width:" + peek + "px" : e === "top" ? "left:" + ins.left + "px;right:" + ins.right + "px;top:" + ins.top + "px;height:" + peek + "px" : "left:" + ins.left + "px;right:" + ins.right + "px;bottom:" + ins.bottom + "px;height:" + peek + "px";
-var strip = sheetPage(k.strip);
+var strip = sheetStrip(k);
 h += '<div class="bd-ly-edit" style="' + pos + ";background:" + hexAlpha(k.color || "#E4E1DA", k.alpha == null ? 55 : k.alpha) + ";box-shadow:" + sheetLine(k, phone) + ";-webkit-backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + "px);backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + 'px)">' + (strip ? layerBody(strip, "view") : "") + "</div>";
 });
 S.layerFocus = keep;
@@ -3656,9 +3707,12 @@ p.pages[menu.id] = menu;
 p.order.push(menu.id);
 var idx = [journal, library].filter(Boolean).map(function (q) { return q.id; }).filter(function (id, i, a) { return a.indexOf(id) === i; });
 s.sheets = [
-Object.assign(clone(SHEET_DEFAULTS), { id: "menu", name: "Menu", pages: about && idx.indexOf(about.id) < 0 ? [about.id] : [], strip: menu.id, edge: "left", edgeM: "top", rest: "peek", peek: L.menuW, peekM: L.menuBand, sliver: L.sliver, sliverM: L.sliverM, color: L.menuColor, alpha: L.menuAlpha, blur: L.menuBlur, line: !!L.menuEdge, dur: L.menuDur !== L.dur ? L.menuDur : "", paneW: L.aboutW, pad: L.aboutPad, padM: L.aboutPadM }),
-Object.assign(clone(SHEET_DEFAULTS), { id: "index", name: "Index", pages: idx, strip: "", edge: "left", edgeM: "top", rest: "open", peek: 0, peekM: 0, sliver: L.sliver - L.menuW, sliverM: L.sliverM, color: L.indexColor, alpha: L.indexAlpha, blur: L.indexBlur, line: !!L.indexEdge })
+Object.assign(clone(SHEET_DEFAULTS), { id: "menu", name: "Menu", pages: (about && idx.indexOf(about.id) < 0 ? [about.id] : []).concat([menu.id]), restPage: menu.id, edge: "left", edgeM: "top", rest: "peek", peek: L.menuW, peekM: L.menuBand, sliver: L.sliver, sliverM: L.sliverM, color: L.menuColor, alpha: L.menuAlpha, blur: L.menuBlur, line: !!L.menuEdge, dur: L.menuDur !== L.dur ? L.menuDur : "" }),
+Object.assign(clone(SHEET_DEFAULTS), { id: "index", name: "Index", pages: idx, edge: "left", edgeM: "top", rest: "open", peek: 0, peekM: 0, sliver: L.sliver - L.menuW, sliverM: L.sliverM, color: L.indexColor, alpha: L.indexAlpha, blur: L.indexBlur, line: !!L.indexEdge })
 ];
+if (about && idx.indexOf(about.id) < 0) {
+about.box = Object.assign({}, about.box || {}, { maxW: String(L.aboutW + L.aboutPad * 2), pl: String(L.aboutPad), pr: String(L.aboutPad), plM: String(L.aboutPadM), prM: String(L.aboutPadM) });
+}
 }
 function relatedPages(page) {
 return S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (p) {
@@ -3865,14 +3919,18 @@ if (window.parent && window.parent !== window && window.parent.__bdInkCache) ret
 return (window.__bdInkCache = window.__bdInkCache || {});
 })();
 var bake = function (img) {
-var src = img.currentSrc || img.src;
-if (!src || src.indexOf("data:") === 0) return;
+var src = img.getAttribute("data-bd-src") || img.currentSrc || img.src;
+if (!src || src.indexOf("data:") === 0 || src.indexOf("blob:") === 0) return;
+var ink = (getComputedStyle(img).color.match(/\d+(\.\d+)?/g) || [17, 17, 17]).map(Number);
+var key = src + "|" + ink.join(",");
 var done = function (url) {
+img.setAttribute("data-bd-src", src);
 img.removeAttribute("srcset");
 img.src = url;
 img.style.mixBlendMode = "normal";
 };
-if (cache[src]) return done(cache[src]);
+if (cache[key] === "…") return;
+if (cache[key]) return done(cache[key]);
 var w = img.naturalWidth;
 var h = img.naturalHeight;
 if (!w || !h) return;
@@ -3890,7 +3948,6 @@ px = cx.getImageData(0, 0, w, h);
 } catch (err) {
 return;
 }
-var ink = (getComputedStyle(img).color.match(/\d+(\.\d+)?/g) || [17, 17, 17]).map(Number);
 var d = px.data;
 for (var i = 0; i < d.length; i += 4) {
 var lum = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
@@ -3901,17 +3958,24 @@ d[i + 2] = ink[2];
 d[i + 3] = Math.round(a * 255);
 }
 cx.putImageData(px, 0, 0);
+/* KEPT AS A BLOB URL: CHEAP TO ASSIGN AGAIN AND AGAIN, DECODED ONCE BY THE BROWSER */
+cache[key] = "…";
+var finish = function (url) {
+cache[key] = url;
+done(url);
+};
 try {
-cache[src] = cv.toDataURL("image/png");
+if (cv.toBlob) cv.toBlob(function (bl) { if (bl) finish(URL.createObjectURL(bl)); else delete cache[key]; }, "image/png");
+else finish(cv.toDataURL("image/png"));
 } catch (err) {
-return;
+delete cache[key];
 }
-done(cache[src]);
 };
 Array.prototype.forEach.call(root.querySelectorAll("img"), function (img) {
 if (img.__bdInk) return;
 if (getComputedStyle(img).getPropertyValue("--bd-ink-img").trim() !== "1") return;
 img.__bdInk = true;
+if (img.src.indexOf("blob:") === 0) return;
 img.loading = "eager";
 if (img.complete && img.naturalWidth) bake(img);
 else img.addEventListener("load", function () { bake(img); }, { once: true });
@@ -4808,10 +4872,12 @@ return out;
 function arrangedSections(pid) {
 var E = editorPrefs();
 var list = panelSections(pid).filter(function (s) { return !E.moved[s.id] || E.moved[s.id] === pid; });
+var srcs = {};
 Object.keys(E.moved).forEach(function (sid) {
 var src = sid.split(":")[0];
 if (E.moved[sid] !== pid || src === pid) return;
-var found = panelSections(src).filter(function (s) { return s.id === sid; })[0];
+srcs[src] = srcs[src] || panelSections(src);
+var found = srcs[src].filter(function (s) { return s.id === sid; })[0];
 if (found) list.push(found);
 });
 var order = E.order[pid] || [];
@@ -5214,21 +5280,27 @@ pins.pages.push(p);
 return;
 }
 if (p.parent && S.project.pages[p.parent]) return;
+if (layersOn() && sheetOf(p.id).k > -1) return;
 var g = groups.filter(function (x) { return x.key === p.section; })[0] || other;
 g.pages.push(p);
+});
+if (layersOn()) sheetList().slice().reverse().forEach(function (k, i) {
+groups.unshift({ key: "", label: "Sheet · " + (k.name || "Sheet"), pages: (k.pages || []).map(sheetPage).filter(Boolean), sheet: k });
 });
 if (other.pages.length) groups.push(other);
 if (layersOn()) {
 pins.label = "Header & footer · not shown with paper sheets";
 if (pins.pages.length) groups.push(pins);
 } else groups.push(pins);
-var h = '<div class="bd-ed-sec"><div class="bd-ed-actions"><button class="bd-ed-btn" data-act="page-add">' + I.plus + 'Page</button><button class="bd-ed-btn" data-act="blog-add">' + I.plus + 'Blog</button>' + (layersOn() ? "" : '<button class="bd-ed-btn" data-act="pin-add" data-val="top">' + I.plus + 'Header</button><button class="bd-ed-btn" data-act="pin-add" data-val="bottom">' + I.plus + "Footer</button>") + "</div>";
+var h = '<div class="bd-ed-sec"><div class="bd-ed-actions"><button class="bd-ed-btn" data-act="page-add">' + I.plus + 'Page</button><button class="bd-ed-btn" data-act="blog-add">' + I.plus + 'Blog</button>' + (layersOn() ? '<button class="bd-ed-btn" data-act="sheet-add">' + I.plus + "Sheet</button>" : '<button class="bd-ed-btn" data-act="pin-add" data-val="top">' + I.plus + 'Header</button><button class="bd-ed-btn" data-act="pin-add" data-val="bottom">' + I.plus + "Footer</button>") + "</div>";
 groups.forEach(function (g) {
 if (!g.pages.length && !g.pins) return;
-h += '<div class="bd-ed-group"><div class="bd-ed-group-label">' + esc(g.label) + "</div>";
+h += '<div class="bd-ed-group' + (g.sheet ? " is-sheet" : "") + '"><div class="bd-ed-group-label">' + esc(g.label) + (g.sheet ? ' <span class="bd-ed-hint">· ' + (g.sheet.rest === "open" ? "open" : g.sheet.rest === "peek" ? "peeks" : "hidden") + "</span>" : "") + "</div>";
+if (g.sheet && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">Empty.</div>';
 if (g.pins && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">None yet. A header or footer shows on every page, with its own columns.</div>';
 g.pages.forEach(function (p) {
-var tag = p.kind === "pin" ? (p.pin.place === "bottom" ? "foot" : "head") : p.blog ? "blog" : esc(p.num || "·");
+var st = g.sheet ? sheetStrip(g.sheet) : null;
+var tag = p.kind === "pin" ? (p.pin.place === "bottom" ? "foot" : "head") : st && st.id === p.id ? "edge" : p.blog ? "blog" : esc(p.num || "·");
 h += '<button class="bd-ed-pg' + (p.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + p.id + '"><b>' + tag + "</b><span>" + (p.slug === "" && p.kind !== "pin" ? "⌂ " : "") + esc(p.title) + "</span></button>";
 if (p.blog) {
 postsOf(p.id).forEach(function (q) {
@@ -5251,6 +5323,7 @@ if (S.confirm === "page") h += '<div class="bd-ed-confirm">Delete “' + esc(cp.
 return h + "</div>";
 }
 /* ONE SHEET'S SETTINGS — IN THE SHEETS LIST (LEFT) AND FOR THE PAGE ON IT (RIGHT) */
+/* ONE SHEET'S SETTINGS — SHOWN ON THE RIGHT FOR ANY PAGE THAT LIES ON IT */
 function sheetEditHTML(n) {
 var k = sheetList()[n];
 if (!k) return "";
@@ -5258,53 +5331,65 @@ var P = "site.sheets." + n + ".";
 var phone = S.mode === "phone";
 var all = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin"; });
 var used = sheetUsed();
-var panes = (k.pages || []).map(sheetPage).filter(Boolean);
+var pages = (k.pages || []).map(sheetPage).filter(Boolean);
+var strip = sheetStrip(k);
+var free = all.filter(function (q) { return used.indexOf(q.id) < 0 && !q.parent; });
 return field("Name", input(P + "name", k.name || ""))
-+ '<span class="bd-ed-label">Pages on it' + (panes.length > 1 ? " · it slides between them" : "") + "</span>"
-+ panes.map(function (q, j) {
-return '<div class="bd-ed-list-row" style="grid-template-columns:minmax(0,1fr) auto auto auto"><span class="bd-ed-hint" style="padding:6px 0">' + esc(q.title) + '</span><button class="bd-ed-btn is-sm is-icon" data-act="sheet-page-up" data-i="' + n + '" data-j="' + j + '" aria-label="Move up">' + I.up + '</button><button class="bd-ed-btn is-sm is-icon" data-act="sheet-page-down" data-i="' + n + '" data-j="' + j + '" aria-label="Move down">' + I.dn + '</button><button class="bd-ed-x" data-act="sheet-page-del" data-i="' + n + '" data-j="' + j + '" aria-label="Take off the sheet">' + I.x + "</button></div>";
++ '<span class="bd-ed-label">Pages on it' + (pages.length > 1 ? " · in this order" : "") + "</span>"
++ pages.map(function (q, j) {
+return '<div class="bd-ed-list-row" style="grid-template-columns:minmax(0,1fr) auto auto auto"><span style="padding:6px 0;font-size:13px">' + esc(q.title) + (strip && strip.id === q.id ? ' <span class="bd-ed-hint">· at rest</span>' : "") + '</span><button class="bd-ed-btn is-sm is-icon" data-act="sheet-page-up" data-i="' + n + '" data-j="' + j + '" aria-label="Move up">' + I.up + '</button><button class="bd-ed-btn is-sm is-icon" data-act="sheet-page-down" data-i="' + n + '" data-j="' + j + '" aria-label="Move down">' + I.dn + '</button><button class="bd-ed-x" data-act="sheet-page-del" data-i="' + n + '" data-j="' + j + '" aria-label="Take off the sheet">' + I.x + "</button></div>";
 }).join("")
-+ '<div class="bd-ed-actions">' + all.filter(function (q) { return used.indexOf(q.id) < 0 && !q.parent; }).map(function (q) {
-return '<button class="bd-ed-btn is-sm" data-act="sheet-page-add" data-i="' + n + '" data-id="' + q.id + '">' + I.plus + esc(q.title) + "</button>";
-}).join("") + "</div>"
-+ (panes.length > 1 ? field("It slides between them", seg(P + "axis", k.axis === "x" ? "x" : "y", [["y", "Up / down"], ["x", "Sideways"]])) : "")
-+ field("Edge · the part that peeks out", select(P + "strip", k.strip || "", [["", "Nothing"]].concat(all.filter(function (q) { return q.id === k.strip || used.indexOf(q.id) < 0; }).map(function (q) { return [q.id, q.title]; }))))
++ (free.length ? field("Add a page", '<select class="bd-ed-input" data-act-change="sheet-page-add" data-i="' + n + '"><option value="">Choose…</option>' + free.map(function (q) { return '<option value="' + q.id + '">' + esc(q.title) + "</option>"; }).join("") + "</select>") : "")
++ (pages.length > 1 ? field("It slides between them", seg(P + "axis", k.axis === "x" ? "x" : "y", [["y", "Up / down"], ["x", "Sideways"]])) : "")
 + field("Parks at" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), seg(P + (phone ? "edgeM" : "edge"), (phone ? k.edgeM : k.edge) || "left", SHEET_EDGES))
 + field("At rest", seg(P + "rest", k.rest || "open", [["open", "Open"], ["peek", "Peeks"], ["hidden", "Hidden"]]))
-+ (k.rest === "peek" || k.strip ? row(dpIn("Peeks (px)", P + "peek", P + "peekM", k.peek, k.peekM)) : "")
-+ (k.rest === "open" ? row(dpIn("Stays showing when a page underneath opens (px)", P + "sliver", P + "sliverM", k.sliver, k.sliverM)) : "")
-+ '<div class="bd-ed-hint">' + (k.rest === "open" ? "Opening a page underneath moves it out of the way (Motion → opens with), leaving that much." : k.rest === "peek" ? "Opening one of its pages slides the whole sheet over, its edge riding along." : "It slides in when one of its pages opens.") + "</div>"
++ (k.rest === "peek" ? row(field("Shows", select(P + "restPage", strip ? strip.id : "", pages.map(function (q) { return [q.id, q.title]; }))), dpIn("That much (px)", P + "peek", P + "peekM", k.peek, k.peekM)) + '<div class="bd-ed-hint">That page is drawn on the edge and is always there. Opening another page on this sheet slides the whole sheet over.</div>' : "")
++ (k.rest === "open" ? row(dpIn("Stays showing when a page underneath opens (px)", P + "sliver", P + "sliverM", k.sliver, k.sliverM)) + '<div class="bd-ed-hint">Opening a page underneath moves this sheet out of the way (that page’s “opens with”), leaving that much.</div>' : "")
++ (k.rest === "hidden" ? '<div class="bd-ed-hint">Off screen until one of its pages opens.</div>' : "")
 + field("Lies over", seg(P + "covers", k.covers === "some" ? "some" : "all", [["all", "Every page"], ["some", "Chosen pages"]]))
-+ (k.covers === "some" ? all.filter(function (q) { return (k.pages || []).indexOf(q.id) < 0 && q.id !== k.strip; }).map(function (q) {
++ (k.covers === "some" ? all.filter(function (q) { return (k.pages || []).indexOf(q.id) < 0; }).map(function (q) {
 return '<label class="bd-ed-check"><input type="checkbox" data-act="sheet-cover" data-i="' + n + '" data-id="' + q.id + '"' + ((k.coverPages || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc(q.title) + "</label>";
 }).join("") + '<div class="bd-ed-hint">On any other page this sheet slides away completely.</div>' : "")
 + '<span class="bd-ed-label">Paper</span>' + colorIn("Colour", P + "color", k.color, "#E4E1DA")
 + row(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur below", P + "blur", k.blur), numIn("Speed (ms)", P + "dur", k.dur, "blank"))
 + sw("Hairline edge", P + "line", k.line)
-+ '<span class="bd-ed-label">Its pages</span>' + row(numIn("Text width", P + "paneW", k.paneW, "blank"), dpIn("Side padding", P + "pad", P + "padM", k.pad, k.padM, "blank"))
-+ '<div class="bd-ed-actions"><button class="bd-ed-btn is-sm is-icon" data-act="sheet-up" data-i="' + n + '" aria-label="Higher">' + I.up + '</button><button class="bd-ed-btn is-sm is-icon" data-act="sheet-down" data-i="' + n + '" aria-label="Lower">' + I.dn + '</button><button class="bd-ed-btn is-sm is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Remove sheet</button></div>";
++ '<div class="bd-ed-actions"><button class="bd-ed-btn is-sm is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve sheet · pages stay</button></div>";
+}
+/* PUT A PAGE ON A SHEET ("" = underneath, "new" = a fresh sheet) */
+function pageToSheet(pg, to) {
+if (!pg) return;
+snap();
+var K = S.project.site.sheets;
+K.forEach(function (k) {
+k.pages = (k.pages || []).filter(function (id) { return id !== pg.id; });
+if (k.restPage === pg.id) k.restPage = "";
+});
+if (to === "new") {
+var k2 = Object.assign(clone(SHEET_DEFAULTS), { id: uid(), name: pg.title, pages: [pg.id], rest: "open" });
+K.unshift(k2);
+} else if (to) {
+var k3 = K.filter(function (k) { return k.id === to; })[0];
+if (k3) k3.pages = (k3.pages || []).concat([pg.id]);
+}
+S.project.site.sheets = K.filter(function (k) { return (k.pages || []).length; });
+changed();
 }
 function layersPanel() {
 var s = S.project.site;
 var Lz = s.layers;
-var h = '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span>' + sw("Show the site as layers", "site.layers.on", Lz.on) + '<div class="bd-ed-hint">Pages lie on translucent sheets stacked over the rest of the site. Each sheet blurs what’s under it. Edit every page as usual; Preview shows the sheets moving.</div>';
+var h = '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span>' + sw("Show the site as layers", "site.layers.on", Lz.on) + '<div class="bd-ed-hint">Pages lie on translucent sheets stacked over the rest of the site. Each sheet blurs what’s under it. Make a sheet in Pages (+ Sheet) or put a page on one from its own panel.</div>';
 if (!Lz.on) return h + "</div>";
 var K = sheetList();
 var phone = S.mode === "phone";
-var all = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin"; });
-var used = sheetUsed();
 h += "</div>";
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Sheets · top to bottom</span>';
-if (!K.length) h += '<div class="bd-ed-hint">No sheets yet. Every page lies underneath until you put it on a sheet.</div><div class="bd-ed-actions"><button class="bd-ed-btn" data-act="sheet-classic">' + I.plus + "Menu + Index (classic)</button></div>";
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Stack · top to bottom</span>';
+if (!K.length) h += '<div class="bd-ed-hint">No sheets yet. Every page lies underneath.</div>';
 K.forEach(function (k, n) {
-var P = "site.sheets." + n + ".";
-var panes = (k.pages || []).map(sheetPage).filter(Boolean);
-var sum = (k.rest === "open" ? "lies open" : k.rest === "peek" ? "edge peeks" : "hidden") + " · " + ((phone ? k.edgeM : k.edge) || "left") + (panes.length ? " · " + panes.map(function (q) { return q.title; }).join(" ↕ ") : "");
-var inner = sheetEditHTML(n);
-h += '<div class="bd-ed-group">' + adv("sheet-" + k.id, esc((n + 1) + " · " + (k.name || "Sheet") + " — " + sum), inner, S.sheetOpen === k.id) + "</div>";
+var pages = (k.pages || []).map(sheetPage).filter(Boolean);
+var sum = (k.rest === "open" ? "open" : k.rest === "peek" ? "peeks " + ((phone ? k.edgeM : k.edge) || "left") : "hidden") + (pages.length ? " · " + pages.map(function (q) { return q.title; }).join(k.axis === "x" ? " ↔ " : " ↕ ") : " · empty");
+h += '<div class="bd-ed-list-row" style="grid-template-columns:auto minmax(0,1fr) auto auto"><b class="bd-ed-hint" style="font-family:var(--e-mono);padding:6px 0">' + (n + 1) + '</b><button class="bd-ed-pg" style="margin:0" data-act="page" data-id="' + esc((pages[0] || {}).id || "") + '"' + (pages.length ? "" : " disabled") + '><span>' + esc(k.name || "Sheet") + ' <span class="bd-ed-hint">· ' + esc(sum) + '</span></span></button><button class="bd-ed-btn is-sm is-icon" data-act="sheet-up" data-i="' + n + '" aria-label="Higher">' + I.up + '</button><button class="bd-ed-btn is-sm is-icon" data-act="sheet-down" data-i="' + n + '" aria-label="Lower">' + I.dn + "</button></div>";
 });
-h += '<div class="bd-ed-hint">Pages and posts not on a sheet lie underneath, one at a time.</div><div class="bd-ed-actions"><button class="bd-ed-btn" data-act="sheet-add">' + I.plus + "Sheet</button></div></div>";
-h += '<div class="bd-ed-sec"><div class="bd-ed-hint">How the sheets move is in the Motion tab. Each page underneath can pick its own way: select it → How it opens.</div></div>';
+h += '<div class="bd-ed-hint">Pages and posts not on a sheet lie underneath, one at a time. Tap a sheet to open its first page; its settings are in that page’s panel.</div></div>';
 return h;
 }
 function sitePanel() {
@@ -5321,9 +5406,8 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-label">Page frame</span>'
 + row(dpIn("Top", "site.mt", "site.mtM", s.mt, s.mtM, "int"), dpIn("Right", "site.mr", "site.mrM", s.mr, s.mrM, "int"), dpIn("Bottom", "site.mb", "site.mbM", s.mb, s.mbM, "int"), dpIn("Left", "site.ml", "site.mlM", s.ml, s.mlM, "int"))
 + row(dpIn("Paragraph indent", "site.indent", "site.indentM", s.indent, s.indentM, "int"))
 + '<div class="bd-ed-hint">Columns are set in the bar above the canvas.</div></div>';
-if (layersOn()) h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title", "site.header", s.header) + (s.header ? sw("Number above the title", "site.showNum", s.showNum) : "") + sw("Click images to zoom", "site.zoom", s.zoom) + '<div class="bd-ed-hint">The menu sheet is the menu, so the floating menu button, page arrows at the end, header and footer are off.</div></div>';
-else h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title", "site.header", s.header) + (s.header ? sw("Number above the title", "site.showNum", s.showNum) : "") + sw("Floating menu button", "site.menu", s.menu) + sw("Page arrows at the end", "site.pager", s.pager) + sw("Click images to zoom", "site.zoom", s.zoom)
-+ (s.menu || hasMenuButton() ? '<button class="bd-ed-btn" data-act="menu-style">' + I.sliders + "Style the menu</button>" : "") + '<div class="bd-ed-hint">Or add Menu, Page title and Page arrows blocks to the header and footer.</div></div>';
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title", "site.header", s.header) + (s.header ? sw("Number above the title", "site.showNum", s.showNum) : "") + (layersOn() ? "" : sw("Floating menu button", "site.menu", s.menu) + sw("Page arrows at the end", "site.pager", s.pager)) + sw("Click images to zoom", "site.zoom", s.zoom)
++ (!layersOn() && (s.menu || hasMenuButton()) ? '<button class="bd-ed-btn" data-act="menu-style">' + I.sliders + "Style the menu</button>" : "") + '<div class="bd-ed-hint">' + (layersOn() ? "With paper sheets the menu is a page on a sheet, so there is no floating button, page arrows, header or footer." : "Or add Menu, Page title and Page arrows blocks to the header and footer.") + "</div></div>";
 var secs = s.sections.map(function (x, i) {
 return '<div class="bd-ed-list-row">' + input("site.sections." + i + ".key", x.key, "", ' aria-label="Section key"') + input("site.sections." + i + ".label", x.label, "", ' aria-label="Section label"') + '<button class="bd-ed-x" data-act="del-section" data-i="' + i + '" aria-label="Remove section">' + I.x + "</button></div>";
 }).join("") + '<button class="bd-ed-btn" data-act="add-section">' + I.plus + "Section</button>";
@@ -5701,16 +5785,13 @@ if (q.kind === "pin" || q.id === pg.id) return;
 stack += '<label class="bd-ed-check"><input type="checkbox" data-act="stack-page" data-id="' + q.id + '"' + ((pg.stack || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc((q.num ? q.num + "  " : "") + q.title) + "</label>";
 });
 var pgw = layersOn() ? sheetOf(pg.id) : null;
-if (pgw && pgw.k > -1) h += '<div class="bd-ed-sec"><span class="bd-ed-title">' + (pgw.strip ? "Its sheet’s edge · " : "Its sheet · ") + esc(pgw.sheet.name) + "</span>" + '<div class="bd-ed-hint">' + (pgw.strip ? "This page is drawn on the sheet’s edge — the part that peeks out." : "Changes here change the whole sheet" + ((pgw.sheet.pages || []).length > 1 ? ", for every page on it." : ".")) + "</div>" + sheetEditHTML(pgw.k) + "</div>";
-h += pageBoxPanel(pg);
+if (pgw && !pg.parent) h += '<div class="bd-ed-sec">' + field("Lies on", '<select class="bd-ed-input" data-act-change="page-sheet"><option value=""' + (pgw.k < 0 ? " selected" : "") + ">Nothing · underneath</option>" + sheetList().map(function (k) { return '<option value="' + esc(k.id) + '"' + (pgw.k > -1 && pgw.sheet.id === k.id ? " selected" : "") + ">Sheet · " + esc(k.name || "Sheet") + "</option>"; }).join("") + '<option value="new">+ A new sheet of its own</option></select>') + (pgw.k > -1 ? '<div class="bd-ed-hint">' + (pgw.strip ? "This page is the sheet’s edge: drawn on the part that peeks out, always there." : "Changes below change the whole sheet" + ((pgw.sheet.pages || []).length > 1 ? ", for every page on it." : ".")) + "</div>" + sheetEditHTML(pgw.k) : "") + "</div>";
+var tail = "";
 if (pgw && pgw.k < 0) {
 var mt = (LAYER_TRANS.filter(function (o) { return o[0] === layerTrans(null); })[0] || LAYER_TRANS[0])[1].split(" · ")[0];
-var ph = S.mode === "phone";
-h += '<div class="bd-ed-sec"><span class="bd-ed-title">How it opens</span><div class="bd-ed-hint">The sheets above get out of the way like this when this page opens. Blank = the site’s (Motion tab).</div>'
-+ field("Opens with", select("page.trans", pg.trans || "", [["", "Site · " + mt]].concat(LAYER_TRANS)))
-+ row(numIn("Speed (ms)", "page.transDur", pg.transDur || "", "blank"))
-+ "</div>";
+tail = '<span class="bd-ed-label">Opens with</span>' + row(field("The sheets above get out of the way", select("page.trans", pg.trans || "", [["", "Site · " + mt]].concat(LAYER_TRANS))), numIn("Speed (ms)", "page.transDur", pg.transDur || "", "blank"));
 }
+h += pageBoxPanel(pg, tail);
 if (!layersOn()) h += '<div class="bd-ed-sec">' + adv("pg-stack", "Continue with other pages", '<div class="bd-ed-hint">Chosen pages scroll on below this one, like one long page.</div>' + stack) + "</div>";
 }
 var free = '<div class="bd-ed-seg"><button data-act="layout" data-val="master" class="' + (isMaster(pg) ? "is-on" : "") + '">Columns</button><button data-act="layout" data-val="free" class="' + (isMaster(pg) ? "" : "is-on") + '">Free grid</button></div><div class="bd-ed-hint">' + (isMaster(pg) ? "Blocks stack in columns. Free grid lets you place them anywhere, row by row." : "Blocks sit anywhere on the grid. Columns stacks them again in order.") + "</div>"
@@ -7952,8 +8033,7 @@ var A = {
 "sec-show": function () { toolAction(act, b); },
 "sec-move": function () { toolAction(act, b); },
 "right-tab": function () { S.rightTab = val; S.rightOpen = true; renderRight(); if (S.toolsZone) renderTools(); },
-"sheet-classic": function () { snap(); migrateSheets(S.project); normalizeProject(S.project); changed(); },
-"sheet-add": function () { snap(); var k = Object.assign(clone(SHEET_DEFAULTS), { id: uid(), name: "Sheet " + (sheetList().length + 1), rest: "hidden" }); S.project.site.sheets.unshift(k); S.sheetOpen = k.id; S.open["sheet-" + k.id] = true; changed(); },
+"sheet-add": function () { snap(); var pg = newPage("Sheet " + (sheetList().length + 1), "", "sheet-" + (sheetList().length + 1), ""); S.project.pages[pg.id] = pg; S.project.order.push(pg.id); S.project.site.sheets.unshift(Object.assign(clone(SHEET_DEFAULTS), { id: uid(), name: pg.title, pages: [pg.id], rest: "open" })); goPage(pg.id); changed(); },
 "sheet-del": function () { snap(); S.project.site.sheets.splice(+b.getAttribute("data-i"), 1); changed(); },
 "sheet-up": function () { var K = S.project.site.sheets; var i = +b.getAttribute("data-i"); if (i < 1) return; snap(); K.splice(i - 1, 0, K.splice(i, 1)[0]); changed(); },
 "sheet-down": function () { var K = S.project.site.sheets; var i = +b.getAttribute("data-i"); if (i >= K.length - 1) return; snap(); K.splice(i + 1, 0, K.splice(i, 1)[0]); changed(); },
@@ -8260,6 +8340,13 @@ p.h = Math.max(1, p.h);
 }
 }
 document.addEventListener("change", function (e) {
+var sa = e.target.closest && e.target.closest("[data-act-change]");
+if (sa && sa.value) {
+var act = sa.getAttribute("data-act-change");
+if (act === "sheet-page-add") { var k = S.project.site.sheets[+sa.getAttribute("data-i")]; if (k) { snap(); k.pages = (k.pages || []).concat([sa.value]); changed(); } }
+if (act === "page-sheet") { pageToSheet(curPage(), sa.value); }
+return;
+}
 var t = e.target;
 if (!S.project || !t.getAttribute) return;
 if (t.closest && t.closest("#bd-ruler") && t.getAttribute("data-bind")) {
@@ -8326,10 +8413,17 @@ var inLeft = !!t.closest("#bd-left");
 var inRight = !!t.closest("#bd-right");
 scheduleSave();
 renderTop();
+/* TYPING: THE PAGE REDRAWS ONCE THE KEYS PAUSE; A PICK OR A SWITCH REDRAWS AT ONCE */
+var typing = t.tagName === "TEXTAREA" || (t.tagName === "INPUT" && !/^(color|checkbox|radio|range)$/.test(t.type));
+clearTimeout(S.typeT);
+var go = function () {
 if (!inLeft) renderLeft();
 renderCanvas();
 if (!inRight) renderRight();
 if (S.codeOpen) renderCode();
+};
+if (typing) S.typeT = setTimeout(go, 160);
+else go();
 });
 document.addEventListener("keydown", function (e) {
 if (!S.project) return;
