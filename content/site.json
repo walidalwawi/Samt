@@ -833,13 +833,13 @@
    },
    "blog": true,
    "box": {
-    "mt": "90",
+    "mt": "0",
     "mb": "0",
-    "mr": "40",
+    "mr": "0",
     "ml": "0",
     "shadow": "none",
-    "fit": true,
-    "radius": 90
+    "fit": false,
+    "radius": 0
    }
   },
   "aj2hm4y8": {
@@ -1302,7 +1302,12 @@
     "gutterM": 24
    },
    "trans": "",
-   "box": {}
+   "box": {
+    "shadow": "none",
+    "mt": "0",
+    "mr": "0",
+    "fit": false
+   }
   },
   "ipk7ns57": {
    "id": "ipk7ns57",
