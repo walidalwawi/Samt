@@ -18,6 +18,7 @@ var I = {};
 (function () {
 var p = {
 panel: '<rect x="2.5" y="3.5" width="15" height="13" rx="1"/><path d="M7.5 3.5v13"/>',
+more: '<circle cx="4.5" cy="10" r="1"/><circle cx="10" cy="10" r="1"/><circle cx="15.5" cy="10" r="1"/>',
 sliders: '<path d="M3 6h9M15 6h2M3 14h3M9 14h8"/><circle cx="13.5" cy="6" r="1.6"/><circle cx="7.5" cy="14" r="1.6"/>',
 desk: '<rect x="2.5" y="4" width="15" height="10" rx="1"/><path d="M7 17h6"/>',
 phone: '<rect x="6" y="2.5" width="8" height="15" rx="1.5"/><path d="M9 15h2"/>',
@@ -51,6 +52,7 @@ gallery: '<rect x="2.5" y="3" width="6.5" height="6.5"/><rect x="11" y="3" width
 pin: '<path d="M7 3h6l-1 5 3 3H5l3-3zM10 11v6"/>',
 ptitle: '<path d="M3.5 7h13M3.5 11h8"/><path d="M3.5 15h5" opacity=".5"/>',
 menubtn: '<path d="M4 6h12M4 10h12M4 14h12"/>',
+sheetmenu: '<path d="M4 3.5v13"/><path d="M8 6h8M8 10h6M8 14h8"/>',
 pager: '<path d="M7.5 6.5 4 10l3.5 3.5M4 10h5M12.5 6.5 16 10l-3.5 3.5M16 10h-5"/>',
 posts: '<rect x="2.5" y="3" width="6.5" height="9"/><rect x="11" y="3" width="6.5" height="9"/><path d="M2.5 15h6.5M11 15h6.5M2.5 17.5h4M11 17.5h4"/>',
 postinfo: '<path d="M7 6 3.5 10 7 14"/><path d="M10 10h7"/>',
@@ -494,6 +496,7 @@ html: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 rule: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 ptitle: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 menubtn: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
+sheetmenu: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 pager: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 posts: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 postinfo: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
@@ -588,6 +591,9 @@ var s = p.site;
 if (!s.styles && s.fs) s.styles = stylesFrom(s.fs, s.lh, s.ms || s.fs, s.ml || s.lh, s.fsM || s.fs, s.lhM || s.lh, s.msM || s.ms || s.fs, s.mlM || s.ml || s.lh);
 if (s.showNum === undefined) s.showNum = false;
 s.layers = Object.assign(clone(LAYER_DEFAULTS), s.layers || {});
+if (s.layers.on && !s.sheets) migrateSheets(p);
+s.sheets = (s.sheets || []).map(function (k) { return Object.assign(clone(SHEET_DEFAULTS), k); });
+s.editor = Object.assign({ layout: {}, hidden: [], order: {}, moved: {}, custom: [] }, s.editor || {});
 s.motion = Object.assign({ gDur: 450, gEase: "ease", tease: 8, open: 24 }, s.motion || {});
 if (s.mt === undefined) {
 var ot = s.top != null ? s.top : 48;
@@ -665,8 +671,8 @@ s.master.libFix = 1;
 if (!s.master.types.gallery) s.master.types.gallery = Object.assign({ space: "", spaceM: "" }, s.master.types.image);
 return p;
 }
-var BD_TYPE_CLASS = { text: "bd-text", notes: "bd-notes", image: "bd-figure", gallery: "bd-gallery", library: "bd-library", link: "bd-link", list: "bd-list", embed: "bd-embed", html: "bd-html", rule: "bd-rule", ptitle: "bd-ptitle", menubtn: "bd-menubtn", pager: "bd-pagerbar", posts: "bd-posts", postinfo: "bd-postinfo", quote: "bd-quote", toggle: "bd-toggle", product: "bd-product" };
-var BD_TYPE_NAME = { text: "Text", notes: "Notes", image: "Image", gallery: "Gallery", library: "Library", link: "Link", list: "List", embed: "Video", html: "HTML", rule: "Rule", ptitle: "Page title", menubtn: "Menu", pager: "Page arrows", posts: "Blog posts", postinfo: "Post info", quote: "Quote", toggle: "Fold-out list", product: "Product" };
+var BD_TYPE_CLASS = { text: "bd-text", notes: "bd-notes", image: "bd-figure", gallery: "bd-gallery", library: "bd-library", link: "bd-link", list: "bd-list", embed: "bd-embed", html: "bd-html", rule: "bd-rule", ptitle: "bd-ptitle", menubtn: "bd-menubtn", sheetmenu: "bd-sheetmenu", pager: "bd-pagerbar", posts: "bd-posts", postinfo: "bd-postinfo", quote: "bd-quote", toggle: "bd-toggle", product: "bd-product" };
+var BD_TYPE_NAME = { text: "Text", notes: "Notes", image: "Image", gallery: "Gallery", library: "Library", link: "Link", list: "List", embed: "Video", html: "HTML", rule: "Rule", ptitle: "Page title", menubtn: "Menu", sheetmenu: "Sheet menu", pager: "Page arrows", posts: "Blog posts", postinfo: "Post info", quote: "Quote", toggle: "Fold-out list", product: "Product" };
 function effPlace(e, phone) {
 var s = S.project.site;
 var t = s.master.types[e.type] || { x: 0, w: 12, xm: 0, wm: 4 };
@@ -695,6 +701,7 @@ html: { w: 12, h: 8, props: { code: "<p>Custom HTML</p>" } },
 rule: { w: 12, h: 2, props: {} },
 ptitle: { w: 12, h: 3, props: { style: "body", align: "left", num: false } },
 menubtn: { w: 12, h: 3, props: { menu: "", mode: "button", corner: "", brand: "none", brandText: "", brandPos: "before", brandStyle: "body", brandSize: "", brandLh: "", brandGap: 16, brandGapM: "", align: "start", dir: "vertical", group: "flat", style: "body", size: "", sizeM: "", lh: "", lhM: "", textCase: "none", tracking: "", itemGap: 0, itemGapM: "", groupGap: 20, groupGapM: "", headGap: 4, current: "underline", hover: "underline" } },
+sheetmenu: { w: 12, h: 6, props: { menu: "", marker: ">", align: "right", style: "heading", gap: 4, gapM: 14, pad: 40, padM: 16, mark: "" } },
 pager: { w: 12, h: 3, props: { num: "num", line: false, loop: false, scope: "site", look: "arrows", nextLabel: "Next, ", prevLabel: "", align: "left", style: "body" } },
 posts: { w: 12, h: 30, props: { blog: "", layout: "grid", cols: 3, colsM: 1, gap: 40, gapM: 24, rowGap: 40, rowGapM: 24, sort: "order", limit: "", featured: "none", fLayout: "stack", fTitleStyle: "heading", showImage: true, showTitle: true, showDate: false, showMeta: true, showExcerpt: false, imagePos: "top", ratio: "auto", imgGap: 12, cardBg: "", cardPad: 0, cardPadM: "", minH: "", titleStyle: "body", titleSize: "", titleLh: "", metaStyle: "small", metaSize: "", metaLh: "", metaGap: 8, hover: "dim" } },
 postinfo: { w: 12, h: 3, props: { back: true, backLabel: "<", date: false, words: true, time: true, style: "small", size: "", lh: "" } },
@@ -2769,6 +2776,7 @@ var tp = forPage();
 return '<div class="' + base + " bd-ptitle bd-ts-" + (E(e, "style") || "body") + " is-al-" + (E(e, "align") || "left") + '">\n' + (p.num && tp && tp.num ? '<span class="bd-num">' + esc(tp.num) + "</span>\n" : "") + "<h1>" + esc(tp ? tp.h1 || tp.title : "Page title") + "</h1>\n</div>";
 }
 if (e.type === "posts") return postsHTML(e, ctx);
+if (e.type === "sheetmenu") return sheetMenuHTML(e, base);
 if (e.type === "postinfo") {
 var ip = forPage();
 var bits = [];
@@ -2929,17 +2937,116 @@ var s = S.project.site;
 if (!s.header || page.header === false || page.kind === "pin") return "";
 return '<header class="bd-head">\n' + (page.num && s.showNum ? '<span class="bd-num">' + esc(page.num) + "</span>\n" : "") + "<h1>" + esc(page.h1 || page.title) + "</h1>\n</header>\n";
 }
-/* LAYERS — WHICH PAGE IS WHICH SHEET */
+/* LAYERS */
 function layersOn() {
 return !!(S.project && S.project.site.layers && S.project.site.layers.on);
 }
+function hexAlpha(hex, pct) {
+var h = String(hex || "#000000").replace("#", "");
+if (h.length === 3) h = h.split("").map(function (c) { return c + c; }).join("");
+var n = parseInt(h, 16) || 0;
+return "rgba(" + ((n >> 16) & 255) + ", " + ((n >> 8) & 255) + ", " + (n & 255) + ", " + Math.round(pct) / 100 + ")";
+}
+/* SHEETS — ANY PAGE CAN LIE ON A PAPER SHEET; THE SHEETS LIST (TOP → BOTTOM) DECIDES WHAT LIES OVER WHAT */
+var SHEET_DEFAULTS = { id: "", name: "Sheet", pages: [], strip: "", edge: "left", edgeM: "top", rest: "open", peek: 200, peekM: 52, sliver: 44, sliverM: 14, axis: "y", covers: "all", coverPages: [], color: "#E4E1DA", alpha: 55, blur: 9, line: true, dur: "", paneW: "", pad: "", padM: "" };
+var SHEET_EDGES = [["left", "Left"], ["right", "Right"], ["top", "Top"], ["bottom", "Bottom"]];
+function sheetList() {
+var s = S.project.site;
+return (s.sheets || []).filter(function (k) { return k && k.id; });
+}
+function sheetPage(id) {
+var q = id && S.project.pages[id];
+return q && q.kind !== "pin" ? q : null;
+}
+/* WHERE A PAGE LIVES: ON A SHEET (k = SHEET INDEX, i = ITS PLACE ON THE SHEET), AS A SHEET'S EDGE STRIP, OR UNDERNEATH (k = -1) */
+function sheetOf(id) {
+var K = sheetList();
+for (var n = 0; n < K.length; n++) {
+var j = (K[n].pages || []).indexOf(id);
+if (j > -1) return { id: id, k: n, i: j, sheet: K[n] };
+if (K[n].strip === id) return { id: id, k: n, i: -1, strip: true, sheet: K[n] };
+}
+return { id: id, k: -1, i: 0 };
+}
+function sheetUsed() {
+var ids = [];
+sheetList().forEach(function (k) {
+(k.pages || []).forEach(function (id) { ids.push(id); });
+if (k.strip) ids.push(k.strip);
+});
+return ids;
+}
+function sheetContent() {
+var used = sheetUsed();
+return S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin" && used.indexOf(q.id) < 0; });
+}
+/* THE PAGE "/" OPENS ON: THE FIRST PAGE OF THE FIRST SHEET THAT LIES OPEN */
+function sheetHome() {
+var K = sheetList();
+for (var n = 0; n < K.length; n++) {
+if (K[n].rest !== "open") continue;
+var q = (K[n].pages || []).map(sheetPage).filter(Boolean)[0];
+if (q) return q.id;
+}
+var c = sheetContent()[0];
+return c ? c.id : "";
+}
+/* WHAT LIES UNDERNEATH BEFORE ANYTHING IS OPENED: THE FEATURED POST OF A BLOG ON A SHEET */
+function sheetFeatured() {
+var blog = null;
+sheetList().forEach(function (k) {
+(k.pages || []).forEach(function (id) {
+var q = sheetPage(id);
+if (!blog && q && q.blog) blog = q;
+});
+});
+var posts = blog ? postsOf(blog.id) : [];
+var f = posts.filter(function (q) { return q.featured; })[0] || posts[0] || sheetContent()[0];
+return f ? f.id : "";
+}
+function sheetModel() {
+return sheetList().map(function (k) {
+return { rest: k.rest || "open", covers: k.covers === "some" ? (k.coverPages || []).slice() : null, panes: (k.pages || []).filter(sheetPage) };
+});
+}
+function sheetFocus(page) {
+var w = page ? sheetOf(page.id) : null;
+if (!w || w.strip) {
+var h = sheetHome();
+return h ? sheetOf(h) : { id: "", k: -1, i: 0 };
+}
+if (w.k > -1) w.i = sheetModel()[w.k].panes.indexOf(page.id);
+return { id: w.id, k: w.k, i: Math.max(0, w.i) };
+}
+/* THE PLAN (EXPORTED AS-IS, SHARED BY PUBLISH AND THE RUNTIME): WHERE EVERY SHEET GOES WHEN A PAGE OPENS
+- the page's own sheet opens on it; sheets above it go back to rest (an open-at-rest sheet tucks to its sliver)
+- sheets below it keep what they were doing
+- a page underneath: every open-at-rest sheet tucks, peeking sheets keep peeking
+- a sheet that doesn't cover the page hides */
+function bdSheetPlan(K, f, prev) {
+return K.map(function (k, n) {
+var p = prev && prev[n];
+var pane = p ? p.i : 0;
+var cov = !k.covers || k.covers.indexOf(f.id) > -1 || k.panes.indexOf(f.id) > -1;
+if (f.k === n) return { st: "open", i: f.i };
+if (f.k > -1 && n > f.k && p) return { st: p.st, i: p.i };
+if (!cov) return { st: "hidden", i: pane };
+if (k.rest === "open") return { st: f.k < 0 || n < f.k ? "tuck" : "open", i: pane };
+return { st: k.rest === "hidden" ? "hidden" : "peek", i: pane };
+});
+}
+/* COMPATIBILITY: WHICH SHEET PAGES ACT AS JOURNAL / LIBRARY / ABOUT */
 function layerRoles() {
-var Ls = S.project.site.layers;
-var pg = function (id) { var q = id && S.project.pages[id]; return q && q.kind !== "pin" ? q : null; };
-var all = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin"; });
-var journal = pg(Ls.journal) || all.filter(function (q) { return q.blog; })[0] || all[0];
-var library = pg(Ls.library) || all.filter(function (q) { return (q.els || []).some(function (e) { return e.type === "library"; }); })[0] || null;
-var about = pg(Ls.about) || all.filter(function (q) { return q.slug === "about"; })[0] || null;
+var panes = [];
+var about = null;
+sheetList().forEach(function (k) {
+(k.pages || []).map(sheetPage).filter(Boolean).forEach(function (q, j) {
+panes.push(q);
+if (!about && k.rest !== "open") about = q;
+});
+});
+var journal = panes.filter(function (q) { return q.blog; })[0] || null;
+var library = panes.filter(function (q) { return (q.els || []).some(function (e) { return e.type === "library"; }); })[0] || null;
 return { journal: journal, library: library, about: about };
 }
 function layerBody(page, ctx) {
@@ -2949,308 +3056,410 @@ var out = '<div class="bd-panel">\n<main class="bd-main">\n' + headHTML(page) + 
 S.renderPage = keep;
 return out;
 }
-function layerState(page) {
-var r = layerRoles();
-var posts = r.journal && r.journal.blog ? postsOf(r.journal.id) : [];
-var feat = (posts.filter(function (q) { return q.featured; })[0] || posts[0] || {}).id || "";
-if (!page || (r.journal && page.id === r.journal.id)) return { view: "journal", half: "journal", post: feat };
-if (r.library && page.id === r.library.id) return { view: "library", half: "library", post: feat };
-if (r.about && page.id === r.about.id) return { view: "about", half: "journal", post: feat };
-return { view: "post", half: "journal", post: page.id };
+/* IS THIS MENU LINK THE CURRENT ONE? THE OPEN PAGE, OR A POST'S BLOG WHEN THE POST ITSELF ISN'T IN THE MENU */
+function sheetCurrent(id, focus, linked, ids) {
+if (!focus || !id) return false;
+if (id === focus) return true;
+if (linked) return false;
+var f = S.project.pages[focus];
+if (f && f.parent && (ids || []).indexOf(f.parent) > -1) return f.parent === id;
+return sheetOf(focus).k < 0 && id === (S.layerBack || sheetHome());
+}
+/* THE SHEET MENU BLOCK — THE SITE MENU WRITTEN ON A SHEET'S EDGE, WITH A MARK */
+function sheetMenuHTML(e, base) {
+var s = S.project.site;
+var p = e.props;
+var mid = p.menu || s.nav.menu;
+var focus = S.layerFocus || (S.renderPage ? S.renderPage.id : "");
+var items = [];
+var ids = [];
+menuGroups(mid).forEach(function (g) {
+g.items.forEach(function (it) {
+var q = it.url ? null : S.project.pages[it.page] || S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (x) { return x && x.slug === it.slug && x.kind !== "pin"; })[0];
+if (q) ids.push(q.id);
+items.push({ it: it, q: q });
+});
+});
+var linked = ids.indexOf(focus) > -1;
+var lis = items.map(function (o) {
+if (o.it.url) return '<li><a class="bd-ly-a" href="' + esc(o.it.url) + '"' + (o.it.ext ? ' target="_blank" rel="noopener"' : "") + '><span class="bd-ly-mk" aria-hidden="true">' + esc(p.marker || "") + "</span>" + esc(o.it.title) + "</a></li>";
+var cur = o.q && sheetCurrent(o.q.id, focus, linked, ids);
+return '<li><a class="bd-ly-a' + (cur ? " is-current" : "") + '" href="/' + esc(o.q ? o.q.slug : o.it.slug) + '"' + (o.q ? ' data-id="' + o.q.id + '"' : "") + '><span class="bd-ly-mk" aria-hidden="true">' + esc(p.marker || "") + "</span>" + esc(o.it.title) + "</a></li>";
+}).join("\n");
+var st = "bd-ts-" + esc(p.style || "heading");
+var vars = "--sm-pad: " + (parseFloat(p.pad) || 0) + "px; --sm-padm: " + (parseFloat(p.padM) || 0) + "px; --sm-gap: " + (parseFloat(p.gap) || 0) + "px; --sm-gapm: " + (parseFloat(p.gapM) || 0) + "px;";
+return '<nav class="' + base + ' bd-sheetmenu is-al-' + (p.align === "left" ? "left" : "right") + '" style="' + vars + '" aria-label="Menu">\n<ul class="bd-ly-list ' + st + '">\n' + lis + '\n</ul>\n<div class="bd-ly-mark ' + st + '">' + esc(p.mark || s.name) + "</div>\n</nav>";
 }
 function layerDoc(page, ctx) {
 var s = S.project.site;
 var Ls = s.layers;
-var r = layerRoles();
-var st = layerState(page);
-var roles = [r.journal, r.library, r.about].filter(Boolean).map(function (q) { return q.id; });
-var arts = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin" && roles.indexOf(q.id) < 0; }).map(function (q) {
-return '<article class="bd-ly-art' + (q.id === st.post ? " is-shown" : "") + '" data-id="' + q.id + '"' + (q.trans ? ' data-trans="' + esc(layerTrans(q)) + '"' : "") + (parseInt(q.transDur, 10) > 0 ? ' data-dur="' + parseInt(q.transDur, 10) + '"' : "") + ' data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n' + layerBody(q, ctx) + "\n</article>";
+var K = sheetList();
+var f = sheetFocus(page);
+var plan = bdSheetPlan(sheetModel(), f, null);
+var shown = f.k < 0 ? f.id : sheetFeatured();
+var keep = S.layerFocus;
+var keepB = S.layerBack;
+S.layerFocus = f.id;
+S.layerBack = "";
+plan.forEach(function (pl, n) { if (!S.layerBack && pl.st === "tuck") S.layerBack = (sheetModel()[n].panes || [])[pl.i] || ""; });
+var arts = sheetContent().map(function (q) {
+return '<article class="bd-ly-art' + (q.id === shown ? " is-shown" : "") + '" data-id="' + q.id + '" data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '"' + (q.parent ? ' data-parent="' + q.parent + '"' : "") + (q.trans ? ' data-trans="' + esc(layerTrans(q)) + '"' : "") + (parseInt(q.transDur, 10) > 0 ? ' data-dur="' + parseInt(q.transDur, 10) + '"' : "") + ">\n" + layerBody(q, ctx) + "\n</article>";
 }).join("\n");
-var role = function (q) {
-if (!q) return "";
-if (r.journal && q.id === r.journal.id) return "journal";
-if (r.library && q.id === r.library.id) return "library";
-if (r.about && q.id === r.about.id) return "about";
-return "post";
-};
-var items = [];
-menuGroups(s.nav.menu).forEach(function (g) {
-g.items.forEach(function (it) {
-if (it.url) {
-items.push('<li><a href="' + esc(it.url) + '"' + (it.ext ? ' target="_blank" rel="noopener"' : "") + ">" + esc(it.title) + "</a></li>");
-return;
+var sheets = K.map(function (k, n) {
+var pl = plan[n];
+var panes = (k.pages || []).map(sheetPage).filter(Boolean);
+var strip = sheetPage(k.strip);
+return '<section class="bd-ly-sheet bd-ly-k is-e-' + esc(k.edge || "left") + " is-em-" + esc(k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
++ '<div class="bd-ly-body">\n<div class="bd-ly-track is-ax-' + (k.axis === "x" ? "x" : "y") + '" style="--n: ' + Math.max(1, panes.length) + "; --i: " + pl.i + ';">\n'
++ panes.map(function (q, j) {
+return '<div class="bd-ly-pane' + (j === pl.i ? " is-on" : "") + '" data-page="' + q.id + '" data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n' + layerBody(q, ctx) + "\n</div>";
+}).join("\n") + "\n</div>\n</div>\n"
++ (strip ? '<div class="bd-ly-strip">\n' + layerBody(strip, ctx) + "\n</div>\n" : "") + "</section>";
+}).join("\n");
+S.layerFocus = keep;
+S.layerBack = keepB;
+var tr = layerTrans(f.k < 0 ? S.project.pages[f.id] : null);
+return '<div class="bd-ly is-t-' + tr + (f.k < 0 ? " is-v-post" : "") + '" id="bd-ly" data-trans="' + esc(layerTrans(null)) + '" data-dur="' + Ls.dur + '" data-focus="' + esc(f.id) + '" data-home="' + esc(sheetHome()) + '">\n'
++ '<div class="bd-ly-sheet bd-ly-content" id="bd-ly-content" tabindex="-1">\n' + arts + "\n</div>\n" + sheets + "\n</div>";
 }
-var q = S.project.pages[it.page] || S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (x) { return x && x.slug === it.slug && x.kind !== "pin"; })[0];
-var ro = role(q);
-var cur = ro === "about" ? st.view === "about" : ro === "post" ? st.view === "post" && q && q.id === st.post : st.view !== "about" && ro === st.half && !(st.view === "post" && roles.indexOf(st.post) < 0 && S.project.pages[st.post] && !S.project.pages[st.post].parent);
-items.push('<li><a class="bd-ly-a' + (cur ? " is-current" : "") + '" href="/' + esc(it.slug) + '" data-go="' + ro + '"' + (q ? ' data-id="' + q.id + '"' : "") + '><span class="bd-ly-mk" aria-hidden="true">' + esc(Ls.marker) + "</span>" + esc(it.title) + "</a></li>");
+/* HOW FAR THE PEEKING SHEETS ABOVE PUSH A SHEET (OR THE PAGES UNDERNEATH) IN FROM EACH EDGE */
+function sheetInsets(upto, phone) {
+var o = { left: 0, right: 0, top: 0, bottom: 0 };
+sheetList().forEach(function (k, n) {
+if (n >= upto || k.rest !== "peek") return;
+var e = (phone ? k.edgeM : k.edge) || "left";
+o[e] += parseFloat(phone ? k.peekM : k.peek) || 0;
 });
-});
-var mark = Ls.mark || s.name;
-return '<div class="bd-ly is-v-' + st.view + " is-h-" + st.half + " is-t-" + layerTrans(S.project.pages[st.post]) + (st.view === "post" ? " is-clip" : "") + '" id="bd-ly" data-trans="' + esc(layerTrans(null)) + '" data-view="' + st.view + '" data-half="' + st.half + '" data-post="' + esc(st.post) + '" data-dur="' + Ls.dur + '" data-menu-dur="' + Ls.menuDur + '">\n'
-+ '<div class="bd-ly-sheet bd-ly-content" id="bd-ly-content" tabindex="-1">\n' + arts + "\n</div>\n"
-+ '<section class="bd-ly-sheet bd-ly-index" id="bd-ly-index" aria-label="Index">\n<div class="bd-ly-half is-journal">\n' + (r.journal ? layerBody(r.journal, ctx) : "") + '\n</div>\n<div class="bd-ly-half is-library">\n' + (r.library ? layerBody(r.library, ctx) : "") + "\n</div>\n</section>\n"
-+ '<nav class="bd-ly-sheet bd-ly-menu" id="bd-ly-menu" aria-label="Menu">\n<div class="bd-ly-about">\n' + (r.about ? layerBody(r.about, ctx) : "") + '\n</div>\n<ul class="bd-ly-list bd-ts-' + esc(Ls.menuStyle || "heading") + '">\n' + items.join("\n") + '\n</ul>\n<div class="bd-ly-mark bd-ts-' + esc(Ls.menuStyle || "heading") + '">' + esc(mark) + "</div>\n</nav>\n</div>";
+return o;
 }
-/* CANVAS IN LAYERS MODE — THE PAGE AS IT SITS IN ITS SHEET, WITH THE MENU SHEET BESIDE IT (STATIC) */
-function layerEditCSS(page, phone) {
-var Ls = S.project.site.layers;
-var st = layerState(page);
-var sheet = st.view === "journal" || st.view === "library" ? hexAlpha(Ls.indexColor, 100) : st.view === "about" ? hexAlpha(Ls.menuColor, 100) : page.sheetBg || "var(--bd-page)";
-var w = phone ? 0 : Ls.menuW;
-var band = phone ? Ls.menuBand : 0;
-return [
-":host {\nposition: relative;\n}",
-".bd-site.is-layered {\nbackground: " + sheet + ";\n}",
-".bd-site.is-layered .bd-panel {\nbackground: transparent;\npadding-left: calc(" + w + "px + var(--bd-wl));\npadding-top: calc(" + band + "px + var(--bd-wt));\n}",
-(function () {
-var t = parseFloat(phone ? page.sheetPadTM : page.sheetPadT);
-var x = parseFloat(phone ? page.sheetPadXM : page.sheetPadX);
-var d = [];
-if (!isNaN(t)) d.push("padding-top: " + (band + t) + "px;");
-if (!isNaN(x)) d.push("padding-left: " + (w + x) + "px;", "padding-right: " + x + "px;");
-return st.view === "post" && d.length ? ".bd-site.is-layered .bd-panel {\n" + d.join("\n") + "\n}" : "";
-})(),
-".bd-ly-edit {\nposition: absolute;\nz-index: 5;\ntop: 0;\nleft: 0;\n" + (phone ? "right: 0;\nheight: " + band + "px;\nflex-direction: row;\nalign-items: center;\njustify-content: space-between;\npadding: 0 " + Ls.menuPadM + "px;\n" : "bottom: 0;\nwidth: " + w + "px;\nflex-direction: column;\nalign-items: " + (Ls.menuAlign === "left" ? "flex-start" : "flex-end") + ";\njustify-content: space-between;\npadding: var(--bd-wt) " + Ls.menuPad + "px;\n") + "display: flex;\nbackground: " + hexAlpha(Ls.menuColor, Ls.menuAlpha) + ";\n-webkit-backdrop-filter: blur(" + Ls.menuBlur + "px);\nbackdrop-filter: blur(" + Ls.menuBlur + "px);\npointer-events: none;\nfont-family: var(--bd-sans);\ncolor: var(--bd-ink);\n" + (Ls.menuEdge ? (phone ? "box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);\n" : "box-shadow: 1px 0 0 rgba(0, 0, 0, 0.12);\n") : "") + "}",
-".bd-ly-edit ul {\ndisplay: flex;\nflex-direction: " + (phone ? "row" : "column") + ";\nalign-items: inherit;\ngap: " + (phone ? Ls.menuGapM : Ls.menuGap) + "px;\nmargin: 0;\npadding: 0;\nlist-style: none;\n}",
-".bd-ly-edit li {\ndisplay: flex;\ngap: 10px;\nwhite-space: nowrap;\n}",
-".bd-ly-edit .bd-ly-mk {\nvisibility: hidden;\n}",
-".bd-ly-edit .is-current .bd-ly-mk {\nvisibility: visible;\n}",
-phone ? ".bd-ly-edit ul {\norder: 2;\n}" : ""
-].filter(Boolean).join("\n");
-}
-function layerEditChrome(page) {
-var s = S.project.site;
-var Ls = s.layers;
-var st = layerState(page);
-var r = layerRoles();
-var items = [];
-menuGroups(s.nav.menu).forEach(function (g) {
-g.items.forEach(function (it) {
-var q = it.page ? S.project.pages[it.page] : null;
-var cur = q && (q.id === page.id || (st.view === "post" && page.parent && r.journal && q.id === r.journal.id));
-items.push('<li class="' + (cur ? "is-current" : "") + '"><span class="bd-ly-mk">' + esc(Ls.marker) + "</span>" + esc(it.title) + "</li>");
-});
-});
-var style = "bd-ts-" + esc(Ls.menuStyle || "heading");
-return '<div class="bd-ly-edit ' + style + '"><ul>' + items.join("") + '</ul><span>' + esc(Ls.mark || s.name) + "</span></div>";
-}
-function hexAlpha(hex, pct) {
-var h = String(hex || "#000000").replace("#", "");
-if (h.length === 3) h = h.split("").map(function (c) { return c + c; }).join("");
-var n = parseInt(h, 16) || 0;
-return "rgba(" + ((n >> 16) & 255) + ", " + ((n >> 8) & 255) + ", " + (n & 255) + ", " + Math.round(pct) / 100 + ")";
-}
-/* PER PAGE: ITS OWN PAPER COLOUR AND MARGINS ON THE CONTENT SHEET */
-function layerPageCSS(phone) {
-var Ls = S.project.site.layers;
+/* EVERY STATE OF A SHEET, PER EDGE AND PER WAY OF GETTING OUT OF THE WAY; EACH RULE SETS EVERY VALUE SO PHONE RULES REPLACE DESKTOP ONES */
+function sheetStateCSS(pfx, edges) {
+var TR = LAYER_TRANS.map(function (t) { return t[0]; });
 var out = [];
-S.project.order.forEach(function (id) {
-var q = S.project.pages[id];
-if (!q || q.kind === "pin") return;
+edges.forEach(function (e) {
+var horiz = e === "left" || e === "right";
+var low = e === "left" || e === "top";
+var ax = horiz ? "kx" : "ky";
+var o = { left: "0 50%", right: "100% 50%", top: "50% 0", bottom: "50% 100%" }[e];
+var V = function (x) {
+var d = Object.assign({ kx: "0px", ky: "0px", kfx: "0deg", kfy: "0deg", ksx: "1", ksy: "1" }, x);
+return "--kx: " + d.kx + ";\n--ky: " + d.ky + ";\n--kfx: " + d.kfx + ";\n--kfy: " + d.kfy + ";\n--ksx: " + d.ksx + ";\n--ksy: " + d.ksy + ";\ntransform-origin: " + o + ";";
+};
+var away = function (amt) { return low ? "calc(" + amt + " - 100%)" : "calc(100% - " + amt + ")"; };
+var sel = ".bd-ly .bd-ly-k." + pfx + e;
+var x = {};
+out.push(sel + ".is-st-open {\n" + V(x) + "\n}");
+x = {};
+x[ax] = away("var(--k-peek)");
+out.push(sel + ".is-st-peek {\n" + V(x) + "\n}");
+x = {};
+x[ax] = low ? "calc(-100% - 24px)" : "calc(100% + 24px)";
+out.push(sel + ".is-st-hidden {\n" + V(x) + "\n}");
+TR.forEach(function (t) {
+var d = {};
+var sl = "var(--k-sliver)";
+if (t === "fold") {
+if (horiz) d.kfy = e === "left" ? "84deg" : "-84deg";
+else d.kfx = e === "top" ? "-84deg" : "84deg";
+} else if (t === "squash") {
+if (horiz) d.ksx = "var(--k-sqx, 0.04)";
+else d.ksy = "var(--k-sqy, 0.04)";
+} else if (t === "drop") d.ky = "calc(100% - " + sl + ")";
+else if (t === "rise") d.ky = "calc(" + sl + " - 100%)";
+else if (t === "push") d.kx = horiz && !low ? "calc(" + sl + " - 100%)" : "calc(100% - " + sl + ")";
+else d[ax] = away(sl);
+out.push(".bd-ly.is-t-" + t + " .bd-ly-k." + pfx + e + ".is-st-tuck {\n" + V(d) + "\n}");
+});
+var body = { left: "top: 0;\nright: var(--k-strip);\nbottom: 0;\nleft: 0;", right: "top: 0;\nright: 0;\nbottom: 0;\nleft: var(--k-strip);", top: "top: 0;\nright: 0;\nbottom: var(--k-strip);\nleft: 0;", bottom: "top: var(--k-strip);\nright: 0;\nbottom: 0;\nleft: 0;" }[e];
+var strip = { left: "top: 0;\nright: 0;\nbottom: 0;\nleft: auto;\nwidth: var(--k-strip);\nheight: auto;", right: "top: 0;\nright: auto;\nbottom: 0;\nleft: 0;\nwidth: var(--k-strip);\nheight: auto;", top: "top: auto;\nright: 0;\nbottom: 0;\nleft: 0;\nwidth: auto;\nheight: var(--k-strip);", bottom: "top: 0;\nright: 0;\nbottom: auto;\nleft: 0;\nwidth: auto;\nheight: var(--k-strip);" }[e];
+out.push(".bd-ly-k." + pfx + e + " > .bd-ly-body {\n" + body + "\n}");
+out.push(".bd-ly-k." + pfx + e + " > .bd-ly-strip {\n" + strip + "\n}");
+});
+return out.join("\n");
+}
+function sheetLine(k, phone) {
+if (!k.line) return "none";
+var e = (phone ? k.edgeM : k.edge) || "left";
+var side = k.rest === "peek" ? { left: "right", right: "left", top: "bottom", bottom: "top" }[e] : e;
+var a = k.rest === "peek" ? "0.12" : "0.1";
+return { left: "-1px 0 0", right: "1px 0 0", top: "0 -1px 0", bottom: "0 1px 0" }[side] + " rgba(0, 0, 0, " + a + ")";
+}
+/* PER SHEET: WHERE IT SITS, HOW MUCH PEEKS, ITS PAPER */
+function sheetBoxCSS(phone) {
+var K = sheetList();
+var out = [];
+K.forEach(function (k, n) {
+var ins = sheetInsets(n, phone);
+var sel = '.bd-ly-k[data-k="' + k.id + '"]';
+var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
+var d = ["top: " + ins.top + "px;", "right: " + ins.right + "px;", "bottom: " + ins.bottom + "px;", "left: " + ins.left + "px;", "--k-peek: " + peek + "px;", "--k-sliver: " + (parseFloat(phone ? k.sliverM : k.sliver) || 0) + "px;", "--k-strip: " + (k.strip && sheetPage(k.strip) ? peek : 0) + "px;", "box-shadow: " + sheetLine(k, phone) + ";"];
+if (!phone) d = d.concat(["z-index: " + (2 + K.length - 1 - n) + ";", "background: " + hexAlpha(k.color || "#E4E1DA", k.alpha == null ? 55 : k.alpha) + ";", "-webkit-backdrop-filter: blur(" + (parseFloat(k.blur) || 0) + "px);", "backdrop-filter: blur(" + (parseFloat(k.blur) || 0) + "px);"]);
+if (!phone && parseInt(k.dur, 10) > 0) d.push("--k-dur: " + parseInt(k.dur, 10) + "ms;");
+out.push(sel + " {\n" + d.join("\n") + "\n}");
+var w = parseFloat(k.paneW);
+var pad = parseFloat(phone ? k.padM : k.pad);
+if (!isNaN(pad)) out.push(sel + " .bd-ly-pane {\npadding: 0 " + pad + "px;\n}");
+if (!phone && (w > 0 || !isNaN(parseFloat(k.pad)))) out.push(sel + " .bd-ly-pane > .bd-panel {\n" + (w > 0 ? "max-width: " + w + "px;\n" : "") + "margin: 0;\npadding-left: 0;\npadding-right: 0;\n}");
+});
+return out.join("\n");
+}
+function sheetEdges(phone) {
+var u = [];
+sheetList().forEach(function (k) {
+var e = (phone ? k.edgeM : k.edge) || "left";
+if (u.indexOf(e) < 0) u.push(e);
+});
+return u;
+}
+/* PER PAGE UNDERNEATH: ITS OWN PAPER COLOUR AND MARGINS */
+function layerPageCSS(phone) {
+var out = [];
+sheetContent().forEach(function (q) {
 var sel = '.bd-ly-art[data-id="' + q.id + '"]';
 var num = function (k) { var v = parseFloat(q[k]); return isNaN(v) ? null : v; };
+var ins = sheetInsets(1e9, phone);
 var t = num(phone ? "sheetPadTM" : "sheetPadT");
 var x = num(phone ? "sheetPadXM" : "sheetPadX");
 if (!phone && q.sheetBg) out.push(sel + " {\nmin-height: 100%;\nbackground: " + q.sheetBg + ";\n}");
 var d = [];
-if (t != null) d.push("padding-top: calc(" + (phone ? "var(--ly-band) + " : "") + t + "px);");
-if (x != null) d.push("padding-left: calc(" + (phone ? "" : "var(--ly-menu-w) + ") + x + "px);", "padding-right: " + x + "px;");
+if (t != null) d.push("padding-top: " + (ins.top + t) + "px;");
+if (x != null) d.push("padding-left: " + (ins.left + x) + "px;", "padding-right: " + (ins.right + x) + "px;");
 if (d.length) out.push(sel + " > .bd-panel {\n" + d.join("\n") + "\n}");
 });
 return out.join("\n");
 }
+function contentInsetCSS(phone) {
+var ins = sheetInsets(1e9, phone);
+var d = ["padding-top: calc(" + ins.top + "px + var(--bd-wt));", "padding-left: calc(" + ins.left + "px + var(--bd-wl));"];
+if (ins.right) d.push("padding-right: " + ins.right + "px;");
+if (ins.bottom) d.push("padding-bottom: " + ins.bottom + "px;");
+return ".bd-ly-art > .bd-panel {\n" + d.join("\n") + "\n}";
+}
+/* THE SHEET MENU ON A STRIP (PUBLISHED), ON THE STRIP PAGE ITSELF AND ON THE CANVAS CHROME */
+function sheetMenuCSS(phone) {
+var W = [".bd-ly-strip", ".bd-site.is-strip", ".bd-ly-edit"];
+var sel = function (x) { return W.map(function (w) { return w + " " + x; }).join(",\n"); };
+if (phone) return [
+sel(".bd-ly-list") + " {\ntop: auto;\nbottom: 0;\nright: var(--sm-padm);\nwidth: auto;\nheight: 100%;\nflex-direction: row;\nalign-items: center;\ngap: var(--sm-gapm);\n}",
+sel(".bd-sheetmenu.is-al-left .bd-ly-list") + ",\n" + sel(".bd-sheetmenu.is-al-right .bd-ly-list") + " {\nalign-items: center;\n}",
+sel(".bd-ly-mark") + " {\ntop: auto;\nleft: var(--sm-padm);\nright: auto;\nbottom: 0;\nheight: 100%;\ndisplay: flex;\nalign-items: center;\n}"
+].join("\n");
+return [
+sel(".bd-panel") + ",\n" + sel(".bd-main") + ",\n" + sel(".bd-grid") + ",\n" + sel(".bd-cols") + ",\n" + sel(".bd-col") + ",\n" + sel(".bd-el") + " {\nposition: static;\n}",
+sel(".bd-ly-list") + " {\nposition: absolute;\ntop: var(--bd-wt);\nright: var(--sm-pad);\nwidth: calc(100% - var(--sm-pad) - 16px);\ndisplay: flex;\nflex-direction: column;\nalign-items: flex-end;\ngap: var(--sm-gap);\nmargin: 0;\npadding: 0;\nlist-style: none;\n}",
+sel(".bd-sheetmenu.is-al-left .bd-ly-list") + " {\nalign-items: flex-start;\n}",
+sel(".bd-ly-mark") + " {\nposition: absolute;\nright: var(--sm-pad);\nbottom: var(--bd-wt);\n}",
+".bd-ly-a {\ndisplay: inline-flex;\ngap: 10px;\nwhite-space: nowrap;\n}",
+".bd-ly-mk {\nvisibility: hidden;\n}",
+".bd-ly-a.is-current .bd-ly-mk {\nvisibility: visible;\n}"
+].join("\n");
+}
 function layerCSS(phone) {
 var Ls = S.project.site.layers;
 if (phone) return [
-":root {\n--ly-band: " + Ls.menuBand + "px;\n--ly-menu-pad: " + Ls.menuPadM + "px;\n--ly-menu-gap: " + Ls.menuGapM + "px;\n--ly-about-pad: " + Ls.aboutPadM + "px;\n--ly-sliver: " + Ls.sliverM + "px;\n}",
-".bd-ly-art > .bd-panel {\npadding-top: calc(var(--ly-band) + var(--bd-wt));\npadding-left: var(--bd-wl);\n}",
-".bd-ly-index {\ntop: var(--ly-band);\nleft: 0;\nwidth: 100vw;\nheight: calc(200% - var(--ly-band) * 2);\nbox-shadow: " + (Ls.indexEdge ? "0 -1px 0 rgba(0, 0, 0, 0.1)" : "none") + ";\n}",
-".is-v-post .bd-ly-index,\n.is-tucked .bd-ly-index {\n--lx: 0px;\n--ly: calc(-50% + var(--ly-sliver));\n}",
-".is-v-post.is-h-library .bd-ly-index,\n.is-tucked.is-h-library .bd-ly-index {\n--ly: calc(-100% + var(--ly-sliver));\n}",
-".bd-ly-sheet.bd-ly-index {\ntransform-origin: 50% 0;\n}",
-".is-h-library .bd-ly-sheet.bd-ly-index {\ntransform-origin: 50% 50%;\n}",
-".is-t-fold.is-v-post .bd-ly-index,\n.is-t-fold.is-tucked .bd-ly-index {\n--ly: 0px;\n--lfy: 0deg;\n--lfx: -84deg;\n}",
-".is-t-fold.is-v-post.is-h-library .bd-ly-index,\n.is-t-fold.is-tucked.is-h-library .bd-ly-index {\n--ly: -50%;\n}",
-".is-t-squash.is-v-post .bd-ly-index,\n.is-t-squash.is-tucked .bd-ly-index {\n--ly: 0px;\n--lsx: 1;\n--lsy: var(--ly-sqy, 0.02);\n}",
-".is-t-squash.is-v-post.is-h-library .bd-ly-index,\n.is-t-squash.is-tucked.is-h-library .bd-ly-index {\n--ly: -50%;\n}",
-".is-t-push.is-v-post .bd-ly-index,\n.is-t-push.is-tucked .bd-ly-index {\n--lx: calc(100vw - var(--ly-sliver));\n--ly: 0px;\n}",
-".is-t-push.is-v-post.is-h-library .bd-ly-index,\n.is-t-push.is-tucked.is-h-library .bd-ly-index {\n--ly: -50%;\n}",
-".bd-ly-menu {\n--lx: 0px;\n--ly: calc(var(--ly-band) - 100%);\nbox-shadow: " + (Ls.menuEdge ? "0 1px 0 rgba(0, 0, 0, 0.12)" : "none") + ";\n}",
-".is-v-about .bd-ly-menu {\n--ly: 0px;\n}",
-".bd-ly-list {\ntop: auto;\nbottom: 0;\nright: var(--ly-menu-pad);\nwidth: auto;\nheight: var(--ly-band);\nflex-direction: row;\nalign-items: center;\n}",
-".bd-ly-mark {\ntop: auto;\nleft: var(--ly-menu-pad);\nright: auto;\nbottom: 0;\nheight: var(--ly-band);\ndisplay: flex;\nalign-items: center;\n}",
-".bd-ly-about {\nright: 0;\nbottom: var(--ly-band);\npadding: 0 var(--ly-about-pad);\n}",
-".is-t-rise.is-v-post .bd-ly-index,\n.is-t-rise.is-tucked .bd-ly-index {\n--lx: 0px;\n}",
+contentInsetCSS(true),
+sheetBoxCSS(true),
+sheetStateCSS("is-em-", sheetEdges(true)),
+sheetMenuCSS(true),
 layerPageCSS(true)
 ].filter(Boolean).join("\n");
 var ease = (LAYER_EASE[Ls.ease] || LAYER_EASE.paper)[1];
+var KD = "var(--ly-pdur, var(--k-dur, var(--ly-dur)))";
 var out = [
-":root {\n--ly-menu-bg: " + hexAlpha(Ls.menuColor, Ls.menuAlpha) + ";\n--ly-menu-blur: " + Ls.menuBlur + "px;\n--ly-menu-w: " + Ls.menuW + "px;\n--ly-menu-pad: " + Ls.menuPad + "px;\n--ly-menu-gap: " + Ls.menuGap + "px;\n--ly-about-w: " + Ls.aboutW + "px;\n--ly-about-pad: " + Ls.aboutPad + "px;\n--ly-index-bg: " + hexAlpha(Ls.indexColor, Ls.indexAlpha) + ";\n--ly-index-blur: " + Ls.indexBlur + "px;\n--ly-sliver: " + Ls.sliver + "px;\n--ly-dur: " + Ls.dur + "ms;\n--ly-menu-dur: " + Ls.menuDur + "ms;\n--ly-ease: " + ease + ";\n--ly-tilt: " + (Ls.tilt || 0) + "deg;\n--ly-focus: " + Ls.focusBlur + "px;\n}",
+":root {\n--ly-dur: " + Ls.dur + "ms;\n--ly-ease: " + ease + ";\n--ly-tilt: " + (Ls.tilt || 0) + "deg;\n--ly-focus: " + Ls.focusBlur + "px;\n}",
 "body.bd-layered {\nheight: 100%;\nmargin: 0;\noverflow: hidden;\n}",
 ".bd-ly {\nposition: fixed;\ninset: 0;\noverflow: hidden;\n}",
 ".bd-ly-sheet {\nposition: absolute;\n--lx: 0px;\n--ly: 0px;\n--lr: 0deg;\ntransform: translate3d(var(--lx), var(--ly), 0) rotate(var(--lr));\ntransition: transform var(--ly-dur) var(--ly-ease), box-shadow var(--ly-dur) var(--ly-ease), filter var(--ly-dur) var(--ly-ease);\nwill-change: transform;\n}",
 ".bd-ly-sheet.is-moving {\n--lr: var(--ly-tilt);\n}",
-Ls.lift ? ".bd-ly-index.is-moving,\n.bd-ly-menu.is-moving {\nbox-shadow: 8px 8px 0 rgba(0, 0, 0, 0.06);\n}" : "",
 ".bd-ly-sheet .bd-panel {\nmin-height: 0;\nbackground: transparent;\n}",
 ".bd-ly-content {\ninset: 0;\nz-index: 1;\noverflow-y: auto;\n-webkit-overflow-scrolling: touch;\noverscroll-behavior: contain;\nbackground: var(--bd-page);\n}",
 Ls.reveal === "focus" ? ".bd-ly:not(.is-v-post) .bd-ly-content {\nfilter: blur(var(--ly-focus));\n}" : Ls.reveal === "rise" ? ".bd-ly:not(.is-v-post) .bd-ly-content {\n--ly: 18px;\n}" : "",
 ".bd-ly-art {\ndisplay: none;\n}",
 ".bd-ly-art.is-shown {\ndisplay: block;\n}",
-".bd-ly-art > .bd-panel {\npadding-left: calc(var(--ly-menu-w) + var(--bd-wl));\n}",
-".bd-ly-index {\ntop: 0;\nleft: var(--ly-menu-w);\nwidth: calc(100vw - var(--ly-menu-w));\nheight: 200%;\nz-index: 2;\nbackground: var(--ly-index-bg);\n-webkit-backdrop-filter: blur(var(--ly-index-blur));\nbackdrop-filter: blur(var(--ly-index-blur));\nbox-shadow: " + (Ls.indexEdge ? "-1px 0 0 rgba(0, 0, 0, 0.1)" : "none") + ";\n}",
-".bd-ly-half {\nheight: 50%;\noverflow-y: auto;\n-webkit-overflow-scrolling: touch;\noverscroll-behavior: contain;\n}",
-".is-h-library .bd-ly-index {\n--ly: -50%;\n}",
-".is-v-post .bd-ly-index,\n.is-tucked .bd-ly-index {\n--lx: calc(var(--ly-sliver) - 100vw);\n}",
-".bd-ly-sheet.bd-ly-index {\n--lfy: 0deg;\n--lfx: 0deg;\n--lsx: 1;\n--lsy: 1;\ntransform: translate3d(var(--lx), var(--ly), 0) rotate(var(--lr)) perspective(2400px) rotateY(var(--lfy)) rotateX(var(--lfx)) scale(var(--lsx), var(--lsy));\ntransform-origin: 0 50%;\n}",
-".bd-ly-index.is-snap {\ntransition: none;\n}",
-".is-clip.is-h-journal .bd-ly-index {\nclip-path: inset(-40px -40px 50% -40px);\n}",
-".is-clip.is-h-library .bd-ly-index {\nclip-path: inset(50% -40px -40px -40px);\n}",
-".is-t-fold.is-v-post .bd-ly-index,\n.is-t-fold.is-tucked .bd-ly-index {\n--lx: 0px;\n--lfy: 84deg;\n}",
-".is-t-squash.is-v-post .bd-ly-index,\n.is-t-squash.is-tucked .bd-ly-index {\n--lx: 0px;\n--lsx: var(--ly-sqx, 0.04);\n}",
-".is-t-drop.is-v-post .bd-ly-index,\n.is-t-drop.is-tucked .bd-ly-index {\n--lx: 0px;\n--ly: calc(50% - var(--ly-sliver));\n}",
-".is-t-drop.is-v-post.is-h-library .bd-ly-index,\n.is-t-drop.is-tucked.is-h-library .bd-ly-index {\n--ly: calc(0px - var(--ly-sliver));\n}",
-".is-t-push.is-v-post .bd-ly-index,\n.is-t-push.is-tucked .bd-ly-index {\n--lx: calc(100vw - var(--ly-menu-w) - var(--ly-sliver));\n}",
-".is-t-cut .bd-ly-index {\ntransition: none;\n}",
-".is-t-rise.is-v-post .bd-ly-index,\n.is-t-rise.is-tucked .bd-ly-index {\n--lx: 0px;\n--ly: calc(-50% + var(--ly-sliver));\n}",
-".is-t-rise.is-v-post.is-h-library .bd-ly-index,\n.is-t-rise.is-tucked.is-h-library .bd-ly-index {\n--ly: calc(-100% + var(--ly-sliver));\n}",
+contentInsetCSS(false),
+".bd-ly-k {\n--kx: 0px;\n--ky: 0px;\n--kfx: 0deg;\n--kfy: 0deg;\n--ksx: 1;\n--ksy: 1;\noverflow: hidden;\ntransform: translate3d(var(--kx), var(--ky), 0) rotate(var(--lr)) perspective(2400px) rotateY(var(--kfy)) rotateX(var(--kfx)) scale(var(--ksx), var(--ksy));\ntransition: transform " + KD + " var(--ly-ease), box-shadow " + KD + " var(--ly-ease);\n}",
+Ls.lift ? ".bd-ly-k.is-moving {\nbox-shadow: 8px 8px 0 rgba(0, 0, 0, 0.06);\n}" : "",
+".bd-ly.is-t-cut .bd-ly-k.is-r-open {\ntransition-duration: 0s;\n}",
+".bd-ly-body,\n.bd-ly-strip {\nposition: absolute;\noverflow: hidden;\n}",
+".bd-ly-track {\nposition: absolute;\ntop: 0;\nleft: 0;\ndisplay: flex;\ntransition: transform " + KD + " var(--ly-ease);\nwill-change: transform;\n}",
+".bd-ly-track.is-ax-y {\nflex-direction: column;\nwidth: 100%;\nheight: calc(var(--n) * 100%);\ntransform: translate3d(0, calc(var(--i) * -100% / var(--n)), 0);\n}",
+".bd-ly-track.is-ax-x {\nflex-direction: row;\nwidth: calc(var(--n) * 100%);\nheight: 100%;\ntransform: translate3d(calc(var(--i) * -100% / var(--n)), 0, 0);\n}",
+".bd-ly-track.is-snap {\ntransition: none;\n}",
+".bd-ly-pane {\nflex: 0 0 calc(100% / var(--n));\nmin-width: 0;\nmin-height: 0;\noverflow-y: auto;\n-webkit-overflow-scrolling: touch;\noverscroll-behavior: contain;\n}",
+sheetBoxCSS(false),
+sheetStateCSS("is-e-", sheetEdges(false)),
+sheetMenuCSS(false),
 layerPageCSS(false),
-".is-t-unfold .bd-ly-art.is-enter {\ntransform-origin: 50% 0;\nanimation: bd-ly-unfold var(--ly-dur) var(--ly-ease) both;\n}",
+".is-t-unfold .bd-ly-art.is-enter {\ntransform-origin: 50% 0;\nanimation: bd-ly-unfold var(--ly-pdur, var(--ly-dur)) var(--ly-ease) both;\n}",
 "@keyframes bd-ly-unfold {\nfrom {\ntransform: perspective(1600px) rotateX(-88deg);\n}\nto {\ntransform: none;\n}\n}",
-".bd-ly-menu {\ntop: 0;\nleft: 0;\nwidth: 100vw;\nheight: 100%;\nz-index: 3;\n--lx: calc(var(--ly-menu-w) - 100vw);\nbackground: var(--ly-menu-bg);\n-webkit-backdrop-filter: blur(var(--ly-menu-blur));\nbackdrop-filter: blur(var(--ly-menu-blur));\nbox-shadow: " + (Ls.menuEdge ? "1px 0 0 rgba(0, 0, 0, 0.12)" : "none") + ";\ntransition-duration: var(--ly-menu-dur);\n}",
-".is-v-about .bd-ly-menu {\n--lx: 0px;\n}",
-".bd-ly-list {\nposition: absolute;\ntop: var(--bd-wt);\nright: var(--ly-menu-pad);\nwidth: calc(var(--ly-menu-w) - var(--ly-menu-pad) - 16px);\ndisplay: flex;\nflex-direction: column;\nalign-items: " + (Ls.menuAlign === "left" ? "flex-start" : "flex-end") + ";\ngap: var(--ly-menu-gap);\nmargin: 0;\npadding: 0;\nlist-style: none;\n}",
-".bd-ly-a {\ndisplay: inline-flex;\ngap: 10px;\nwhite-space: nowrap;\n}",
-".bd-ly-mk {\nvisibility: hidden;\n}",
-".bd-ly-a.is-current .bd-ly-mk {\nvisibility: visible;\n}",
-".bd-ly-mark {\nposition: absolute;\nright: var(--ly-menu-pad);\nbottom: var(--bd-wt);\n}",
-".bd-ly-about {\nposition: absolute;\ntop: 0;\nbottom: 0;\nleft: 0;\nright: var(--ly-menu-w);\noverflow-y: auto;\npadding: 0 var(--ly-about-pad);\n}",
-".bd-ly-about > .bd-panel {\nmax-width: var(--ly-about-w);\nmargin: 0;\npadding-left: 0;\npadding-right: 0;\n}",
-"@media (prefers-reduced-motion: reduce) {\n.bd-ly-sheet {\ntransition-duration: 1ms;\n}\n}"
+"@media (prefers-reduced-motion: reduce) {\n.bd-ly-sheet,\n.bd-ly-track {\ntransition-duration: 1ms;\n}\n}"
 ];
 return out.filter(Boolean).join("\n");
 }
-/* LAYER RUNTIME (EXPORTED AS-IS) — MOVES THE SHEETS, KEEPS THE ADDRESS BAR IN STEP */
+/* LAYER RUNTIME (EXPORTED AS-IS) — MOVES THE SHEETS BY bdSheetPlan, KEEPS THE ADDRESS BAR IN STEP */
 function bdLayers(doc, preview) {
 var root = doc.getElementById("bd-ly");
 if (!root) return;
 var content = doc.getElementById("bd-ly-content");
-var index = doc.getElementById("bd-ly-index");
-var menu = doc.getElementById("bd-ly-menu");
-var dur = parseInt(root.getAttribute("data-dur"), 10) || 460;
-var menuDur = parseInt(root.getAttribute("data-menu-dur"), 10) || dur;
+var els = Array.prototype.slice.call(root.querySelectorAll(".bd-ly-k"));
+var base = parseInt(root.getAttribute("data-dur"), 10) || 460;
+var dur = base;
 var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 var siteTitle = doc.title.split(" — ").pop();
-var S = { view: root.getAttribute("data-view"), half: root.getAttribute("data-half"), post: root.getAttribute("data-post") };
-var before = "journal";
 var master = root.getAttribute("data-trans") || "slide";
-var baseDur = dur;
-function sizes() {
-var sl = parseFloat(getComputedStyle(root).getPropertyValue("--ly-sliver")) || 40;
-if (index.offsetWidth) root.style.setProperty("--ly-sqx", Math.max(0.01, sl / index.offsetWidth).toFixed(4));
-if (index.offsetHeight) root.style.setProperty("--ly-sqy", Math.max(0.01, sl / (index.offsetHeight / 2)).toFixed(4));
-}
-sizes();
-window.addEventListener("resize", sizes);
-function transOf(id) {
-var a = art(id);
-return (a && a.getAttribute("data-trans")) || master;
-}
-var homeSlug = (menu.querySelector('[data-go="journal"]') || { getAttribute: function () { return "/"; } }).getAttribute("href");
+var home = root.getAttribute("data-home") || "";
+var F = root.getAttribute("data-focus") || home;
+var before = home;
+var model = els.map(function (k) {
+var c = k.getAttribute("data-covers");
+return { el: k, rest: k.getAttribute("data-rest") || "open", covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track") };
+});
+var cur = model.map(function (m) {
+return { st: (m.el.className.match(/\bis-st-([a-z]+)/) || [])[1] || "open", i: parseInt(m.track.style.getPropertyValue("--i"), 10) || 0 };
+});
 function art(id) {
 return content.querySelector('.bd-ly-art[data-id="' + id + '"]');
 }
-function moving(el) {
-if (reduce || !el) return;
-el.classList.add("is-moving");
-clearTimeout(el.bdMv);
-el.bdMv = setTimeout(function () { el.classList.remove("is-moving"); }, Math.round((el === menu ? menuDur : dur) * 0.55));
+function pane(id) {
+return root.querySelector('.bd-ly-pane[data-page="' + id + '"]');
 }
-function urlFor() {
-if (S.view === "post") {
-var a = art(S.post);
-return a ? "/" + a.getAttribute("data-slug") : "/";
+function where(id) {
+for (var n = 0; n < model.length; n++) {
+var j = model[n].panes.indexOf(id);
+if (j > -1) return { id: id, k: n, i: j };
 }
-var m = menu.querySelector('[data-go="' + (S.view === "about" ? "about" : S.half) + '"]');
-return m ? m.getAttribute("href") : homeSlug;
+return id && art(id) ? { id: id, k: -1, i: 0 } : null;
 }
-function mark() {
-menu.querySelectorAll(".bd-ly-a").forEach(function (a) {
-var g = a.getAttribute("data-go");
-var on = S.view === "about" ? g === "about" : S.view === "post" && g === "post" ? a.getAttribute("data-id") === S.post : g === S.half && !(S.view === "post" && menu.querySelector('[data-go="post"][data-id="' + S.post + '"]'));
-a.classList.toggle("is-current", on);
+function kd(m) {
+return parseInt(getComputedStyle(m.el).getPropertyValue("--k-dur"), 10) || dur;
+}
+function sizes() {
+els.forEach(function (k) {
+var sl = parseFloat(getComputedStyle(k).getPropertyValue("--k-sliver")) || 40;
+if (k.offsetWidth) k.style.setProperty("--k-sqx", Math.max(0.01, sl / k.offsetWidth).toFixed(4));
+if (k.offsetHeight) k.style.setProperty("--k-sqy", Math.max(0.01, sl / k.offsetHeight).toFixed(4));
 });
 }
-function go(view, id, pop) {
-var prev = { view: S.view, half: S.half, post: S.post };
-if (view === "journal" || view === "library") {
-S.view = view;
-S.half = view;
-} else if (view === "about") {
-if (S.view !== "about") before = S.view;
-S.view = "about";
-} else if (view === "post") {
-S.view = "post";
-if (id) S.post = id;
+sizes();
+window.addEventListener("resize", sizes);
+function moving(m) {
+if (reduce) return;
+m.el.classList.add("is-moving");
+clearTimeout(m.el.bdMv);
+m.el.bdMv = setTimeout(function () { m.el.classList.remove("is-moving"); }, Math.round(kd(m) * 0.55));
 }
-var tr = transOf(S.post);
-var a0 = art(S.post);
-dur = (a0 && parseInt(a0.getAttribute("data-dur"), 10)) || baseDur;
-if (dur !== baseDur) root.style.setProperty("--ly-dur", dur + "ms");
-else root.style.removeProperty("--ly-dur");
-root.className = root.className.replace(/\bis-t-[a-z]+\b/g, "").trim() + " is-t-" + tr;
-var a = art(S.post);
-if (S.post !== prev.post && a) {
+function slugOf(id) {
+var x = pane(id) || art(id);
+return x ? x.getAttribute("data-slug") : "";
+}
+function mark() {
+var a0 = art(F);
+var par = a0 ? a0.getAttribute("data-parent") : "";
+var has = function (id) { return !!id && !!root.querySelector('.bd-ly-a[data-id="' + id + '"]'); };
+var on = F;
+if (a0 && !has(F)) {
+on = has(par) ? par : "";
+if (!on) {
+for (var n = 0; n < model.length; n++) {
+if (cur[n].st === "tuck") {
+on = model[n].panes[cur[n].i];
+break;
+}
+}
+}
+}
+root.querySelectorAll(".bd-ly-a[data-id]").forEach(function (a) {
+a.classList.toggle("is-current", a.getAttribute("data-id") === on);
+});
+}
+function go(id, pop) {
+var f = where(id);
+if (!f) return;
+var pf = where(F) || { id: F, k: -1, i: 0 };
+if (f.k > -1 && model[f.k].rest !== "open" && !(pf.k > -1 && model[pf.k].rest !== "open")) before = F;
+/* THE WAY OUT OF THE WAY BELONGS TO THE PAGE UNDERNEATH BEING OPENED OR CLOSED */
+var tid = f.k < 0 ? f.id : pf.k < 0 && f.k > -1 && model[f.k].rest === "open" ? pf.id : "";
+if (tid && art(tid)) {
+var ta = art(tid);
+var tr = ta.getAttribute("data-trans") || master;
+var td = parseInt(ta.getAttribute("data-dur"), 10) || 0;
+root.className = root.className.replace(/\bis-t-[a-z]+\b/g, "").replace(/\s+/g, " ").trim() + " is-t-" + tr;
+dur = td || base;
+if (td) root.style.setProperty("--ly-pdur", td + "ms");
+else root.style.removeProperty("--ly-pdur");
+if (f.k < 0 && tr === "unfold" && !reduce && (pf.k > -1 || pf.id !== f.id)) {
+ta.classList.remove("is-enter");
+void ta.offsetWidth;
+ta.classList.add("is-enter");
+clearTimeout(ta.bdEnter);
+ta.bdEnter = setTimeout(function () { ta.classList.remove("is-enter"); }, dur + 60);
+}
+}
+if (f.k < 0) {
+var a = art(f.id);
+if (!a.classList.contains("is-shown")) {
 content.querySelectorAll(".bd-ly-art.is-shown").forEach(function (x) { x.classList.remove("is-shown"); });
 a.classList.add("is-shown");
 content.scrollTop = 0;
 }
-if (a && S.view === "post" && (prev.view !== "post" || S.post !== prev.post) && tr === "unfold" && !reduce) {
-a.classList.remove("is-enter");
-void a.offsetWidth;
-a.classList.add("is-enter");
-clearTimeout(a.bdEnter);
-a.bdEnter = setTimeout(function () { a.classList.remove("is-enter"); }, dur + 60);
 }
-/* FROM A POST TO THE OTHER HALF: SWAP HALVES WHILE THE SHEET IS STILL TUCKED AWAY, THEN ONLY SLIDE IT BACK */
-if (prev.view === "post" && S.view !== "post" && S.view !== "about" && prev.half !== S.half) {
-index.classList.add("is-snap");
-root.classList.remove("is-h-" + prev.half);
-root.classList.add("is-h-" + S.half);
-void index.offsetWidth;
-index.classList.remove("is-snap");
+var next = bdSheetPlan(model, f, cur);
+next.forEach(function (n, x) {
+var m = model[x];
+var c = cur[x];
+if (n.i !== c.i) {
+/* A SHEET THAT ISN'T LYING OPEN CHANGES PAGE INSTANTLY, OUT OF SIGHT, THEN ONLY SLIDES BACK */
+if (c.st !== "open") m.track.classList.add("is-snap");
+m.track.style.setProperty("--i", n.i);
+if (c.st !== "open") {
+void m.track.offsetWidth;
+m.track.classList.remove("is-snap");
 }
-var tucked = S.view === "about" && (prev.view === "post" || (prev.view === "about" && root.classList.contains("is-tucked")));
-root.classList.toggle("is-tucked", tucked);
-/* ONLY THE HALF IN USE TRAVELS WITH A POST — THE OTHER HALF NEVER SWEEPS PAST */
-clearTimeout(root.bdClip);
-if (S.view === "post" || tucked) root.classList.add("is-clip");
-else if (root.classList.contains("is-clip")) root.bdClip = setTimeout(function () { root.classList.remove("is-clip"); }, dur + 80);
-root.classList.remove("is-v-" + prev.view, "is-h-" + prev.half);
-root.classList.add("is-v-" + S.view, "is-h-" + S.half);
-if (prev.half !== S.half || (prev.view === "post") !== (S.view === "post" || tucked)) moving(index);
-if ((prev.view === "about") !== (S.view === "about")) moving(menu);
+m.track.querySelectorAll(".bd-ly-pane").forEach(function (p, j) { p.classList.toggle("is-on", j === n.i); });
+}
+if (n.st !== c.st) {
+m.el.classList.remove("is-st-" + c.st);
+m.el.classList.add("is-st-" + n.st);
+moving(m);
+} else if (n.i !== c.i) moving(m);
+});
+cur = next;
+F = f.id;
+root.classList.toggle("is-v-post", f.k < 0);
+root.setAttribute("data-focus", F);
 mark();
-var t = S.view === "post" && art(S.post) ? art(S.post).getAttribute("data-title") + " — " + siteTitle : siteTitle;
-doc.title = t;
-if (S.view === "post") content.focus({ preventScroll: true });
+var ft = art(F);
+doc.title = ft ? ft.getAttribute("data-title") + " — " + siteTitle : siteTitle;
+if (f.k < 0) content.focus({ preventScroll: true });
 if (preview || pop) return;
 try {
-history.pushState({ bdly: 1 }, "", urlFor());
+history.pushState({ bdly: 1 }, "", "/" + slugOf(F));
 } catch (e) {}
 }
 function back() {
-if (S.view === "about") go(before === "post" ? "post" : S.half);
-else if (S.view === "post") go(S.half);
+var f = where(F);
+if (!f) return;
+if (f.k > -1 && model[f.k].rest !== "open") {
+go(before && before !== F && where(before) ? before : home);
+return;
+}
+if (f.k < 0) {
+for (var n = 0; n < model.length; n++) {
+if (cur[n].st === "tuck") {
+go(model[n].panes[cur[n].i]);
+return;
+}
+}
+if (home !== F) go(home);
+}
 }
 function bySlug(slug) {
 slug = String(slug || "").replace(/^\/+|\/+$/g, "").replace(/\.html$/, "");
-var m = menu.querySelector('.bd-ly-a[href="/' + slug + '"]');
-if (m && m.getAttribute("data-go") !== "post") return { view: m.getAttribute("data-go") };
+if (slug === "index") slug = "";
+var x = root.querySelector('.bd-ly-pane[data-slug="' + slug + '"]');
+if (x) return x.getAttribute("data-page");
 var a = content.querySelector('.bd-ly-art[data-slug="' + slug + '"]');
-if (a) return { view: "post", id: a.getAttribute("data-id") };
-return null;
+return a ? a.getAttribute("data-id") : "";
 }
 window.bdLayerOpen = function (href) {
 var u;
@@ -3260,9 +3469,11 @@ u = new URL(href, location.href);
 return false;
 }
 if (!preview && u.origin !== location.origin) return false;
-var r = bySlug(u.pathname);
-if (!r) return false;
-go(r.view, r.id);
+var id = bySlug(u.pathname);
+if (!id) return false;
+var w = where(id);
+if (id === F && w && w.k > -1 && model[w.k].rest !== "open") back();
+else go(id);
 setTimeout(function () {
 doc.querySelectorAll(".bd-unfold").forEach(function (x) { x.remove(); });
 doc.querySelectorAll(".is-open, .is-unfold").forEach(function (x) { x.classList.remove("is-open", "is-unfold"); });
@@ -3273,12 +3484,6 @@ doc.addEventListener("click", function (ev) {
 if (ev.defaultPrevented || ev.button > 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
 var a = ev.target.closest && ev.target.closest("a[href]");
 if (!a || a.target === "_blank") return;
-var g = a.getAttribute("data-go");
-if (g === "about" && S.view === "about") {
-ev.preventDefault();
-back();
-return;
-}
 if (window.bdLayerOpen(a.href)) ev.preventDefault();
 });
 doc.addEventListener("keydown", function (ev) {
@@ -3286,11 +3491,81 @@ if (ev.key === "Escape") back();
 });
 if (!preview) {
 window.addEventListener("popstate", function () {
-var r = bySlug(location.pathname) || { view: "journal" };
-go(r.view, r.id, true);
+go(bySlug(location.pathname) || home, true);
 });
 }
 mark();
+}
+/* CANVAS IN LAYERS MODE — THE PAGE ON ITS SHEET, WITH THE PEEKING SHEETS ABOVE IT DRAWN AT THEIR EDGES (STATIC) */
+function layerEditCSS(page, phone) {
+var w = sheetOf(page.id);
+var menu = sheetMenuCSS(false) + (phone ? "\n" + sheetMenuCSS(true) : "");
+if (w.strip) {
+var k = w.sheet;
+var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
+return [":host {\nposition: relative;\n}", ".bd-site.is-strip {\nposition: relative;\n" + (phone ? "width: 100%;\nheight: " + peek + "px;\nmin-height: 0;\n" : "width: " + peek + "px;\nmin-height: 640px;\n") + "background: " + hexAlpha(k.color || "#E4E1DA", 100) + ";\n}", menu].join("\n");
+}
+var bg = w.k > -1 ? hexAlpha(w.sheet.color || "#E4E1DA", 100) : page.sheetBg || "var(--bd-page)";
+var ins = sheetInsets(w.k > -1 ? w.k : 1e9, phone);
+var out = [":host {\nposition: relative;\n}", ".bd-site.is-layered {\nbackground: " + bg + ";\n}", ".bd-site.is-layered .bd-panel {\nbackground: transparent;\npadding-left: calc(" + ins.left + "px + var(--bd-wl));\npadding-top: calc(" + ins.top + "px + var(--bd-wt));\n" + (ins.right ? "padding-right: " + ins.right + "px;\n" : "") + "}"];
+var d = [];
+if (w.k > -1) {
+var pad = parseFloat(phone ? w.sheet.padM : w.sheet.pad);
+var pw = parseFloat(w.sheet.paneW);
+if (!isNaN(pad)) d.push("padding-left: " + (ins.left + pad) + "px;", "padding-right: " + pad + "px;");
+if (pw > 0 && !phone) d.push("max-width: " + (ins.left + (isNaN(pad) ? 0 : pad) * 2 + pw) + "px;", "margin: 0;");
+} else {
+var t = parseFloat(phone ? page.sheetPadTM : page.sheetPadT);
+var x = parseFloat(phone ? page.sheetPadXM : page.sheetPadX);
+if (!isNaN(t)) d.push("padding-top: " + (ins.top + t) + "px;");
+if (!isNaN(x)) d.push("padding-left: " + (ins.left + x) + "px;", "padding-right: " + (ins.right + x) + "px;");
+}
+if (d.length) out.push(".bd-site.is-layered .bd-panel {\n" + d.join("\n") + "\n}");
+out.push(".bd-ly-edit {\nposition: absolute;\nz-index: 5;\npointer-events: none;\noverflow: hidden;\nfont-family: var(--bd-sans);\ncolor: var(--bd-ink);\n}");
+out.push(".bd-ly-edit a {\ncolor: inherit;\ntext-decoration: none;\n}");
+out.push(".bd-ly-edit .bd-ed-cols {\ndisplay: none;\n}");
+out.push(menu);
+return out.join("\n");
+}
+function layerEditChrome(page) {
+var w = sheetOf(page.id);
+if (w.strip) return "";
+var phone = S.mode === "phone";
+var keep = S.layerFocus;
+S.layerFocus = page.id;
+var h = "";
+sheetList().forEach(function (k, n) {
+if ((w.k > -1 && n >= w.k) || k.rest !== "peek") return;
+var e = (phone ? k.edgeM : k.edge) || "left";
+var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
+var ins = sheetInsets(n, phone);
+var pos = e === "left" ? "top:" + ins.top + "px;bottom:" + ins.bottom + "px;left:" + ins.left + "px;width:" + peek + "px" : e === "right" ? "top:" + ins.top + "px;bottom:" + ins.bottom + "px;right:" + ins.right + "px;width:" + peek + "px" : e === "top" ? "left:" + ins.left + "px;right:" + ins.right + "px;top:" + ins.top + "px;height:" + peek + "px" : "left:" + ins.left + "px;right:" + ins.right + "px;bottom:" + ins.bottom + "px;height:" + peek + "px";
+var strip = sheetPage(k.strip);
+h += '<div class="bd-ly-edit" style="' + pos + ";background:" + hexAlpha(k.color || "#E4E1DA", k.alpha == null ? 55 : k.alpha) + ";box-shadow:" + sheetLine(k, phone) + ";-webkit-backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + "px);backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + 'px)">' + (strip ? layerBody(strip, "view") : "") + "</div>";
+});
+S.layerFocus = keep;
+return h;
+}
+/* START FROM THE CLASSIC SET: A MENU SHEET (MENU PAGE ON ITS EDGE, ABOUT ON IT) OVER AN INDEX SHEET (JOURNAL ABOVE LIBRARY) */
+function migrateSheets(p) {
+var s = p.site;
+var L = Object.assign(clone(LAYER_DEFAULTS), s.layers || {});
+var all = p.order.map(function (id) { return p.pages[id]; }).filter(function (q) { return q && q.kind !== "pin"; });
+var pg = function (id) { var q = id && p.pages[id]; return q && q.kind !== "pin" ? q : null; };
+var journal = pg(L.journal) || all.filter(function (q) { return q.blog; })[0] || all[0] || null;
+var library = pg(L.library) || all.filter(function (q) { return (q.els || []).some(function (e) { return e.type === "library"; }); })[0] || null;
+var about = pg(L.about) || all.filter(function (q) { return q.slug === "about"; })[0] || null;
+var slug = all.some(function (q) { return q.slug === "menu"; }) ? "sheet-menu" : "menu";
+var menu = newPage("Menu", "", slug, "");
+menu.header = false;
+menu.els = [{ id: uid(), type: "sheetmenu", d: { x: 0, y: 0, w: s.cols || 12, h: 6 }, m: null, props: { menu: (s.nav && s.nav.menu) || "", marker: L.marker, align: L.menuAlign === "left" ? "left" : "right", style: L.menuStyle || "heading", gap: L.menuGap, gapM: L.menuGapM, pad: L.menuPad, padM: L.menuPadM, mark: L.mark || "" } }];
+p.pages[menu.id] = menu;
+p.order.push(menu.id);
+var idx = [journal, library].filter(Boolean).map(function (q) { return q.id; }).filter(function (id, i, a) { return a.indexOf(id) === i; });
+s.sheets = [
+Object.assign(clone(SHEET_DEFAULTS), { id: "menu", name: "Menu", pages: about && idx.indexOf(about.id) < 0 ? [about.id] : [], strip: menu.id, edge: "left", edgeM: "top", rest: "peek", peek: L.menuW, peekM: L.menuBand, sliver: L.sliver, sliverM: L.sliverM, color: L.menuColor, alpha: L.menuAlpha, blur: L.menuBlur, line: !!L.menuEdge, dur: L.menuDur !== L.dur ? L.menuDur : "", paneW: L.aboutW, pad: L.aboutPad, padM: L.aboutPadM }),
+Object.assign(clone(SHEET_DEFAULTS), { id: "index", name: "Index", pages: idx, strip: "", edge: "left", edgeM: "top", rest: "open", peek: 0, peekM: 0, sliver: L.sliver - L.menuW, sliverM: L.sliverM, color: L.indexColor, alpha: L.indexAlpha, blur: L.indexBlur, line: !!L.indexEdge })
+];
 }
 function relatedPages(page) {
 return S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (p) {
@@ -3757,7 +4032,7 @@ if (layersOn()) {
 d.menu = false;
 d.pager = false;
 }
-return (layersOn() ? "/* LAYERS */\n" + bdLayers.toString() + "\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nbdLayers(document, !!window.BD_PREVIEW);\n});\n\n" : "") + "/* DATA */\nvar BD_DATA = " + JSON.stringify(d, null, 0).replace(/\},\{/g, "},\n{") + ";\n\n/* CHROME */\n" + bdChrome.toString() + "\n\n/* GALLERIES */\n" + bdGalleries.toString() + "\n\n/* LINES ONLY */\n" + bdInk.toString() + "\n\n/* START */\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nvar data = Object.assign({}, BD_DATA, { current: document.body.getAttribute(\"data-bd-page\") || \"\" });\nbdChrome(document, data);\nbdGalleries(document);\nbdInk(document);\n});\n";
+return (layersOn() ? "/* LAYERS */\n" + bdSheetPlan.toString() + "\n" + bdLayers.toString() + "\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nbdLayers(document, !!window.BD_PREVIEW);\n});\n\n" : "") + "/* DATA */\nvar BD_DATA = " + JSON.stringify(d, null, 0).replace(/\},\{/g, "},\n{") + ";\n\n/* CHROME */\n" + bdChrome.toString() + "\n\n/* GALLERIES */\n" + bdGalleries.toString() + "\n\n/* LINES ONLY */\n" + bdInk.toString() + "\n\n/* START */\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nvar data = Object.assign({}, BD_DATA, { current: document.body.getAttribute(\"data-bd-page\") || \"\" });\nbdChrome(document, data);\nbdGalleries(document);\nbdInk(document);\n});\n";
 }
 function exportPage(page) {
 var s = S.project.site;
@@ -4220,27 +4495,442 @@ renderCanvas();
 if (!opts.skipRight) renderRight();
 if (!opts.skipCode) renderCode();
 }
+/* TOOLS — EVERY BUTTON, TAB AND SECTION OF THE BACK OFFICE CAN BE HIDDEN, BROUGHT BACK, REORDERED AND MOVED; YOUR OWN TOOLS COME IN AS CODE */
+var TOOL_ZONES = { top: ["Top bar", "btn"], rail: ["Rail", "btn"], left: ["Left panel", "panel"], right: ["Right panel", "panel"] };
+var RAIL_TYPES = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["notes", "Notes"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"], ["quote", "Quote"], ["toggle", "Fold-out list"], ["product", "Product"], ["sep1"], ["menubtn", "Menu"], ["sheetmenu", "Sheet menu"], ["ptitle", "Page title"], ["pager", "Page arrows"], ["sep2"], ["posts", "Blog posts"], ["postinfo", "Post info"], ["sep3"]];
+var TOOL_DEFAULT = {
+top: ["toggle-left", "brand", "projects", "mode", "undo", "redo", "code-btn", "preview", "publish", "status", "toggle-right"],
+rail: RAIL_TYPES.map(function (t) { return t.length > 1 ? "add:" + t[0] : t[0]; }).concat(["inspect"]),
+left: ["pages", "styles", "motion", "site", "code"],
+right: []
+};
+var TOOL_TEMPLATE = "// A tool of your own. Ask Claude: “make me a back-office tool that …”, then paste the code here.\nBD.tool({\nid: \"hello\",\nname: \"Hello\",\nkind: \"button\", // button (top bar or rail) · panel (a tab) · section (inside a panel)\nicon: '<circle cx=\"10\" cy=\"10\" r=\"6\"/>', // 20×20 line drawing, optional\nzone: \"top\", // button: top or rail · panel: left or right\nrun: function (api) {\napi.say(\"Hello from \" + api.page.title);\n}\n});\n";
+var TOOLS_X = {};
+var TOOL_ERR = {};
+function editorPrefs() {
+var s = S.project.site;
+s.editor = Object.assign({ layout: {}, hidden: [], order: {}, moved: {}, custom: [] }, s.editor || {});
+return s.editor;
+}
+/* WHAT A TOOL CAN DO: READ AND CHANGE THE SITE, THE PAGE, THE SELECTED BLOCK; BUILD PANEL FIELDS */
+function toolAPI() {
+return {
+get site() { return S.project.site; },
+get page() { return curPage(); },
+get block() { return selEl(); },
+state: S,
+set: function (path, v) { snap(); applyPath(path, v); changed(); },
+change: function (fn) { snap(); fn(); changed(); },
+render: function () { render(); },
+say: function (msg) { setStatus(String(msg)); },
+css: function () { return exportCSS(); },
+uid: uid,
+ui: { field: field, row: row, sw: sw, seg: seg, select: select, input: input, numIn: numIn, colorIn: colorIn, esc: esc, icon: I }
+};
+}
+function loadCustomTools() {
+var list = editorPrefs().custom || [];
+var key = JSON.stringify(list);
+if (S.toolsKey === key) return;
+S.toolsKey = key;
+TOOLS_X = {};
+TOOL_ERR = {};
+list.forEach(function (c) {
+try {
+var got = [];
+var BD = { tool: function (spec) { got.push(spec); } };
+(new Function("BD", "api", c.code))(BD, toolAPI());
+if (!got.length) throw new Error("Nothing was added: the code has to call BD.tool({ … }).");
+got.forEach(function (spec) {
+if (!spec || !spec.id) throw new Error("A tool needs an id.");
+spec.id = String(spec.id).replace(/[^a-z0-9-]/gi, "-").toLowerCase();
+spec.kind = spec.kind || (spec.run ? "button" : spec.panel ? "section" : "panel");
+spec.cid = c.id;
+TOOLS_X[spec.id] = spec;
+});
+} catch (err) {
+TOOL_ERR[c.id] = String((err && err.message) || err);
+}
+});
+}
+function toolIcon(paths) {
+return '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (paths || '<rect x="4" y="4" width="12" height="12" rx="1"/>') + "</svg>";
+}
+function toolDefs() {
+loadCustomTools();
+var phone = S.mode === "phone";
+var d = {
+"toggle-left": { label: "Left panel", icon: I.panel, act: "toggle-left", iconOnly: true },
+"brand": { label: "“Back office” label", only: ["top"], html: function () { return '<span class="bd-ed-brand">Back office</span>'; } },
+"projects": { label: "Site switcher", icon: I.chev, act: "projects", html: function (z) { return z === "top" ? '<button class="bd-ed-btn" data-act="projects" aria-haspopup="true"><span class="bd-ed-hide-narrow">' + esc(REPO.domain || S.project.site.name) + "</span>" + I.chev + "</button>" : null; } },
+"mode": { label: "Desktop | Phone", html: function (z) {
+if (z === "top") return '<div class="bd-ed-top-mid"><div class="bd-ed-seg" role="group" aria-label="Layout"><button data-act="mode" data-val="desk" class="' + (phone ? "" : "is-on") + '" aria-pressed="' + !phone + '">' + I.desk + '<span class="bd-ed-hide-narrow">Desktop</span></button><button data-act="mode" data-val="phone" class="' + (phone ? "is-on" : "") + '" aria-pressed="' + phone + '">' + I.phone + '<span class="bd-ed-hide-narrow">Phone</span></button></div></div>';
+return '<button class="bd-ed-tool' + (phone ? "" : " is-on") + '" data-act="mode" data-val="desk" data-tip="Desktop" aria-label="Desktop">' + I.desk + '</button><button class="bd-ed-tool' + (phone ? " is-on" : "") + '" data-act="mode" data-val="phone" data-tip="Phone" aria-label="Phone">' + I.phone + "</button>";
+} },
+"undo": { label: "Undo", icon: I.undo, act: "undo", iconOnly: true, disabled: function () { return !S.undo.length; } },
+"redo": { label: "Redo", icon: I.redo, act: "redo", iconOnly: true, disabled: function () { return !S.redo.length; } },
+"code-btn": { label: "Code", icon: I.code, act: "code", on: function () { return S.codeOpen; } },
+"preview": { label: "Preview", icon: I.eye, act: "preview", on: function () { return S.preview && !S.inspect; } },
+"publish": { label: "Save & publish", icon: I.up, act: "export", primary: true, disabled: function () { return S.publishing; }, text: function () { return S.publishing ? "Publishing…" : "Save & publish"; } },
+"status": { label: "Saved / published status", only: ["top"], html: function () { return '<span class="bd-ed-status bd-ed-hide-narrow"></span>'; } },
+"toggle-right": { label: "Right panel", icon: I.sliders, act: "toggle-right", iconOnly: true },
+"inspect": { label: "Style anything", icon: I.target, act: "inspect", iconOnly: true }
+};
+RAIL_TYPES.forEach(function (t) {
+if (t.length === 1) {
+d[t[0]] = { label: "— divider", sep: true };
+return;
+}
+d["add:" + t[0]] = { label: "Add " + t[1].toLowerCase(), tip: t[1], icon: I[t[0]], act: "add", type: t[0], iconOnly: true, when: function () { return t[0] === "menubtn" ? !layersOn() : t[0] === "sheetmenu" ? layersOn() : true; } };
+});
+Object.keys(TOOLS_X).forEach(function (id) {
+var x = TOOLS_X[id];
+if (x.kind !== "button") return;
+d["x:" + id] = { label: x.name || id, icon: toolIcon(x.icon), act: "tool-run", tool: id, iconOnly: !x.text, custom: x };
+});
+return d;
+}
+function panelDefs() {
+loadCustomTools();
+var d = { pages: { label: "Pages", html: pagesPanel }, styles: { label: "Styles", html: stylesPanel }, motion: { label: "Motion", html: motionPanel }, site: { label: "Site", html: sitePanel }, code: { label: "Code", fixed: "left" } };
+Object.keys(TOOLS_X).forEach(function (id) {
+var x = TOOLS_X[id];
+if (x.kind !== "panel") return;
+d["x:" + id] = { label: x.name || id, custom: x, html: function () { return toolSafe(x, function () { return x.render ? x.render(toolAPI()) : ""; }); } };
+});
+return d;
+}
+function toolSafe(x, fn) {
+try {
+return fn() || "";
+} catch (err) {
+return '<div class="bd-ed-sec"><div class="bd-ed-err">' + esc(x.name || x.id) + ": " + esc(String((err && err.message) || err)) + "</div></div>";
+}
+}
+/* WHERE EVERYTHING IS NOW: SAVED ORDER FIRST, ANYTHING NEW GOES TO ITS USUAL PLACE */
+function toolLayout() {
+var E = editorPrefs();
+var defs = toolDefs();
+var pdefs = panelDefs();
+var L = { top: [], rail: [], left: [], right: [] };
+var seen = {};
+Object.keys(L).forEach(function (z) {
+var btn = TOOL_ZONES[z][1] === "btn";
+(E.layout[z] || TOOL_DEFAULT[z]).forEach(function (id) {
+var t = btn ? defs[id] : pdefs[id];
+if (!t || seen[id] || (t.only && t.only.indexOf(z) < 0) || (t.fixed && t.fixed !== z)) return;
+L[z].push(id);
+seen[id] = true;
+});
+});
+Object.keys(defs).forEach(function (id) {
+if (seen[id]) return;
+var z = defs[id].custom ? (defs[id].custom.zone === "rail" ? "rail" : "top") : TOOL_DEFAULT.rail.indexOf(id) > -1 ? "rail" : "top";
+var at = TOOL_DEFAULT[z].indexOf(id);
+if (at > -1 && at < L[z].length) L[z].splice(at, 0, id);
+else L[z].push(id);
+});
+Object.keys(pdefs).forEach(function (id) {
+if (seen[id]) return;
+L[pdefs[id].custom && pdefs[id].custom.zone === "right" ? "right" : "left"].push(id);
+});
+return L;
+}
+function toolHidden(id) {
+return editorPrefs().hidden.indexOf(id) > -1;
+}
+function toolZoneOf(id) {
+var L = toolLayout();
+for (var z in L) if (L[z].indexOf(id) > -1) return z;
+return "";
+}
+function toolButtonHTML(id, t, z) {
+if (t.html) {
+var h = t.html(z);
+if (h != null) return h;
+}
+if (t.sep) return z === "rail" ? '<span class="bd-ed-rail-sep"></span>' : '<span class="bd-ed-top-sep"></span>';
+var on = t.on && t.on();
+var dis = t.disabled && t.disabled();
+var attrs = ' data-act="' + t.act + '"' + (t.type ? ' data-type="' + t.type + '"' : "") + (t.tool ? ' data-tool="' + esc(t.tool) + '"' : "") + (dis ? " disabled" : "") + ' aria-label="' + esc(t.label) + '"';
+if (z === "rail") return '<button class="bd-ed-tool' + (on ? " is-on" : "") + '"' + attrs + ' data-tip="' + esc(t.tip || t.label) + '">' + (t.icon || "") + "</button>";
+var txt = t.text ? t.text() : t.label;
+return '<button class="bd-ed-btn' + (t.iconOnly ? " is-icon" : "") + (on ? " is-on" : "") + (t.primary ? " is-primary" : "") + '"' + attrs + ' title="' + esc(t.tip || t.label) + '">' + (t.icon || "") + (t.iconOnly ? "" : '<span class="bd-ed-hide-narrow">' + esc(txt) + "</span>") + "</button>";
+}
+function toolZoneHTML(z) {
+var defs = toolDefs();
+var L = toolLayout();
+var h = L[z].filter(function (id) { var t = defs[id]; return t && !toolHidden(id) && (!t.when || t.when()); }).map(function (id) { return toolButtonHTML(id, defs[id], z); }).join("");
+if (z === "top" && h.indexOf("bd-ed-top-mid") < 0) {
+var at = h.indexOf('data-act="projects"');
+var end = at > -1 ? h.indexOf("</button>", at) + 9 : h.length;
+h = h.slice(0, end) + '<div class="bd-ed-top-mid"></div>' + h.slice(end);
+}
+return h + (z === "rail" ? '<span class="bd-ed-rail-sep"></span><button class="bd-ed-tool" data-act="tools-open" data-val="rail" data-tip="Tools · hide, move, add" aria-label="Tools">' + I.more + "</button>" : '<button class="bd-ed-btn is-icon" data-act="tools-open" data-val="top" title="Tools · hide, move, add" aria-label="Tools">' + I.more + "</button>");
+}
+/* SECTIONS OF A PANEL, EACH WITH A STEADY ID FROM ITS HEADING */
+function secLabel(node) {
+var lab = node.querySelector(".bd-ed-label, .bd-ed-title, summary") || node.querySelector(".bd-ed-hint, button");
+return lab ? lab.textContent.replace(/\s+/g, " ").trim() : "";
+}
+function panelSections(pid) {
+var pd = panelDefs()[pid];
+if (!pd || !pd.html) return [];
+var box = document.createElement("div");
+box.innerHTML = pd.html();
+var out = [];
+var used = {};
+Array.prototype.slice.call(box.children).forEach(function (node, n) {
+var lab = secLabel(node);
+var key = lab.split("·")[0].trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 32) || "part-" + (n + 1);
+var id = pid + ":" + key;
+while (used[id]) id += "-2";
+used[id] = true;
+node.setAttribute("data-sec", id);
+out.push({ id: id, node: node, label: lab ? lab.slice(0, 48) : "Part " + (n + 1) });
+});
+Object.keys(TOOLS_X).forEach(function (xid) {
+var x = TOOLS_X[xid];
+if (x.kind !== "section" || (x.panel || "styles") !== pid) return;
+var b = document.createElement("div");
+b.innerHTML = toolSafe(x, function () { return x.render ? x.render(toolAPI()) : ""; });
+var node = b.firstElementChild || b;
+if (!node.classList.contains("bd-ed-sec")) {
+var w = document.createElement("div");
+w.className = "bd-ed-sec";
+w.innerHTML = b.innerHTML;
+node = w;
+}
+var id = pid + ":x-" + xid;
+node.setAttribute("data-sec", id);
+out.push({ id: id, node: node, label: x.name || xid });
+});
+return out;
+}
+function arrangedSections(pid) {
+var E = editorPrefs();
+var list = panelSections(pid).filter(function (s) { return !E.moved[s.id] || E.moved[s.id] === pid; });
+Object.keys(E.moved).forEach(function (sid) {
+var src = sid.split(":")[0];
+if (E.moved[sid] !== pid || src === pid) return;
+var found = panelSections(src).filter(function (s) { return s.id === sid; })[0];
+if (found) list.push(found);
+});
+var order = E.order[pid] || [];
+list.forEach(function (s, n) { s.n = n; });
+list.sort(function (a, b) {
+var ia = order.indexOf(a.id);
+var ib = order.indexOf(b.id);
+if (ia < 0 && ib < 0) return a.n - b.n;
+if (ia < 0) return 1;
+if (ib < 0) return -1;
+return ia - ib;
+});
+return list;
+}
+function panelHTML(pid) {
+return arrangedSections(pid).filter(function (s) { return !toolHidden(s.id); }).map(function (s) { return s.node.outerHTML; }).join("");
+}
+function tabsHTML(z, cur, extra) {
+var pdefs = panelDefs();
+var L = toolLayout();
+return '<div class="bd-ed-tabs" role="tablist">' + (extra || "") + L[z].filter(function (id) { return pdefs[id] && !toolHidden(id); }).map(function (id) {
+return '<button data-act="' + (z === "left" ? "left-tab" : "right-tab") + '" data-val="' + esc(id) + '" class="' + (cur === id ? "is-on" : "") + '">' + esc(pdefs[id].label) + "</button>";
+}).join("") + '<button class="bd-ed-tabs-more" data-act="tools-open" data-val="' + z + '" aria-label="Tools · hide, move, add" title="Tools · hide, move, add">' + I.more + "</button></div>";
+}
+/* THE TOOLS SHEET: ONE PER ZONE */
+function renderTools() {
+var box = $("bd-tools");
+if (!S.toolsZone || !S.project) {
+if (box) box.hidden = true;
+return;
+}
+if (!box) {
+box = document.createElement("div");
+box.id = "bd-tools";
+box.className = "bd-ed-pop is-tools";
+document.body.appendChild(box);
+}
+var z = S.toolsZone;
+var E = editorPrefs();
+var btn = TOOL_ZONES[z][1] === "btn";
+var defs = btn ? toolDefs() : panelDefs();
+var L = toolLayout();
+var mine = L[z];
+var others = Object.keys(TOOL_ZONES).filter(function (q) { return q !== z && TOOL_ZONES[q][1] === TOOL_ZONES[z][1]; });
+var chip = function (act, label, extra, on) { return '<button class="bd-ed-chip' + (on ? " is-on" : "") + '" data-act="' + act + '"' + (extra || "") + ">" + label + "</button>"; };
+var row = function (id, t, n, len) {
+var hid = toolHidden(id);
+var a = ' data-id="' + esc(id) + '" data-z="' + z + '"';
+return '<div class="bd-ed-trow' + (hid ? " is-hidden" : "") + '"><span>' + esc(t.label) + '</span><span class="bd-ed-trow-acts">'
++ (n > 0 ? chip("tool-up", "↑", a) : "") + (n < len - 1 ? chip("tool-down", "↓", a) : "")
++ chip(hid ? "tool-show" : "tool-hide", hid ? "Show" : "Hide", a, hid)
++ (t.fixed || t.only ? "" : others.map(function (q) { return chip("tool-move", "→ " + TOOL_ZONES[q][0].replace(" panel", "").replace(" bar", ""), a + ' data-to="' + q + '"'); }).join(""))
++ "</span></div>";
+};
+var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Tools · ' + TOOL_ZONES[z][0] + '</span><button class="bd-ed-btn" style="height:26px" data-act="tools-close">Done</button></div><div class="bd-ed-hint">Hide what you don’t use, bring it back here, change the order, or move it to another ' + (btn ? "bar" : "panel") + ".</div></div>";
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">' + (btn ? "Buttons" : "Tabs") + "</span>" + mine.map(function (id, n) { return row(id, defs[id], n, mine.length); }).join("") + "</div>";
+if (!btn) {
+var pid = z === "left" ? S.leftTab : S.rightTab;
+var pd = panelDefs()[pid];
+if (pd && pd.html) {
+var secs = arrangedSections(pid);
+var pids = Object.keys(panelDefs()).filter(function (q) { return q !== pid && panelDefs()[q].html; });
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Sections in “' + esc(pd.label) + "”</span>" + secs.map(function (s, n) {
+var hid = toolHidden(s.id);
+var a = ' data-id="' + esc(s.id) + '" data-p="' + esc(pid) + '"';
+return '<div class="bd-ed-trow' + (hid ? " is-hidden" : "") + '"><span>' + esc(s.label) + '</span><span class="bd-ed-trow-acts">'
++ (n > 0 ? chip("sec-up", "↑", a) : "") + (n < secs.length - 1 ? chip("sec-down", "↓", a) : "")
++ chip(hid ? "sec-show" : "sec-hide", hid ? "Show" : "Hide", a, hid)
++ pids.map(function (q) { return chip("sec-move", "→ " + esc(panelDefs()[q].label), a + ' data-to="' + esc(q) + '"'); }).join("")
++ "</span></div>";
+}).join("") + '<div class="bd-ed-hint">Open another tab to arrange its sections.</div></div>';
+}
+}
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Your tools</span>';
+(E.custom || []).forEach(function (c) {
+var names = Object.keys(TOOLS_X).filter(function (k) { return TOOLS_X[k].cid === c.id; }).map(function (k) { return TOOLS_X[k].name || k; });
+h += '<div class="bd-ed-trow"><span>' + esc(names.join(", ") || c.name || "Tool") + '</span><span class="bd-ed-trow-acts">' + chip("tool-edit", "Edit", ' data-id="' + esc(c.id) + '"') + chip("tool-del", "Remove", ' data-id="' + esc(c.id) + '"') + "</span></div>" + (TOOL_ERR[c.id] ? '<div class="bd-ed-err">' + esc(TOOL_ERR[c.id]) + "</div>" : "");
+});
+if (S.toolsAdd) {
+var cur = S.toolsEdit ? (E.custom || []).filter(function (c) { return c.id === S.toolsEdit; })[0] : null;
+h += '<textarea class="bd-ed-input bd-ed-tools-code" id="bd-tool-code" spellcheck="false">' + esc(cur ? cur.code : TOOL_TEMPLATE) + "</textarea>"
++ (S.toolsMsg ? '<div class="bd-ed-err">' + esc(S.toolsMsg) + "</div>" : "")
++ '<div class="bd-ed-hint">Paste the code Claude gives you. A tool runs inside the back office with full access to your site (and your GitHub key), so only paste code you trust.</div>'
++ '<div class="bd-ed-actions"><button class="bd-ed-btn is-primary" data-act="tool-save">' + (cur ? "Save tool" : "Add tool") + '</button><button class="bd-ed-btn" data-act="tool-cancel">Cancel</button></div>';
+} else h += '<div class="bd-ed-actions"><button class="bd-ed-btn" data-act="tool-add">' + I.plus + "Add tool</button></div>";
+h += "</div>";
+h += '<div class="bd-ed-sec"><div class="bd-ed-actions"><button class="bd-ed-btn is-sm" data-act="tools-reset">Put everything back</button></div><div class="bd-ed-hint">Saved with the site when you publish, so every device gets the same layout.</div></div>';
+box.innerHTML = h;
+box.classList.toggle("is-at-left", z === "right");
+box.hidden = false;
+}
+function toolsChanged() {
+scheduleSave();
+render();
+renderTools();
+}
+function layoutWritable() {
+var E = editorPrefs();
+var L = toolLayout();
+Object.keys(L).forEach(function (z) { E.layout[z] = L[z].slice(); });
+return E;
+}
+function toolAction(act, b) {
+var E = editorPrefs();
+var id = b.getAttribute("data-id");
+var z = b.getAttribute("data-z");
+var p = b.getAttribute("data-p");
+var to = b.getAttribute("data-to");
+var mv = function (list, d) {
+var i = list.indexOf(id);
+if (i < 0 || i + d < 0 || i + d >= list.length) return;
+list.splice(i + d, 0, list.splice(i, 1)[0]);
+};
+if (act === "tools-open") {
+S.toolsZone = S.toolsZone === b.getAttribute("data-val") ? null : b.getAttribute("data-val");
+S.toolsAdd = false;
+S.toolsEdit = null;
+S.toolsMsg = "";
+renderTools();
+return;
+}
+if (act === "tools-close") {
+S.toolsZone = null;
+renderTools();
+return;
+}
+if (act === "tool-add" || act === "tool-edit") {
+S.toolsAdd = true;
+S.toolsEdit = act === "tool-edit" ? id : null;
+S.toolsMsg = "";
+renderTools();
+return;
+}
+if (act === "tool-cancel") {
+S.toolsAdd = false;
+S.toolsEdit = null;
+S.toolsMsg = "";
+renderTools();
+return;
+}
+if (act === "tool-run") {
+var x = TOOLS_X[b.getAttribute("data-tool")];
+if (x && x.run) {
+try {
+x.run(toolAPI(), b);
+} catch (err) {
+setStatus((x.name || x.id) + ": " + ((err && err.message) || err), true);
+}
+}
+return;
+}
+if (act === "tool-fn") {
+var y = TOOLS_X[b.getAttribute("data-tool")];
+var fn = y && y.actions && y.actions[b.getAttribute("data-fn")];
+if (fn) {
+try {
+fn(toolAPI(), b);
+} catch (err) {
+setStatus((y.name || y.id) + ": " + ((err && err.message) || err), true);
+}
+}
+return;
+}
+snap();
+if (act === "tool-save") {
+var code = ($("bd-tool-code") || {}).value || "";
+var test = { tool: function () { test.n = (test.n || 0) + 1; } };
+try {
+(new Function("BD", "api", code))(test, toolAPI());
+if (!test.n) throw new Error("Nothing was added: the code has to call BD.tool({ … }).");
+} catch (err) {
+S.undo.pop();
+S.toolsMsg = String((err && err.message) || err);
+renderTools();
+return;
+}
+if (S.toolsEdit) E.custom.forEach(function (c) { if (c.id === S.toolsEdit) c.code = code; });
+else E.custom.push({ id: uid(), code: code });
+S.toolsAdd = false;
+S.toolsEdit = null;
+S.toolsMsg = "";
+} else if (act === "tool-del") {
+E.custom = E.custom.filter(function (c) { return c.id !== id; });
+} else if (act === "tool-up" || act === "tool-down") {
+mv(layoutWritable().layout[z], act === "tool-up" ? -1 : 1);
+} else if (act === "tool-hide" || act === "sec-hide") {
+if (E.hidden.indexOf(id) < 0) E.hidden.push(id);
+} else if (act === "tool-show" || act === "sec-show") {
+E.hidden = E.hidden.filter(function (x) { return x !== id; });
+} else if (act === "tool-move") {
+var W = layoutWritable();
+W.layout[z] = W.layout[z].filter(function (x) { return x !== id; });
+W.layout[to].push(id);
+if (z === "right" && S.rightTab === id) S.rightTab = "sel";
+if (z === "left" && S.leftTab === id) S.leftTab = "pages";
+} else if (act === "sec-up" || act === "sec-down") {
+E.order[p] = arrangedSections(p).map(function (s) { return s.id; });
+mv(E.order[p], act === "sec-up" ? -1 : 1);
+} else if (act === "sec-move") {
+if (id.split(":")[0] === to) delete E.moved[id];
+else E.moved[id] = to;
+} else if (act === "tools-reset") {
+E.layout = {};
+E.hidden = [];
+E.order = {};
+E.moved = {};
+}
+toolsChanged();
+}
+
 function renderTop() {
 var t = $("bd-top");
 if (!S.project) {
 t.innerHTML = '<span class="bd-ed-brand">Back office</span><span class="bd-ed-brand">' + esc(REPO.domain || "") + '</span><div class="bd-ed-top-mid"></div><span class="bd-ed-status"></span>';
 return;
 }
-var phone = S.mode === "phone";
-t.innerHTML = '<button class="bd-ed-btn is-icon" data-act="toggle-left" aria-label="Left panel" title="Show / hide the left panel">' + I.panel + '</button>'
-+ '<span class="bd-ed-brand">Back office</span>'
-+ '<button class="bd-ed-btn" data-act="projects" aria-haspopup="true"><span class="bd-ed-hide-narrow">' + esc(REPO.domain || S.project.site.name) + '</span>' + I.chev + "</button>"
-+ '<div class="bd-ed-top-mid"><div class="bd-ed-seg" role="group" aria-label="Layout">'
-+ '<button data-act="mode" data-val="desk" class="' + (phone ? "" : "is-on") + '" aria-pressed="' + !phone + '">' + I.desk + '<span class="bd-ed-hide-narrow">Desktop</span></button>'
-+ '<button data-act="mode" data-val="phone" class="' + (phone ? "is-on" : "") + '" aria-pressed="' + phone + '">' + I.phone + '<span class="bd-ed-hide-narrow">Phone</span></button>'
-+ "</div></div>"
-+ '<button class="bd-ed-btn is-icon" data-act="undo" aria-label="Undo"' + (S.undo.length ? "" : " disabled") + ">" + I.undo + "</button>"
-+ '<button class="bd-ed-btn is-icon" data-act="redo" aria-label="Redo"' + (S.redo.length ? "" : " disabled") + ">" + I.redo + "</button>"
-+ '<button class="bd-ed-btn' + (S.codeOpen ? " is-on" : "") + '" data-act="code">' + I.code + '<span class="bd-ed-hide-narrow">Code</span></button>'
-+ '<button class="bd-ed-btn' + (S.preview && !S.inspect ? " is-on" : "") + '" data-act="preview">' + I.eye + '<span class="bd-ed-hide-narrow">Preview</span></button>'
-+ '<button class="bd-ed-btn is-primary" data-act="export"' + (S.publishing ? " disabled" : "") + ">" + I.up + '<span class="bd-ed-hide-narrow">' + (S.publishing ? "Publishing…" : "Save & publish") + "</span></button>"
-+ '<span class="bd-ed-status bd-ed-hide-narrow"></span>'
-+ '<button class="bd-ed-btn is-icon" data-act="toggle-right" aria-label="Right panel" title="Show / hide the right panel">' + I.sliders + "</button>";
+t.innerHTML = toolZoneHTML("top");
 setStatus(S.status || "Saved", S.statusWarn);
 applyPanels();
 }
@@ -4402,7 +5092,7 @@ return '<button class="bd-ed-btn" data-act="ly-preset" data-val="' + x[0] + '">'
 }).join("") + "</div>"
 + field("A post or page opens with", select("site.layers.trans", Lz.trans || "slide", LAYER_TRANS)) + '<div class="bd-ed-hint">Any page can pick its own: select it, Page → Opens with.</div>'
 + field("Feel", select("site.layers.ease", Lz.ease, Object.keys(LAYER_EASE).map(function (k) { return [k, LAYER_EASE[k][0]]; })))
-+ row(numIn("Index sheet (ms)", "site.layers.dur", Lz.dur), numIn("Menu sheet (ms)", "site.layers.menuDur", Lz.menuDur))
++ row(numIn("Sheets (ms)", "site.layers.dur", Lz.dur), field("", '<div class="bd-ed-hint">A sheet can have its own speed: Site → Sheets.</div>'))
 + row(numIn("Tilt while moving (°)", "site.layers.tilt", Lz.tilt), numIn("Out-of-focus blur", "site.layers.focusBlur", Lz.focusBlur))
 + sw("Hard shadow while moving", "site.layers.lift", Lz.lift)
 + field("The post underneath", seg("site.layers.reveal", Lz.reveal, [["focus", "Comes into focus"], ["rise", "Rises"], ["none", "As is"]])) + "</div>";
@@ -4465,27 +5155,47 @@ return h + "</div>";
 function layersPanel() {
 var s = S.project.site;
 var Lz = s.layers;
-var h = '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span>' + sw("Show the site as layers", "site.layers.on", Lz.on) + '<div class="bd-ed-hint">Menu sheet on top, an index sheet (journal above, library below) in the middle, pages and posts underneath. Each sheet blurs what’s under it. Edit every page as usual; Preview shows the sheets moving.</div>';
+var h = '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span>' + sw("Show the site as layers", "site.layers.on", Lz.on) + '<div class="bd-ed-hint">Pages lie on translucent sheets stacked over the rest of the site. Each sheet blurs what’s under it. Edit every page as usual; Preview shows the sheets moving.</div>';
 if (!Lz.on) return h + "</div>";
-var r = layerRoles();
-var opts = [["", "Automatic"]].concat(S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin" && !q.parent; }).map(function (q) { return [q.id, q.title]; }));
-h += row(field("Journal (top of index)", select("site.layers.journal", Lz.journal, opts)), field("Library (bottom)", select("site.layers.library", Lz.library, opts)))
-+ field("About (on the menu sheet)", select("site.layers.about", Lz.about, opts))
-+ '<div class="bd-ed-hint">Now: ' + esc([r.journal ? "journal = " + r.journal.title : "", r.library ? "library = " + r.library.title : "", r.about ? "about = " + r.about.title : ""].filter(Boolean).join(" · ")) + ". The menu lists the site menu; other pages open underneath like posts.</div>"
-+ row(field("Menu on the sheet", select("site.nav.menu", s.nav.menu, s.menus.map(function (m) { return [m.id, m.name]; }))), field("Mark on the sheet", input("site.layers.mark", Lz.mark, "", ' placeholder="' + esc(s.name) + '"'))) + "</div>";
-h += '<div class="bd-ed-sec">' + adv("ly-menu", "Menu sheet", colorIn("Colour", "site.layers.menuColor", Lz.menuColor, "#D2CEC6")
-+ row(numIn("See-through %", "site.layers.menuAlpha", Lz.menuAlpha), numIn("Blur below", "site.layers.menuBlur", Lz.menuBlur))
-+ row(dpIn(S.mode === "phone" ? "Band height" : "Column width", "site.layers.menuW", "site.layers.menuBand", Lz.menuW, Lz.menuBand), dpIn("Side padding", "site.layers.menuPad", "site.layers.menuPadM", Lz.menuPad, Lz.menuPadM), dpIn("Between links", "site.layers.menuGap", "site.layers.menuGapM", Lz.menuGap, Lz.menuGapM))
-+ row(field("Links sit", seg("site.layers.menuAlign", Lz.menuAlign, [["left", "Left"], ["right", "Right"]])), field("Current mark", input("site.layers.marker", Lz.marker)))
-+ field("Text style", select("site.layers.menuStyle", Lz.menuStyle, BD_STYLES))
-+ sw("Hairline edge", "site.layers.menuEdge", Lz.menuEdge)
-+ '<span class="bd-ed-label">About on the sheet</span>' + row(numIn("Text width", "site.layers.aboutW", Lz.aboutW), dpIn("Side padding", "site.layers.aboutPad", "site.layers.aboutPadM", Lz.aboutPad, Lz.aboutPadM)), true) + "</div>";
-h += '<div class="bd-ed-sec">' + adv("ly-index", "Index sheet (tracing paper)", colorIn("Colour", "site.layers.indexColor", Lz.indexColor, "#E4E1DA")
-+ row(numIn("See-through %", "site.layers.indexAlpha", Lz.indexAlpha), numIn("Blur below", "site.layers.indexBlur", Lz.indexBlur))
-+ row(dpIn("Edge left showing", "site.layers.sliver", "site.layers.sliverM", Lz.sliver, Lz.sliverM))
-+ sw("Hairline edge", "site.layers.indexEdge", Lz.indexEdge)
-+ '<div class="bd-ed-hint">Cards and books are the Blog posts and Library blocks on those pages: style them there or in Styles → Blocks.</div>') + "</div>";
-h += '<div class="bd-ed-sec"><div class="bd-ed-hint">How the sheets move is in the Motion tab.</div></div>';
+var K = sheetList();
+var phone = S.mode === "phone";
+var all = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin"; });
+var used = sheetUsed();
+h += "</div>";
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Sheets · top to bottom</span>';
+if (!K.length) h += '<div class="bd-ed-hint">No sheets yet. Every page lies underneath until you put it on a sheet.</div><div class="bd-ed-actions"><button class="bd-ed-btn" data-act="sheet-classic">' + I.plus + "Menu + Index (classic)</button></div>";
+K.forEach(function (k, n) {
+var P = "site.sheets." + n + ".";
+var panes = (k.pages || []).map(sheetPage).filter(Boolean);
+var sum = (k.rest === "open" ? "lies open" : k.rest === "peek" ? "edge peeks" : "hidden") + " · " + ((phone ? k.edgeM : k.edge) || "left") + (panes.length ? " · " + panes.map(function (q) { return q.title; }).join(" ↕ ") : "");
+var inner = field("Name", input(P + "name", k.name || ""))
++ '<span class="bd-ed-label">Pages on it' + (panes.length > 1 ? " · it slides between them" : "") + "</span>"
++ panes.map(function (q, j) {
+return '<div class="bd-ed-list-row" style="grid-template-columns:minmax(0,1fr) auto auto auto"><span class="bd-ed-hint" style="padding:6px 0">' + esc(q.title) + '</span><button class="bd-ed-btn is-sm is-icon" data-act="sheet-page-up" data-i="' + n + '" data-j="' + j + '" aria-label="Move up">' + I.up + '</button><button class="bd-ed-btn is-sm is-icon" data-act="sheet-page-down" data-i="' + n + '" data-j="' + j + '" aria-label="Move down">' + I.dn + '</button><button class="bd-ed-x" data-act="sheet-page-del" data-i="' + n + '" data-j="' + j + '" aria-label="Take off the sheet">' + I.x + "</button></div>";
+}).join("")
++ '<div class="bd-ed-actions">' + all.filter(function (q) { return used.indexOf(q.id) < 0 && !q.parent; }).map(function (q) {
+return '<button class="bd-ed-btn is-sm" data-act="sheet-page-add" data-i="' + n + '" data-id="' + q.id + '">' + I.plus + esc(q.title) + "</button>";
+}).join("") + "</div>"
++ (panes.length > 1 ? field("It slides between them", seg(P + "axis", k.axis === "x" ? "x" : "y", [["y", "Up / down"], ["x", "Sideways"]])) : "")
++ field("Edge · the part that peeks out", select(P + "strip", k.strip || "", [["", "Nothing"]].concat(all.filter(function (q) { return q.id === k.strip || used.indexOf(q.id) < 0; }).map(function (q) { return [q.id, q.title]; }))))
++ field("Parks at" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), seg(P + (phone ? "edgeM" : "edge"), (phone ? k.edgeM : k.edge) || "left", SHEET_EDGES))
++ field("At rest", seg(P + "rest", k.rest || "open", [["open", "Open"], ["peek", "Peeks"], ["hidden", "Hidden"]]))
++ (k.rest === "peek" || k.strip ? row(dpIn("Peeks (px)", P + "peek", P + "peekM", k.peek, k.peekM)) : "")
++ (k.rest === "open" ? row(dpIn("Stays showing when a page underneath opens (px)", P + "sliver", P + "sliverM", k.sliver, k.sliverM)) : "")
++ '<div class="bd-ed-hint">' + (k.rest === "open" ? "Opening a page underneath moves it out of the way (Motion → opens with), leaving that much." : k.rest === "peek" ? "Opening one of its pages slides the whole sheet over, its edge riding along." : "It slides in when one of its pages opens.") + "</div>"
++ field("Lies over", seg(P + "covers", k.covers === "some" ? "some" : "all", [["all", "Every page"], ["some", "Chosen pages"]]))
++ (k.covers === "some" ? all.filter(function (q) { return (k.pages || []).indexOf(q.id) < 0 && q.id !== k.strip; }).map(function (q) {
+return '<label class="bd-ed-check"><input type="checkbox" data-act="sheet-cover" data-i="' + n + '" data-id="' + q.id + '"' + ((k.coverPages || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc(q.title) + "</label>";
+}).join("") + '<div class="bd-ed-hint">On any other page this sheet slides away completely.</div>' : "")
++ '<span class="bd-ed-label">Paper</span>' + colorIn("Colour", P + "color", k.color, "#E4E1DA")
++ row(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur below", P + "blur", k.blur), numIn("Speed (ms)", P + "dur", k.dur, "blank"))
++ sw("Hairline edge", P + "line", k.line)
++ '<span class="bd-ed-label">Its pages</span>' + row(numIn("Text width", P + "paneW", k.paneW, "blank"), dpIn("Side padding", P + "pad", P + "padM", k.pad, k.padM, "blank"))
++ '<div class="bd-ed-actions"><button class="bd-ed-btn is-sm is-icon" data-act="sheet-up" data-i="' + n + '" aria-label="Higher">' + I.up + '</button><button class="bd-ed-btn is-sm is-icon" data-act="sheet-down" data-i="' + n + '" aria-label="Lower">' + I.dn + '</button><button class="bd-ed-btn is-sm is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Remove sheet</button></div>";
+h += '<div class="bd-ed-group">' + adv("sheet-" + k.id, esc((n + 1) + " · " + (k.name || "Sheet") + " — " + sum), inner, S.sheetOpen === k.id) + "</div>";
+});
+h += '<div class="bd-ed-hint">Pages and posts not on a sheet lie underneath, one at a time.</div><div class="bd-ed-actions"><button class="bd-ed-btn" data-act="sheet-add">' + I.plus + "Sheet</button></div></div>";
+h += '<div class="bd-ed-sec"><div class="bd-ed-hint">How the sheets move is in the Motion tab. Each page underneath can pick its own way: Page → This page’s sheet.</div></div>';
 return h;
 }
 function sitePanel() {
@@ -4524,12 +5234,11 @@ if (!S.project) {
 L.innerHTML = "";
 return;
 }
-if (["pages", "styles", "motion", "site", "code"].indexOf(S.leftTab) < 0) S.leftTab = "pages";
+var LT = toolLayout().left.filter(function (id) { return !toolHidden(id) || id === "code"; });
 if (S.codeOpen) S.leftTab = "code";
-else if (S.leftTab === "code") S.leftTab = "pages";
-var h = '<div class="bd-ed-tabs" role="tablist">' + [["pages", "Pages"], ["styles", "Styles"], ["motion", "Motion"], ["site", "Site"], ["code", "Code"]].map(function (t) {
-return '<button data-act="left-tab" data-val="' + t[0] + '" class="' + (S.leftTab === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
-}).join("") + "</div>";
+else if (S.leftTab === "code") S.leftTab = "";
+if (LT.indexOf(S.leftTab) < 0 && S.leftTab !== "code") S.leftTab = LT.filter(function (id) { return id !== "code"; })[0] || "";
+var h = tabsHTML("left", S.leftTab);
 $("bd-app").classList.toggle("has-wide-left", S.leftTab === "code");
 L.classList.toggle("has-codepane", S.leftTab === "code");
 if (S.leftTab === "code") {
@@ -4538,10 +5247,7 @@ renderCode();
 requestAnimationFrame(fitSheet);
 return;
 }
-if (S.leftTab === "pages") h += pagesPanel();
-else if (S.leftTab === "styles") h += stylesPanel();
-else if (S.leftTab === "motion") h += motionPanel();
-else h += sitePanel();
+h += S.leftTab ? panelHTML(S.leftTab) : '<div class="bd-ed-sec"><div class="bd-ed-hint">Every tab is hidden or moved. Tap ⋯ to bring one back.</div></div>';
 L.innerHTML = h;
 }
 
@@ -4584,6 +5290,15 @@ if (e.type === "html") h += field("HTML", '<textarea class="bd-ed-input" data-bi
 if (e.type === "rule") h += '<div class="bd-ed-hint">A thin line in the rule colour.</div>';
 if (e.type === "ptitle") {
 h += sw("Page number above", "el.num", !!p.num) + lookSection(e) + '<div class="bd-ed-hint">Shows the title of whichever page is open. Put it in the header to use it on every page.</div>';
+}
+if (e.type === "sheetmenu") {
+var smw = sheetOf(curPage().id);
+h += field("Shows", menuPicker("el.menu", p.menu || S.project.site.nav.menu))
++ row(field("Links sit", seg("el.align", p.align === "left" ? "left" : "right", [["left", "Left"], ["right", "Right"]])), field("Current mark", input("el.marker", p.marker || "")))
++ field("Text style", select("el.style", p.style || "heading", BD_STYLES))
++ row(dpIn("Side padding", "el.pad", "el.padM", p.pad, p.padM), dpIn("Between links", "el.gap", "el.gapM", p.gap, p.gapM))
++ field("Mark", input("el.mark", p.mark || "", "", ' placeholder="' + esc(S.project.site.name) + '"'))
++ '<div class="bd-ed-hint">' + (smw.strip ? "This page is the edge of the “" + esc(smw.sheet.name) + "” sheet: the menu sits in the part that peeks out. On desktop the links stack down the strip with the mark at the bottom; on phone they run along the band." : "A sheet menu shows on a sheet’s edge. Make this page the edge of a sheet: Site → Sheets → Edge.") + "</div>";
 }
 if (e.type === "menubtn") {
 var list = p.mode === "list";
@@ -4792,6 +5507,21 @@ if (!S.project) {
 R.innerHTML = "";
 return;
 }
+var RT = toolLayout().right.filter(function (id) { return !toolHidden(id); });
+if (RT.indexOf(S.rightTab) < 0) S.rightTab = "sel";
+var rtabs = RT.length ? tabsHTML("right", S.rightTab, '<button data-act="right-tab" data-val="sel" class="' + (S.rightTab === "sel" ? "is-on" : "") + '">Selected</button>') : "";
+if (RT.length && S.rightTab !== "sel") {
+R.innerHTML = rtabs + panelHTML(S.rightTab);
+return;
+}
+if (rtabs) {
+renderRightInner(R);
+R.insertAdjacentHTML("afterbegin", rtabs);
+return;
+}
+renderRightInner(R);
+}
+function renderRightInner(R) {
 if (S.inspect) {
 R.innerHTML = insPanel(false);
 fillIns();
@@ -4861,7 +5591,9 @@ var q = S.project.pages[id];
 if (q.kind === "pin" || q.id === pg.id) return;
 stack += '<label class="bd-ed-check"><input type="checkbox" data-act="stack-page" data-id="' + q.id + '"' + ((pg.stack || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc((q.num ? q.num + "  " : "") + q.title) + "</label>";
 });
-if (layersOn() && [layerRoles().journal, layerRoles().library, layerRoles().about].filter(Boolean).map(function (q) { return q.id; }).indexOf(pg.id) < 0) {
+var pgw = layersOn() ? sheetOf(pg.id) : null;
+if (pgw && pgw.k > -1) h += '<div class="bd-ed-sec"><span class="bd-ed-label">On a sheet</span><div class="bd-ed-hint">' + (pgw.strip ? "This page is the edge of the “" + esc(pgw.sheet.name) + "” sheet — the part that peeks out." : "This page lies on the “" + esc(pgw.sheet.name) + "” sheet.") + ' Its paper, edge and movement are set in Site → Sheets.</div><button class="bd-ed-btn" data-act="sheet-edit" data-i="' + pgw.k + '">' + I.sliders + "Edit the sheet</button></div>";
+if (pgw && pgw.k < 0) {
 var mt = (LAYER_TRANS.filter(function (o) { return o[0] === layerTrans(null); })[0] || LAYER_TRANS[0])[1].split(" · ")[0];
 var ph = S.mode === "phone";
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">This page’s sheet</span><div class="bd-ed-hint">How this page opens and the paper it’s on. Blank = the site’s (Motion tab).</div>'
@@ -5553,10 +6285,7 @@ insSetProp(insField(t.getAttribute("data-ins")).p, nv);
 function renderRail() {
 var r = $("bd-rail");
 r.hidden = !S.project || S.preview;
-r.innerHTML = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["notes", "Notes"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"], ["quote", "Quote"], ["toggle", "Fold-out list"], ["product", "Product"], ["sep"], ["menubtn", "Menu"], ["ptitle", "Page title"], ["pager", "Page arrows"], ["sep"], ["posts", "Blog posts"], ["postinfo", "Post info"]].filter(function (t) { return !(layersOn() && t[0] === "menubtn"); }).map(function (t) {
-if (t[0] === "sep") return '<span class="bd-ed-rail-sep"></span>';
-return '<button class="bd-ed-tool" data-act="add" data-type="' + t[0] + '" data-tip="' + t[1] + '" aria-label="Add ' + t[1] + '">' + I[t[0]] + "</button>";
-}).join("") + '<span class="bd-ed-rail-sep"></span><button class="bd-ed-tool" data-act="inspect" data-tip="Style anything" aria-label="Style anything">' + I.target + "</button>";
+r.innerHTML = S.project ? toolZoneHTML("rail") : "";
 }
 
 /* CANVAS */
@@ -5672,7 +6401,7 @@ var pinH = page.kind === "pin" ? (phone && page.pin.hM !== "" && page.pin.hM != 
 if (pinH !== "" && pinH != null && !isNaN(parseFloat(pinH))) layout += "\n.bd-main {\nflex: none;\nheight: " + parseFloat(pinH) + "px;\nbox-shadow: 0 1px 0 #ff4d00;\n}";
 var css = baseCSS(s, "edit") + "\n" + (!isSpread(s) && isSpreadPage(page) ? ":host {\n--bd-w: 100%;\n}\n" : "") + layout + "\n" + sc.desk + "\n" + pc.desk + "\n" + (phone ? sc.mob + "\n" + pc.mob + "\n" : "") + (S.inspect ? INSPECT_CSS : S.preview ? "" : EDIT_CSS);
 if (layersOn() && page.kind !== "pin") css += "\n" + layerEditCSS(page, phone);
-shadow.innerHTML = "<style>" + css + '</style>' + (layersOn() && page.kind !== "pin" ? layerEditChrome(page) : "") + '<div class="bd-site' + (layersOn() && page.kind !== "pin" ? " is-layered" : "") + (phone ? " is-phone" : "") + (S.inspect ? " is-inspect" : S.preview ? "" : " is-editing") + (page.kind === "pin" ? " is-pin-page" : "") + '" data-bd-page="' + esc(page.slug) + '">' + pageHTML(page, "edit") + "</div>";
+shadow.innerHTML = "<style>" + css + '</style>' + (layersOn() && page.kind !== "pin" ? layerEditChrome(page) : "") + '<div class="bd-site' + (layersOn() && page.kind !== "pin" ? " is-layered" + (sheetOf(page.id).strip ? " is-strip" : "") : "") + (phone ? " is-phone" : "") + (S.inspect ? " is-inspect" : S.preview ? "" : " is-editing") + (page.kind === "pin" ? " is-pin-page" : "") + '" data-bd-page="' + esc(page.slug) + '">' + pageHTML(page, "edit") + "</div>";
 var data = chromeData(page.slug);
 data.open = !!S.menuOpen;
 data.onToggle = function (o) { S.menuOpen = o; };
@@ -5798,6 +6527,7 @@ var m = node && node.className && String(node.className).match(/bd-e-([a-z0-9]+)
 return m ? m[1] : null;
 }
 function selectEl(id) {
+S.rightTab = "sel";
 S.sel = id;
 S.confirm = null;
 if (shadow) {
@@ -7025,6 +7755,10 @@ document.addEventListener("click", function (e) {
 var b = e.target.closest("[data-act]");
 var pop = $("bd-pop");
 if (!pop.hidden && !e.target.closest("#bd-pop") && !(b && b.getAttribute("data-act") === "projects")) closePop();
+if (S.toolsZone && !e.target.closest("#bd-tools") && !(b && b.getAttribute("data-act") === "tools-open") && !e.target.closest(".bd-ed-left, .bd-ed-right, #bd-top, #bd-rail")) {
+S.toolsZone = null;
+renderTools();
+}
 if (!b) return;
 var act = b.getAttribute("data-act");
 var val = b.getAttribute("data-val");
@@ -7036,6 +7770,38 @@ var A = {
 "sign-out": function () { closePop(); lock("Key forgotten on this device."); },
 "reload": loadSite,
 "el-css-clear": function () { var e = selEl(); if (!e) return; snap(); clearElCss(e); changed(); },
+"tools-open": function () { toolAction(act, b); },
+"tools-close": function () { toolAction(act, b); },
+"tools-reset": function () { toolAction(act, b); },
+"tool-add": function () { toolAction(act, b); },
+"tool-edit": function () { toolAction(act, b); },
+"tool-cancel": function () { toolAction(act, b); },
+"tool-save": function () { toolAction(act, b); },
+"tool-del": function () { toolAction(act, b); },
+"tool-run": function () { toolAction(act, b); },
+"tool-fn": function () { toolAction(act, b); },
+"tool-up": function () { toolAction(act, b); },
+"tool-down": function () { toolAction(act, b); },
+"tool-hide": function () { toolAction(act, b); },
+"tool-show": function () { toolAction(act, b); },
+"tool-move": function () { toolAction(act, b); },
+"sec-up": function () { toolAction(act, b); },
+"sec-down": function () { toolAction(act, b); },
+"sec-hide": function () { toolAction(act, b); },
+"sec-show": function () { toolAction(act, b); },
+"sec-move": function () { toolAction(act, b); },
+"right-tab": function () { S.rightTab = val; S.rightOpen = true; renderRight(); if (S.toolsZone) renderTools(); },
+"sheet-classic": function () { snap(); migrateSheets(S.project); normalizeProject(S.project); changed(); },
+"sheet-add": function () { snap(); var k = Object.assign(clone(SHEET_DEFAULTS), { id: uid(), name: "Sheet " + (sheetList().length + 1), rest: "hidden" }); S.project.site.sheets.unshift(k); S.sheetOpen = k.id; S.open["sheet-" + k.id] = true; changed(); },
+"sheet-del": function () { snap(); S.project.site.sheets.splice(+b.getAttribute("data-i"), 1); changed(); },
+"sheet-up": function () { var K = S.project.site.sheets; var i = +b.getAttribute("data-i"); if (i < 1) return; snap(); K.splice(i - 1, 0, K.splice(i, 1)[0]); changed(); },
+"sheet-down": function () { var K = S.project.site.sheets; var i = +b.getAttribute("data-i"); if (i >= K.length - 1) return; snap(); K.splice(i + 1, 0, K.splice(i, 1)[0]); changed(); },
+"sheet-page-add": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; if (!k) return; snap(); k.pages = (k.pages || []).concat([b.getAttribute("data-id")]); changed(); },
+"sheet-page-del": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; if (!k) return; snap(); k.pages.splice(+b.getAttribute("data-j"), 1); changed(); },
+"sheet-page-up": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; var j = +b.getAttribute("data-j"); if (!k || j < 1) return; snap(); k.pages.splice(j - 1, 0, k.pages.splice(j, 1)[0]); changed(); },
+"sheet-page-down": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; var j = +b.getAttribute("data-j"); if (!k || j >= k.pages.length - 1) return; snap(); k.pages.splice(j + 1, 0, k.pages.splice(j, 1)[0]); changed(); },
+"sheet-cover": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; var id = b.getAttribute("data-id"); if (!k) return; snap(); var c = k.coverPages = k.coverPages || []; var x = c.indexOf(id); if (x > -1) c.splice(x, 1); else c.push(id); changed(); },
+"sheet-edit": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; if (!k) return; S.leftTab = "site"; S.sheetOpen = k.id; S.open["sheet-" + k.id] = true; S.leftOpen = true; S.hideLeft = false; render(); },
 "ly-preset": function () { var v = b.getAttribute("data-val"); if (!LAYER_PRESETS[v]) return; snap(); Object.assign(S.project.site.layers, clone(LAYER_PRESETS[v])); changed(); },
 "confirm-no": function () { var was = S.confirm; S.confirm = null; if (was === "discard") openPop(); else renderLeft(); },
 "mode": function () { if (S.live) endEdit(); S.mode = val; render(); },
@@ -7172,7 +7938,7 @@ location.reload();
 "export": publish,
 "toggle-left": function () { if (wideScreen()) { S.hideLeft = !S.hideLeft; lsSet("bd-hide-left", S.hideLeft ? "1" : ""); applyPanels(); return; } S.leftOpen = !S.leftOpen; S.rightOpen = false; renderLeft(); renderRight(); },
 "toggle-right": function () { if (wideScreen()) { S.hideRight = !S.hideRight; lsSet("bd-hide-right", S.hideRight ? "1" : ""); applyPanels(); return; } S.rightOpen = !S.rightOpen; S.leftOpen = false; renderLeft(); renderRight(); },
-"left-tab": function () { var wasCode = S.codeOpen; S.leftTab = val; S.codeOpen = val === "code"; renderLeft(); renderTop(); if (wasCode !== S.codeOpen) requestAnimationFrame(fitSheet); },
+"left-tab": function () { var wasCode = S.codeOpen; S.leftTab = val; S.codeOpen = val === "code"; renderLeft(); renderTop(); if (S.toolsZone) renderTools(); if (wasCode !== S.codeOpen) requestAnimationFrame(fitSheet); },
 "page": function () { goPage(b.getAttribute("data-id")); },
 "page-add": function () { addPage("page"); },
 "menu-item-move": function () { var m = S.project.site.menus[+b.getAttribute("data-m")]; var i = +b.getAttribute("data-i"), j = i + (+val); if (j < 0 || j >= m.items.length) return; snap(); var t = m.items[i]; m.items[i] = m.items[j]; m.items[j] = t; changed(); },
