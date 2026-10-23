@@ -64,6 +64,21 @@ async def run():
         await pg.mouse.wheel(0, -80); await pg.wait_for_timeout(250)
         t3 = await ev(st)
         ok('scroll: back at the top, scrolling up brings the margin back', t3[0] == 80)
+        # a sheet only ever slides in a straight line; one black scroll line on the window's right edge
+        await ev("(function(){ var ix = S.project.site.sheets.find(function(k){return k.id==='index'}); ix.rest='open'; ix.sliver=60; S.project.site.layers.dur=900; S.project.pages['fji5ongj'].box={mt:'100',mr:'90'}; changed(); })()")
+        await pg.wait_for_timeout(2500)
+        W = FR + ".contentWindow"
+        rect = "(function(){ var r = " + W + ".document.querySelector('.bd-ly-k[data-k=index]').getBoundingClientRect(); return [Math.round(r.left), Math.round(r.top)]; })()"
+        await ev(W + ".document.querySelector('.bd-ly-pane a[href*=watermelon]').click()")
+        tops = []; lefts = []
+        for i in range(6):
+            await pg.wait_for_timeout(140); q = await ev(rect); tops.append(q[1]); lefts.append(q[0])
+        ok('slide: a tucking sheet keeps its top edge (no diagonal)', set(tops) == {100})
+        ok('slide: it does move left', lefts[-1] < lefts[0] - 100)
+        await pg.wait_for_timeout(1200)
+        ok('slide: the tucked sheet keeps its page margins', await ev(W + ".document.querySelector('.bd-ly-k[data-k=index]').className.indexOf('is-on-') > -1"))
+        bar = await ev("(function(){ var w = " + W + "; var b = w.document.getElementById('bd-ly-bar'); return [b.className.indexOf('is-off') < 0, Math.round(b.querySelector('i').getBoundingClientRect().right) === w.innerWidth]; })()")
+        ok('scrollbar: one black line shows, on the far right edge of the window', bar == [True, True])
         ok('no page errors', not errs)
         await b.close()
     bad = [n for n, c in R if not c]

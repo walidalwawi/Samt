@@ -3247,7 +3247,7 @@ var sheets = K.map(function (k, n) {
 var pl = plan[n];
 var panes = sheetPanes(k);
 var strip = sheetStrip(k);
-var onPage = pl.st === "open" ? panes[pl.i] : strip;
+var onPage = pl.st === "peek" && strip ? strip : panes[pl.i] || strip;
 return '<section class="bd-ly-sheet bd-ly-k is-e-' + esc(k.edge || "left") + " is-em-" + esc(k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + (onPage ? " is-on-" + onPage.id : "") + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
 + '<div class="bd-ly-body">\n<div class="bd-ly-track is-ax-' + (k.axis === "x" ? "x" : "y") + '" style="--n: ' + Math.max(1, panes.length) + "; --i: " + pl.i + ';">\n'
 + panes.map(function (q, j) {
@@ -3259,7 +3259,7 @@ S.layerFocus = keep;
 S.layerBack = keepB;
 var tr = layerTrans(f.k < 0 ? S.project.pages[f.id] : null);
 return '<div class="bd-ly is-t-' + tr + (f.k < 0 ? " is-v-post" : "") + '" id="bd-ly" data-trans="' + esc(layerTrans(null)) + '" data-dur="' + Ls.dur + '" data-focus="' + esc(f.id) + '" data-home="' + esc(sheetHome()) + '">\n'
-+ '<div class="bd-ly-sheet bd-ly-content" id="bd-ly-content" tabindex="-1">\n' + arts + "\n</div>\n" + sheets + "\n</div>";
++ '<div class="bd-ly-sheet bd-ly-content" id="bd-ly-content" tabindex="-1">\n' + arts + "\n</div>\n" + sheets + '\n<div class="bd-ly-bar is-off" id="bd-ly-bar" aria-hidden="true"><i></i></div>\n</div>';
 }
 /* HOW FAR THE PEEKING SHEETS ABOVE PUSH A SHEET (OR THE PAGES UNDERNEATH) IN FROM EACH EDGE */
 function sheetInsets(upto, phone) {
@@ -3449,6 +3449,7 @@ contentInsetCSS(false),
 Ls.lift ? ".bd-ly-k.is-moving {\nbox-shadow: 8px 8px 0 rgba(0, 0, 0, 0.06);\n}" : "",
 ".bd-ly.is-t-cut .bd-ly-k.is-r-open {\ntransition-duration: 0s;\n}",
 ".bd-ly-k.is-lift {\ntransition-property: transform, box-shadow, right, bottom, left;\n}",
+".bd-ly-k.is-snapbox {\ntransition-property: transform, box-shadow;\n}",
 ".bd-ly-body,\n.bd-ly-strip {\nposition: absolute;\noverflow: hidden;\n}",
 ".bd-ly-track {\nposition: absolute;\ntop: 0;\nleft: 0;\ndisplay: flex;\ntransition: transform " + KD + " var(--ly-ease);\nwill-change: transform;\n}",
 ".bd-ly-track.is-ax-y {\nflex-direction: column;\nwidth: 100%;\nheight: calc(var(--n) * 100%);\ntransform: translate3d(0, calc(var(--i) * -100% / var(--n)), 0);\n}",
@@ -3486,7 +3487,7 @@ return { el: k, rest: k.getAttribute("data-rest") || "open", covers: c && c !== 
 });
 function onPage(m, st, i) {
 m.el.style.removeProperty("--k-up");
-var id = st === "open" ? m.panes[i] : m.strip;
+var id = st === "peek" && m.strip ? m.strip : m.panes[i] || m.strip;
 m.el.className = m.el.className.replace(/\bis-on-\S+/g, "").replace(/\s+/g, " ").trim() + (id ? " is-on-" + id : "");
 }
 var cur = model.map(function (m) {
@@ -3517,6 +3518,49 @@ if (k.offsetHeight) k.style.setProperty("--k-sqy", Math.max(0.01, sl / k.offsetH
 }
 sizes();
 window.addEventListener("resize", sizes);
+/* THE ONE SCROLL LINE, ON THE WINDOW'S RIGHT EDGE, FOR THE PAGE THAT IS SCROLLING */
+var barEl = doc.getElementById("bd-ly-bar");
+var thumb = barEl ? barEl.querySelector("i") : null;
+function scroller() {
+var f = where(F);
+if (f && f.k > -1 && cur[f.k] && cur[f.k].st === "open") return model[f.k].el.querySelector(".bd-ly-pane.is-on");
+return content;
+}
+function bar() {
+if (!thumb) return;
+var sc = scroller();
+var h = root.clientHeight;
+if (!sc || sc.scrollHeight <= sc.clientHeight + 1) {
+barEl.classList.add("is-off");
+return;
+}
+var th = Math.max(28, Math.round(h * sc.clientHeight / sc.scrollHeight));
+var top = Math.round((h - th) * sc.scrollTop / (sc.scrollHeight - sc.clientHeight));
+barEl.classList.remove("is-off");
+thumb.style.setProperty("--bh", th + "px");
+thumb.style.setProperty("--bt", top + "px");
+}
+if (thumb) {
+var drag = null;
+thumb.addEventListener("pointerdown", function (e) {
+var sc = scroller();
+drag = { y: e.clientY, t: sc.scrollTop, sc: sc };
+thumb.setPointerCapture(e.pointerId);
+e.preventDefault();
+});
+thumb.addEventListener("pointermove", function (e) {
+if (!drag) return;
+var h = root.clientHeight;
+var th = Math.max(28, Math.round(h * drag.sc.clientHeight / drag.sc.scrollHeight));
+drag.sc.scrollTop = drag.t + (e.clientY - drag.y) * (drag.sc.scrollHeight - drag.sc.clientHeight) / Math.max(1, h - th);
+});
+thumb.addEventListener("pointerup", function () { drag = null; });
+thumb.addEventListener("pointercancel", function () { drag = null; });
+root.addEventListener("scroll", bar, true);
+window.addEventListener("resize", bar);
+window.addEventListener("load", bar);
+setTimeout(bar, 60);
+}
 /* A SHEET WITH A TOP MARGIN RISES FIRST: SCROLLING USES UP THE MARGIN (THE SHEET'S TOP EDGE CLIMBS), THEN THE PAGE SCROLLS INSIDE IT; BACK AT THE TOP THE MARGIN COMES BACK */
 els.forEach(function (k) {
 var tY = null;
@@ -3655,6 +3699,10 @@ m.track.classList.remove("is-snap");
 m.track.querySelectorAll(".bd-ly-pane").forEach(function (p, j) { p.classList.toggle("is-on", j === n.i); });
 }
 if (n.st !== c.st) {
+/* A SHEET'S EDGES NEVER MOVE WHILE IT SLIDES: ITS BOX CHANGES INSTANTLY, THE SLIDE IS A STRAIGHT LINE */
+m.el.classList.add("is-snapbox");
+clearTimeout(m.el.bdSb);
+m.el.bdSb = setTimeout(function () { m.el.classList.remove("is-snapbox"); }, dur + 80);
 m.el.classList.remove("is-st-" + c.st);
 m.el.classList.add("is-st-" + n.st);
 moving(m);
@@ -3663,6 +3711,8 @@ if (n.st !== c.st || n.i !== c.i) onPage(m, n.st, n.i);
 });
 cur = next;
 F = f.id;
+setTimeout(bar, 30);
+setTimeout(bar, dur + 80);
 root.classList.toggle("is-v-post", f.k < 0);
 root.setAttribute("data-focus", F);
 mark();
@@ -4278,10 +4328,17 @@ if (g !== "" && g != null && !isNaN(parseFloat(g))) out.push(".bd-panel > " + se
 });
 return out.join("\n");
 }
+/* SCROLLBARS: A THIN BLACK LINE; WITH SHEETS ONE LINE ON THE WINDOW'S FAR RIGHT EDGE FOR WHICHEVER PAGE IS SCROLLING (SHEETS HAVE MARGINS, SO THEIR OWN BARS WOULD FLOAT IN THE MIDDLE) */
+function scrollCSS() {
+var out = ["* {\nscrollbar-width: thin;\nscrollbar-color: var(--bd-ink) transparent;\n}", "::-webkit-scrollbar {\nwidth: 4px;\nheight: 4px;\n}", "::-webkit-scrollbar-thumb {\nbackground: var(--bd-ink);\n}", "::-webkit-scrollbar-track {\nbackground: transparent;\n}"];
+if (layersOn()) out.push(".bd-ly-content,\n.bd-ly-pane {\nscrollbar-width: none;\n}", ".bd-ly-content::-webkit-scrollbar,\n.bd-ly-pane::-webkit-scrollbar {\ndisplay: none;\n}", ".bd-ly-bar {\nposition: absolute;\ntop: 0;\nright: 0;\nbottom: 0;\nwidth: 18px;\nz-index: 30;\npointer-events: none;\n}", ".bd-ly-bar.is-off {\ndisplay: none;\n}", ".bd-ly-bar i {\nposition: absolute;\nright: 0;\ntop: var(--bt, 0px);\nwidth: 18px;\nheight: var(--bh, 40px);\npointer-events: auto;\ntouch-action: none;\ncursor: default;\n}", ".bd-ly-bar i::after {\ncontent: \"\";\nposition: absolute;\ntop: 0;\nright: 0;\nbottom: 0;\nwidth: 3px;\nbackground: var(--bd-ink);\n}");
+return out.join("\n");
+}
 function exportCSS() {
 var s = S.project.site;
 var pages = S.project.order.map(function (id) { return S.project.pages[id]; });
 var out = [baseCSS(s, "export")];
+out.push("/* SCROLLBARS */\n" + scrollCSS() + "\n");
 out.push("/* MASTER */\n" + masterRules(s, false) + "\n");
 out.push("/* COLUMNS */\n" + colRules(false) + "\n");
 var pr = pinRules(false);
