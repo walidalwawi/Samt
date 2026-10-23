@@ -600,7 +600,7 @@
     "restPage": "",
     "edge": "left",
     "edgeM": "top",
-    "rest": "peek",
+    "rest": "open",
     "peek": 0,
     "peekM": 0,
     "sliver": -70,
