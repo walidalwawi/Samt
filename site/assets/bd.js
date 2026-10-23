@@ -215,18 +215,18 @@ bdLayers(document, !!window.BD_PREVIEW);
 });
 
 /* DATA */
-var BD_DATA = {"site":"Samt","menu":false,"groups":[{"label":"","items":[{"title":"Library","slug":"library"},
-{"title":"About","slug":"about"},
-{"title":"Journal","slug":""}]}],"pager":false,"nav":{"icon":"text","label":"ص مت","openLabel":"×","corner":"right","headings":false,"accordion":true,"current":"arrow","title":"hide"},"sections":[],"pages":[{"section":"","slug":"","num":"","title":"Journal"},
+var BD_DATA = {"site":"Samt","menu":false,"groups":[{"label":"","items":[{"title":"Journal","slug":""},
+{"title":"Library","slug":"library"},
+{"title":"About","slug":"about"}]}],"pager":false,"nav":{"icon":"text","label":"ص مت","openLabel":"×","corner":"right","headings":false,"accordion":true,"current":"arrow","title":"hide"},"sections":[],"pages":[{"section":"","slug":"menu","num":"","title":"Menu"},
 {"section":"","slug":"how-to-deseed-a-watermelon","num":"","title":"How To Deseed A Watermelon For Safe Consumption"},
+{"section":"","slug":"","num":"","title":"Journal"},
 {"section":"","slug":"handala-and-the-freeze-point","num":"","title":"Handala And The Freeze Point"},
 {"section":"","slug":"militant-improvisation","num":"","title":"Militant Improvisation"},
 {"section":"","slug":"the-bourgeoi-rtist","num":"","title":"The Bourgeoi’rtist"},
 {"section":"","slug":"art-in-times-of-crisis","num":"","title":"Art In Times Of Crisis"},
 {"section":"","slug":"library","num":"","title":"Library"},
 {"section":"","slug":"about","num":"","title":"About"},
-{"section":"","slug":"supply","num":"","title":"Supply"},
-{"section":"","slug":"menu","num":"","title":"Menu"}],"externals":[],"gDur":450};
+{"section":"","slug":"supply","num":"","title":"Supply"}],"externals":[],"gDur":450};
 
 /* CHROME */
 function bdChrome(root, data, nav) {
@@ -535,7 +535,12 @@ host.appendChild(box);
 
 /* LINES ONLY */
 function bdInk(root) {
-var cache = window.__bdInkCache = window.__bdInkCache || {};
+var cache = (function () {
+try {
+if (window.parent && window.parent !== window && window.parent.__bdInkCache) return window.parent.__bdInkCache;
+} catch (err) {}
+return (window.__bdInkCache = window.__bdInkCache || {});
+})();
 var bake = function (img) {
 var src = img.currentSrc || img.src;
 if (!src || src.indexOf("data:") === 0) return;

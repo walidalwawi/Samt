@@ -1,7 +1,8 @@
 {
  "pages": [
-  "site/index.html",
+  "site/menu.html",
   "site/how-to-deseed-a-watermelon.html",
+  "site/index.html",
   "site/handala-and-the-freeze-point.html",
   "site/militant-improvisation.html",
   "site/the-bourgeoi-rtist.html",
@@ -9,8 +10,7 @@
   "site/library.html",
   "site/about.html",
   "site/supply.html",
-  "site/menu.html",
   "site/404.html"
  ],
- "published": "2026-10-23T10:40:58.502Z"
+ "published": "2026-10-23T11:03:45.795Z"
 }
