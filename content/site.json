@@ -237,6 +237,14 @@
      "space": "",
      "spaceM": ""
     },
+    "sheetmenu": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 6,
+     "space": 0,
+     "spaceM": ""
+    },
     "pager": {
      "x": 0,
      "w": 12,
@@ -556,6 +564,68 @@
    "gEase": "ease",
    "tease": 8,
    "open": 24
+  },
+  "sheets": [
+   {
+    "id": "menu",
+    "name": "Menu",
+    "pages": [
+     "nsye72w3"
+    ],
+    "strip": "56ud3gky",
+    "edge": "left",
+    "edgeM": "top",
+    "rest": "peek",
+    "peek": 300,
+    "peekM": 52,
+    "sliver": 130,
+    "sliverM": 14,
+    "axis": "y",
+    "covers": "all",
+    "coverPages": [],
+    "color": "#ffffff",
+    "alpha": 100,
+    "blur": 0,
+    "line": false,
+    "dur": "",
+    "paneW": 600,
+    "pad": 40,
+    "padM": 24
+   },
+   {
+    "id": "index",
+    "name": "Index",
+    "pages": [
+     "fji5ongj",
+     "b2lr3tkr"
+    ],
+    "strip": "1bp9xrs5",
+    "edge": "left",
+    "edgeM": "top",
+    "rest": "peek",
+    "peek": 25,
+    "peekM": 0,
+    "sliver": -70,
+    "sliverM": 14,
+    "axis": "y",
+    "covers": "all",
+    "coverPages": [],
+    "color": "#ebebeb",
+    "alpha": 30,
+    "blur": 10,
+    "line": false,
+    "dur": "",
+    "paneW": "",
+    "pad": "",
+    "padM": ""
+   }
+  ],
+  "editor": {
+   "layout": {},
+   "hidden": [],
+   "order": {},
+   "moved": {},
+   "custom": []
   }
  },
  "order": [
@@ -568,7 +638,8 @@
   "1bp9xrs5",
   "b2lr3tkr",
   "nsye72w3",
-  "zty6iib1"
+  "zty6iib1",
+  "56ud3gky"
  ],
  "pages": {
   "f0kgkfxt": {
@@ -4467,6 +4538,54 @@
     "colsM": 1,
     "gutter": 40,
     "gutterM": 24
+   }
+  },
+  "56ud3gky": {
+   "id": "56ud3gky",
+   "title": "Menu",
+   "h1": "",
+   "num": "",
+   "slug": "menu",
+   "section": "",
+   "desc": "",
+   "header": false,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "yg3i5pdn",
+     "type": "sheetmenu",
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 6
+     },
+     "m": null,
+     "props": {
+      "menu": "main",
+      "marker": ">",
+      "align": "left",
+      "style": "heading",
+      "gap": 4,
+      "gapM": 14,
+      "pad": 40,
+      "padM": 16,
+      "mark": "صمت"
+     }
+    }
+   ],
+   "kind": "page",
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
    }
   }
  }

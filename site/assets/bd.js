@@ -1,123 +1,179 @@
 /* LAYERS */
+function bdSheetPlan(K, f, prev) {
+return K.map(function (k, n) {
+var p = prev && prev[n];
+var pane = p ? p.i : 0;
+var cov = !k.covers || k.covers.indexOf(f.id) > -1 || k.panes.indexOf(f.id) > -1;
+if (f.k === n) return { st: "open", i: f.i };
+if (f.k > -1 && n > f.k && p) return { st: p.st, i: p.i };
+if (!cov) return { st: "hidden", i: pane };
+if (k.rest === "open") return { st: f.k < 0 || n < f.k ? "tuck" : "open", i: pane };
+return { st: k.rest === "hidden" ? "hidden" : "peek", i: pane };
+});
+}
 function bdLayers(doc, preview) {
 var root = doc.getElementById("bd-ly");
 if (!root) return;
 var content = doc.getElementById("bd-ly-content");
-var index = doc.getElementById("bd-ly-index");
-var menu = doc.getElementById("bd-ly-menu");
-var dur = parseInt(root.getAttribute("data-dur"), 10) || 460;
-var menuDur = parseInt(root.getAttribute("data-menu-dur"), 10) || dur;
+var els = Array.prototype.slice.call(root.querySelectorAll(".bd-ly-k"));
+var base = parseInt(root.getAttribute("data-dur"), 10) || 460;
+var dur = base;
 var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 var siteTitle = doc.title.split(" — ").pop();
-var S = { view: root.getAttribute("data-view"), half: root.getAttribute("data-half"), post: root.getAttribute("data-post") };
-var before = "journal";
 var master = root.getAttribute("data-trans") || "slide";
-var baseDur = dur;
-function sizes() {
-var sl = parseFloat(getComputedStyle(root).getPropertyValue("--ly-sliver")) || 40;
-if (index.offsetWidth) root.style.setProperty("--ly-sqx", Math.max(0.01, sl / index.offsetWidth).toFixed(4));
-if (index.offsetHeight) root.style.setProperty("--ly-sqy", Math.max(0.01, sl / (index.offsetHeight / 2)).toFixed(4));
-}
-sizes();
-window.addEventListener("resize", sizes);
-function transOf(id) {
-var a = art(id);
-return (a && a.getAttribute("data-trans")) || master;
-}
-var homeSlug = (menu.querySelector('[data-go="journal"]') || { getAttribute: function () { return "/"; } }).getAttribute("href");
+var home = root.getAttribute("data-home") || "";
+var F = root.getAttribute("data-focus") || home;
+var before = home;
+var model = els.map(function (k) {
+var c = k.getAttribute("data-covers");
+return { el: k, rest: k.getAttribute("data-rest") || "open", covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track") };
+});
+var cur = model.map(function (m) {
+return { st: (m.el.className.match(/\bis-st-([a-z]+)/) || [])[1] || "open", i: parseInt(m.track.style.getPropertyValue("--i"), 10) || 0 };
+});
 function art(id) {
 return content.querySelector('.bd-ly-art[data-id="' + id + '"]');
 }
-function moving(el) {
-if (reduce || !el) return;
-el.classList.add("is-moving");
-clearTimeout(el.bdMv);
-el.bdMv = setTimeout(function () { el.classList.remove("is-moving"); }, Math.round((el === menu ? menuDur : dur) * 0.55));
+function pane(id) {
+return root.querySelector('.bd-ly-pane[data-page="' + id + '"]');
 }
-function urlFor() {
-if (S.view === "post") {
-var a = art(S.post);
-return a ? "/" + a.getAttribute("data-slug") : "/";
+function where(id) {
+for (var n = 0; n < model.length; n++) {
+var j = model[n].panes.indexOf(id);
+if (j > -1) return { id: id, k: n, i: j };
 }
-var m = menu.querySelector('[data-go="' + (S.view === "about" ? "about" : S.half) + '"]');
-return m ? m.getAttribute("href") : homeSlug;
+return id && art(id) ? { id: id, k: -1, i: 0 } : null;
 }
-function mark() {
-menu.querySelectorAll(".bd-ly-a").forEach(function (a) {
-var g = a.getAttribute("data-go");
-var on = S.view === "about" ? g === "about" : S.view === "post" && g === "post" ? a.getAttribute("data-id") === S.post : g === S.half && !(S.view === "post" && menu.querySelector('[data-go="post"][data-id="' + S.post + '"]'));
-a.classList.toggle("is-current", on);
+function kd(m) {
+return parseInt(getComputedStyle(m.el).getPropertyValue("--k-dur"), 10) || dur;
+}
+function sizes() {
+els.forEach(function (k) {
+var sl = parseFloat(getComputedStyle(k).getPropertyValue("--k-sliver")) || 40;
+if (k.offsetWidth) k.style.setProperty("--k-sqx", Math.max(0.01, sl / k.offsetWidth).toFixed(4));
+if (k.offsetHeight) k.style.setProperty("--k-sqy", Math.max(0.01, sl / k.offsetHeight).toFixed(4));
 });
 }
-function go(view, id, pop) {
-var prev = { view: S.view, half: S.half, post: S.post };
-if (view === "journal" || view === "library") {
-S.view = view;
-S.half = view;
-} else if (view === "about") {
-if (S.view !== "about") before = S.view;
-S.view = "about";
-} else if (view === "post") {
-S.view = "post";
-if (id) S.post = id;
+sizes();
+window.addEventListener("resize", sizes);
+function moving(m) {
+if (reduce) return;
+m.el.classList.add("is-moving");
+clearTimeout(m.el.bdMv);
+m.el.bdMv = setTimeout(function () { m.el.classList.remove("is-moving"); }, Math.round(kd(m) * 0.55));
 }
-var tr = transOf(S.post);
-var a0 = art(S.post);
-dur = (a0 && parseInt(a0.getAttribute("data-dur"), 10)) || baseDur;
-if (dur !== baseDur) root.style.setProperty("--ly-dur", dur + "ms");
-else root.style.removeProperty("--ly-dur");
-root.className = root.className.replace(/\bis-t-[a-z]+\b/g, "").trim() + " is-t-" + tr;
-var a = art(S.post);
-if (S.post !== prev.post && a) {
+function slugOf(id) {
+var x = pane(id) || art(id);
+return x ? x.getAttribute("data-slug") : "";
+}
+function mark() {
+var a0 = art(F);
+var par = a0 ? a0.getAttribute("data-parent") : "";
+var has = function (id) { return !!id && !!root.querySelector('.bd-ly-a[data-id="' + id + '"]'); };
+var on = F;
+if (a0 && !has(F)) {
+on = has(par) ? par : "";
+if (!on) {
+for (var n = 0; n < model.length; n++) {
+if (cur[n].st === "tuck") {
+on = model[n].panes[cur[n].i];
+break;
+}
+}
+}
+}
+root.querySelectorAll(".bd-ly-a[data-id]").forEach(function (a) {
+a.classList.toggle("is-current", a.getAttribute("data-id") === on);
+});
+}
+function go(id, pop) {
+var f = where(id);
+if (!f) return;
+var pf = where(F) || { id: F, k: -1, i: 0 };
+if (f.k > -1 && model[f.k].rest !== "open" && !(pf.k > -1 && model[pf.k].rest !== "open")) before = F;
+/* THE WAY OUT OF THE WAY BELONGS TO THE PAGE UNDERNEATH BEING OPENED OR CLOSED */
+var tid = f.k < 0 ? f.id : pf.k < 0 && f.k > -1 && model[f.k].rest === "open" ? pf.id : "";
+if (tid && art(tid)) {
+var ta = art(tid);
+var tr = ta.getAttribute("data-trans") || master;
+var td = parseInt(ta.getAttribute("data-dur"), 10) || 0;
+root.className = root.className.replace(/\bis-t-[a-z]+\b/g, "").replace(/\s+/g, " ").trim() + " is-t-" + tr;
+dur = td || base;
+if (td) root.style.setProperty("--ly-pdur", td + "ms");
+else root.style.removeProperty("--ly-pdur");
+if (f.k < 0 && tr === "unfold" && !reduce && (pf.k > -1 || pf.id !== f.id)) {
+ta.classList.remove("is-enter");
+void ta.offsetWidth;
+ta.classList.add("is-enter");
+clearTimeout(ta.bdEnter);
+ta.bdEnter = setTimeout(function () { ta.classList.remove("is-enter"); }, dur + 60);
+}
+}
+if (f.k < 0) {
+var a = art(f.id);
+if (!a.classList.contains("is-shown")) {
 content.querySelectorAll(".bd-ly-art.is-shown").forEach(function (x) { x.classList.remove("is-shown"); });
 a.classList.add("is-shown");
 content.scrollTop = 0;
 }
-if (a && S.view === "post" && (prev.view !== "post" || S.post !== prev.post) && tr === "unfold" && !reduce) {
-a.classList.remove("is-enter");
-void a.offsetWidth;
-a.classList.add("is-enter");
-clearTimeout(a.bdEnter);
-a.bdEnter = setTimeout(function () { a.classList.remove("is-enter"); }, dur + 60);
 }
-/* FROM A POST TO THE OTHER HALF: SWAP HALVES WHILE THE SHEET IS STILL TUCKED AWAY, THEN ONLY SLIDE IT BACK */
-if (prev.view === "post" && S.view !== "post" && S.view !== "about" && prev.half !== S.half) {
-index.classList.add("is-snap");
-root.classList.remove("is-h-" + prev.half);
-root.classList.add("is-h-" + S.half);
-void index.offsetWidth;
-index.classList.remove("is-snap");
+var next = bdSheetPlan(model, f, cur);
+next.forEach(function (n, x) {
+var m = model[x];
+var c = cur[x];
+if (n.i !== c.i) {
+/* A SHEET THAT ISN'T LYING OPEN CHANGES PAGE INSTANTLY, OUT OF SIGHT, THEN ONLY SLIDES BACK */
+if (c.st !== "open") m.track.classList.add("is-snap");
+m.track.style.setProperty("--i", n.i);
+if (c.st !== "open") {
+void m.track.offsetWidth;
+m.track.classList.remove("is-snap");
 }
-var tucked = S.view === "about" && (prev.view === "post" || (prev.view === "about" && root.classList.contains("is-tucked")));
-root.classList.toggle("is-tucked", tucked);
-/* ONLY THE HALF IN USE TRAVELS WITH A POST — THE OTHER HALF NEVER SWEEPS PAST */
-clearTimeout(root.bdClip);
-if (S.view === "post" || tucked) root.classList.add("is-clip");
-else if (root.classList.contains("is-clip")) root.bdClip = setTimeout(function () { root.classList.remove("is-clip"); }, dur + 80);
-root.classList.remove("is-v-" + prev.view, "is-h-" + prev.half);
-root.classList.add("is-v-" + S.view, "is-h-" + S.half);
-if (prev.half !== S.half || (prev.view === "post") !== (S.view === "post" || tucked)) moving(index);
-if ((prev.view === "about") !== (S.view === "about")) moving(menu);
+m.track.querySelectorAll(".bd-ly-pane").forEach(function (p, j) { p.classList.toggle("is-on", j === n.i); });
+}
+if (n.st !== c.st) {
+m.el.classList.remove("is-st-" + c.st);
+m.el.classList.add("is-st-" + n.st);
+moving(m);
+} else if (n.i !== c.i) moving(m);
+});
+cur = next;
+F = f.id;
+root.classList.toggle("is-v-post", f.k < 0);
+root.setAttribute("data-focus", F);
 mark();
-var t = S.view === "post" && art(S.post) ? art(S.post).getAttribute("data-title") + " — " + siteTitle : siteTitle;
-doc.title = t;
-if (S.view === "post") content.focus({ preventScroll: true });
+var ft = art(F);
+doc.title = ft ? ft.getAttribute("data-title") + " — " + siteTitle : siteTitle;
+if (f.k < 0) content.focus({ preventScroll: true });
 if (preview || pop) return;
 try {
-history.pushState({ bdly: 1 }, "", urlFor());
+history.pushState({ bdly: 1 }, "", "/" + slugOf(F));
 } catch (e) {}
 }
 function back() {
-if (S.view === "about") go(before === "post" ? "post" : S.half);
-else if (S.view === "post") go(S.half);
+var f = where(F);
+if (!f) return;
+if (f.k > -1 && model[f.k].rest !== "open") {
+go(before && before !== F && where(before) ? before : home);
+return;
+}
+if (f.k < 0) {
+for (var n = 0; n < model.length; n++) {
+if (cur[n].st === "tuck") {
+go(model[n].panes[cur[n].i]);
+return;
+}
+}
+if (home !== F) go(home);
+}
 }
 function bySlug(slug) {
 slug = String(slug || "").replace(/^\/+|\/+$/g, "").replace(/\.html$/, "");
-var m = menu.querySelector('.bd-ly-a[href="/' + slug + '"]');
-if (m && m.getAttribute("data-go") !== "post") return { view: m.getAttribute("data-go") };
+if (slug === "index") slug = "";
+var x = root.querySelector('.bd-ly-pane[data-slug="' + slug + '"]');
+if (x) return x.getAttribute("data-page");
 var a = content.querySelector('.bd-ly-art[data-slug="' + slug + '"]');
-if (a) return { view: "post", id: a.getAttribute("data-id") };
-return null;
+return a ? a.getAttribute("data-id") : "";
 }
 window.bdLayerOpen = function (href) {
 var u;
@@ -127,9 +183,11 @@ u = new URL(href, location.href);
 return false;
 }
 if (!preview && u.origin !== location.origin) return false;
-var r = bySlug(u.pathname);
-if (!r) return false;
-go(r.view, r.id);
+var id = bySlug(u.pathname);
+if (!id) return false;
+var w = where(id);
+if (id === F && w && w.k > -1 && model[w.k].rest !== "open") back();
+else go(id);
 setTimeout(function () {
 doc.querySelectorAll(".bd-unfold").forEach(function (x) { x.remove(); });
 doc.querySelectorAll(".is-open, .is-unfold").forEach(function (x) { x.classList.remove("is-open", "is-unfold"); });
@@ -140,12 +198,6 @@ doc.addEventListener("click", function (ev) {
 if (ev.defaultPrevented || ev.button > 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
 var a = ev.target.closest && ev.target.closest("a[href]");
 if (!a || a.target === "_blank") return;
-var g = a.getAttribute("data-go");
-if (g === "about" && S.view === "about") {
-ev.preventDefault();
-back();
-return;
-}
 if (window.bdLayerOpen(a.href)) ev.preventDefault();
 });
 doc.addEventListener("keydown", function (ev) {
@@ -153,8 +205,7 @@ if (ev.key === "Escape") back();
 });
 if (!preview) {
 window.addEventListener("popstate", function () {
-var r = bySlug(location.pathname) || { view: "journal" };
-go(r.view, r.id, true);
+go(bySlug(location.pathname) || home, true);
 });
 }
 mark();
@@ -174,7 +225,8 @@ var BD_DATA = {"site":"Samt","menu":false,"groups":[{"label":"","items":[{"title
 {"section":"","slug":"art-in-times-of-crisis","num":"","title":"Art In Times Of Crisis"},
 {"section":"","slug":"library","num":"","title":"Library"},
 {"section":"","slug":"about","num":"","title":"About"},
-{"section":"","slug":"supply","num":"","title":"Supply"}],"externals":[],"gDur":450};
+{"section":"","slug":"supply","num":"","title":"Supply"},
+{"section":"","slug":"menu","num":"","title":"Menu"}],"externals":[],"gDur":450};
 
 /* CHROME */
 function bdChrome(root, data, nav) {
