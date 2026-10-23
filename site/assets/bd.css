@@ -1,4 +1,4 @@
-/* PUBLISHED mvlcih11 */
+/* PUBLISHED mvld6k4o */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1833,7 +1833,7 @@ left: 0px;
 --k-sliver: 130px;
 --k-strip: 300px;
 --k-nudge: 0px;
-box-shadow: none;
+box-shadow: 1px 0 0 rgba(0, 0, 0, 0.12);
 z-index: 3;
 background: rgba(255, 242, 213, 0.9);
 -webkit-backdrop-filter: blur(5px);
@@ -2432,7 +2432,7 @@ left: 0px;
 --k-sliver: 14px;
 --k-strip: 70px;
 --k-nudge: 0px;
-box-shadow: none;
+box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
 }
 .bd-ly-k[data-k="menu"].is-on-nsye72w3 {
 right: calc(0px + 0px);

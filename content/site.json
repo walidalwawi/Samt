@@ -587,7 +587,7 @@
     "color": "#fff2d5",
     "alpha": 90,
     "blur": 0,
-    "shadow": "none",
+    "shadow": "line",
     "nudge": 0,
     "dur": ""
    },
@@ -4648,7 +4648,9 @@
     "card": "",
     "mtM": "",
     "fit": false,
-    "mrM": "0%"
+    "mrM": "0%",
+    "radius": "",
+    "maxW": ""
    },
    "sheetBg": ""
   }
