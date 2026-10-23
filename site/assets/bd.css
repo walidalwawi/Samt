@@ -1,4 +1,4 @@
-/* PUBLISHED mvkvkw2k */
+/* PUBLISHED mvkvuwf4 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1981,15 +1981,13 @@ visibility: hidden;
 visibility: visible;
 }
 .bd-ly-art[data-id="fji5ongj"] > .bd-panel {
-margin-top: 90px;
-margin-right: 90px;
-margin-bottom: 90px;
-margin-left: calc(300px + 90px);
+margin-top: 0px;
+margin-right: 0px;
+margin-bottom: 0px;
+margin-left: calc(300px + 0px);
 padding-left: var(--bd-wl);
 width: auto;
 border-radius: 90px;
-box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
-min-height: 0;
 }
 .is-t-unfold .bd-ly-art.is-enter {
 transform-origin: 50% 0;
@@ -2523,11 +2521,11 @@ display: flex;
 align-items: center;
 }
 .bd-ly-art[data-id="fji5ongj"] > .bd-panel {
-margin-top: calc(52px + 90px);
+margin-top: calc(52px + 0px);
 padding-top: var(--bd-wt);
-margin-right: 90px;
-margin-bottom: 90px;
-margin-left: 90px;
+margin-right: 0px;
+margin-bottom: 0px;
+margin-left: 0px;
 width: auto;
 }
 /* CUSTOM */

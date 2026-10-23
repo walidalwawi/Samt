@@ -811,12 +811,12 @@
    },
    "blog": true,
    "box": {
-    "mt": "90",
-    "mb": "90",
-    "mr": "90",
-    "ml": "90",
-    "shadow": "soft",
-    "fit": true,
+    "mt": "0",
+    "mb": "0",
+    "mr": "0",
+    "ml": "0",
+    "shadow": "none",
+    "fit": false,
     "radius": 90
    }
   },
