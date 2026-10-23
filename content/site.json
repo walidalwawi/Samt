@@ -604,7 +604,7 @@
     "rest": "open",
     "peek": 1000,
     "peekM": 0,
-    "sliver": -70,
+    "sliver": 30,
     "sliverM": 14,
     "axis": "y",
     "covers": "all",
@@ -612,7 +612,7 @@
     "color": "#ebebeb",
     "alpha": 30,
     "blur": 10,
-    "shadow": "none",
+    "shadow": "line",
     "nudge": 0,
     "dur": ""
    }
@@ -842,13 +842,15 @@
     "shadow": "none",
     "fit": true,
     "radius": 0,
-    "pt": "20",
+    "pt": "30",
     "pr": "",
     "pb": "",
     "pl": "",
-    "mtM": "",
+    "mtM": "0",
     "card": "",
-    "mrM": "0"
+    "mrM": "0",
+    "mbM": "0",
+    "mlM": "0"
    },
    "sheetBg": ""
   },

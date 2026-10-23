@@ -1,4 +1,4 @@
-/* PUBLISHED mvl02lz2 */
+/* PUBLISHED mvlchmip */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1848,10 +1848,10 @@ right: 0px;
 bottom: 0px;
 left: 300px;
 --k-peek: 1000px;
---k-sliver: -70px;
+--k-sliver: 30px;
 --k-strip: 0px;
 --k-nudge: 0px;
-box-shadow: none;
+box-shadow: -1px 0 0 rgba(0, 0, 0, 0.1);
 z-index: 2;
 background: rgba(235, 235, 235, 0.3);
 -webkit-backdrop-filter: blur(11.2px);
@@ -2064,7 +2064,7 @@ max-width: 680px;
 margin: 0;
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-panel {
-padding-top: 20px;
+padding-top: 30px;
 min-height: 0;
 }
 .is-t-unfold .bd-ly-art.is-enter {
@@ -2450,7 +2450,7 @@ left: 0px;
 --k-sliver: 14px;
 --k-strip: 0px;
 --k-nudge: 0px;
-box-shadow: none;
+box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 .bd-ly-k[data-k="index"].is-on-fji5ongj {
 --k-mt: 0px;
@@ -2622,7 +2622,7 @@ max-width: 680px;
 margin: 0;
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-panel {
-padding-top: 20px;
+padding-top: 30px;
 }
 /* CUSTOM */
 .bd-e-lb31qsc3 {
