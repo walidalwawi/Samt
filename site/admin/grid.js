@@ -563,8 +563,17 @@ on: false, journal: "", library: "", about: "", mark: "",
 menuColor: "#D2CEC6", menuAlpha: 58, menuBlur: 9, menuW: 200, menuBand: 52, menuPad: 40, menuPadM: 16, menuGap: 4, menuGapM: 14, menuAlign: "right", marker: ">", menuEdge: true, menuStyle: "heading",
 aboutW: 620, aboutPad: 64, aboutPadM: 24,
 indexColor: "#E4E1DA", indexAlpha: 55, indexBlur: 9, sliver: 44, sliverM: 14, indexEdge: true,
-ease: "paper", dur: 460, menuDur: 460, tilt: 0, lift: true, reveal: "focus", focusBlur: 3
+ease: "paper", dur: 460, menuDur: 460, tilt: 0, lift: true, reveal: "focus", focusBlur: 3, trans: "slide"
 };
+/* HOW A POST OR PAGE OPENS — THE INDEX SHEET GETS OUT OF THE WAY (SITE DEFAULT, EVERY PAGE CAN OVERRIDE) */
+var LAYER_TRANS = [["slide", "Slide away"], ["fold", "Fold back · hinge on the edge"], ["unfold", "Unfold · the post swings down"], ["squash", "Concertina · squash into the edge"], ["drop", "Drop · falls to the bottom"], ["push", "Push · slides off the other side"], ["rise", "Rise · lifts off the top"], ["cut", "Cut · no motion"]];
+function layerTrans(page) {
+var t = page && page.trans;
+var ok = function (x) { return LAYER_TRANS.some(function (o) { return o[0] === x; }); };
+if (t && ok(t)) return t;
+var m = S.project.site.layers.trans;
+return ok(m) ? m : "slide";
+}
 var LAYER_EASE = { paper: ["Paper", "cubic-bezier(.2,.8,.2,1)"], slide: ["Even slide", "cubic-bezier(.65,0,.35,1)"], drag: ["Heavy drag", "cubic-bezier(.7,0,.25,1)"], stop: ["Stop-motion", "steps(6, end)"], straight: ["Straight", "linear"] };
 var LAYER_PRESETS = {
 paper: { ease: "paper", dur: 460, menuDur: 460, tilt: 0, lift: true, reveal: "focus" },
@@ -2956,7 +2965,7 @@ var r = layerRoles();
 var st = layerState(page);
 var roles = [r.journal, r.library, r.about].filter(Boolean).map(function (q) { return q.id; });
 var arts = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin" && roles.indexOf(q.id) < 0; }).map(function (q) {
-return '<article class="bd-ly-art' + (q.id === st.post ? " is-shown" : "") + '" data-id="' + q.id + '" data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n' + layerBody(q, ctx) + "\n</article>";
+return '<article class="bd-ly-art' + (q.id === st.post ? " is-shown" : "") + '" data-id="' + q.id + '"' + (q.trans ? ' data-trans="' + esc(layerTrans(q)) + '"' : "") + (parseInt(q.transDur, 10) > 0 ? ' data-dur="' + parseInt(q.transDur, 10) + '"' : "") + ' data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n' + layerBody(q, ctx) + "\n</article>";
 }).join("\n");
 var role = function (q) {
 if (!q) return "";
@@ -2979,7 +2988,7 @@ items.push('<li><a class="bd-ly-a' + (cur ? " is-current" : "") + '" href="/' + 
 });
 });
 var mark = Ls.mark || s.name;
-return '<div class="bd-ly is-v-' + st.view + " is-h-" + st.half + '" id="bd-ly" data-view="' + st.view + '" data-half="' + st.half + '" data-post="' + esc(st.post) + '" data-dur="' + Ls.dur + '" data-menu-dur="' + Ls.menuDur + '">\n'
+return '<div class="bd-ly is-v-' + st.view + " is-h-" + st.half + " is-t-" + layerTrans(S.project.pages[st.post]) + (st.view === "post" ? " is-clip" : "") + '" id="bd-ly" data-trans="' + esc(layerTrans(null)) + '" data-view="' + st.view + '" data-half="' + st.half + '" data-post="' + esc(st.post) + '" data-dur="' + Ls.dur + '" data-menu-dur="' + Ls.menuDur + '">\n'
 + '<div class="bd-ly-sheet bd-ly-content" id="bd-ly-content" tabindex="-1">\n' + arts + "\n</div>\n"
 + '<section class="bd-ly-sheet bd-ly-index" id="bd-ly-index" aria-label="Index">\n<div class="bd-ly-half is-journal">\n' + (r.journal ? layerBody(r.journal, ctx) : "") + '\n</div>\n<div class="bd-ly-half is-library">\n' + (r.library ? layerBody(r.library, ctx) : "") + "\n</div>\n</section>\n"
 + '<nav class="bd-ly-sheet bd-ly-menu" id="bd-ly-menu" aria-label="Menu">\n<div class="bd-ly-about">\n' + (r.about ? layerBody(r.about, ctx) : "") + '\n</div>\n<ul class="bd-ly-list bd-ts-' + esc(Ls.menuStyle || "heading") + '">\n' + items.join("\n") + '\n</ul>\n<div class="bd-ly-mark bd-ts-' + esc(Ls.menuStyle || "heading") + '">' + esc(mark) + "</div>\n</nav>\n</div>";
@@ -2988,13 +2997,21 @@ return '<div class="bd-ly is-v-' + st.view + " is-h-" + st.half + '" id="bd-ly" 
 function layerEditCSS(page, phone) {
 var Ls = S.project.site.layers;
 var st = layerState(page);
-var sheet = st.view === "journal" || st.view === "library" ? hexAlpha(Ls.indexColor, 100) : st.view === "about" ? hexAlpha(Ls.menuColor, 100) : "var(--bd-page)";
+var sheet = st.view === "journal" || st.view === "library" ? hexAlpha(Ls.indexColor, 100) : st.view === "about" ? hexAlpha(Ls.menuColor, 100) : page.sheetBg || "var(--bd-page)";
 var w = phone ? 0 : Ls.menuW;
 var band = phone ? Ls.menuBand : 0;
 return [
 ":host {\nposition: relative;\n}",
 ".bd-site.is-layered {\nbackground: " + sheet + ";\n}",
 ".bd-site.is-layered .bd-panel {\nbackground: transparent;\npadding-left: calc(" + w + "px + var(--bd-wl));\npadding-top: calc(" + band + "px + var(--bd-wt));\n}",
+(function () {
+var t = parseFloat(phone ? page.sheetPadTM : page.sheetPadT);
+var x = parseFloat(phone ? page.sheetPadXM : page.sheetPadX);
+var d = [];
+if (!isNaN(t)) d.push("padding-top: " + (band + t) + "px;");
+if (!isNaN(x)) d.push("padding-left: " + (w + x) + "px;", "padding-right: " + x + "px;");
+return st.view === "post" && d.length ? ".bd-site.is-layered .bd-panel {\n" + d.join("\n") + "\n}" : "";
+})(),
 ".bd-ly-edit {\nposition: absolute;\nz-index: 5;\ntop: 0;\nleft: 0;\n" + (phone ? "right: 0;\nheight: " + band + "px;\nflex-direction: row;\nalign-items: center;\njustify-content: space-between;\npadding: 0 " + Ls.menuPadM + "px;\n" : "bottom: 0;\nwidth: " + w + "px;\nflex-direction: column;\nalign-items: " + (Ls.menuAlign === "left" ? "flex-start" : "flex-end") + ";\njustify-content: space-between;\npadding: var(--bd-wt) " + Ls.menuPad + "px;\n") + "display: flex;\nbackground: " + hexAlpha(Ls.menuColor, Ls.menuAlpha) + ";\n-webkit-backdrop-filter: blur(" + Ls.menuBlur + "px);\nbackdrop-filter: blur(" + Ls.menuBlur + "px);\npointer-events: none;\nfont-family: var(--bd-sans);\ncolor: var(--bd-ink);\n" + (Ls.menuEdge ? (phone ? "box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);\n" : "box-shadow: 1px 0 0 rgba(0, 0, 0, 0.12);\n") : "") + "}",
 ".bd-ly-edit ul {\ndisplay: flex;\nflex-direction: " + (phone ? "row" : "column") + ";\nalign-items: inherit;\ngap: " + (phone ? Ls.menuGapM : Ls.menuGap) + "px;\nmargin: 0;\npadding: 0;\nlist-style: none;\n}",
 ".bd-ly-edit li {\ndisplay: flex;\ngap: 10px;\nwhite-space: nowrap;\n}",
@@ -3025,19 +3042,49 @@ if (h.length === 3) h = h.split("").map(function (c) { return c + c; }).join("")
 var n = parseInt(h, 16) || 0;
 return "rgba(" + ((n >> 16) & 255) + ", " + ((n >> 8) & 255) + ", " + (n & 255) + ", " + Math.round(pct) / 100 + ")";
 }
+/* PER PAGE: ITS OWN PAPER COLOUR AND MARGINS ON THE CONTENT SHEET */
+function layerPageCSS(phone) {
+var Ls = S.project.site.layers;
+var out = [];
+S.project.order.forEach(function (id) {
+var q = S.project.pages[id];
+if (!q || q.kind === "pin") return;
+var sel = '.bd-ly-art[data-id="' + q.id + '"]';
+var num = function (k) { var v = parseFloat(q[k]); return isNaN(v) ? null : v; };
+var t = num(phone ? "sheetPadTM" : "sheetPadT");
+var x = num(phone ? "sheetPadXM" : "sheetPadX");
+if (!phone && q.sheetBg) out.push(sel + " {\nmin-height: 100%;\nbackground: " + q.sheetBg + ";\n}");
+var d = [];
+if (t != null) d.push("padding-top: calc(" + (phone ? "var(--ly-band) + " : "") + t + "px);");
+if (x != null) d.push("padding-left: calc(" + (phone ? "" : "var(--ly-menu-w) + ") + x + "px);", "padding-right: " + x + "px;");
+if (d.length) out.push(sel + " > .bd-panel {\n" + d.join("\n") + "\n}");
+});
+return out.join("\n");
+}
 function layerCSS(phone) {
 var Ls = S.project.site.layers;
 if (phone) return [
 ":root {\n--ly-band: " + Ls.menuBand + "px;\n--ly-menu-pad: " + Ls.menuPadM + "px;\n--ly-menu-gap: " + Ls.menuGapM + "px;\n--ly-about-pad: " + Ls.aboutPadM + "px;\n--ly-sliver: " + Ls.sliverM + "px;\n}",
 ".bd-ly-art > .bd-panel {\npadding-top: calc(var(--ly-band) + var(--bd-wt));\npadding-left: var(--bd-wl);\n}",
 ".bd-ly-index {\ntop: var(--ly-band);\nleft: 0;\nwidth: 100vw;\nheight: calc(200% - var(--ly-band) * 2);\nbox-shadow: " + (Ls.indexEdge ? "0 -1px 0 rgba(0, 0, 0, 0.1)" : "none") + ";\n}",
-".is-v-post .bd-ly-index,\n.is-tucked .bd-ly-index {\n--lx: 0px;\n--ly: calc(-100% + var(--ly-sliver));\n}",
+".is-v-post .bd-ly-index,\n.is-tucked .bd-ly-index {\n--lx: 0px;\n--ly: calc(-50% + var(--ly-sliver));\n}",
+".is-v-post.is-h-library .bd-ly-index,\n.is-tucked.is-h-library .bd-ly-index {\n--ly: calc(-100% + var(--ly-sliver));\n}",
+".bd-ly-sheet.bd-ly-index {\ntransform-origin: 50% 0;\n}",
+".is-h-library .bd-ly-sheet.bd-ly-index {\ntransform-origin: 50% 50%;\n}",
+".is-t-fold.is-v-post .bd-ly-index,\n.is-t-fold.is-tucked .bd-ly-index {\n--ly: 0px;\n--lfy: 0deg;\n--lfx: -84deg;\n}",
+".is-t-fold.is-v-post.is-h-library .bd-ly-index,\n.is-t-fold.is-tucked.is-h-library .bd-ly-index {\n--ly: -50%;\n}",
+".is-t-squash.is-v-post .bd-ly-index,\n.is-t-squash.is-tucked .bd-ly-index {\n--ly: 0px;\n--lsx: 1;\n--lsy: var(--ly-sqy, 0.02);\n}",
+".is-t-squash.is-v-post.is-h-library .bd-ly-index,\n.is-t-squash.is-tucked.is-h-library .bd-ly-index {\n--ly: -50%;\n}",
+".is-t-push.is-v-post .bd-ly-index,\n.is-t-push.is-tucked .bd-ly-index {\n--lx: calc(100vw - var(--ly-sliver));\n--ly: 0px;\n}",
+".is-t-push.is-v-post.is-h-library .bd-ly-index,\n.is-t-push.is-tucked.is-h-library .bd-ly-index {\n--ly: -50%;\n}",
 ".bd-ly-menu {\n--lx: 0px;\n--ly: calc(var(--ly-band) - 100%);\nbox-shadow: " + (Ls.menuEdge ? "0 1px 0 rgba(0, 0, 0, 0.12)" : "none") + ";\n}",
 ".is-v-about .bd-ly-menu {\n--ly: 0px;\n}",
 ".bd-ly-list {\ntop: auto;\nbottom: 0;\nright: var(--ly-menu-pad);\nwidth: auto;\nheight: var(--ly-band);\nflex-direction: row;\nalign-items: center;\n}",
 ".bd-ly-mark {\ntop: auto;\nleft: var(--ly-menu-pad);\nright: auto;\nbottom: 0;\nheight: var(--ly-band);\ndisplay: flex;\nalign-items: center;\n}",
-".bd-ly-about {\nright: 0;\nbottom: var(--ly-band);\npadding: 0 var(--ly-about-pad);\n}"
-].join("\n");
+".bd-ly-about {\nright: 0;\nbottom: var(--ly-band);\npadding: 0 var(--ly-about-pad);\n}",
+".is-t-rise.is-v-post .bd-ly-index,\n.is-t-rise.is-tucked .bd-ly-index {\n--lx: 0px;\n}",
+layerPageCSS(true)
+].filter(Boolean).join("\n");
 var ease = (LAYER_EASE[Ls.ease] || LAYER_EASE.paper)[1];
 var out = [
 ":root {\n--ly-menu-bg: " + hexAlpha(Ls.menuColor, Ls.menuAlpha) + ";\n--ly-menu-blur: " + Ls.menuBlur + "px;\n--ly-menu-w: " + Ls.menuW + "px;\n--ly-menu-pad: " + Ls.menuPad + "px;\n--ly-menu-gap: " + Ls.menuGap + "px;\n--ly-about-w: " + Ls.aboutW + "px;\n--ly-about-pad: " + Ls.aboutPad + "px;\n--ly-index-bg: " + hexAlpha(Ls.indexColor, Ls.indexAlpha) + ";\n--ly-index-blur: " + Ls.indexBlur + "px;\n--ly-sliver: " + Ls.sliver + "px;\n--ly-dur: " + Ls.dur + "ms;\n--ly-menu-dur: " + Ls.menuDur + "ms;\n--ly-ease: " + ease + ";\n--ly-tilt: " + (Ls.tilt || 0) + "deg;\n--ly-focus: " + Ls.focusBlur + "px;\n}",
@@ -3056,6 +3103,21 @@ Ls.reveal === "focus" ? ".bd-ly:not(.is-v-post) .bd-ly-content {\nfilter: blur(v
 ".bd-ly-half {\nheight: 50%;\noverflow-y: auto;\n-webkit-overflow-scrolling: touch;\noverscroll-behavior: contain;\n}",
 ".is-h-library .bd-ly-index {\n--ly: -50%;\n}",
 ".is-v-post .bd-ly-index,\n.is-tucked .bd-ly-index {\n--lx: calc(var(--ly-sliver) - 100vw);\n}",
+".bd-ly-sheet.bd-ly-index {\n--lfy: 0deg;\n--lfx: 0deg;\n--lsx: 1;\n--lsy: 1;\ntransform: translate3d(var(--lx), var(--ly), 0) rotate(var(--lr)) perspective(2400px) rotateY(var(--lfy)) rotateX(var(--lfx)) scale(var(--lsx), var(--lsy));\ntransform-origin: 0 50%;\n}",
+".bd-ly-index.is-snap {\ntransition: none;\n}",
+".is-clip.is-h-journal .bd-ly-index {\nclip-path: inset(-40px -40px 50% -40px);\n}",
+".is-clip.is-h-library .bd-ly-index {\nclip-path: inset(50% -40px -40px -40px);\n}",
+".is-t-fold.is-v-post .bd-ly-index,\n.is-t-fold.is-tucked .bd-ly-index {\n--lx: 0px;\n--lfy: 84deg;\n}",
+".is-t-squash.is-v-post .bd-ly-index,\n.is-t-squash.is-tucked .bd-ly-index {\n--lx: 0px;\n--lsx: var(--ly-sqx, 0.04);\n}",
+".is-t-drop.is-v-post .bd-ly-index,\n.is-t-drop.is-tucked .bd-ly-index {\n--lx: 0px;\n--ly: calc(50% - var(--ly-sliver));\n}",
+".is-t-drop.is-v-post.is-h-library .bd-ly-index,\n.is-t-drop.is-tucked.is-h-library .bd-ly-index {\n--ly: calc(0px - var(--ly-sliver));\n}",
+".is-t-push.is-v-post .bd-ly-index,\n.is-t-push.is-tucked .bd-ly-index {\n--lx: calc(100vw - var(--ly-menu-w) - var(--ly-sliver));\n}",
+".is-t-cut .bd-ly-index {\ntransition: none;\n}",
+".is-t-rise.is-v-post .bd-ly-index,\n.is-t-rise.is-tucked .bd-ly-index {\n--lx: 0px;\n--ly: calc(-50% + var(--ly-sliver));\n}",
+".is-t-rise.is-v-post.is-h-library .bd-ly-index,\n.is-t-rise.is-tucked.is-h-library .bd-ly-index {\n--ly: calc(-100% + var(--ly-sliver));\n}",
+layerPageCSS(false),
+".is-t-unfold .bd-ly-art.is-enter {\ntransform-origin: 50% 0;\nanimation: bd-ly-unfold var(--ly-dur) var(--ly-ease) both;\n}",
+"@keyframes bd-ly-unfold {\nfrom {\ntransform: perspective(1600px) rotateX(-88deg);\n}\nto {\ntransform: none;\n}\n}",
 ".bd-ly-menu {\ntop: 0;\nleft: 0;\nwidth: 100vw;\nheight: 100%;\nz-index: 3;\n--lx: calc(var(--ly-menu-w) - 100vw);\nbackground: var(--ly-menu-bg);\n-webkit-backdrop-filter: blur(var(--ly-menu-blur));\nbackdrop-filter: blur(var(--ly-menu-blur));\nbox-shadow: " + (Ls.menuEdge ? "1px 0 0 rgba(0, 0, 0, 0.12)" : "none") + ";\ntransition-duration: var(--ly-menu-dur);\n}",
 ".is-v-about .bd-ly-menu {\n--lx: 0px;\n}",
 ".bd-ly-list {\nposition: absolute;\ntop: var(--bd-wt);\nright: var(--ly-menu-pad);\nwidth: calc(var(--ly-menu-w) - var(--ly-menu-pad) - 16px);\ndisplay: flex;\nflex-direction: column;\nalign-items: " + (Ls.menuAlign === "left" ? "flex-start" : "flex-end") + ";\ngap: var(--ly-menu-gap);\nmargin: 0;\npadding: 0;\nlist-style: none;\n}",
@@ -3082,6 +3144,19 @@ var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: re
 var siteTitle = doc.title.split(" — ").pop();
 var S = { view: root.getAttribute("data-view"), half: root.getAttribute("data-half"), post: root.getAttribute("data-post") };
 var before = "journal";
+var master = root.getAttribute("data-trans") || "slide";
+var baseDur = dur;
+function sizes() {
+var sl = parseFloat(getComputedStyle(root).getPropertyValue("--ly-sliver")) || 40;
+if (index.offsetWidth) root.style.setProperty("--ly-sqx", Math.max(0.01, sl / index.offsetWidth).toFixed(4));
+if (index.offsetHeight) root.style.setProperty("--ly-sqy", Math.max(0.01, sl / (index.offsetHeight / 2)).toFixed(4));
+}
+sizes();
+window.addEventListener("resize", sizes);
+function transOf(id) {
+var a = art(id);
+return (a && a.getAttribute("data-trans")) || master;
+}
 var homeSlug = (menu.querySelector('[data-go="journal"]') || { getAttribute: function () { return "/"; } }).getAttribute("href");
 function art(id) {
 return content.querySelector('.bd-ly-art[data-id="' + id + '"]');
@@ -3119,16 +3194,39 @@ S.view = "about";
 S.view = "post";
 if (id) S.post = id;
 }
-if (S.post !== prev.post) {
+var tr = transOf(S.post);
+var a0 = art(S.post);
+dur = (a0 && parseInt(a0.getAttribute("data-dur"), 10)) || baseDur;
+if (dur !== baseDur) root.style.setProperty("--ly-dur", dur + "ms");
+else root.style.removeProperty("--ly-dur");
+root.className = root.className.replace(/\bis-t-[a-z]+\b/g, "").trim() + " is-t-" + tr;
 var a = art(S.post);
-if (a) {
+if (S.post !== prev.post && a) {
 content.querySelectorAll(".bd-ly-art.is-shown").forEach(function (x) { x.classList.remove("is-shown"); });
 a.classList.add("is-shown");
 content.scrollTop = 0;
 }
+if (a && S.view === "post" && (prev.view !== "post" || S.post !== prev.post) && tr === "unfold" && !reduce) {
+a.classList.remove("is-enter");
+void a.offsetWidth;
+a.classList.add("is-enter");
+clearTimeout(a.bdEnter);
+a.bdEnter = setTimeout(function () { a.classList.remove("is-enter"); }, dur + 60);
+}
+/* FROM A POST TO THE OTHER HALF: SWAP HALVES WHILE THE SHEET IS STILL TUCKED AWAY, THEN ONLY SLIDE IT BACK */
+if (prev.view === "post" && S.view !== "post" && S.view !== "about" && prev.half !== S.half) {
+index.classList.add("is-snap");
+root.classList.remove("is-h-" + prev.half);
+root.classList.add("is-h-" + S.half);
+void index.offsetWidth;
+index.classList.remove("is-snap");
 }
 var tucked = S.view === "about" && (prev.view === "post" || (prev.view === "about" && root.classList.contains("is-tucked")));
 root.classList.toggle("is-tucked", tucked);
+/* ONLY THE HALF IN USE TRAVELS WITH A POST — THE OTHER HALF NEVER SWEEPS PAST */
+clearTimeout(root.bdClip);
+if (S.view === "post" || tucked) root.classList.add("is-clip");
+else if (root.classList.contains("is-clip")) root.bdClip = setTimeout(function () { root.classList.remove("is-clip"); }, dur + 80);
 root.classList.remove("is-v-" + prev.view, "is-h-" + prev.half);
 root.classList.add("is-v-" + S.view, "is-h-" + S.half);
 if (prev.half !== S.half || (prev.view === "post") !== (S.view === "post" || tucked)) moving(index);
@@ -4302,6 +4400,7 @@ if (Lz.on) {
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span><div class="bd-ed-hint">How the menu and index sheets slide. Preview to watch.</div><div class="bd-ed-actions">' + [["paper", "Paper"], ["drag", "Heavy drag"], ["stop", "Stop-motion"], ["quiet", "Quiet"], ["still", "Still"]].map(function (x) {
 return '<button class="bd-ed-btn" data-act="ly-preset" data-val="' + x[0] + '">' + x[1] + "</button>";
 }).join("") + "</div>"
++ field("A post or page opens with", select("site.layers.trans", Lz.trans || "slide", LAYER_TRANS)) + '<div class="bd-ed-hint">Any page can pick its own: select it, Page → Opens with.</div>'
 + field("Feel", select("site.layers.ease", Lz.ease, Object.keys(LAYER_EASE).map(function (k) { return [k, LAYER_EASE[k][0]]; })))
 + row(numIn("Index sheet (ms)", "site.layers.dur", Lz.dur), numIn("Menu sheet (ms)", "site.layers.menuDur", Lz.menuDur))
 + row(numIn("Tilt while moving (°)", "site.layers.tilt", Lz.tilt), numIn("Out-of-focus blur", "site.layers.focusBlur", Lz.focusBlur))
@@ -4762,6 +4861,15 @@ var q = S.project.pages[id];
 if (q.kind === "pin" || q.id === pg.id) return;
 stack += '<label class="bd-ed-check"><input type="checkbox" data-act="stack-page" data-id="' + q.id + '"' + ((pg.stack || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc((q.num ? q.num + "  " : "") + q.title) + "</label>";
 });
+if (layersOn() && [layerRoles().journal, layerRoles().library, layerRoles().about].filter(Boolean).map(function (q) { return q.id; }).indexOf(pg.id) < 0) {
+var mt = (LAYER_TRANS.filter(function (o) { return o[0] === layerTrans(null); })[0] || LAYER_TRANS[0])[1].split(" · ")[0];
+var ph = S.mode === "phone";
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">This page’s sheet</span><div class="bd-ed-hint">How this page opens and the paper it’s on. Blank = the site’s (Motion tab).</div>'
++ field("Opens with", select("page.trans", pg.trans || "", [["", "Site · " + mt]].concat(LAYER_TRANS)))
++ row(numIn("Speed (ms)", "page.transDur", pg.transDur || "", "blank"), colorIn("Paper colour", "page.sheetBg", pg.sheetBg || "", "#ffffff"))
++ row(numIn("Margin top" + (ph ? " · phone" : ""), ph ? "page.sheetPadTM" : "page.sheetPadT", (ph ? pg.sheetPadTM : pg.sheetPadT) == null ? "" : (ph ? pg.sheetPadTM : pg.sheetPadT), "blank"), numIn("Margin sides" + (ph ? " · phone" : ""), ph ? "page.sheetPadXM" : "page.sheetPadX", (ph ? pg.sheetPadXM : pg.sheetPadX) == null ? "" : (ph ? pg.sheetPadXM : pg.sheetPadX), "blank"))
++ "</div>";
+}
 if (!layersOn()) h += '<div class="bd-ed-sec">' + adv("pg-stack", "Continue with other pages", '<div class="bd-ed-hint">Chosen pages scroll on below this one, like one long page.</div>' + stack) + "</div>";
 }
 var free = '<div class="bd-ed-seg"><button data-act="layout" data-val="master" class="' + (isMaster(pg) ? "is-on" : "") + '">Columns</button><button data-act="layout" data-val="free" class="' + (isMaster(pg) ? "" : "is-on") + '">Free grid</button></div><div class="bd-ed-hint">' + (isMaster(pg) ? "Blocks stack in columns. Free grid lets you place them anywhere, row by row." : "Blocks sit anywhere on the grid. Columns stacks them again in order.") + "</div>"

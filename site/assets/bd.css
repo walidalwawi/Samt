@@ -1,4 +1,4 @@
-/* PUBLISHED mvkl2ggw */
+/* PUBLISHED trans1 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1764,6 +1764,70 @@ overscroll-behavior: contain;
 .is-tucked .bd-ly-index {
 --lx: calc(var(--ly-sliver) - 100vw);
 }
+.bd-ly-sheet.bd-ly-index {
+--lfy: 0deg;
+--lfx: 0deg;
+--lsx: 1;
+--lsy: 1;
+transform: translate3d(var(--lx), var(--ly), 0) rotate(var(--lr)) perspective(2400px) rotateY(var(--lfy)) rotateX(var(--lfx)) scale(var(--lsx), var(--lsy));
+transform-origin: 0 50%;
+}
+.bd-ly-index.is-snap {
+transition: none;
+}
+.is-clip.is-h-journal .bd-ly-index {
+clip-path: inset(-40px -40px 50% -40px);
+}
+.is-clip.is-h-library .bd-ly-index {
+clip-path: inset(50% -40px -40px -40px);
+}
+.is-t-fold.is-v-post .bd-ly-index,
+.is-t-fold.is-tucked .bd-ly-index {
+--lx: 0px;
+--lfy: 84deg;
+}
+.is-t-squash.is-v-post .bd-ly-index,
+.is-t-squash.is-tucked .bd-ly-index {
+--lx: 0px;
+--lsx: var(--ly-sqx, 0.04);
+}
+.is-t-drop.is-v-post .bd-ly-index,
+.is-t-drop.is-tucked .bd-ly-index {
+--lx: 0px;
+--ly: calc(50% - var(--ly-sliver));
+}
+.is-t-drop.is-v-post.is-h-library .bd-ly-index,
+.is-t-drop.is-tucked.is-h-library .bd-ly-index {
+--ly: calc(0px - var(--ly-sliver));
+}
+.is-t-push.is-v-post .bd-ly-index,
+.is-t-push.is-tucked .bd-ly-index {
+--lx: calc(100vw - var(--ly-menu-w) - var(--ly-sliver));
+}
+.is-t-cut .bd-ly-index {
+transition: none;
+}
+.is-t-rise.is-v-post .bd-ly-index,
+.is-t-rise.is-tucked .bd-ly-index {
+--lx: 0px;
+--ly: calc(-50% + var(--ly-sliver));
+}
+.is-t-rise.is-v-post.is-h-library .bd-ly-index,
+.is-t-rise.is-tucked.is-h-library .bd-ly-index {
+--ly: calc(-100% + var(--ly-sliver));
+}
+.is-t-unfold .bd-ly-art.is-enter {
+transform-origin: 50% 0;
+animation: bd-ly-unfold var(--ly-dur) var(--ly-ease) both;
+}
+@keyframes bd-ly-unfold {
+from {
+transform: perspective(1600px) rotateX(-88deg);
+}
+to {
+transform: none;
+}
+}
 .bd-ly-menu {
 top: 0;
 left: 0;
@@ -2198,7 +2262,46 @@ box-shadow: none;
 .is-v-post .bd-ly-index,
 .is-tucked .bd-ly-index {
 --lx: 0px;
+--ly: calc(-50% + var(--ly-sliver));
+}
+.is-v-post.is-h-library .bd-ly-index,
+.is-tucked.is-h-library .bd-ly-index {
 --ly: calc(-100% + var(--ly-sliver));
+}
+.bd-ly-sheet.bd-ly-index {
+transform-origin: 50% 0;
+}
+.is-h-library .bd-ly-sheet.bd-ly-index {
+transform-origin: 50% 50%;
+}
+.is-t-fold.is-v-post .bd-ly-index,
+.is-t-fold.is-tucked .bd-ly-index {
+--ly: 0px;
+--lfy: 0deg;
+--lfx: -84deg;
+}
+.is-t-fold.is-v-post.is-h-library .bd-ly-index,
+.is-t-fold.is-tucked.is-h-library .bd-ly-index {
+--ly: -50%;
+}
+.is-t-squash.is-v-post .bd-ly-index,
+.is-t-squash.is-tucked .bd-ly-index {
+--ly: 0px;
+--lsx: 1;
+--lsy: var(--ly-sqy, 0.02);
+}
+.is-t-squash.is-v-post.is-h-library .bd-ly-index,
+.is-t-squash.is-tucked.is-h-library .bd-ly-index {
+--ly: -50%;
+}
+.is-t-push.is-v-post .bd-ly-index,
+.is-t-push.is-tucked .bd-ly-index {
+--lx: calc(100vw - var(--ly-sliver));
+--ly: 0px;
+}
+.is-t-push.is-v-post.is-h-library .bd-ly-index,
+.is-t-push.is-tucked.is-h-library .bd-ly-index {
+--ly: -50%;
 }
 .bd-ly-menu {
 --lx: 0px;
@@ -2230,6 +2333,10 @@ align-items: center;
 right: 0;
 bottom: var(--ly-band);
 padding: 0 var(--ly-about-pad);
+}
+.is-t-rise.is-v-post .bd-ly-index,
+.is-t-rise.is-tucked .bd-ly-index {
+--lx: 0px;
 }
 /* CUSTOM */
 .bd-e-lb31qsc3 {

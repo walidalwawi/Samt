@@ -11,6 +11,19 @@ var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: re
 var siteTitle = doc.title.split(" — ").pop();
 var S = { view: root.getAttribute("data-view"), half: root.getAttribute("data-half"), post: root.getAttribute("data-post") };
 var before = "journal";
+var master = root.getAttribute("data-trans") || "slide";
+var baseDur = dur;
+function sizes() {
+var sl = parseFloat(getComputedStyle(root).getPropertyValue("--ly-sliver")) || 40;
+if (index.offsetWidth) root.style.setProperty("--ly-sqx", Math.max(0.01, sl / index.offsetWidth).toFixed(4));
+if (index.offsetHeight) root.style.setProperty("--ly-sqy", Math.max(0.01, sl / (index.offsetHeight / 2)).toFixed(4));
+}
+sizes();
+window.addEventListener("resize", sizes);
+function transOf(id) {
+var a = art(id);
+return (a && a.getAttribute("data-trans")) || master;
+}
 var homeSlug = (menu.querySelector('[data-go="journal"]') || { getAttribute: function () { return "/"; } }).getAttribute("href");
 function art(id) {
 return content.querySelector('.bd-ly-art[data-id="' + id + '"]');
@@ -48,16 +61,39 @@ S.view = "about";
 S.view = "post";
 if (id) S.post = id;
 }
-if (S.post !== prev.post) {
+var tr = transOf(S.post);
+var a0 = art(S.post);
+dur = (a0 && parseInt(a0.getAttribute("data-dur"), 10)) || baseDur;
+if (dur !== baseDur) root.style.setProperty("--ly-dur", dur + "ms");
+else root.style.removeProperty("--ly-dur");
+root.className = root.className.replace(/\bis-t-[a-z]+\b/g, "").trim() + " is-t-" + tr;
 var a = art(S.post);
-if (a) {
+if (S.post !== prev.post && a) {
 content.querySelectorAll(".bd-ly-art.is-shown").forEach(function (x) { x.classList.remove("is-shown"); });
 a.classList.add("is-shown");
 content.scrollTop = 0;
 }
+if (a && S.view === "post" && (prev.view !== "post" || S.post !== prev.post) && tr === "unfold" && !reduce) {
+a.classList.remove("is-enter");
+void a.offsetWidth;
+a.classList.add("is-enter");
+clearTimeout(a.bdEnter);
+a.bdEnter = setTimeout(function () { a.classList.remove("is-enter"); }, dur + 60);
+}
+/* FROM A POST TO THE OTHER HALF: SWAP HALVES WHILE THE SHEET IS STILL TUCKED AWAY, THEN ONLY SLIDE IT BACK */
+if (prev.view === "post" && S.view !== "post" && S.view !== "about" && prev.half !== S.half) {
+index.classList.add("is-snap");
+root.classList.remove("is-h-" + prev.half);
+root.classList.add("is-h-" + S.half);
+void index.offsetWidth;
+index.classList.remove("is-snap");
 }
 var tucked = S.view === "about" && (prev.view === "post" || (prev.view === "about" && root.classList.contains("is-tucked")));
 root.classList.toggle("is-tucked", tucked);
+/* ONLY THE HALF IN USE TRAVELS WITH A POST — THE OTHER HALF NEVER SWEEPS PAST */
+clearTimeout(root.bdClip);
+if (S.view === "post" || tucked) root.classList.add("is-clip");
+else if (root.classList.contains("is-clip")) root.bdClip = setTimeout(function () { root.classList.remove("is-clip"); }, dur + 80);
 root.classList.remove("is-v-" + prev.view, "is-h-" + prev.half);
 root.classList.add("is-v-" + S.view, "is-h-" + S.half);
 if (prev.half !== S.half || (prev.view === "post") !== (S.view === "post" || tucked)) moving(index);
