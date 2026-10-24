@@ -550,9 +550,9 @@
    "sliver": 130,
    "sliverM": 14,
    "indexEdge": false,
-   "ease": "straight",
-   "dur": 200,
-   "menuDur": 120,
+   "ease": "paper",
+   "dur": 460,
+   "menuDur": 460,
    "tilt": 0,
    "lift": true,
    "reveal": "focus",
@@ -584,8 +584,8 @@
     "axis": "y",
     "covers": "all",
     "coverPages": [],
-    "color": "#ebebeb",
-    "alpha": 90,
+    "color": "linear-gradient(90deg, #ffffff, #ebebeb)",
+    "alpha": 70,
     "blur": 0,
     "shadow": "line",
     "nudge": 0,
@@ -609,7 +609,7 @@
     "axis": "y",
     "covers": "all",
     "coverPages": [],
-    "color": "#ebebeb",
+    "color": "",
     "alpha": 30,
     "blur": 10,
     "shadow": "line",
@@ -4307,7 +4307,9 @@
     "mr": "10%",
     "mb": "0",
     "mrM": "0",
-    "mtM": "0"
+    "mtM": "0",
+    "shadow": "none",
+    "fit": false
    }
   },
   "zty6iib1": {
@@ -4594,7 +4596,8 @@
     "fit": false,
     "card": "",
     "mrM": "0"
-   }
+   },
+   "sheetBg": ""
   },
   "56ud3gky": {
    "id": "56ud3gky",
