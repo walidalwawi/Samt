@@ -613,7 +613,7 @@
     "peek": 200,
     "peekM": 0,
     "sliver": 100,
-    "sliverM": 14,
+    "sliverM": 10,
     "axis": "y",
     "covers": "all",
     "coverPages": [
@@ -626,7 +626,12 @@
     "nudge": 300,
     "dur": "",
     "box": {
-     "mr": "200"
+     "mr": "200",
+     "mrM": "0",
+     "mtM": "0",
+     "mbM": "0",
+     "mlM": "0",
+     "plM": "0"
     },
     "pattern": "lined",
     "patColor": "#000000",
@@ -861,16 +866,18 @@
     "ml": "",
     "shadow": "none",
     "fit": false,
-    "radius": 0,
+    "radius": "",
     "pt": "",
     "pr": "",
     "pb": "",
     "pl": "",
-    "mtM": "0",
+    "mtM": "",
     "card": "",
-    "mrM": "0",
-    "mbM": "0",
-    "mlM": "0"
+    "mrM": "",
+    "mbM": "",
+    "mlM": "0",
+    "maxWM": "",
+    "plM": "20"
    },
    "sheetBg": "linear-gradient(180deg, transparent, #ebebeb)"
   },
@@ -1339,7 +1346,8 @@
     "mr": "",
     "fit": false,
     "ml": "",
-    "pl": "150"
+    "pl": "150",
+    "plM": "30"
    }
   },
   "ipk7ns57": {
@@ -1802,7 +1810,10 @@
    "date": "",
    "excerpt": "",
    "featured": false,
-   "box": {}
+   "box": {
+    "pl": "150",
+    "plM": "20"
+   }
   },
   "k2b6e868": {
    "id": "k2b6e868",
@@ -4332,7 +4343,9 @@
     "mtM": "0",
     "shadow": "none",
     "fit": false,
-    "card": ""
+    "card": "",
+    "plM": "20",
+    "prM": "0"
    },
    "sheetBg": "linear-gradient(180deg, #ebebeb, transparent)"
   },
