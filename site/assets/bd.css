@@ -1,4 +1,4 @@
-/* PUBLISHED mvldaere */
+/* PUBLISHED mvm2u2ey */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -2065,6 +2065,7 @@ margin: 0;
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-panel {
 padding-top: 30px;
+box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
 }
 .is-t-unfold .bd-ly-art.is-enter {
 transform-origin: 50% 0;
