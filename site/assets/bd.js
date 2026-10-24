@@ -2,7 +2,7 @@
 function bdSheetPlan(K, f, prev) {
 return K.map(function (k, n) {
 var p = prev && prev[n];
-var pane = p ? p.i : 0;
+var pane = p ? p.i : k.main || 0;
 var cov = !k.covers || k.covers.indexOf(f.id) > -1 || k.panes.indexOf(f.id) > -1;
 if (f.k === n) return { st: "open", i: f.i };
 if (k.rest === "still") return { st: cov ? "open" : "hidden", i: pane };
@@ -28,7 +28,7 @@ var before = home;
 var model = els.map(function (k) {
 var c = k.getAttribute("data-covers");
 var st = k.querySelector(".bd-ly-strip > .bd-panel");
-return { el: k, rest: k.getAttribute("data-rest") || "open", covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
+return { el: k, rest: k.getAttribute("data-rest") || "open", main: parseInt(k.getAttribute("data-main"), 10) || 0, covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
 });
 function onPage(m, st, i) {
 m.el.style.removeProperty("--k-up");
