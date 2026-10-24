@@ -16,13 +16,14 @@ async def run():
         await pg.goto('http://127.0.0.1:8765/admin'); await pg.wait_for_timeout(3000)
         ev = pg.evaluate
         sh = "document.getElementById('bd-sheet').shadowRoot"
+        await ev("sheetList().forEach(function(k){ if (k.id === 'menu') { k.peek = 300; k.peekM = 70; k.out = 'peek'; } if (k.id === 'index') { k.box = {}; } }); changed();")
         # the canvas shrinks the sheet to a page's margins (desktop and phone), % included
         await ev("goPage('b2lr3tkr')"); await pg.wait_for_timeout(500)
         full = await ev(f"(() => {{ const r = {sh}.querySelector('.bd-site .bd-panel').getBoundingClientRect(); return [r.width, r.height]; }})()")
         await ev("S.project.pages['b2lr3tkr'].box = { mt: '20%', ml: '100', mr: '100', mb: '50' }; changed();"); await pg.wait_for_timeout(700)
         small = await ev(f"(() => {{ const r = {sh}.querySelector('.bd-site .bd-panel').getBoundingClientRect(); return [r.width, r.height]; }})()")
-        ok('canvas: left+right margins (100 + 100 at 0.6 zoom) leave the sheet 120px narrower than its window', small[0] < full[0] - 20)
-        ok('canvas: a page on an open sheet under a peeking menu starts at the window edge (menu inset goes into its content)', await ev(f"(() => {{ const l = {sh}.querySelector('.bd-site'); const q = l.querySelector('.bd-panel'); return getComputedStyle(l).paddingLeft === '100px' && parseFloat(getComputedStyle(q).paddingLeft) >= 300; }})()"))
+        ok('canvas: left+right inset (100 + 100 at 0.6 zoom) leave the page 120px narrower than its sheet', small[0] < full[0] - 20)
+        ok('canvas: a page on an open sheet under a peeking menu: its inset (100px) sits inside the frame, the menu inset goes into its content', await ev(f"(() => {{ const l = {sh}.querySelector('.bd-site'); const q = l.querySelector('.bd-panel'); return getComputedStyle(l).paddingLeft === '0px' && getComputedStyle(q).marginLeft === '100px' && parseFloat(getComputedStyle(q).paddingLeft) >= 300; }})()"))
         css = await ev("layerEditCSS(S.project.pages['b2lr3tkr'], false)")
         ok('canvas: 20% is a share of the drawn window (800 → 160px)', '160px' in css)
         # the edge page of a peeking sheet never draws 0 wide
@@ -42,8 +43,8 @@ async def run():
         ok('site switch Page title writes headings', doc.count('bd-head') >= 5)
         ok('site switch Click images to zoom marks images', doc.count('has-zoom') > 0)
         ok('menus: one list in the Site panel, no picker', await ev("(function(){ S.project.site.menus.length; return menuEditor(S.project.site.menus[0].id, true).indexOf('Menu name') < 0; })()"))
-        # blur only under a sheet; a margin-top sheet rises before the page scrolls inside it
-        await ev("(function(){ var ix = S.project.site.sheets.find(function(k){return k.id==='index'}); ix.rest='open'; ix.shadow='line'; S.project.site.layers.reveal='focus'; S.project.site.layers.focusBlur=5; ix.blur=10; S.project.pages['b2lr3tkr'].box={mt:'100'}; changed(); })()")
+        # blur only under a sheet; a sheet with a top margin rises before the page scrolls inside it
+        await ev("(function(){ var ix = S.project.site.sheets.find(function(k){return k.id==='index'}); ix.rest='open'; ix.shadow='line'; S.project.site.layers.reveal='focus'; S.project.site.layers.focusBlur=5; ix.blur=10; ix.box={mt:'100'}; S.project.pages['b2lr3tkr'].box={}; changed(); })()")
         css = await ev("exportCSS()")
         ok('blur: the content layer is no longer filtered (only sheets blur what is under them)', '.bd-ly-content {\nfilter' not in css and 'blur(var(--ly-focus))' not in css)
         ok('blur: sheet blur = sqrt(own² + focus²) = 11.2px', 'backdrop-filter: blur(11.2px);' in css)
@@ -66,7 +67,7 @@ async def run():
         t3 = await ev(st)
         ok('scroll: back at the top, scrolling up brings the margin back', t3[0] == 80)
         # a sheet only ever slides in a straight line; one black scroll line on the window's right edge
-        await ev("(function(){ var ix = S.project.site.sheets.find(function(k){return k.id==='index'}); ix.rest='open'; ix.sliver=60; S.project.site.layers.dur=900; S.project.pages['fji5ongj'].box={mt:'100',mr:'90'}; changed(); })()")
+        await ev("(function(){ var ix = S.project.site.sheets.find(function(k){return k.id==='index'}); ix.rest='open'; ix.sliver=60; S.project.site.layers.dur=900; ix.box={mt:'100',mr:'90'}; S.project.pages['fji5ongj'].box={}; changed(); })()")
         await pg.wait_for_timeout(2500)
         W = FR + ".contentWindow"
         rect = "(function(){ var r = " + W + ".document.querySelector('.bd-ly-k[data-k=index]').getBoundingClientRect(); return [Math.round(r.left), Math.round(r.top)]; })()"
@@ -148,6 +149,28 @@ async def run():
         ok('sliver is measured past the menu strip (300 + 30 = 330px)', re.search(r'data-k="index"\] \{[^}]*--k-sliver: 330px', css) is not None)
         await ev("S.sheetSel=sheetList().filter(k=>k.id==='index')[0].id; S.preview=false; S.sel=null; render()")
         ok('sheet panel has the Play button', 'sheet-play' in await ev("document.getElementById('bd-right').innerHTML"))
+        # --- page inset: inside the sheet's frame, never moves the sheet edges
+        await ev("S.project.pages['b2lr3tkr'].box = { ml: '10%', mt: '40' }; S.preview = false; changed();")
+        css = await ev("exportCSS()")
+        ok('inset: the export insets the page panel (margin on the panel, not on the sheet)', '.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {\nmargin-top: 40px;' in css and 'margin-left: 10vw;' in css)
+        ok('inset: the sheet itself has no per-page edge rule any more', '.is-on-b2lr3tkr {' not in css)
+        await pg.click('[data-act=preview]'); await pg.wait_for_timeout(2500)
+        FR2 = "document.getElementById('bd-sheet').shadowRoot.querySelector('iframe')"
+        await ev(FR2 + ".contentWindow.document.querySelector('a[href=\"/library\"]').click()"); await pg.wait_for_timeout(900)
+        got = await ev("(function(){ var d = " + FR2 + ".contentWindow.document; var pn = d.querySelector('.bd-ly-pane[data-page=\"b2lr3tkr\"]'); var q = pn.querySelector('.bd-panel'); var a = pn.getBoundingClientRect(), b = q.getBoundingClientRect(); return [Math.round(b.left - a.left), Math.round(b.top - a.top), Math.round(a.width - b.width)]; })()")
+        ok('inset: published, the page sits 10% (of the window) and 40px inside its pane, the pane stays full', got[0] > 100 and got[1] == 40)
+        await pg.click('[data-act=preview]'); await pg.wait_for_timeout(600)
+        await ev("S.project.pages['b2lr3tkr'].box = {}; S.preview=false; changed();")
+        # --- the simple behaviour model writes the old fields
+        await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; k.rest='open'; k.out='peek'; k.sliver=40; k.sliverM=''; })()")
+        ok('behaviour: Starts Away turns a shown sheet with a 40px strip into a peeking one', await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; sheetMove(k, 'start', 'away'); return k.rest === 'peek' && k.peek === 40; })()"))
+        ok('behaviour: strip 0 on an away sheet = hidden', await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; sheetMove(k, 'strip', 0); return k.rest === 'hidden'; })()"))
+        ok('behaviour: Starts Shown + Stays shown = still', await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; sheetMove(k, 'start', 'shown'); sheetMove(k, 'other', 'stay'); return k.rest === 'still'; })()"))
+        ok('behaviour: Goes away with a strip = open + peek out + sliver', await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; sheetMove(k, 'other', 'away'); sheetMove(k, 'strip', 25); return k.rest === 'open' && k.out === 'peek' && k.sliver === 25; })()"))
+        await ev("S.sheetSel='index'; S.preview=false; S.sel=null; render()")
+        rt = await ev("document.getElementById('bd-right').innerHTML")
+        ok('behaviour: panel shows Starts, Side, Enters with, Leaves with always', all(t in rt for t in ['Starts', 'Side', 'Enters with', 'Leaves with', 'When another page opens']))
+        await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; k.rest='open'; k.out='peek'; k.sliver=100; })()")
         # --- grid + drag to resize (desktop and phone), always snapping to the 5% grid
         await ev("S.sheetSel=''; S.preview=false; S.inspect=false; S.mode='desktop'; S.project.pages['b2lr3tkr'].box = {}; goPage('b2lr3tkr'); render()"); await pg.wait_for_timeout(700)
         SHB = "document.getElementById('bd-sheet').shadowRoot"
