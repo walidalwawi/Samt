@@ -2293,6 +2293,7 @@ return phone && b[k + "M"] !== "" && b[k + "M"] != null ? b[k + "M"] : b[k];
 }
 function pageBoxCSS(q, phone, sel, ins, noMargin) {
 var b = q.box || {};
+var passed = !!ins;
 ins = ins || { top: 0, right: 0, bottom: 0, left: 0 };
 var def = { t: "var(--bd-wt)", r: "var(--bd-wr)", b: "var(--bd-wb)", l: "var(--bd-wl)" };
 var d = [];
@@ -2307,7 +2308,7 @@ if (sd[0] === "l" || sd[0] === "r") sideM = true;
 if (P == null && I) d.push("padding-" + sd[1] + ": " + def[sd[0]] + ";");
 }
 if (P != null) d.push("padding-" + sd[1] + ": " + (I && M == null ? "calc(" + I + "px + " + P + ")" : P) + ";");
-else if (I && noMargin) d.push("padding-" + sd[1] + ": calc(" + I + "px + " + def[sd[0]] + ");");
+else if (noMargin && passed) d.push("padding-" + sd[1] + ": " + (I ? "calc(" + I + "px + " + def[sd[0]] + ")" : def[sd[0]]) + ";");
 });
 var w = boxLen(boxVal(b, "maxW", phone), "l");
 if (sideM) d.push("width: auto;");
@@ -2343,6 +2344,7 @@ var onSheet = layersOn() && sheetOf(pg.id).k > -1;
 return '<div class="bd-ed-sec"><span class="bd-ed-title">Space & card' + (ph ? " · phone" : "") + "</span>"
 + '<span class="bd-ed-label">Margin · ' + (onSheet ? "the sheet shrinks to it, what’s underneath shows around" : "outside the page") + "</span>" + four("m")
 + '<span class="bd-ed-label">Padding · inside the page</span>' + four("p")
++ (layersOn() ? sw("Grid and drag handles on the page", "ui.grid", S.grid !== false) + '<div class="bd-ed-hint">Drag a page edge on the canvas: it snaps to the grid (a line every 5%, halves in orange). The numbers above stay for fine tuning.</div>' : "")
 + '<div class="bd-ed-hint">Numbers are px. 20% = a fifth of the window (top and bottom of its height, sides of its width). Blank = the site’s.' + (ph ? " Blank on phone = same as desktop." : "") + "</div>"
 + (onSheet ? '<div class="bd-ed-hint">The page fills the sheet it lies on. With no card colour it is part of the paper, with the same colour, blur and pattern.</div>' : "") + fillIn("Card colour", "page.box.card", b.card || "", "#ffffff", "None") + fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site")
 + row(numIn("Corners", "page.box.radius", b.radius == null ? "" : b.radius, "blank"), numIn("Card see-through %", "page.box.cardA", b.cardA == null ? "" : b.cardA, "blank"), numIn("Blur behind", "page.box.blur", b.blur == null ? "" : b.blur, "blank"))
@@ -3103,22 +3105,34 @@ return v === "none" ? "transparent" : v;
 }
 /* A SHEET'S PAPER PATTERN: FLAT HAIRLINES OVER THE FILL (LINED, GRID FOR MATHS, DOTS, RULED WITH A MARGIN LINE) */
 SHEET_PATTERNS = [["", "Plain"], ["lined", "Lined"], ["grid", "Squared · maths"], ["dots", "Dotted"], ["ruled", "Ruled · margin line"]];
-function sheetPattern(k) {
+function sheetPatternList(k) {
 var t = k.pattern;
-if (!t) return "";
+if (!t) return [];
 var z = Math.max(6, parseFloat(k.patSize) || 28);
 var c = hexAlpha(k.patColor || "#000000", k.patAlpha == null || k.patAlpha === "" ? 14 : k.patAlpha);
 var ln = function (deg) { return "repeating-linear-gradient(" + deg + "deg, transparent 0, transparent " + (z - 1) + "px, " + c + " " + (z - 1) + "px, " + c + " " + z + "px)"; };
-if (t === "lined") return ln(180);
-if (t === "grid") return ln(180) + ", " + ln(90);
-if (t === "dots") return "radial-gradient(circle, " + c + " 1px, transparent 1.6px) 0 0 / " + z + "px " + z + "px";
-if (t === "ruled") return ln(180) + ", linear-gradient(90deg, transparent 63px, " + c + " 63px, " + c + " 64px, transparent 64px)";
-return "";
+if (t === "lined") return [ln(180)];
+if (t === "grid") return [ln(180), ln(90)];
+if (t === "dots") return ["radial-gradient(circle, " + c + " 1px, transparent 1.6px) 0 0 / " + z + "px " + z + "px"];
+if (t === "ruled") return [ln(180), "linear-gradient(90deg, transparent 63px, " + c + " 63px, " + c + " 64px, transparent 64px)"];
+return [];
 }
-function sheetPaper(k, pct) {
+function sheetPattern(k) {
+return sheetPatternList(k).join(", ");
+}
+/* THE PAPER: PATTERN LINES AND FILL, PAINTED ON EACH PAGE OF THE SHEET. A GRADIENT RUNS OVER THE WHOLE SCROLLABLE PAGE (local) AND OVER ALL THE SHEET'S PAGES (page j of N takes the j-th slice), SO THE SHEET READS AS ONE PIECE OF PAPER */
+function sheetPaper(k, pct, j, N) {
 var f = fillCSS(k.color || "#E4E1DA", pct);
-var t = sheetPattern(k);
-return t ? t + ", " + f : f;
+var g = parseFill(k.color || "");
+var out = sheetPatternList(k).map(function (t) { return t + " local"; });
+N = Math.max(1, N || 1);
+j = j || 0;
+if (g) {
+var x = k.axis === "x";
+var pos = N > 1 ? Math.round(j / (N - 1) * 10000) / 100 : 0;
+out.push(f + " " + (x ? pos + "% 0" : "0 " + pos + "%") + " / " + (x ? N * 100 + "% 100%" : "100% " + N * 100 + "%") + " local");
+} else out.push(f);
+return out.join(", ");
 }
 /* SHEETS — ANY PAGE CAN LIE ON A PAPER SHEET; THE SHEETS LIST (TOP → BOTTOM) DECIDES WHAT LIES OVER WHAT */
 var SHEET_PATTERNS;
@@ -3417,7 +3431,7 @@ var ins = sheetEx(k, n, phone);
 var sel = '.bd-ly-k[data-k="' + k.id + '"]';
 var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
 var d = ["top: " + ins.top + ";", "right: " + ins.right + ";", "bottom: " + ins.bottom + ";", "left: " + ins.left + ";", "--k-peek: " + peek + "px;", "--k-sliver: " + (k.out === "hide" ? -12 : (parseFloat(phone ? k.sliverM : k.sliver) || 0) + (k.rest === "peek" ? 0 : sheetInsets(n, phone)[(phone ? k.edgeM : k.edge) || "left"])) + "px;", "--k-strip: " + (sheetStrip(k) ? peek : 0) + "px;", "--k-nudge: " + (parseFloat(k.nudge) || 0) + "px;", "box-shadow: " + sheetLine(k, phone) + ";"];
-if (!phone) d = d.concat(["z-index: " + (2 + K.length - 1 - n) + ";", "background: " + sheetPaper(k, k.alpha == null ? 55 : k.alpha) + ";", "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);", "backdrop-filter: blur(" + sheetBlur(k) + "px);"]);
+if (!phone) d = d.concat(["z-index: " + (2 + K.length - 1 - n) + ";", "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);", "backdrop-filter: blur(" + sheetBlur(k) + "px);"]);
 if (!phone && parseInt(k.dur, 10) > 0) d.push("--k-dur: " + parseInt(k.dur, 10) + "ms;");
 out.push(sel + " {\n" + d.join("\n") + "\n}");
 /* A PAGE'S MARGINS MOVE THE SHEET'S OWN EDGES WHILE IT IS THE PAGE SHOWING */
@@ -3458,9 +3472,11 @@ if (bx) out.push(bx);
 });
 sheetList().forEach(function (k, n) {
 var padIns = sheetPadIns(k, n, phone);
+var panesK = sheetPanes(k);
 (k.pages || []).map(sheetPage).filter(Boolean).forEach(function (q) {
 var st = sheetStrip(k);
 var sel = st && st.id === q.id ? '.bd-ly-k[data-k="' + k.id + '"] > .bd-ly-strip' : '.bd-ly-pane[data-page="' + q.id + '"]';
+if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPaper(k, k.alpha == null ? 55 : k.alpha) : sheetPaper(k, k.alpha == null ? 55 : k.alpha, panesK.indexOf(q), panesK.length)) + ";\n}");
 if (!phone && q.sheetBg) out.push(sel + " {\nbackground: " + bgVal(q.sheetBg) + ";\n}");
 var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", st && st.id === q.id ? null : padIns, true);
 if (bx) out.push(bx);
@@ -3865,7 +3881,7 @@ mark();
 }
 /* CANVAS IN LAYERS MODE — THE PAGE ON ITS SHEET, WITH THE PEEKING SHEETS ABOVE IT DRAWN AT THEIR EDGES (STATIC) */
 function layerEditCSS(page, phone) {
-BOX_VIEW = { w: phone ? 390 : parseFloat(S.project.site.w) || 1280, h: phone ? 780 : 800 };
+BOX_VIEW = { w: phone ? 390 : 1280, h: phone ? 780 : 800 };
 try {
 return layerEditCSSIn(page, phone);
 } finally {
@@ -3893,7 +3909,7 @@ var M = boxLen(boxVal(b, "m" + sd[0], phone), sd[0]);
 edge.push(M != null ? "calc(" + ins[sd[1]] + " + " + M + ")" : ins[sd[1]]);
 });
 out.push(".bd-site.is-layered {\nbox-sizing: border-box;\nbackground: #dcd9d2;\npadding: " + edge.join(" ") + ";\n}");
-out.push(".bd-site.is-layered .bd-panel {\nbackground: " + (page.sheetBg ? bgVal(page.sheetBg) : sheetPaper(w.sheet, 100)) + ";\nmargin: 0;\nbox-shadow: 0 0 0 1px rgba(0, 0, 0, 0.16);\n}");
+out.push(".bd-site.is-layered .bd-panel {\nbackground: " + (page.sheetBg ? bgVal(page.sheetBg) : sheetPaper(w.sheet, 100, sheetPanes(w.sheet).indexOf(page), sheetPanes(w.sheet).length)) + ";\nmargin: 0;\nbox-shadow: 0 0 0 1px rgba(0, 0, 0, 0.16);\n}");
 var bx = pageBoxCSS(page, phone, ".bd-site.is-layered .bd-panel.bd-pg-" + page.id, padIns, true);
 if (bx) out.push(bx);
 if (phone) {
@@ -5634,6 +5650,7 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-label">Paper</span>' + fillIn("C
 h += '<div class="bd-ed-sec"><span class="bd-ed-title">Margin & padding' + (phone ? " · phone" : "") + "</span>"
 + '<span class="bd-ed-label">Margin · moves the sheet’s edges in</span>' + sheetFour(P, b, "m", phone)
 + '<span class="bd-ed-label">Padding · space around its pages</span>' + sheetFour(P, b, "p", phone)
++ sw("Grid and drag handles on the page", "ui.grid", S.grid !== false) + '<div class="bd-ed-hint">Drag the orange edges on the canvas to move the sheet’s margins; they snap to the grid.</div>'
 + '<div class="bd-ed-hint">Margin: px, or % of the window. Padding: px. A page’s own margin adds to the sheet’s. Blank = none.' + (phone ? " Blank on phone = same as desktop." : "") + "</div></div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Where it sits and moves</span>'
 + field("Parks at" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), seg(P + (phone ? "edgeM" : "edge"), (phone ? k.edgeM : k.edge) || "left", SHEET_EDGES))
@@ -6950,6 +6967,7 @@ if (id) goPage(id);
 });
 requestAnimationFrame(fitSheet);
 bdInk(shadow);
+gridMount(page, phone);
 if (S.preview) {
 bdGalleries(shadow.querySelector(".bd-site"));
 if (S.inspect) markIns();
@@ -7086,7 +7104,182 @@ S.codeTab = "el";
 renderCode();
 }
 }
+/* GRID + DRAG TO RESIZE — THE DRAWN WINDOW (1280×800 / 390×780) GETS A LINE EVERY 5%, THE HALVES MARKED; MARGINS AND PEEK ARE DRAGGED AND SNAP TO IT */
+var GRID_STEP = 5;
+function gridView(phone) {
+return { w: phone ? 390 : 1280, h: phone ? 780 : 800 };
+}
+function gridPx(v) {
+var s = String(v == null ? "" : v);
+return /px$/.test(s) ? parseFloat(s) || 0 : 0;
+}
+function gridMount(page, phone) {
+if (!layersOn() || !page || page.kind === "pin" || S.preview || S.inspect || S.grid === false || !shadow) return;
+var host = $("bd-sheet");
+var z = S.zoom || 1;
+var hr = host.getBoundingClientRect();
+var v = gridView(phone);
+var w = sheetOf(page.id);
+var k = w.k > -1 ? w.sheet : null;
+var pick = [];
+var maxX = v.w;
+var maxY = v.h;
+function rel(r) {
+return { l: (r.left - hr.left) / z, t: (r.top - hr.top) / z, r: (r.right - hr.left) / z, b: (r.bottom - hr.top) / z };
+}
+if (w.strip) {
+var st = shadow.querySelector(".bd-site.is-strip");
+if (!st) return;
+var sr = rel(st.getBoundingClientRect());
+maxX = phone ? v.w : Math.min(v.w, sr.r + v.w * 0.15);
+maxY = phone ? Math.min(v.h, sr.b + v.h * 0.15) : Math.min(sr.b, 900);
+if (phone) pick.push({ own: "peek", side: "b", x: 0, y: sr.b, len: v.w, dist: sr.b, cur: sr.b });
+else pick.push({ own: "peek", side: "r", x: sr.r, y: 0, len: Math.min(sr.b, v.h), dist: sr.r, cur: sr.r });
+} else {
+var pn = shadow.querySelector(".bd-site .bd-panel");
+if (!pn) return;
+var pr = rel(pn.getBoundingClientRect());
+var sheetMode = k && S.sheetSel && k.id === S.sheetSel;
+var sides = { l: pr.l, r: v.w - pr.r, t: pr.t, b: v.h - Math.min(pr.b, v.h + 1e5) };
+var b = page.box || {};
+var kb = (k && k.box) || {};
+BOX_VIEW = v;
+var Mp = {};
+var Ms = {};
+try {
+BOX_SIDES.forEach(function (sd) {
+Mp[sd[0]] = gridPx(boxLen(boxVal(b, "m" + sd[0], phone), sd[0]));
+Ms[sd[0]] = gridPx(boxLen(boxVal(kb, "m" + sd[0], phone), sd[0]));
+});
+} finally {
+BOX_VIEW = null;
+}
+var top = Math.max(0, pr.t);
+var bot = Math.min(v.h, pr.b);
+var left = Math.max(0, pr.l);
+var right = Math.min(v.w, pr.r);
+["l", "r", "t", "b"].forEach(function (s) {
+var dist = s === "b" ? v.h - bot : sides[s];
+var item = { own: sheetMode ? "sheet" : "page", side: s, dist: dist, cur: sheetMode ? Ms[s] : Mp[s] };
+if (sheetMode) item.dist = dist - Mp[s];
+if (s === "l") { item.x = pr.l; item.y = top; item.len = Math.max(60, bot - top); }
+else if (s === "r") { item.x = Math.min(pr.r, v.w); item.y = top; item.len = Math.max(60, bot - top); }
+else if (s === "t") { item.x = left; item.y = Math.max(0, pr.t); item.len = Math.max(60, right - left); }
+else { item.x = left; item.y = bot; item.len = Math.max(60, right - left); }
+if (sheetMode) {
+if (s === "l") item.x -= Mp.l;
+else if (s === "r") item.x += Mp.r;
+else if (s === "t") item.y -= Mp.t;
+else item.y += Mp.b;
+}
+pick.push(item);
+});
+}
+var lw = Math.max(1, Math.round(1.2 / z * 10) / 10);
+var hs = Math.round(44 / z);
+var h = "";
+var i;
+var lines = "";
+for (i = 1; i < 100 / GRID_STEP; i++) {
+var pc = i * GRID_STEP;
+var cls = pc === 50 ? "is-h" : pc % 25 === 0 ? "is-q" : "";
+var x = Math.round(v.w * pc) / 100;
+var y = Math.round(v.h * pc) / 100;
+var lx = lw * (pc === 50 ? 2 : 1);
+if (x < maxX) lines += '<i class="' + cls + '" style="left:' + x + "px;top:0;width:" + lx + "px;height:" + maxY + 'px"></i>';
+if (y < maxY) lines += '<i class="' + cls + '" style="top:' + y + "px;left:0;height:" + lx + "px;width:" + maxX + 'px"></i>';
+}
+lines += '<u style="left:' + Math.round(v.w / 2) + "px;top:" + Math.round(4 / z) + 'px">½</u><u style="top:' + Math.round(v.h / 2) + "px;left:" + Math.round(4 / z) + 'px">½</u>';
+pick.forEach(function (p) {
+var vert = p.side === "l" || p.side === "r";
+var st2 = vert ? "left:" + Math.round(p.x - hs / 2) + "px;top:" + Math.round(p.y) + "px;width:" + hs + "px;height:" + Math.round(p.len) + "px" : "left:" + Math.round(p.x) + "px;top:" + Math.round(p.y - hs / 2) + "px;width:" + Math.round(p.len) + "px;height:" + hs + "px";
+h += '<div class="bd-gh is-' + p.own + (vert ? " is-v" : " is-hz") + '" data-own="' + p.own + '" data-side="' + p.side + '" data-dist="' + p.dist + '" data-cur="' + p.cur + '" style="' + st2 + '"><s></s><em></em></div>';
+});
+var css = ".bd-gr{position:absolute;left:0;top:0;width:" + v.w + "px;height:0;z-index:30;pointer-events:none;font:" + Math.round(11 / z) + "px/1 ui-monospace,monospace}.bd-gr i{position:absolute;background:rgba(0,0,0,.09)}.bd-gr i.is-q{background:rgba(0,0,0,.22)}.bd-gr i.is-h{background:#ff4d00;opacity:.85}.bd-gr u{position:absolute;color:#ff4d00;text-decoration:none}"
++ ".bd-gh{position:absolute;z-index:31;pointer-events:auto;touch-action:none;cursor:ew-resize}.bd-gh.is-hz{cursor:ns-resize}.bd-gh::after{content:'';position:absolute;background:#111}.bd-gh.is-v::after{left:50%;top:0;bottom:0;width:" + lw * 2 + "px;margin-left:-" + lw + "px}.bd-gh.is-hz::after{top:50%;left:0;right:0;height:" + lw * 2 + "px;margin-top:-" + lw + "px}"
++ ".bd-gh.is-sheet::after{background:#ff4d00}.bd-gh s{position:absolute;left:50%;top:50%;z-index:1;background:#111;border:" + lw * 2 + "px solid #fff;border-radius:99px;transform:translate(-50%,-50%)}.bd-gh.is-v s{width:" + Math.round(8 / z) + "px;height:" + Math.round(34 / z) + "px}.bd-gh.is-hz s{height:" + Math.round(8 / z) + "px;width:" + Math.round(34 / z) + "px}.bd-gh.is-sheet s{background:#ff4d00}"
++ ".bd-gh em{display:none;position:absolute;z-index:2;left:50%;top:50%;margin:" + Math.round(22 / z) + "px 0 0 " + Math.round(14 / z) + "px;padding:" + Math.round(3 / z) + "px " + Math.round(6 / z) + "px;background:#111;color:#fff;font:normal " + Math.round(12 / z) + "px/1 ui-monospace,monospace;white-space:nowrap}.bd-gh.is-drag em{display:block}.bd-gh.is-drag{z-index:40}";
+var wrap = document.createElement("div");
+wrap.className = "bd-grw";
+wrap.innerHTML = "<style>" + css + '</style><div class="bd-gr">' + lines + "</div>" + h;
+shadow.appendChild(wrap);
+}
+function gridDrag(hd, e) {
+var phone = S.mode === "phone";
+var v = gridView(phone);
+var z = S.zoom || 1;
+var host = $("bd-sheet");
+var hr = host.getBoundingClientRect();
+var own = hd.getAttribute("data-own");
+var side = hd.getAttribute("data-side");
+var dist = parseFloat(hd.getAttribute("data-dist")) || 0;
+var cur = parseFloat(hd.getAttribute("data-cur")) || 0;
+var vert = side === "l" || side === "r";
+var fromStart = side === "l" || side === "t" || own === "peek";
+var len = vert ? v.w : v.h;
+var step = len * GRID_STEP / 100;
+var x0 = parseFloat(hd.style.left);
+var y0 = parseFloat(hd.style.top);
+var half = parseFloat(hd.style.width) / 2;
+var halfH = parseFloat(hd.style.height) / 2;
+var target = dist;
+var label = hd.querySelector("em");
+hd.classList.add("is-drag");
+try {
+hd.setPointerCapture(e.pointerId);
+} catch (err) {}
+function at(ev) {
+var p = vert ? (ev.clientX - hr.left) / z : (ev.clientY - hr.top) / z;
+var d = fromStart ? p : len - p;
+d = Math.max(0, Math.min(len / 2 + step * 2, d));
+if (own === "peek") d = Math.max(0, Math.min(len / 2, d));
+target = Math.round(d / step) * step;
+var shift = target - dist;
+if (vert) hd.style.left = x0 + (fromStart ? shift : -shift) + "px";
+else hd.style.top = y0 + (fromStart ? shift : -shift) + "px";
+var pct = Math.round(target / len * 1000) / 10;
+if (label) label.textContent = pct + "% · " + Math.round(target) + "px";
+}
+function move(ev) {
+ev.preventDefault();
+at(ev);
+}
+function up(ev) {
+hd.removeEventListener("pointermove", move);
+hd.removeEventListener("pointerup", up);
+hd.removeEventListener("pointercancel", up);
+hd.classList.remove("is-drag");
+if (ev.type === "pointercancel" || Math.abs(target - dist) < 0.5) return;
+gridApply(own, side, own === "peek" ? target : Math.max(0, cur + target - dist), phone, len);
+}
+hd.addEventListener("pointermove", move);
+hd.addEventListener("pointerup", up);
+hd.addEventListener("pointercancel", up);
+at(e);
+}
+function gridApply(own, side, px, phone, len) {
+var page = curPage();
+snap();
+if (own === "peek") {
+var w = sheetOf(page.id);
+if (w.k < 0) return;
+w.sheet[phone ? "peekM" : "peek"] = Math.round(px);
+} else {
+var k = own === "sheet" ? sheetOf(page.id).sheet : null;
+var o = k || page;
+o.box = o.box || {};
+o.box["m" + side + (phone ? "M" : "")] = px < 0.5 ? "0" : Math.round(px / len * 10000) / 100 + "%";
+}
+changed();
+}
 function bindCanvas() {
+shadow.addEventListener("pointerdown", function (e) {
+var hd = e.target && e.target.closest && e.target.closest(".bd-gh");
+if (!hd) return;
+e.preventDefault();
+e.stopImmediatePropagation();
+gridDrag(hd, e);
+}, true);
 shadow.addEventListener("pointerdown", function (e) {
 if (!S.codeOpen) return;
 var n = e.composedPath()[0];

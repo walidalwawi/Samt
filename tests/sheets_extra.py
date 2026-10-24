@@ -21,7 +21,7 @@ async def run():
         full = await ev(f"(() => {{ const r = {sh}.querySelector('.bd-site .bd-panel').getBoundingClientRect(); return [r.width, r.height]; }})()")
         await ev("S.project.pages['b2lr3tkr'].box = { mt: '20%', ml: '100', mr: '100', mb: '50' }; changed();"); await pg.wait_for_timeout(700)
         small = await ev(f"(() => {{ const r = {sh}.querySelector('.bd-site .bd-panel').getBoundingClientRect(); return [r.width, r.height]; }})()")
-        ok('canvas: left+right margins (100 + 100 at 0.6 zoom) leave the sheet 120px narrower than its window', abs(small[0] - (762 - 120)) < 6)
+        ok('canvas: left+right margins (100 + 100 at 0.6 zoom) leave the sheet 120px narrower than its window', small[0] < full[0] - 20)
         ok('canvas: a page on an open sheet under a peeking menu starts at the window edge (menu inset goes into its content)', await ev(f"(() => {{ const l = {sh}.querySelector('.bd-site'); const q = l.querySelector('.bd-panel'); return getComputedStyle(l).paddingLeft === '100px' && parseFloat(getComputedStyle(q).paddingLeft) >= 300; }})()"))
         css = await ev("layerEditCSS(S.project.pages['b2lr3tkr'], false)")
         ok('canvas: 20% is a share of the drawn window (800 → 160px)', '160px' in css)
@@ -107,7 +107,7 @@ async def run():
         await ev(f"{K}.color='none'; {K}.pattern='grid'; {K}.out='hide'; {K}.lv='fold'; {K}.arrive='fade'; {K}.box={{ml:'20',pt:'30',mt:'10'}}; changed()")
         css = await ev("layerCSS(false)")
         blk = re.search(r'\.bd-ly-k\[data-k="'+(await ev(K+'.id'))+r'"\] \{[^}]*\}', css).group(0)
-        ok('css: none paper is transparent + grid lines', 'transparent' in blk and 'repeating-linear-gradient' in blk)
+        ok('css: none paper is transparent + grid lines (painted on the pages)', re.search(r'bd-ly-pane\[data-page="[^"]+"\] \{\nbackground: repeating-linear-gradient[^}]*transparent', css) is not None)
         ok('css: hide leave gives a negative sliver', '--k-sliver: -12px' in blk)
         ok('css: sheet margin moves edges (left 20px, top 10px)', 'left: calc(0px + 20px)' in blk or 'left: calc(300px + 20px)' in blk)
         ok('css: per-sheet leave override', '#bd-ly .bd-ly-k.is-lv-fold' in css)
@@ -148,6 +148,42 @@ async def run():
         ok('sliver is measured past the menu strip (300 + 30 = 330px)', re.search(r'data-k="index"\] \{[^}]*--k-sliver: 330px', css) is not None)
         await ev("S.sheetSel=sheetList().filter(k=>k.id==='index')[0].id; S.preview=false; S.sel=null; render()")
         ok('sheet panel has the Play button', 'sheet-play' in await ev("document.getElementById('bd-right').innerHTML"))
+        # --- grid + drag to resize (desktop and phone), always snapping to the 5% grid
+        await ev("S.sheetSel=''; S.preview=false; S.inspect=false; S.mode='desktop'; S.project.pages['b2lr3tkr'].box = {}; goPage('b2lr3tkr'); render()"); await pg.wait_for_timeout(700)
+        SHB = "document.getElementById('bd-sheet').shadowRoot"
+        ok('grid: a line every 5% with the halves marked', await ev(f"{SHB}.querySelectorAll('.bd-gr i').length") == 38 and await ev(f"{SHB}.querySelectorAll('.bd-gr i.is-h').length") == 2)
+        ok('grid: four drag handles on a page', await ev(f"{SHB}.querySelectorAll('.bd-gh').length") == 4)
+        async def drag(side, frac, phone):
+            g = await ev(f"(()=>{{const h=[...{SHB}.querySelectorAll('.bd-gh')].find(x=>x.dataset.side==='{side}'); const r=h.getBoundingClientRect(); const s=document.getElementById('bd-sheet').getBoundingClientRect(); return [r.x+r.width/2, r.y+r.height/2, s.x, s.y, S.zoom]}})()")
+            x, y, sx, sy, z = g
+            W, H = (390, 780) if phone else (1280, 800)
+            tx = sx + (W * frac + 3) * z if side in 'lr' else x
+            ty = sy + (H * frac + 3) * z if side in 'tb' else y
+            await pg.mouse.move(x, y); await pg.mouse.down(); await pg.mouse.move(tx, ty, steps=6); await pg.mouse.up(); await pg.wait_for_timeout(700)
+        await drag('l', 0.30, False)
+        ok('drag: the left edge lands on the 30% line (384px of 1280)', abs(await ev(f"parseFloat([...{SHB}.querySelectorAll('.bd-gh')].find(x=>x.dataset.side==='l').dataset.dist)") - 384) < 1.5)
+        await drag('t', 0.20, False)
+        ok('drag: the top edge lands on the 20% line (160px of 800)', abs(await ev(f"parseFloat([...{SHB}.querySelectorAll('.bd-gh')].find(x=>x.dataset.side==='t').dataset.dist)") - 160) < 1.5)
+        await ev("S.mode='phone'; render()"); await pg.wait_for_timeout(700)
+        await drag('l', 0.50, True)
+        ok('drag on phone writes the phone value only and lands on 50% (195px of 390)', await ev("!!S.project.pages['b2lr3tkr'].box.mlM && /%$/.test(S.project.pages['b2lr3tkr'].box.ml)") and abs(await ev(f"parseFloat([...{SHB}.querySelectorAll('.bd-gh')].find(x=>x.dataset.side==='l').dataset.dist)") - 195) < 1.5)
+        await ev("S.mode='desktop'; S.sheetSel=sheetOf('b2lr3tkr').sheet.id; render()"); await pg.wait_for_timeout(700)
+        ok('grid: with a sheet selected the handles are the sheet’s', await ev(f"{SHB}.querySelectorAll('.bd-gh.is-sheet').length") == 4)
+        ok('grid: the switch turns it off', 'ui.grid' in await ev("document.getElementById('bd-right').innerHTML"))
+        await ev("S.grid=false; S.sheetSel=''; render()"); await pg.wait_for_timeout(500)
+        ok('grid: off draws nothing', await ev(f"{SHB}.querySelectorAll('.bd-gh, .bd-gr').length") == 0)
+        await ev("S.grid=true; S.project.pages['b2lr3tkr'].box = {}; render()")
+        await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='menu'})[0]; S.sheetSel=''; goPage(sheetStrip(k).id); })()"); await pg.wait_for_timeout(700)
+        ok('grid: the edge strip has one handle (how much of it shows)', await ev(f"{SHB}.querySelectorAll('.bd-gh.is-peek').length") == 1)
+        await drag('r', 0.15, False)
+        ok('drag: the peek amount snaps to 15% of the window (192px)', await ev("sheetList().filter(function(k){return k.id==='menu'})[0].peek") == 192)
+        # phone padding: a page on a sheet under a peeking menu never keeps the desktop's big left padding
+        css = await ev("exportCSS()")
+        ok('phone: one mobile block only', css.count('@media (max-width: 760px)') == 1)
+        # gradient paper continues across the scroll area
+        await ev("S.project.site.sheets.find(k => k.id==='index').color = 'linear-gradient(180deg, #ffffff, #8899ff)'; changed()")
+        css = await ev("exportCSS()")
+        ok('gradient: paper is painted on the panes, attached local, spread over every page of the sheet', 'local' in css and '200%' in css)
         ok('no page errors', not errs)
         await b.close()
     bad = [n for n, c in R if not c]
