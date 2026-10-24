@@ -589,7 +589,15 @@
     "blur": 0,
     "shadow": "none",
     "nudge": 0,
-    "dur": ""
+    "dur": "",
+    "box": {},
+    "pattern": "",
+    "patColor": "#000000",
+    "patSize": 28,
+    "patAlpha": 14,
+    "out": "peek",
+    "lv": "",
+    "arrive": "slide"
    },
    {
     "id": "index",
@@ -602,19 +610,31 @@
     "edge": "left",
     "edgeM": "top",
     "rest": "open",
-    "peek": 0,
+    "peek": 200,
     "peekM": 0,
-    "sliver": 30,
+    "sliver": 100,
     "sliverM": 14,
     "axis": "y",
     "covers": "all",
-    "coverPages": [],
-    "color": "linear-gradient(90deg, #ffffff, #ebebeb)",
-    "alpha": 30,
+    "coverPages": [
+     "56ud3gky"
+    ],
+    "color": "",
+    "alpha": 0,
     "blur": 10,
     "shadow": "line",
-    "nudge": 0,
-    "dur": ""
+    "nudge": 300,
+    "dur": "",
+    "box": {
+     "mr": "200"
+    },
+    "pattern": "lined",
+    "patColor": "#000000",
+    "patSize": 28,
+    "patAlpha": 10,
+    "out": "peek",
+    "lv": "slide",
+    "arrive": "slide"
    }
   ],
   "editor": {
@@ -835,14 +855,14 @@
    },
    "blog": true,
    "box": {
-    "mt": "0",
-    "mb": "0",
-    "mr": "10%",
-    "ml": "0",
+    "mt": "",
+    "mb": "",
+    "mr": "0",
+    "ml": "",
     "shadow": "none",
     "fit": false,
     "radius": 0,
-    "pt": "30",
+    "pt": "",
     "pr": "",
     "pb": "",
     "pl": "",
@@ -852,7 +872,7 @@
     "mbM": "0",
     "mlM": "0"
    },
-   "sheetBg": ""
+   "sheetBg": "linear-gradient(180deg, transparent, #ebebeb)"
   },
   "aj2hm4y8": {
    "id": "aj2hm4y8",
@@ -4303,14 +4323,16 @@
     "gutterM": 20
    },
    "box": {
-    "mt": "0",
-    "mr": "10%",
-    "mb": "0",
+    "mt": "",
+    "mr": "",
+    "mb": "",
     "mrM": "0",
     "mtM": "0",
     "shadow": "none",
-    "fit": false
-   }
+    "fit": false,
+    "card": ""
+   },
+   "sheetBg": "linear-gradient(180deg, #ebebeb, transparent)"
   },
   "zty6iib1": {
    "id": "zty6iib1",
