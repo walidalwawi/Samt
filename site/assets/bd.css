@@ -1,4 +1,4 @@
-/* PUBLISHED mvmc1hse */
+/* PUBLISHED mvmc8z5v */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1884,7 +1884,7 @@ left: 0px;
 --k-nudge: 300px;
 box-shadow: -1px 0 0 rgba(0, 0, 0, 0.1);
 z-index: 2;
-background: repeating-linear-gradient(180deg, transparent 0, transparent 27px, rgba(0, 0, 0, 0.1) 27px, rgba(0, 0, 0, 0.1) 28px), rgba(228, 225, 218, 0);
+background: rgba(228, 225, 218, 0);
 -webkit-backdrop-filter: blur(11.2px);
 backdrop-filter: blur(11.2px);
 }
