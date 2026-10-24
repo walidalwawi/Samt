@@ -133,6 +133,15 @@ async def run():
         ok('canvas renders', await ev("!!document.getElementById('bd-sheet').shadowRoot.querySelector('.bd-site')"))
         ok('no page errors '+str(errs[:2]), not errs)
 
+        # --- one place for sheets: Site has no Stack list, the sheet panel has Higher / Lower, also while previewing
+        await ev("S.leftTab='site'; S.preview=false; render()")
+        ok('site tab: no Stack list any more', 'Stack' not in await ev("document.getElementById('bd-left').innerText.replace(/\\s+/g,' ')"))
+        await ev("S.leftTab='pages'; S.sheetSel=sheetList()[0].id; S.preview=true; S.sel=null; render()")
+        tt = (await ev("document.getElementById('bd-right').innerText")).lower()
+        ok('sheet panel shows while previewing, with Stack + Higher/Lower', 'higher' in tt and 'lower' in tt and 'paper' in tt)
+        id0 = await ev("sheetList()[0].id")
+        await ev("S.preview=false; sheetList(); document.querySelector('[data-act=\"sheet-down\"]') && document.querySelector('[data-act=\"sheet-down\"]').click()"); await pg.wait_for_timeout(300)
+        ok('Lower moves the sheet down the stack', await ev(f"sheetList()[1].id === '{id0}'"))
         ok('no page errors', not errs)
         await b.close()
     bad = [n for n, c in R if not c]

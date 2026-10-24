@@ -5521,12 +5521,12 @@ var M = s.motion;
 var Lz = s.layers;
 var h = "";
 if (Lz.on) {
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span><div class="bd-ed-hint">How the menu and index sheets slide. Preview to watch.</div><div class="bd-ed-actions">' + [["paper", "Paper"], ["drag", "Heavy drag"], ["stop", "Stop-motion"], ["quiet", "Quiet"], ["still", "Still"]].map(function (x) {
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span><div class="bd-ed-hint">How every sheet moves, unless a sheet sets its own. Preview to watch.</div><div class="bd-ed-actions">' + [["paper", "Paper"], ["drag", "Heavy drag"], ["stop", "Stop-motion"], ["quiet", "Quiet"], ["still", "Still"]].map(function (x) {
 return '<button class="bd-ed-btn" data-act="ly-preset" data-val="' + x[0] + '">' + x[1] + "</button>";
 }).join("") + "</div>"
 + field("A post or page opens with", select("site.layers.trans", Lz.trans || "slide", LAYER_TRANS)) + '<div class="bd-ed-hint">Any page can pick its own: select it, Page → Opens with.</div>'
 + field("Feel", select("site.layers.ease", Lz.ease, Object.keys(LAYER_EASE).map(function (k) { return [k, LAYER_EASE[k][0]]; })))
-+ row(numIn("Sheets (ms)", "site.layers.dur", Lz.dur), field("", '<div class="bd-ed-hint">A sheet can have its own speed: Site → Sheets.</div>'))
++ row(numIn("Every sheet (ms)", "site.layers.dur", Lz.dur), field("", '<div class="bd-ed-hint">A sheet can set its own speed and leave: tap its title in Pages.</div>'))
 + row(numIn("Tilt while moving (°)", "site.layers.tilt", Lz.tilt), numIn("Out-of-focus blur", "site.layers.focusBlur", Lz.focusBlur))
 + sw("Hard shadow while moving", "site.layers.lift", Lz.lift)
 + field("The post underneath", seg("site.layers.reveal", Lz.reveal, [["focus", "Comes into focus"], ["rise", "Rises"], ["none", "As is"]])) + "</div>";
@@ -5649,7 +5649,9 @@ h += '<div class="bd-ed-sec">' + field("Lies over", seg(P + "covers", k.covers =
 + (k.covers === "some" ? all.filter(function (q) { return (k.pages || []).indexOf(q.id) < 0; }).map(function (q) {
 return '<label class="bd-ed-check"><input type="checkbox" data-act="sheet-cover" data-i="' + n + '" data-id="' + q.id + '"' + ((k.coverPages || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc(q.title) + "</label>";
 }).join("") + '<div class="bd-ed-hint">On any other page this sheet slides away completely.</div>' : "")
-+ '<div class="bd-ed-actions"><button class="bd-ed-btn is-sm is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve sheet · pages stay</button></div></div>";
++ "</div>";
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Stack · ' + (n + 1) + " of " + sheetList().length + ", top to bottom</span>"
++ '<div class="bd-ed-actions"><button class="bd-ed-btn" data-act="sheet-up" data-i="' + n + '">' + I.up + 'Higher</button><button class="bd-ed-btn" data-act="sheet-down" data-i="' + n + '">' + I.dn + 'Lower</button><button class="bd-ed-btn is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve · pages stay</button></div></div>";
 return h;
 }
 /* PUT A PAGE ON A SHEET ("" = underneath, "new" = a fresh sheet) */
@@ -5674,19 +5676,9 @@ changed();
 function layersPanel() {
 var s = S.project.site;
 var Lz = s.layers;
-var h = '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span>' + sw("Show the site as layers", "site.layers.on", Lz.on) + '<div class="bd-ed-hint">Pages lie on translucent sheets stacked over the rest of the site. Each sheet blurs what’s under it. Make a sheet in Pages (+ Sheet) or put a page on one from its own panel.</div>';
+var h = '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span>' + sw("Show the site as layers", "site.layers.on", Lz.on) + '<div class="bd-ed-hint">Pages lie on translucent sheets stacked over the rest of the site. Make a sheet in Pages (+ Sheet) or put a page on one from its own panel.</div>';
 if (!Lz.on) return h + "</div>";
-var K = sheetList();
-var phone = S.mode === "phone";
-h += "</div>";
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Stack · top to bottom</span>';
-if (!K.length) h += '<div class="bd-ed-hint">No sheets yet. Every page lies underneath.</div>';
-K.forEach(function (k, n) {
-var pages = (k.pages || []).map(sheetPage).filter(Boolean);
-var sum = (k.rest === "open" ? "open" : k.rest === "still" ? "still" : k.rest === "peek" ? "peeks " + ((phone ? k.edgeM : k.edge) || "left") : "hidden") + (pages.length ? " · " + pages.map(function (q) { return q.title; }).join(k.axis === "x" ? " ↔ " : " ↕ ") : " · empty");
-h += '<div class="bd-ed-list-row" style="grid-template-columns:auto minmax(0,1fr) auto auto"><b class="bd-ed-hint" style="font-family:var(--e-mono);padding:6px 0">' + (n + 1) + '</b><button class="bd-ed-pg" style="margin:0" data-act="page" data-id="' + esc((pages[0] || {}).id || "") + '"' + (pages.length ? "" : " disabled") + '><span>' + esc(k.name || "Sheet") + ' <span class="bd-ed-hint">· ' + esc(sum) + '</span></span></button><button class="bd-ed-btn is-sm is-icon" data-act="sheet-up" data-i="' + n + '" aria-label="Higher">' + I.up + '</button><button class="bd-ed-btn is-sm is-icon" data-act="sheet-down" data-i="' + n + '" aria-label="Lower">' + I.dn + "</button></div>";
-});
-h += '<div class="bd-ed-hint">Pages and posts not on a sheet lie underneath, one at a time. Tap a sheet to open its first page; its settings are in that page’s panel.</div></div>';
+h += '<div class="bd-ed-hint">' + (sheetList().length ? sheetList().length + " sheet" + (sheetList().length > 1 ? "s" : "") + ". " : "No sheets yet. ") + "Tap a sheet’s title in Pages to edit it, move it up or down the stack, or change how it moves. Pages and posts not on a sheet lie underneath, one at a time.</div></div>";
 return h;
 }
 function sitePanel() {
@@ -6027,7 +6019,7 @@ R.innerHTML = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed
 return;
 }
 var sk = S.sheetSel ? sheetList().map(function (k) { return k.id; }).indexOf(S.sheetSel) : -1;
-if (sk > -1 && !e && !S.preview) {
+if (sk > -1 && !e) {
 R.innerHTML = sheetPanelHTML(sk);
 return;
 }
@@ -6093,9 +6085,9 @@ if (pgw && !pg.parent) h += '<div class="bd-ed-sec">' + field("Lies on", '<selec
 var tail = "";
 if (pgw && pgw.k < 0) {
 var mt = (LAYER_TRANS.filter(function (o) { return o[0] === layerTrans(null); })[0] || LAYER_TRANS[0])[1].split(" · ")[0];
-tail = '<span class="bd-ed-label">Opens with</span>' + row(field("The sheets above get out of the way", select("page.trans", pg.trans || "", [["", "Site · " + mt]].concat(LAYER_TRANS))), numIn("Speed (ms)", "page.transDur", pg.transDur || "", "blank"));
+tail = '<span class="bd-ed-title">Opens with</span>' + row(field("The sheets above get out of the way", select("page.trans", pg.trans || "", [["", "Site · " + mt]].concat(LAYER_TRANS))), numIn("Speed (ms)", "page.transDur", pg.transDur || "", "blank"));
 }
-h += pageBoxPanel(pg, tail);
+h += pageBoxPanel(pg) + (tail ? '<div class="bd-ed-sec">' + tail + "</div>" : "");
 if (!layersOn()) h += '<div class="bd-ed-sec">' + adv("pg-stack", "Continue with other pages", '<div class="bd-ed-hint">Chosen pages scroll on below this one, like one long page.</div>' + stack) + "</div>";
 }
 var free = '<div class="bd-ed-seg"><button data-act="layout" data-val="master" class="' + (isMaster(pg) ? "is-on" : "") + '">Columns</button><button data-act="layout" data-val="free" class="' + (isMaster(pg) ? "" : "is-on") + '">Free grid</button></div><div class="bd-ed-hint">' + (isMaster(pg) ? "Blocks stack in columns. Free grid lets you place them anywhere, row by row." : "Blocks sit anywhere on the grid. Columns stacks them again in order.") + "</div>"
@@ -8349,6 +8341,7 @@ S.sel = null;
 S.sheetSel = id;
 S.leftOpen = false;
 S.rightOpen = true;
+S.rightTab = "sel";
 render();
 },
 "sheet-done": function () { S.sheetSel = ""; render(); },
