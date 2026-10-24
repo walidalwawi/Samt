@@ -1,7 +1,7 @@
-# Samt · CLAUDE.md
+# Walid Al Wawi · CLAUDE.md
 
 ## What this is
-Static site for samt.co on Cloudflare Workers (static assets, free plan). Pushing to `main` deploys.
+Static site for walidalwawi.com on Cloudflare Workers (static assets, free plan). Pushing to `main` deploys.
 Source of truth is `content/site.json`; the back office at /admin renders and publishes it.
 
 ## Back office (site/admin.html + site/admin/grid.*)
@@ -27,7 +27,7 @@ Any page can lie on a translucent sheet; site.sheets is the stack, top → botto
 - Sheets only ever slide in a straight line: a sheet keeps the margins of the page it shows while it tucks/hides (onPage), and its box changes instantly (is-snapbox) whenever its state changes, so top/left/right/bottom never animate during a slide.
 - Scrollbars (scrollCSS, /* SCROLLBARS */): thin black line everywhere (scrollbar-width/color + ::-webkit-scrollbar). With layers on the native bars of panes and the content layer are hidden and one draggable black line (#bd-ly-bar, runtime bar()) sits on the window's far right edge for whichever page is scrolling.
 - Fills: a sheet's colour, a page's card colour and "behind the page" can be a solid or a two-colour linear gradient (string "linear-gradient(<n>deg, #a, #b)"; fillIn UI = Solid | Gradient via the `fill.<part>|<path>` pseudo-paths in applyPath; parseFill/fillCSS apply the sheet's see-through to both stops).
-- A sheet's box is inset by the peeks of the peeking sheets above it (sheetInsets); pages underneath are padded by all peeking sheets.
+- A sheet that parks on an edge (rest=peek) is inset by the peeks of the peeking sheets above it (sheetBoxIns); every other sheet starts at the window's edge and lies UNDER them (translucent), and only its pages' content is padded by those peeks (pageBoxCSS ins + noMargin). Page margins are measured from the window edge. Pages underneath are padded by all peeking sheets.
 - bdSheetPlan(K, focus, prev) — exported as-is, used by Publish (initial classes) and the runtime: the page's own sheet opens on it; sheets above go back to rest (open-at-rest ones tuck); sheets below keep what they were doing; a page underneath tucks every open-at-rest sheet; a sheet that doesn't cover the page hides. Runtime bdLayers(): is-st-open/peek/tuck/hidden on .bd-ly-k, page on a sheet = --i on .bd-ly-track (snaps instantly when the sheet isn't open, so it only slides back), pushState, Escape/back, About-style toggle.
 - Opening transitions (LAYER_TRANS, site.layers.trans; page.trans overrides — Space & card → Opens with, pages underneath only): slide, fold, unfold, squash, drop, push, rise, cut — sheetStateCSS writes every state per edge and per transition (desktop prefix is-e-, phone is-em- inside the one mobile block). page.transDur → --ly-pdur.
 - Canvas: a page on a sheet is drawn as the sheet shrunk to the page's margins on a grey desk (layerEditCSS; % = share of the drawn 1280×800 / 390×780 window via BOX_VIEW), with the peeking sheets above drawn at their edges (layerEditChrome renders their rest pages); the edge page is drawn at least 120 px / 40 px (phone) even when peek is 0. Before: the page on its sheet's paper, with the peeking sheets above drawn at their edges (layerEditChrome renders their rest pages); a rest page is edited at strip size (.bd-site.is-strip). Preview renders the real export in an iframe (kept in place; see Panels).
@@ -70,13 +70,3 @@ Styles → Blocks sets the default look per block type (BLOCK_STYLE); a block's 
 
 ## When unsure
 Ask before assuming.
-
-## Samt house style — "deadpan gesture" (fixed, Walid's choice)
-- Interactions mimic one real-life gesture, stripped to a diagram: the library book cover swings open ~24° on hover (flat grey spine, blunt shadow, no textures, no realism).
-- One small physical gesture per element, never decoration: brutalist surfaces, the motion supplies the humour.
-- Keep it flat: solid colours, hard shadows, simple transforms (rotate/translate). No gradients for realism, no bounce, no 3D beyond a single hinge.
-- Timing ~0.45s ease; angles small enough to read as cheeky, not as a 3D effect.
-- Reference implementation: library "Book look" (.bd-library.is-book, hover "Open (perspective)").
-- Mobile first: hover only teases (~8°, desktop with real hover); a tap/click plays the full gesture (~24°) and the link opens after ~0.5s. New-tab links open immediately while the gesture plays.
-- Journal cards use the tracing-paper variant (Posts block → Card look → Tracing paper): a frosted sheet with the post info lies on the poster image; hover nudges it, a tap slides it most of the way off, then the post opens. The zine variant (cover swings) is still available as a Card look.
-- Each post can set its own card image: mark an image block "Use as card image", pick one under Page → Card image, or upload an own image there (cards only, not shown in the post).

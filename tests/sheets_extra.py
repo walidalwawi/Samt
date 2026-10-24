@@ -21,7 +21,8 @@ async def run():
         full = await ev(f"(() => {{ const r = {sh}.querySelector('.bd-site .bd-panel').getBoundingClientRect(); return [r.width, r.height]; }})()")
         await ev("S.project.pages['b2lr3tkr'].box = { mt: '20%', ml: '100', mr: '100', mb: '50' }; changed();"); await pg.wait_for_timeout(700)
         small = await ev(f"(() => {{ const r = {sh}.querySelector('.bd-site .bd-panel').getBoundingClientRect(); return [r.width, r.height]; }})()")
-        ok('canvas: left+right margins make the sheet narrower', small[0] < full[0] - 100)
+        ok('canvas: left+right margins (100 + 100 at 0.6 zoom) leave the sheet 120px narrower than its window', abs(small[0] - (762 - 120)) < 6)
+        ok('canvas: a page on an open sheet under a peeking menu starts at the window edge (menu inset goes into its content)', await ev(f"(() => {{ const l = {sh}.querySelector('.bd-site'); const q = l.querySelector('.bd-panel'); return getComputedStyle(l).paddingLeft === '100px' && parseFloat(getComputedStyle(q).paddingLeft) >= 300; }})()"))
         css = await ev("layerEditCSS(S.project.pages['b2lr3tkr'], false)")
         ok('canvas: 20% is a share of the drawn window (800 → 160px)', '160px' in css)
         # the edge page of a peeking sheet never draws 0 wide

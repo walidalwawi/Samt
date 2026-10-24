@@ -2307,6 +2307,7 @@ if (sd[0] === "l" || sd[0] === "r") sideM = true;
 if (P == null && I) d.push("padding-" + sd[1] + ": " + def[sd[0]] + ";");
 }
 if (P != null) d.push("padding-" + sd[1] + ": " + (I && M == null ? "calc(" + I + "px + " + P + ")" : P) + ";");
+else if (I && noMargin) d.push("padding-" + sd[1] + ": calc(" + I + "px + " + def[sd[0]] + ");");
 });
 var w = boxLen(boxVal(b, "maxW", phone), "l");
 if (sideM) d.push("width: auto;");
@@ -3272,6 +3273,11 @@ return '<div class="bd-ly is-t-' + tr + (f.k < 0 ? " is-v-post" : "") + '" id="b
 + '<div class="bd-ly-sheet bd-ly-content" id="bd-ly-content" tabindex="-1">\n' + arts + "\n</div>\n" + sheets + '\n<div class="bd-ly-bar is-off" id="bd-ly-bar" aria-hidden="true"><i></i></div>\n</div>';
 }
 /* HOW FAR THE PEEKING SHEETS ABOVE PUSH A SHEET (OR THE PAGES UNDERNEATH) IN FROM EACH EDGE */
+var NO_INS = { left: 0, right: 0, top: 0, bottom: 0 };
+/* A SHEET THAT PARKS ON AN EDGE STAYS BESIDE THE PEEKS ABOVE IT; EVERY OTHER SHEET STARTS AT THE WINDOW'S EDGE AND LIES UNDER THEM, ONLY ITS CONTENT IS PUSHED IN */
+function sheetBoxIns(k, n, phone) {
+return k.rest === "peek" ? sheetInsets(n, phone) : NO_INS;
+}
 function sheetInsets(upto, phone) {
 var o = { left: 0, right: 0, top: 0, bottom: 0 };
 sheetList().forEach(function (k, n) {
@@ -3352,7 +3358,7 @@ function sheetBoxCSS(phone) {
 var K = sheetList();
 var out = [];
 K.forEach(function (k, n) {
-var ins = sheetInsets(n, phone);
+var ins = sheetBoxIns(k, n, phone);
 var sel = '.bd-ly-k[data-k="' + k.id + '"]';
 var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
 var d = ["top: " + ins.top + "px;", "right: " + ins.right + "px;", "bottom: " + ins.bottom + "px;", "left: " + ins.left + "px;", "--k-peek: " + peek + "px;", "--k-sliver: " + (parseFloat(phone ? k.sliverM : k.sliver) || 0) + "px;", "--k-strip: " + (sheetStrip(k) ? peek : 0) + "px;", "--k-nudge: " + (parseFloat(k.nudge) || 0) + "px;", "box-shadow: " + sheetLine(k, phone) + ";"];
@@ -3395,12 +3401,13 @@ if (!phone && q.sheetBg) out.push(sel + " {\nmin-height: 100%;\nbackground: " + 
 var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", ins);
 if (bx) out.push(bx);
 });
-sheetList().forEach(function (k) {
+sheetList().forEach(function (k, n) {
+var padIns = k.rest === "peek" ? null : sheetInsets(n, phone);
 (k.pages || []).map(sheetPage).filter(Boolean).forEach(function (q) {
 var st = sheetStrip(k);
 var sel = st && st.id === q.id ? '.bd-ly-k[data-k="' + k.id + '"] > .bd-ly-strip' : '.bd-ly-pane[data-page="' + q.id + '"]';
 if (!phone && q.sheetBg) out.push(sel + " {\nbackground: " + q.sheetBg + ";\n}");
-var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", null, true);
+var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", padIns, true);
 if (bx) out.push(bx);
 });
 });
@@ -3815,7 +3822,8 @@ return [":host {\nposition: relative;\n}", ".bd-site.is-strip {\nposition: relat
 var out = [":host {\nposition: relative;\n}"];
 if (w.k > -1) {
 /* A PAGE ON A SHEET: THE SHEET ITSELF SHRINKS TO THE PAGE'S MARGINS, WHAT LIES UNDERNEATH SHOWS AROUND IT */
-var ins = sheetInsets(w.k, phone);
+var ins = sheetBoxIns(w.sheet, w.k, phone);
+var padIns = w.sheet.rest === "peek" ? null : sheetInsets(w.k, phone);
 var b = page.box || {};
 var edge = [];
 BOX_SIDES.forEach(function (sd) {
@@ -3824,7 +3832,7 @@ edge.push(M != null ? "calc(" + (ins[sd[1]] || 0) + "px + " + M + ")" : (ins[sd[
 });
 out.push(".bd-site.is-layered {\nbox-sizing: border-box;\nbackground: #dcd9d2;\npadding: " + edge.join(" ") + ";\n}");
 out.push(".bd-site.is-layered .bd-panel {\nbackground: " + (page.sheetBg || fillCSS(w.sheet.color || "#E4E1DA", 100)) + ";\nmargin: 0;\nbox-shadow: 0 0 0 1px rgba(0, 0, 0, 0.16);\n}");
-var bx = pageBoxCSS(page, phone, ".bd-site.is-layered .bd-panel.bd-pg-" + page.id, null, true);
+var bx = pageBoxCSS(page, phone, ".bd-site.is-layered .bd-panel.bd-pg-" + page.id, padIns, true);
 if (bx) out.push(bx);
 if (phone) {
 var bb = page.box || {};
