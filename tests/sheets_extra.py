@@ -85,6 +85,54 @@ async def run():
         css = await ev("exportCSS()")
         ok('gradient: a sheet\'s paper keeps its see-through on every stop', 'linear-gradient(90deg, rgba(255, 0, 0, 0.3), rgba(255, 255, 255, 0.3))' in css)
         ok('gradient: back to solid keeps the first colour', await ev("(function(){ applyPath('fill.mode|site.sheets.1.color', 'solid'); return S.project.site.sheets[1].color; })()") == '#ff0000')
+        # --- sheet panel, fills, patterns, margin/padding, leave/appear, page card ---
+        import re
+        errs2 = errs
+        # left title selects sheet, right shows sheet settings
+        await ev("S.preview=false; S.sel=null; render()"); await pg.wait_for_timeout(300)
+        await ev("S.leftTab='pages'; render()"); await pg.wait_for_timeout(300)
+        n = await pg.locator('button.bd-ed-group-label.is-btn').count()
+        ok('left: sheet titles are buttons (%d)'%n, n>=2)
+        await pg.locator('button.bd-ed-group-label.is-btn').nth(1).click(); await pg.wait_for_timeout(500)
+        t = await ev("document.getElementById('bd-right').innerText")
+        t=t.lower(); ok('right: sheet settings show', all(x.lower() in t for x in ['Paper','Margin & padding','Pages spread','Leaves with','Pattern']))
+        ok('right: page-only sections hidden', 'Space & card' not in t)
+        # page click returns to page settings
+        await ev("goPage(sheetList()[1].pages[0])"); await pg.wait_for_timeout(300)
+        t = await ev("document.getElementById('bd-right').innerText")
+        ok('page click -> page settings with Sheet settings button', 'Space & card' in t and 'Sheet settings' in t)
+        await ev("S.sheetSel = sheetList()[1].id; render()")
+        # model edits
+        K = "S.project.site.sheets[1]"
+        await ev(f"{K}.color='none'; {K}.pattern='grid'; {K}.out='hide'; {K}.lv='fold'; {K}.arrive='fade'; {K}.box={{ml:'20',pt:'30',mt:'10'}}; changed()")
+        css = await ev("layerCSS(false)")
+        blk = re.search(r'\.bd-ly-k\[data-k="'+(await ev(K+'.id'))+r'"\] \{[^}]*\}', css).group(0)
+        ok('css: none paper is transparent + grid lines', 'transparent' in blk and 'repeating-linear-gradient' in blk)
+        ok('css: hide leave gives a negative sliver', '--k-sliver: -12px' in blk)
+        ok('css: sheet margin moves edges (left 20px, top 10px)', 'left: calc(0px + 20px)' in blk or 'left: calc(300px + 20px)' in blk)
+        ok('css: per-sheet leave override', '#bd-ly .bd-ly-k.is-lv-fold' in css)
+        ok('css: fade-in rule', 'is-ap-fade.is-st-hidden' in css)
+        ok('css: sheet padding goes to pages (30px top)', re.search(r'bd-ly-pane\[data-page="[^"]+"\] > \.bd-panel \{[^}]*padding-top: calc\(30px', css) is not None)
+        html = await ev("layerDoc(curPage(), 'view')")
+        ok('markup: classes is-lv-fold + is-ap-fade', 'is-lv-fold' in html and 'is-ap-fade' in html)
+        # gradient to clear
+        await ev(f"{K}.color='linear-gradient(90deg, #ff0000, #0000ff)'; applyPath('fill.ends|site.sheets.1.color','cx'); ")
+        v = await ev(K+'.color')
+        ok('gradient: colour -> clear stored (%s)'%v, v=='linear-gradient(90deg, #ff0000, transparent)')
+        css = await ev("layerCSS(false)")
+        ok('css: clear stop stays transparent', re.search(r'rgba\(255, 0, 0, [\d.]+\), transparent', css) is not None)
+        await ev(f"applyPath('fill.mode|site.sheets.1.color','none')")
+        ok('fill mode None -> "none"', (await ev(K+'.color'))=='none')
+        # page card opacity + blur + none
+        pid = await ev("sheetList()[1].pages[0]")
+        await ev(f"S.project.pages['{pid}'].box = {{card:'#ffffff', cardA:'40', blur:'6'}}; changed()")
+        css = await ev("layerCSS(false)")
+        ok('css: page card see-through + blur', 'rgba(255, 255, 255, 0.4)' in css and 'blur(6px)' in css)
+        # canvas
+        await ev("goPage('%s'); S.sheetSel=''; render()"%pid); await pg.wait_for_timeout(600)
+        ok('canvas renders', await ev("!!document.getElementById('bd-sheet').shadowRoot.querySelector('.bd-site')"))
+        ok('no page errors '+str(errs[:2]), not errs)
+
         ok('no page errors', not errs)
         await b.close()
     bad = [n for n, c in R if not c]

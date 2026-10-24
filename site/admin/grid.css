@@ -408,6 +408,25 @@ text-transform: uppercase;
 color: var(--e-mute);
 padding: 4px 4px 2px;
 }
+button.bd-ed-group-label.is-btn {
+width: 100%;
+display: block;
+border: 0;
+border-radius: 3px;
+background: none;
+text-align: left;
+cursor: pointer;
+}
+button.bd-ed-group-label.is-btn:hover {
+color: var(--e-ink);
+}
+button.bd-ed-group-label.is-btn.is-on {
+background: var(--e-ink);
+color: var(--e-surface);
+}
+button.bd-ed-group-label.is-btn.is-on .bd-ed-hint {
+color: inherit;
+}
 .bd-ed-pg {
 width: 100%;
 display: grid;
