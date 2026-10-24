@@ -79,6 +79,11 @@ async def run():
         ok('slide: the tucked sheet keeps its page margins', await ev(W + ".document.querySelector('.bd-ly-k[data-k=index]').className.indexOf('is-on-') > -1"))
         bar = await ev("(function(){ var w = " + W + "; var b = w.document.getElementById('bd-ly-bar'); return [b.className.indexOf('is-off') < 0, Math.round(b.querySelector('i').getBoundingClientRect().right) === w.innerWidth]; })()")
         ok('scrollbar: one black line shows, on the far right edge of the window', bar == [True, True])
+        # gradients: a sheet's paper and a page's card/behind colours can be solid or a two-colour gradient
+        await ev("(function(){ var ix = S.project.site.sheets.find(function(k){return k.id==='index'}); ix.color='#ebebeb'; ix.alpha=30; applyPath('fill.mode|site.sheets.1.color', 'grad'); applyPath('fill.a|site.sheets.1.color', '#ff0000'); applyPath('fill.angle|site.sheets.1.color', '90'); applyPath('fill.mode|page.sheetBg', 'grad'); changed(); })()")
+        css = await ev("exportCSS()")
+        ok('gradient: a sheet\'s paper keeps its see-through on every stop', 'linear-gradient(90deg, rgba(255, 0, 0, 0.3), rgba(255, 255, 255, 0.3))' in css)
+        ok('gradient: back to solid keeps the first colour', await ev("(function(){ applyPath('fill.mode|site.sheets.1.color', 'solid'); return S.project.site.sheets[1].color; })()") == '#ff0000')
         ok('no page errors', not errs)
         await b.close()
     bad = [n for n, c in R if not c]

@@ -2338,7 +2338,7 @@ return '<div class="bd-ed-sec"><span class="bd-ed-title">Space & card' + (ph ? "
 + '<span class="bd-ed-label">Margin · ' + (onSheet ? "the sheet shrinks to it, what’s underneath shows around" : "outside the page") + "</span>" + four("m")
 + '<span class="bd-ed-label">Padding · inside the page</span>' + four("p")
 + '<div class="bd-ed-hint">Numbers are px. 20% = a fifth of the window (top and bottom of its height, sides of its width). Blank = the site’s.' + (ph ? " Blank on phone = same as desktop." : "") + "</div>"
-+ row(colorIn("Card colour", "page.box.card", b.card || "", "#ffffff", "None"), colorIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site"))
++ fillIn("Card colour", "page.box.card", b.card || "", "#ffffff", "None") + fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site")
 + row(numIn("Corners", "page.box.radius", b.radius == null ? "" : b.radius, "blank"), field("Max width" + (ph ? " · phone" : ""), input("page.box.maxW" + (ph ? "M" : ""), (ph ? b.maxWM : b.maxW) || "", "", ' placeholder="720 or 60%"')))
 + field("Shadow", seg("page.box.shadow", b.shadow || "none", [["none", "None"], ["line", "Line"], ["hard", "Hard"], ["soft", "Soft"]]))
 + sw("Card only as tall as what’s on it", "page.box.fit", !!b.fit)
@@ -3076,6 +3076,16 @@ if (h.length === 3) h = h.split("").map(function (c) { return c + c; }).join("")
 var n = parseInt(h, 16) || 0;
 return "rgba(" + ((n >> 16) & 255) + ", " + ((n >> 8) & 255) + ", " + (n & 255) + ", " + Math.round(pct) / 100 + ")";
 }
+/* A FILL IS A COLOUR OR A TWO-COLOUR LINEAR GRADIENT ("linear-gradient(180deg, #aaa, #bbb)"); A SHEET'S SEE-THROUGH APPLIES TO EVERY STOP */
+function parseFill(v) {
+var m = String(v || "").match(/^linear-gradient\(\s*(-?[\d.]+)deg\s*,\s*(#[0-9a-f]{3,6})\s*,\s*(#[0-9a-f]{3,6})\s*\)$/i);
+return m ? { angle: parseFloat(m[1]), a: m[2], b: m[3] } : null;
+}
+function fillCSS(v, pct) {
+var g = parseFill(v);
+if (g) return "linear-gradient(" + g.angle + "deg, " + hexAlpha(g.a, pct) + ", " + hexAlpha(g.b, pct) + ")";
+return hexAlpha(v, pct);
+}
 /* SHEETS — ANY PAGE CAN LIE ON A PAPER SHEET; THE SHEETS LIST (TOP → BOTTOM) DECIDES WHAT LIES OVER WHAT */
 var SHEET_DEFAULTS = { id: "", name: "Sheet", pages: [], restPage: "", edge: "left", edgeM: "top", rest: "open", peek: 200, peekM: 52, sliver: 44, sliverM: 14, axis: "y", covers: "all", coverPages: [], color: "#E4E1DA", alpha: 55, blur: 9, shadow: "line", nudge: 0, dur: "" };
 /* THE PAGE A PEEKING SHEET SHOWS AT REST — DRAWN ON ITS EDGE, ALWAYS THERE; THE OTHER PAGES SLIDE INTO VIEW */
@@ -3346,7 +3356,7 @@ var ins = sheetInsets(n, phone);
 var sel = '.bd-ly-k[data-k="' + k.id + '"]';
 var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
 var d = ["top: " + ins.top + "px;", "right: " + ins.right + "px;", "bottom: " + ins.bottom + "px;", "left: " + ins.left + "px;", "--k-peek: " + peek + "px;", "--k-sliver: " + (parseFloat(phone ? k.sliverM : k.sliver) || 0) + "px;", "--k-strip: " + (sheetStrip(k) ? peek : 0) + "px;", "--k-nudge: " + (parseFloat(k.nudge) || 0) + "px;", "box-shadow: " + sheetLine(k, phone) + ";"];
-if (!phone) d = d.concat(["z-index: " + (2 + K.length - 1 - n) + ";", "background: " + hexAlpha(k.color || "#E4E1DA", k.alpha == null ? 55 : k.alpha) + ";", "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);", "backdrop-filter: blur(" + sheetBlur(k) + "px);"]);
+if (!phone) d = d.concat(["z-index: " + (2 + K.length - 1 - n) + ";", "background: " + fillCSS(k.color || "#E4E1DA", k.alpha == null ? 55 : k.alpha) + ";", "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);", "backdrop-filter: blur(" + sheetBlur(k) + "px);"]);
 if (!phone && parseInt(k.dur, 10) > 0) d.push("--k-dur: " + parseInt(k.dur, 10) + "ms;");
 out.push(sel + " {\n" + d.join("\n") + "\n}");
 /* A PAGE'S MARGINS MOVE THE SHEET'S OWN EDGES WHILE IT IS THE PAGE SHOWING */
@@ -3800,7 +3810,7 @@ if (w.strip) {
 var k = w.sheet;
 var peek = Math.max(parseFloat(phone ? k.peekM : k.peek) || 0, phone ? 40 : 120);
 var sx = pageBoxCSS(page, phone, ".bd-site.is-strip .bd-panel", null, true);
-return [":host {\nposition: relative;\n}", ".bd-site.is-strip {\nposition: relative;\n" + (phone ? "width: 100%;\nheight: " + peek + "px;\nmin-height: 0;\n" : "width: " + peek + "px;\nmin-height: 640px;\n") + "background: " + hexAlpha(k.color || "#E4E1DA", 100) + ";\n}", sx, menu].join("\n");
+return [":host {\nposition: relative;\n}", ".bd-site.is-strip {\nposition: relative;\n" + (phone ? "width: 100%;\nheight: " + peek + "px;\nmin-height: 0;\n" : "width: " + peek + "px;\nmin-height: 640px;\n") + "background: " + fillCSS(k.color || "#E4E1DA", 100) + ";\n}", sx, menu].join("\n");
 }
 var out = [":host {\nposition: relative;\n}"];
 if (w.k > -1) {
@@ -3813,7 +3823,7 @@ var M = boxLen(boxVal(b, "m" + sd[0], phone), sd[0]);
 edge.push(M != null ? "calc(" + (ins[sd[1]] || 0) + "px + " + M + ")" : (ins[sd[1]] || 0) + "px");
 });
 out.push(".bd-site.is-layered {\nbox-sizing: border-box;\nbackground: #dcd9d2;\npadding: " + edge.join(" ") + ";\n}");
-out.push(".bd-site.is-layered .bd-panel {\nbackground: " + (page.sheetBg || hexAlpha(w.sheet.color || "#E4E1DA", 100)) + ";\nmargin: 0;\nbox-shadow: 0 0 0 1px rgba(0, 0, 0, 0.16);\n}");
+out.push(".bd-site.is-layered .bd-panel {\nbackground: " + (page.sheetBg || fillCSS(w.sheet.color || "#E4E1DA", 100)) + ";\nmargin: 0;\nbox-shadow: 0 0 0 1px rgba(0, 0, 0, 0.16);\n}");
 var bx = pageBoxCSS(page, phone, ".bd-site.is-layered .bd-panel.bd-pg-" + page.id, null, true);
 if (bx) out.push(bx);
 if (phone) {
@@ -3854,7 +3864,7 @@ var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
 var ins = sheetInsets(n, phone);
 var pos = e === "left" ? "top:" + ins.top + "px;bottom:" + ins.bottom + "px;left:" + ins.left + "px;width:" + peek + "px" : e === "right" ? "top:" + ins.top + "px;bottom:" + ins.bottom + "px;right:" + ins.right + "px;width:" + peek + "px" : e === "top" ? "left:" + ins.left + "px;right:" + ins.right + "px;top:" + ins.top + "px;height:" + peek + "px" : "left:" + ins.left + "px;right:" + ins.right + "px;bottom:" + ins.bottom + "px;height:" + peek + "px";
 var strip = sheetStrip(k);
-h += '<div class="bd-ly-edit" style="' + pos + ";background:" + hexAlpha(k.color || "#E4E1DA", k.alpha == null ? 55 : k.alpha) + ";box-shadow:" + sheetLine(k, phone) + ";-webkit-backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + "px);backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + 'px)">' + (strip ? layerBody(strip, "view") : "") + "</div>";
+h += '<div class="bd-ly-edit" style="' + pos + ";background:" + fillCSS(k.color || "#E4E1DA", k.alpha == null ? 55 : k.alpha) + ";box-shadow:" + sheetLine(k, phone) + ";-webkit-backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + "px);backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + 'px)">' + (strip ? layerBody(strip, "view") : "") + "</div>";
 });
 S.layerFocus = keep;
 return h;
@@ -5320,6 +5330,14 @@ return '<button class="bd-ed-btn" style="min-width:32px;justify-content:center" 
 function colorIn(label, path, val, fallback, empty) {
 return field(label, '<div class="bd-ed-list-row" style="grid-template-columns:minmax(0,1fr) auto"><input type="color" class="bd-ed-input" data-bind="' + path + '" value="' + esc(val || fallback) + '"><button class="bd-ed-btn" style="height:30px" data-act="set" data-path="' + path + '" data-val="">' + (val ? "Reset" : empty || "Ink") + "</button></div>");
 }
+/* A COLOUR FIELD THAT CAN ALSO BE A GRADIENT (SOLID | GRADIENT, THEN ONE OR TWO COLOURS AND AN ANGLE) */
+function fillIn(label, path, val, fallback, empty) {
+var g = parseFill(val);
+var h = seg("fill.mode|" + path, g ? "grad" : "solid", [["solid", "Solid"], ["grad", "Gradient"]]);
+if (g) h += '<div class="bd-ed-list-row" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto"><input type="color" class="bd-ed-input" aria-label="From" data-bind="fill.a|' + path + '" value="' + esc(g.a) + '"><input type="color" class="bd-ed-input" aria-label="To" data-bind="fill.b|' + path + '" value="' + esc(g.b) + '"><input class="bd-ed-input bd-ed-n" aria-label="Angle" inputmode="decimal" data-type="num" data-bind="fill.angle|' + path + '" value="' + esc(g.angle) + '"><button class="bd-ed-btn" style="height:30px" data-act="set" data-path="' + path + '" data-val="">Reset</button></div><div class="bd-ed-hint">From, to, angle in degrees (180 = top to bottom, 90 = left to right).</div>';
+else h += '<div class="bd-ed-list-row" style="grid-template-columns:minmax(0,1fr) auto"><input type="color" class="bd-ed-input" data-bind="' + path + '" value="' + esc(val || fallback) + '"><button class="bd-ed-btn" style="height:30px" data-act="set" data-path="' + path + '" data-val="">' + (val ? "Reset" : empty || "Ink") + "</button></div>";
+return field(label, h);
+}
 function navPanel(inBlock) {
 var s = S.project.site;
 var n = s.nav;
@@ -5527,7 +5545,7 @@ return '<div class="bd-ed-list-row" style="grid-template-columns:minmax(0,1fr) a
 + (k.covers === "some" ? all.filter(function (q) { return (k.pages || []).indexOf(q.id) < 0; }).map(function (q) {
 return '<label class="bd-ed-check"><input type="checkbox" data-act="sheet-cover" data-i="' + n + '" data-id="' + q.id + '"' + ((k.coverPages || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc(q.title) + "</label>";
 }).join("") + '<div class="bd-ed-hint">On any other page this sheet slides away completely.</div>' : "")
-+ '<span class="bd-ed-label">Paper</span>' + colorIn("Colour", P + "color", k.color, "#E4E1DA")
++ '<span class="bd-ed-label">Paper</span>' + fillIn("Colour", P + "color", k.color, "#E4E1DA")
 + row(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur below", P + "blur", k.blur), numIn("Speed (ms)", P + "dur", k.dur, "blank"))
 + field("Edge", seg(P + "shadow", k.shadow || "none", [["none", "None"], ["line", "Hairline"], ["hard", "Hard shadow"]]))
 + '<div class="bd-ed-actions"><button class="bd-ed-btn is-sm is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve sheet · pages stay</button></div>";
@@ -8478,6 +8496,24 @@ var rest = path.slice(root.length + 1);
 var el = selEl();
 if (root === "ui") {
 S[rest] = v;
+} else if (root === "fill") {
+var bar = rest.indexOf("|");
+var part = rest.slice(0, bar);
+var real = rest.slice(bar + 1);
+var rr = real.split(".")[0];
+var obj = rr === "page" ? curPage() : S.project.site;
+var cur = real.split(".").slice(1).reduce(function (o, key) { return o == null ? o : o[key]; }, obj);
+var g0 = parseFill(cur);
+var solid = g0 ? g0.a : /^#[0-9a-f]{3,6}$/i.test(cur || "") ? cur : "#ffffff";
+var nv0;
+if (part === "mode") nv0 = v === "grad" ? (g0 ? cur : "linear-gradient(180deg, " + solid + ", #ffffff)") : g0 ? g0.a : cur;
+else {
+var g1 = g0 || { angle: 180, a: solid, b: "#ffffff" };
+if (part === "angle") g1.angle = parseFloat(v) || 0;
+else g1[part] = v;
+nv0 = "linear-gradient(" + g1.angle + "deg, " + g1.a + ", " + g1.b + ")";
+}
+applyPath(real, nv0);
 } else if (root === "menu") {
 setPath(S.project.site.menus, rest, v);
 } else if (root === "site") {
