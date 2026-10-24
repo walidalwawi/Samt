@@ -839,7 +839,7 @@
     "mb": "0",
     "mr": "10%",
     "ml": "0",
-    "shadow": "line",
+    "shadow": "none",
     "fit": false,
     "radius": 0,
     "pt": "30",
