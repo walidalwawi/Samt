@@ -142,6 +142,12 @@ async def run():
         id0 = await ev("sheetList()[0].id")
         await ev("S.preview=false; sheetList(); document.querySelector('[data-act=\"sheet-down\"]') && document.querySelector('[data-act=\"sheet-down\"]').click()"); await pg.wait_for_timeout(300)
         ok('Lower moves the sheet down the stack', await ev(f"sheetList()[1].id === '{id0}'"))
+        # --- "stays showing" is measured past the peeking strips above, so it is visible; Play button; hide
+        await ev("S.project.site.sheets.sort((a,b)=> a.id==='menu' ? -1 : b.id==='menu' ? 1 : 0); S.project.site.sheets.forEach(k=>{ if(k.id==='index'){ k.sliver=30; k.rest='open'; k.out='peek'; } }); changed()")
+        css = await ev("layerCSS(false)")
+        ok('sliver is measured past the menu strip (300 + 30 = 330px)', re.search(r'data-k="index"\] \{[^}]*--k-sliver: 330px', css) is not None)
+        await ev("S.sheetSel=sheetList().filter(k=>k.id==='index')[0].id; S.preview=false; S.sel=null; render()")
+        ok('sheet panel has the Play button', 'sheet-play' in await ev("document.getElementById('bd-right').innerHTML"))
         ok('no page errors', not errs)
         await b.close()
     bad = [n for n, c in R if not c]

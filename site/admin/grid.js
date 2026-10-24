@@ -3416,7 +3416,7 @@ K.forEach(function (k, n) {
 var ins = sheetEx(k, n, phone);
 var sel = '.bd-ly-k[data-k="' + k.id + '"]';
 var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
-var d = ["top: " + ins.top + ";", "right: " + ins.right + ";", "bottom: " + ins.bottom + ";", "left: " + ins.left + ";", "--k-peek: " + peek + "px;", "--k-sliver: " + (k.out === "hide" ? -12 : parseFloat(phone ? k.sliverM : k.sliver) || 0) + "px;", "--k-strip: " + (sheetStrip(k) ? peek : 0) + "px;", "--k-nudge: " + (parseFloat(k.nudge) || 0) + "px;", "box-shadow: " + sheetLine(k, phone) + ";"];
+var d = ["top: " + ins.top + ";", "right: " + ins.right + ";", "bottom: " + ins.bottom + ";", "left: " + ins.left + ";", "--k-peek: " + peek + "px;", "--k-sliver: " + (k.out === "hide" ? -12 : (parseFloat(phone ? k.sliverM : k.sliver) || 0) + (k.rest === "peek" ? 0 : sheetInsets(n, phone)[(phone ? k.edgeM : k.edge) || "left"])) + "px;", "--k-strip: " + (sheetStrip(k) ? peek : 0) + "px;", "--k-nudge: " + (parseFloat(k.nudge) || 0) + "px;", "box-shadow: " + sheetLine(k, phone) + ";"];
 if (!phone) d = d.concat(["z-index: " + (2 + K.length - 1 - n) + ";", "background: " + sheetPaper(k, k.alpha == null ? 55 : k.alpha) + ";", "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);", "backdrop-filter: blur(" + sheetBlur(k) + "px);"]);
 if (!phone && parseInt(k.dur, 10) > 0) d.push("--k-dur: " + parseInt(k.dur, 10) + "ms;");
 out.push(sel + " {\n" + d.join("\n") + "\n}");
@@ -3512,6 +3512,7 @@ var out = [
 ".bd-ly-sheet {\nposition: absolute;\n--lx: 0px;\n--ly: 0px;\n--lr: 0deg;\ntransform: translate3d(var(--lx), var(--ly), 0) rotate(var(--lr));\ntransition: transform var(--ly-dur) var(--ly-ease), box-shadow var(--ly-dur) var(--ly-ease), filter var(--ly-dur) var(--ly-ease);\nwill-change: transform;\n}",
 ".bd-ly-sheet.is-moving {\n--lr: var(--ly-tilt);\n}",
 ".bd-ly-sheet .bd-panel {\nmin-height: 0;\nbackground: transparent;\n}",
+".bd-ly-pane > .bd-panel {\nmin-height: 100%;\nbox-sizing: border-box;\n}",
 ".bd-ly-content {\ninset: 0;\nz-index: 1;\noverflow-y: auto;\n-webkit-overflow-scrolling: touch;\noverscroll-behavior: contain;\nbackground: var(--bd-page);\n}",
 Ls.reveal === "rise" ? ".bd-ly:not(.is-v-post) .bd-ly-content {\n--ly: 18px;\n}" : "",
 ".bd-ly-art {\ndisplay: none;\n}",
@@ -5641,10 +5642,10 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-label">Where it sits and moves</
 + (k.rest === "open" ? field("When a page underneath opens", seg(P + "out", k.out === "hide" ? "hide" : "peek", [["peek", "Peeks · stays showing"], ["hide", "Hides · leaves"]])) + (k.out === "hide" ? "" : row(dpIn("Stays showing (px)", P + "sliver", P + "sliverM", k.sliver, k.sliverM))) : "")
 + (k.rest === "hidden" ? '<div class="bd-ed-hint">Off screen until one of its pages opens.</div>' : "")
 + (k.rest === "still" ? '<div class="bd-ed-hint">Lies where it is and never moves out of the way. Opening one of its own pages slides it to that page; anything else opens underneath or beside it. Use margins to make it a smaller card.</div>' : "")
-+ field("Leaves with", select(P + "lv", k.lv || "", LV))
-+ field("Appears", seg(P + "arrive", k.arrive === "fade" || k.arrive === "cut" ? k.arrive : "slide", [["slide", "Slides in"], ["fade", "Fades in"], ["cut", "Cuts"]]))
++ (k.rest === "open" ? field("Leaves with", select(P + "lv", k.lv || "", LV)) : "")
++ (k.rest === "hidden" || k.covers === "some" ? field("Appears", seg(P + "arrive", k.arrive === "fade" || k.arrive === "cut" ? k.arrive : "slide", [["slide", "Slides in"], ["fade", "Fades in"], ["cut", "Cuts"]])) : "")
 + row(numIn("Speed (ms)", P + "dur", k.dur, "blank"))
-+ '<div class="bd-ed-hint">Leaves with: how this sheet gets out of the way. Site = the site’s “opens with”. Appears: how it arrives from off screen.</div></div>';
++ '<div class="bd-ed-hint">Leaves with: how this sheet gets out of the way when a page underneath opens (Site = the site’s “opens with”).' + (k.rest === "hidden" || k.covers === "some" ? " Appears: how it arrives from off screen." : "") + '</div><button class="bd-ed-btn" data-act="sheet-play">' + I.eye + "Play it · open a page underneath, then come back</button></div>";
 h += '<div class="bd-ed-sec">' + field("Lies over", seg(P + "covers", k.covers === "some" ? "some" : "all", [["all", "Every page"], ["some", "Chosen pages"]]))
 + (k.covers === "some" ? all.filter(function (q) { return (k.pages || []).indexOf(q.id) < 0; }).map(function (q) {
 return '<label class="bd-ed-check"><input type="checkbox" data-act="sheet-cover" data-i="' + n + '" data-id="' + q.id + '"' + ((k.coverPages || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc(q.title) + "</label>";
@@ -8343,6 +8344,30 @@ S.leftOpen = false;
 S.rightOpen = true;
 S.rightTab = "sel";
 render();
+},
+"sheet-play": function () {
+var kk = sheetList().filter(function (x) { return x.id === S.sheetSel; })[0];
+var under = sheetContent()[0];
+var mine = kk && (kk.pages || []).map(sheetPage).filter(Boolean)[0];
+if (!kk || !under || !mine) {
+toast("Needs a page that lies underneath, not on a sheet.");
+return;
+}
+var go = function (q) {
+try {
+var d = $("bd-sheet").shadowRoot.querySelector("iframe.bd-prev").contentDocument;
+var a = d.createElement("a");
+a.href = q.slug === "" ? "/" : "/" + q.slug;
+a.textContent = "x";
+d.querySelector(".bd-ly-content").appendChild(a);
+a.click();
+} catch (err) {}
+};
+S.preview = true;
+S.pageId = mine.id;
+render();
+setTimeout(function () { go(under); }, 1800);
+setTimeout(function () { go(mine); }, 3600);
 },
 "sheet-done": function () { S.sheetSel = ""; render(); },
 "sheet-del": function () { snap(); S.sheetSel = ""; S.project.site.sheets.splice(+b.getAttribute("data-i"), 1); changed(); },
