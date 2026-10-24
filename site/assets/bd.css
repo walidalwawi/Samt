@@ -1,4 +1,4 @@
-/* PUBLISHED mvm81y84 */
+/* PUBLISHED mvm85s3y */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1833,9 +1833,9 @@ left: 0px;
 --k-sliver: 130px;
 --k-strip: 300px;
 --k-nudge: 0px;
-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.12);
+box-shadow: none;
 z-index: 3;
-background: linear-gradient(90deg, rgba(255, 255, 255, 0.7), rgba(235, 235, 235, 0.7));
+background: linear-gradient(90deg, rgba(255, 255, 255, 0.7), rgba(214, 214, 214, 0.7));
 -webkit-backdrop-filter: blur(5px);
 backdrop-filter: blur(5px);
 }
@@ -1853,7 +1853,7 @@ left: 0px;
 --k-nudge: 0px;
 box-shadow: -1px 0 0 rgba(0, 0, 0, 0.1);
 z-index: 2;
-background: rgba(228, 225, 218, 0.3);
+background: linear-gradient(90deg, rgba(255, 255, 255, 0.3), rgba(235, 235, 235, 0.3));
 -webkit-backdrop-filter: blur(11.2px);
 backdrop-filter: blur(11.2px);
 }
@@ -2436,7 +2436,7 @@ left: 0px;
 --k-sliver: 14px;
 --k-strip: 70px;
 --k-nudge: 0px;
-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+box-shadow: none;
 }
 .bd-ly-k[data-k="menu"].is-on-nsye72w3 {
 right: calc(0px + 0px);
