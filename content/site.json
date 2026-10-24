@@ -598,11 +598,11 @@
      "fji5ongj",
      "b2lr3tkr"
     ],
-    "restPage": "",
+    "restPage": "fji5ongj",
     "edge": "left",
     "edgeM": "top",
     "rest": "open",
-    "peek": 1000,
+    "peek": 0,
     "peekM": 0,
     "sliver": 30,
     "sliverM": 14,
@@ -1312,7 +1312,7 @@
     "gutter": 40,
     "gutterM": 24
    },
-   "trans": "",
+   "trans": "slide",
    "box": {
     "shadow": "none",
     "mt": "0",
