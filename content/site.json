@@ -1335,9 +1335,11 @@
    "trans": "slide",
    "box": {
     "shadow": "none",
-    "mt": "0",
-    "mr": "0",
-    "fit": false
+    "mt": "",
+    "mr": "",
+    "fit": false,
+    "ml": "",
+    "pl": "150"
    }
   },
   "ipk7ns57": {
