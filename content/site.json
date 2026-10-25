@@ -578,23 +578,23 @@
     "edge": "left",
     "edgeM": "top",
     "rest": "peek",
-    "peek": 192,
+    "peek": 320,
     "peekM": 70,
     "sliver": 130,
     "sliverM": 14,
     "axis": "x",
     "covers": "all",
     "coverPages": [],
-    "color": "",
+    "color": "#4e7a27",
     "alpha": 70,
     "blur": 0,
-    "shadow": "line",
+    "shadow": "none",
     "nudge": 100,
     "dur": "",
     "box": {
      "mr": "",
-     "mt": "",
-     "mb": "",
+     "mt": "10%",
+     "mb": "5%",
      "ml": "",
      "pt": ""
     },
@@ -606,7 +606,8 @@
     "lv": "rise",
     "arrive": "slide",
     "main": "56ud3gky",
-    "hover": ""
+    "hover": "",
+    "layPg": false
    },
    {
     "id": "fmqzc8z3",
@@ -661,10 +662,10 @@
     "axis": "y",
     "covers": "all",
     "coverPages": [],
-    "color": "#E4E1DA",
+    "color": "",
     "alpha": 55,
     "blur": 9,
-    "shadow": "line",
+    "shadow": "none",
     "nudge": 0,
     "dur": "",
     "box": {
@@ -922,7 +923,7 @@
     "maxWM": "",
     "plM": "20"
    },
-   "sheetBg": "linear-gradient(180deg, transparent, #ebebeb)"
+   "sheetBg": ""
   },
   "aj2hm4y8": {
    "id": "aj2hm4y8",
@@ -1390,7 +1391,8 @@
     "fit": false,
     "ml": "",
     "pl": "100",
-    "plM": "30"
+    "plM": "30",
+    "card": "#0061fe"
    }
   },
   "ipk7ns57": {
@@ -1855,7 +1857,8 @@
    "featured": false,
    "box": {
     "pl": "150",
-    "plM": "20"
+    "plM": "20",
+    "card": "#0061fe"
    }
   },
   "k2b6e868": {
@@ -2278,7 +2281,9 @@
    "date": "",
    "excerpt": "",
    "featured": false,
-   "box": {}
+   "box": {
+    "card": "#0061fe"
+   }
   },
   "ap7jj2t4": {
    "id": "ap7jj2t4",
@@ -2555,7 +2560,9 @@
    "date": "",
    "excerpt": "",
    "featured": false,
-   "box": {}
+   "box": {
+    "card": "#0061fe"
+   }
   },
   "1bp9xrs5": {
    "id": "1bp9xrs5",
@@ -2942,7 +2949,9 @@
     "gutter": 40,
     "gutterM": 24
    },
-   "box": {}
+   "box": {
+    "card": "#0061fe"
+   }
   },
   "b2lr3tkr": {
    "id": "b2lr3tkr",
@@ -4395,7 +4404,7 @@
     "pb": "50",
     "ml": "0"
    },
-   "sheetBg": "linear-gradient(180deg, #ebebeb, transparent)"
+   "sheetBg": ""
   },
   "zty6iib1": {
    "id": "zty6iib1",
@@ -4676,8 +4685,8 @@
     "pr": "",
     "plM": "24",
     "prM": "24",
-    "mr": "",
-    "shadow": "soft",
+    "mr": "40%",
+    "shadow": "none",
     "fit": false,
     "card": "",
     "mrM": "0",
