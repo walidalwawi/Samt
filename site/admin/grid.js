@@ -5869,6 +5869,7 @@ var K = sheetList();
 var k = K[n];
 var v = gridView(phone);
 var ax = k.axis === "x" ? "x" : "y";
+if (phone && sheetStrip(k)) ax = k.edgeM === "left" || k.edgeM === "right" ? "x" : "y";
 var L = ax === "x" ? v.w : v.h;
 var C = ax === "x" ? v.h : v.w;
 var pages = (k.pages || []).map(sheetPage).filter(Boolean);
@@ -6002,7 +6003,7 @@ if (G.hidden) return "At rest: hidden. It appears when one of its pages opens.";
 if (k.rest === "peek") {
 var e = (phone ? k.edgeM : k.edge) || "left";
 var w = parseFloat(phone ? k.peekM : k.peek) || 0;
-return "At rest: " + name + " shows as a strip, " + pc(w, e === "left" || e === "right" ? v.w : v.h) + " of the window on the " + e + ". It stays there when another page opens; its other pages open beside it.";
+return "At rest: " + name + " shows " + pc(w, e === "left" || e === "right" ? v.w : v.h) + " of the window on the " + e + ", the rest of the sheet lies beyond it. It stays there when another page opens; the sheet slides out beside it.";
 }
 var full = G.rect.l <= 0.5 && G.rect.t <= 0.5 && G.rect.r >= v.w - 0.5 && G.rect.b >= v.h - 0.5;
 var s = "At rest: " + name + (full ? " fills the window." : " shows, with what lies under the sheet around it.");
@@ -6025,77 +6026,11 @@ st = G.pages.filter(function (q) { return q.id === id; })[0];
 }
 return { st: st, pane: G.pages.filter(function (q) { return q.id !== st.id; })[0] };
 }
-function stripRects(G) {
-var k = G.k, v = G.v;
-var phone = G.phone;
-var e = stripEdge(k, phone, G.ax, 0);
-var ax = phone ? (e === "left" || e === "right" ? "x" : "y") : G.ax;
-var L = ax === "x" ? v.w : v.h;
-var atEnd = e === "left" || e === "top";
-var s = sheetStrip(k) ? Math.max(0, Math.min(L, parseFloat(phone ? k.peekM : k.peek) || 0)) : 0;
-var R = function (a0, a1) { return ax === "x" ? { l: a0, r: a1, t: 0, b: v.h } : { l: 0, r: v.w, t: a0, b: a1 }; };
-return {
-ax: ax, L: L, atEnd: atEnd, s: s, seam: atEnd ? L - s : s,
-open: { pane: atEnd ? R(0, L - s) : R(s, L), strip: atEnd ? R(L - s, L) : R(0, s) },
-rest: { strip: atEnd ? R(0, s) : R(L - s, L) }
-};
-}
-function layStripDrawing(n, pg, G) {
-var k = G.k, v = G.v;
-var st = sheetStrip(k);
-var pane = G.pages.filter(function (q) { return q.id !== st.id; })[0];
-var SR = stripRects(G);
-var ax = SR.ax, L = SR.L;
-var DW = 380;
-var sc = Math.min((DW - 60) / v.w, 300 / v.h);
-var x0 = (DW - v.w * sc) / 2, y0 = 30;
-var VH = Math.round(y0 + v.h * sc + 34);
-var r1 = function (x) { return Math.round(x * 10) / 10; };
-var X = function (x) { return r1(x0 + x * sc); };
-var Y = function (y) { return r1(y0 + y * sc); };
-var Lx = function (x) { return r1(x * sc); };
-var o = '<svg class="bd-lay" viewBox="0 0 ' + DW + " " + VH + '" width="100%" role="img" aria-label="The two pages of this sheet and the seam between them" data-n="' + G.n + '" data-bx="' + (-x0 / sc) + '" data-by="' + (-y0 / sc) + '" data-sc="' + sc + '" data-w="' + v.w + '" data-h="' + v.h + '" data-dw="' + DW + '" data-axis="' + ax + '" style="display:block;touch-action:none;color:inherit">';
-var sx = v.w / 20, sy = v.h / 20;
-for (var i = 1; i < 20; i++) {
-o += '<line x1="' + X(i * sx) + '" y1="' + Y(0) + '" x2="' + X(i * sx) + '" y2="' + Y(v.h) + '" stroke="currentColor" stroke-opacity="' + (i % 5 === 0 ? .09 : .035) + '" stroke-width=".6"/>';
-o += '<line x1="' + X(0) + '" y1="' + Y(i * sy) + '" x2="' + X(v.w) + '" y2="' + Y(i * sy) + '" stroke="currentColor" stroke-opacity="' + (i % 5 === 0 ? .09 : .035) + '" stroke-width=".6"/>';
-}
-var card = function (r, q, isStrip) {
-var bx = X(r.l) + 2, by = Y(r.t) + 2, bw = Math.max(0, Lx(r.r - r.l) - 4), bh = Math.max(0, Lx(r.b - r.t) - 4);
-var cur = pg && pg.id === q.id;
-var c = '<g data-act="lay-page" data-id="' + q.id + '" style="cursor:pointer"><rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" rx="9" fill="#fff" stroke="rgba(0,0,0,.14)"/>';
-if (bw > 40 && bh > 30) {
-c += '<rect x="' + r1(bx + 10) + '" y="' + r1(by + 10) + '" width="' + r1(bw * .42) + '" height="5" rx="2.5" fill="rgba(0,0,0,.2)"/>';
-[.8, .66, .74].forEach(function (f, j) { if (26 + j * 8 < bh - 10) c += '<rect x="' + r1(bx + 10) + '" y="' + r1(by + 22 + j * 8) + '" width="' + r1((bw - 20) * f) + '" height="3" rx="1.5" fill="rgba(0,0,0,.1)"/>'; });
-if (bh > 80) c += '<rect x="' + r1(bx + 10) + '" y="' + r1(by + bh * .44) + '" width="' + r1(bw - 20) + '" height="' + r1(bh * .3) + '" rx="6" fill="' + LAY_C.salmon + '"/>';
-}
-var nm = esc(String(q.title || "").slice(0, Math.max(3, Math.floor(bw / 6.2))));
-if (bw > 24 && bh > 20) c += '<text x="' + r1(bx + 8) + '" y="' + r1(by + bh - 8) + '" font-size="10.5" fill="' + (cur ? "#1f1e1c" : "#6b6862") + '"' + (cur ? ' font-weight="600"' : "") + ">" + nm + (isStrip && bw > 90 ? " · strip" : "") + "</text>";
-return c + "</g>";
-};
-o += card(SR.open.pane, pane, false) + (SR.s > 0.5 ? card(SR.open.strip, st, true) : "");
-G.pages.forEach(function (q) {
-var r = q.id === st.id ? SR.open.strip : SR.open.pane;
-var cx = X(r.r) - 11, cy = Y(r.t) + 11;
-o += '<g data-act="lay-rm" data-i="' + G.n + '" data-id="' + q.id + '" style="cursor:pointer"><circle cx="' + cx + '" cy="' + cy + '" r="7" fill="#6b6862"/><path d="M' + (cx - 3) + " " + (cy - 3) + "l6 6m0 -6l-6 6" + '" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></g>';
-});
-o += '<rect x="' + X(0) + '" y="' + Y(0) + '" width="' + Lx(v.w) + '" height="' + Lx(v.h) + '" rx="9" fill="none" stroke="' + LAY_C.win + '" stroke-width="2.5" pointer-events="none"/>';
-o += '<text x="' + (X(0) + 6) + '" y="' + (Y(0) - 7) + '" font-size="10" font-weight="600" fill="' + LAY_C.win + '">window</text>';
-/* THE SEAM */
-var m = ax === "x"
-? '<line x1="' + X(SR.seam) + '" y1="' + Y(0) + '" x2="' + X(SR.seam) + '" y2="' + Y(v.h) + '" stroke="' + LAY_C.win + '" stroke-width="2" stroke-dasharray="5 3" pointer-events="none"/><path d="M' + (X(SR.seam) - 8) + " " + (Y(0) - 22) + 'h16l-8 12z" fill="' + LAY_C.win + '"/>'
-: '<line x1="' + X(0) + '" y1="' + Y(SR.seam) + '" x2="' + X(v.w) + '" y2="' + Y(SR.seam) + '" stroke="' + LAY_C.win + '" stroke-width="2" stroke-dasharray="5 3" pointer-events="none"/><path d="M' + (X(0) - 22) + " " + (Y(SR.seam) - 8) + 'v16l12-8z" fill="' + LAY_C.win + '"/>';
-var hx = ax === "x" ? X(SR.seam) : X(0) - 14, hy = ax === "x" ? Y(0) - 16 : Y(SR.seam);
-o += '<g data-lh="seam" style="cursor:' + (ax === "x" ? "ew-resize" : "ns-resize") + '">' + m + '<circle cx="' + hx + '" cy="' + hy + '" r="18" fill="transparent"/></g>';
-o += '<text x="' + (ax === "x" ? X(SR.seam) : X(v.w) - 4) + '" y="' + (ax === "x" ? Y(v.h) + 16 : Y(SR.seam) - 6) + '" text-anchor="' + (ax === "x" ? "middle" : "end") + '" font-size="10" fill="' + LAY_C.win + '">' + Math.round(SR.s / L * 100) + "% shows at rest" + "</text>";
-return o + "</svg>";
-}
 /* THE LAYOUT DRAWING — DRAWN FROM sheetGeo; EVERY HANDLE WRITES THROUGH layWrite */
 function layoutDrawing(n, pg) {
 var phone = S.mode === "phone";
 var G = sheetGeo(n, phone);
 var k = G.k;
-if (sheetStrip(k) && G.N === 2) return layStripDrawing(n, pg, G);
 var v = G.v;
 var K = sheetList();
 var others = [];
@@ -6139,7 +6074,7 @@ if (bh > 80) c += '<rect x="' + r1(bx + 10) + '" y="' + r1(by + bh * .44) + '" w
 }
 if (below === null) return c;
 var nm = esc(String(q.title || "").slice(0, Math.max(4, Math.floor(bw / 6.2))));
-var tag = (isStar ? "★ " : "") + nm + (k.rest === "peek" && isStar ? " · strip" : "");
+var tag = (isStar ? "★ " : "") + nm + "";
 if (below) return c + '<text x="' + r1(bx + bw / 2) + '" y="' + r1(by + bh + 14) + '" text-anchor="middle" font-size="10.5" fill="' + (cur ? "#1f1e1c" : "#6b6862") + '"' + (cur ? ' font-weight="600"' : "") + ">" + tag + "</text>";
 return c + '<text x="' + r1(bx + 10) + '" y="' + r1(by + bh - 9) + '" font-size="10.5" fill="' + (cur ? "#1f1e1c" : "#6b6862") + '"' + (cur ? ' font-weight="600"' : "") + ">" + tag + "</text>";
 };
@@ -6231,11 +6166,6 @@ if (h > 36 && w > 30) o += '<rect x="' + (x + 8) + '" y="' + (y + h * .5) + '" w
 o += '<rect x="1" y="1" width="' + (TW - 2) + '" height="' + (TH - 2) + '" rx="8" fill="none" stroke="' + LAY_C.win + '" stroke-width="2"/></svg>';
 return '<figure class="bd-lay-fig">' + o + "<figcaption><b>" + label + "</b><span>" + note + "</span></figcaption></figure>";
 };
-if (sheetStrip(k) && G.N === 2) {
-var SR = stripRects(G);
-var pn = G.pages.filter(function (q) { return q.id !== sheetStrip(k).id; })[0];
-return '<div class="bd-lay-res">' + thumb(clip(SR.rest.strip), "At rest", esc(sheetStrip(k).title) + " strip only") + thumb([clip(SR.open.pane), clip(SR.open.strip)].filter(Boolean), esc(pn.title) + " opens", "beside the strip") + "</div>";
-}
 var rest = G.hidden ? null : clip(G.rect);
 var away;
 var awayNote;
@@ -6254,11 +6184,9 @@ var free = S.project.order.map(function (id) { return S.project.pages[id]; }).fi
 var G = sheetGeo(n, phone);
 var h = '<div class="bd-lay-box">' + layoutDrawing(n, curPage()) + "</div>" + layResult(n);
 h += '<div class="bd-lay-cap">' + layCaption(n, phone) + "</div>";
-if (G.cutSide || (G.N > 1 && ((G.star === G.N - 1 && G.mEnd > 0.5) || (G.star === 0 && G.mStart > 0.5)))) h += field("The ★ page is", '<span class="bd-ed-seg"><button class="' + (k.rest === "peek" ? "is-on" : "") + '" data-act="lay-strip" data-i="' + n + '" data-val="1">A strip · stays on the edge</button><button class="' + (k.rest !== "peek" ? "is-on" : "") + '" data-act="lay-strip" data-i="' + n + '" data-val="0">A page · slides like the others</button></span>');
-if (sheetStrip(k) && G.N === 2) h += '<div class="bd-ed-hint"><i class="bd-lay-sw" style="background:' + LAY_C.win + '"></i>drag the seam (▼) to set where the view breaks between the two pages — the strip is the page that stays on the edge · tap a page to edit it · × takes a page off · ' + (phone ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
-else {
-h += '<div class="bd-ed-hint"><i class="bd-lay-sw" style="background:' + LAY_C.sheet + '"></i>this sheet — drag its edges · <i class="bd-lay-sw" style="background:' + LAY_C.win + '"></i>the window, always 100% · ▽ drag to set where the sheet goes when a page underneath opens · tap a page to edit it · × takes a page off · ' + (phone ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
-if (G.N === 2) h += field("Starts on", seg(P + "main", k.main || G.pages[0].id, G.pages.map(function (q) { return [q.id, esc(q.title)]; })));
+{
+h += '<div class="bd-ed-hint"><i class="bd-lay-sw" style="background:' + LAY_C.sheet + '"></i>this sheet, one long sheet of paper — drag its edges · <i class="bd-lay-sw" style="background:' + LAY_C.win + '"></i>the window, always 100% · the pill on the line between the pages = the seam: drag it in to set how much of the page shows at rest · ▽ drag to set where the sheet goes when a page underneath opens · tap a page to edit it · × takes a page off · ' + (phone ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
+if (G.N === 2 && !sheetStrip(k)) h += field("Starts on", seg(P + "main", k.main || G.pages[0].id, G.pages.map(function (q) { return [q.id, esc(q.title)]; })));
 }
 h += field("Pages spread", seg(P + "axis", k.axis === "x" ? "x" : "y", [["y", "Vertical"], ["x", "Horizontal"]]));
 if (S.layAdd === n) {
@@ -6411,25 +6339,15 @@ var cur = d.kind === "sheet" ? G.rect[d.side] : (G.slots.filter(function (s) { r
 if (vert) tx = (pos - cur) * d.sc; else ty = (pos - cur) * d.sc;
 d.res = { pos: pos };
 txt = Math.round(pos / (vert ? d.w : d.h) * 100) + "%";
-} else if (d.kind === "seam" && !sheetStrip(G.k)) {
+} else if (d.kind === "seam") {
 var Lq = G.L, bq = G.star === 0 ? Lq : 0;
 var alq = d.axis === "x" ? p.x : p.y;
 var pq = snapTo(Math.max(0, Math.min(Lq, alq)), Lq);
 var dq = G.star === 0 ? Lq - pq : pq;
 d.res = { peek: Lq - dq };
-var shq = (pq - bq) * d.sc;
+var shq = (pq - (G.slots[0] ? (d.axis === "x" ? G.slots[0].box.r : G.slots[0].box.b) : bq)) * d.sc;
 if (d.axis === "x") tx = shq; else ty = shq;
 txt = Math.round((Lq - dq) / Lq * 100) + "% shows at rest";
-} else if (d.kind === "seam") {
-var SR = stripRects(G);
-var Ls = SR.L;
-var along2 = d.axis === "x" ? p.x : p.y;
-var pos2 = snapTo(Math.max(0, Math.min(Ls, along2)), Ls);
-var sz = SR.atEnd ? Ls - pos2 : pos2;
-d.res = { peek: sz };
-var sh2 = (pos2 - SR.seam) * d.sc;
-if (d.axis === "x") tx = sh2; else ty = sh2;
-txt = Math.round(sz / Ls * 100) + "% strip";
 } else if (d.kind === "win") {
 var L = G.L;
 var along = d.axis === "x" ? p.x : p.y;
