@@ -190,6 +190,13 @@ async def run():
         RT = "document.getElementById('bd-right')"
         ok('layout: the right panel is wider with a sheet selected', await ev(f"{RT}.getBoundingClientRect().width") > 380)
         ok('layout: the drawing has 4 sheet handles, no page-inset handles and no other sheets drawn', await ev(f"{RT}.querySelectorAll('svg.bd-lay [data-lh=sheet]').length") == 4 and await ev(f"{RT}.querySelectorAll('svg.bd-lay [data-lh=page]').length") == 0 and await ev(f"{RT}.querySelectorAll('svg.bd-lay [stroke-dasharray=\"4 3\"][fill-opacity]').length") == 0)
+        ok('seam: a sheet that is not parked has its seam too (one handle, between the two pages)', await ev(f"{RT}.querySelectorAll('svg.bd-lay [data-lh=seam]').length") == 1)
+        await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; window.__k0 = JSON.stringify(k); })()")
+        g = await ev("(()=>{const s=document.querySelector('#bd-right svg.bd-lay'); s.scrollIntoView({block:'center'}); const h=s.querySelector('[data-lh=seam] circle'); const r=h.getBoundingClientRect(); const sr=s.getBoundingClientRect(); return [r.x+r.width/2, r.y+r.height/2, sr.width/+s.dataset.dw*+s.dataset.sc*+s.dataset.w, s.dataset.axis]})()")
+        await pg.mouse.move(g[0], g[1]); await pg.mouse.down(); await pg.mouse.move(g[0] - g[2] * 0.4, g[1], steps=8); await pg.mouse.up(); await pg.wait_for_timeout(300)
+        info = await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; return [k.rest, k.peek, k.edge, k.axis, sheetGeo(sheetList().indexOf(k), false).star, k.main]; })()")
+        ok('seam: dragging it in 40% parks the sheet showing 60 percent of the page at rest (peek ' + str(info) + ')', info[0] == 'peek' and 740 < info[1] < 790)
+        await ev("(function(){ var i = sheetList().map(function(k){return k.id}).indexOf('index'); var o = JSON.parse(window.__k0); var k = sheetList()[i]; Object.keys(k).forEach(function(x){ delete k[x]; }); Object.assign(k, o); changed(); render(); })()")
         ok('layout: nothing draggable is left on the canvas', await ev(f"{SHB}.querySelectorAll('.bd-gh, .bd-gr').length") == 0)
         ok('layout: no old grid switch', 'ui.grid' not in await ev(f"{RT}.innerHTML"))
         async def drag(kind, side, frac):
@@ -263,7 +270,7 @@ async def run():
         ok('seam drag: the seam at 85% makes the strip 15% of the window (192px)', await ev("sheetList().filter(function(k){return k.id==='menu'})[0].peek") == 192)
         ok('seam: the order stays About, Menu and Menu stays the strip', await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='menu'})[0]; return k.pages.join() === 'nsye72w3,56ud3gky' && k.restPage === '56ud3gky'; })()"))
         await ev("S.mode='phone'; render()"); await pg.wait_for_timeout(500)
-        g = await ev("(()=>{const s=document.querySelector('#bd-right svg.bd-lay'); s.scrollIntoView({block:'center'}); const h=s.querySelector('[data-lh=seam] circle'); const r=h.getBoundingClientRect(); const sr=s.getBoundingClientRect(); return [r.x+r.width/2, r.y+r.height/2, sr.width/+s.dataset.dw*+s.dataset.sc*+s.dataset.h, s.dataset.axis]})()")
+        g = await ev("(()=>{const s=document.querySelector('#bd-right svg.bd-lay'); s.scrollIntoView({block:'center'}); const h=s.querySelector('[data-lh=seam] circle'); const r=h.getBoundingClientRect(); const sr=s.getBoundingClientRect(); return [r.x+r.width/2, r.y+r.height/2, sr.width/+s.dataset.dw*+s.dataset.sc*+s.dataset.w, s.dataset.axis]})()")
         ok('seam: on a phone the top edge makes the seam run across (vertical spread)', g[3] == 'y')
         await ev("S.mode='desktop'; render()"); await pg.wait_for_timeout(400)
         ok('limit: a sheet with two pages cannot take a third (drag or add)', await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='menu'})[0]; return sheetFull(k); })()"))
