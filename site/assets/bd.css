@@ -2511,25 +2511,6 @@ mix-blend-mode: multiply;
 background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .3 0 0 0 0 .25 0 0 0 0 .2 0 0 0 .9 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
 }
 
-/* BRASS FASTENER */
-.bd-pg-56ud3gky {
-position: relative;
-}
-.bd-pg-56ud3gky::before {
-content: "";
-position: absolute;
-z-index: 3;
-top: 26px;
-left: 50%;
-width: 26px;
-height: 26px;
-margin-left: -13px;
-border-radius: 50%;
-pointer-events: none;
-background: radial-gradient(circle at 35% 30%, #f3e3a1, #b8923a 55%, #7a5c1c);
-box-shadow: 0 1px 2px rgba(0,0,0,.35);
-}
-
 /* MOBILE */
 @media (max-width: 760px) {
 :root {
@@ -3201,8 +3182,5 @@ box-sizing: border-box;
 max-width: 100%!Important;
 width: 100%important;
 background-color: transparent;
-}
-.bd-pg-56ud3gky::before {
-display: none;
 }
 }
