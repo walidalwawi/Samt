@@ -16,13 +16,13 @@
   "labelW": 100,
   "labelWM": 88,
   "colors": {
-   "page": "#ffffff",
-   "panel": "#ffffff",
-   "ink": "#111111",
-   "rule": "#ffffff"
+   "page": "#0C0C0B",
+   "panel": "#EADFC8",
+   "ink": "#16140F",
+   "rule": "#16140F"
   },
-  "sans": "Helvetica Neue",
-  "mono": "IBM Plex Mono",
+  "sans": "Newsreader",
+  "mono": "Courier Prime",
   "fs": 23.5,
   "lh": 29.6,
   "ms": 16.5,
@@ -36,17 +36,17 @@
   "pager": false,
   "sections": [],
   "externals": [],
-  "css": "/* TEXT */\n.bd-text a {\nborder-bottom: 1px solid currentColor;\n}\n.bd-e-lb31qsc3 {\nmargin-bottom: 0;\n}\n.bd-e-83zud23g .bd-mbrand {\nfont-size: 30px;\n}\n.bd-e-yg3i5pdn .bd-ly-mark {\nfont-size: 18px;\n}\n\n/* MOBILE */\n@media (max-width: 760px) {\n.bd-e-lb31qsc3 {\nmax-width: 100%!Important;\nwidth: 100%important;\nbackground-color: transparent;\n}\n}\n",
+  "css": "/* TEXT */\n.bd-text a {\nborder-bottom: 1px solid currentColor;\n}\n.bd-e-lb31qsc3 {\nmargin-bottom: 0;\n}\n.bd-e-83zud23g .bd-mbrand {\nfont-size: 30px;\n}\n.bd-e-yg3i5pdn .bd-ly-mark {\nfont-size: 18px;\n}\n\n/* PAPER */\n.bd-ly-k::after {\ncontent: \"\";\nposition: absolute;\ninset: 0;\npointer-events: none;\nopacity: .22;\nmix-blend-mode: multiply;\nbackground-image: url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .3 0 0 0 0 .25 0 0 0 0 .2 0 0 0 .9 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>\");\n}\n\n/* BRASS FASTENER */\n.bd-pg-56ud3gky {\nposition: relative;\n}\n.bd-pg-56ud3gky::before {\ncontent: \"\";\nposition: absolute;\nz-index: 3;\ntop: 26px;\nleft: 50%;\nwidth: 26px;\nheight: 26px;\nmargin-left: -13px;\nborder-radius: 50%;\npointer-events: none;\nbackground: radial-gradient(circle at 35% 30%, #f3e3a1, #b8923a 55%, #7a5c1c);\nbox-shadow: 0 1px 2px rgba(0,0,0,.35);\n}\n\n/* MOBILE */\n@media (max-width: 760px) {\n.bd-e-lb31qsc3 {\nmax-width: 100%!Important;\nwidth: 100%important;\nbackground-color: transparent;\n}\n.bd-pg-56ud3gky::before {\ndisplay: none;\n}\n}\n",
   "head": "<script>\n/* NAV — UNDERLINE THE CURRENT PAGE */\ndocument.addEventListener(\"DOMContentLoaded\", function () {\nvar here = location.pathname.replace(/\\/$/, \"\") || \"/\";\ndocument.querySelectorAll(\".sm-nav a\").forEach(function (a) {\nvar to = a.getAttribute(\"href\").replace(/\\/$/, \"\") || \"/\";\nif (to === here || (to !== \"/\" && here.indexOf(to + \"-\") === 0)) a.classList.add(\"is-current\");\n});\n});\n</script>",
   "showNum": false,
   "zoom": false,
   "styles": {
    "body": {
     "font": "sans",
-    "size": 13,
-    "lh": 19,
-    "sizeM": 14,
-    "lhM": 20,
+    "size": 15,
+    "lh": 22,
+    "sizeM": 15,
+    "lhM": 22,
     "weight": 400,
     "italic": false,
     "textCase": "none",
@@ -55,22 +55,22 @@
    },
    "heading": {
     "font": "sans",
-    "size": 15,
-    "lh": 19,
-    "sizeM": 14,
-    "lhM": 20,
+    "size": 17,
+    "lh": 22,
+    "sizeM": 16,
+    "lhM": 21,
     "weight": "400",
-    "italic": false,
+    "italic": true,
     "textCase": "none",
     "tracking": 0,
     "color": ""
    },
    "small": {
     "font": "sans",
-    "size": 13,
+    "size": 14,
     "lh": 19,
-    "sizeM": 12,
-    "lhM": 17,
+    "sizeM": 13,
+    "lhM": 18,
     "weight": "400",
     "italic": false,
     "textCase": "none",
@@ -80,7 +80,7 @@
    "caption": {
     "font": "sans",
     "size": 12,
-    "lh": 18,
+    "lh": 17,
     "sizeM": 12,
     "lhM": 17,
     "weight": 400,
@@ -91,14 +91,14 @@
    },
    "mono": {
     "font": "mono",
-    "size": 12,
-    "lh": 18,
-    "sizeM": 12,
-    "lhM": 17,
+    "size": 11,
+    "lh": 17,
+    "sizeM": 11,
+    "lhM": 16,
     "weight": 400,
     "italic": false,
     "textCase": "uppercase",
-    "tracking": 0,
+    "tracking": 0.04,
     "color": ""
    }
   },
@@ -115,7 +115,7 @@
    "btnSide": 34,
    "btnTopM": 22,
    "btnSideM": 18,
-   "font": "sans",
+   "font": "mono",
    "size": 0,
    "lh": 0,
    "sizeM": 0,
@@ -336,10 +336,10 @@
     "titleSizeM": "",
     "titleLh": 20,
     "titleLhM": "",
-    "metaStyle": "small",
-    "metaSize": 12,
+    "metaStyle": "mono",
+    "metaSize": 10,
     "metaSizeM": "",
-    "metaLh": 15,
+    "metaLh": 14,
     "metaLhM": "",
     "metaGap": 10,
     "cardBg": "",
@@ -375,12 +375,12 @@
    },
    "library": {
     "book": "1",
-    "spine": "#0ec800",
+    "spine": "#E8603C",
     "spineW": 10,
     "shadow": "1",
     "radius": 2,
     "hover": "tilt",
-    "blend": "difference",
+    "blend": "",
     "backdrop": ""
    },
    "toggle": {
@@ -528,7 +528,7 @@
    "library": "",
    "about": "nsye72w3",
    "mark": "صمت",
-   "menuColor": "#ffffff",
+   "menuColor": "#B9A27A",
    "menuAlpha": 100,
    "menuBlur": 0,
    "menuW": 200,
@@ -540,7 +540,7 @@
    "menuAlign": "left",
    "marker": ">",
    "menuEdge": false,
-   "menuStyle": "heading",
+   "menuStyle": "mono",
    "aboutW": 600,
    "aboutPad": 40,
    "aboutPadM": 24,
@@ -551,7 +551,7 @@
    "sliverM": 14,
    "indexEdge": false,
    "ease": "paper",
-   "dur": 460,
+   "dur": 520,
    "menuDur": 460,
    "tilt": 0,
    "lift": true,
@@ -585,10 +585,10 @@
     "axis": "x",
     "covers": "all",
     "coverPages": [],
-    "color": "#4e7a27",
-    "alpha": 70,
+    "color": "#B9A27A",
+    "alpha": 100,
     "blur": 0,
-    "shadow": "none",
+    "shadow": "line",
     "nudge": 100,
     "dur": "",
     "box": {
@@ -654,18 +654,18 @@
     "restPage": "",
     "edge": "bottom",
     "edgeM": "top",
-    "rest": "still",
+    "rest": "open",
     "peek": 90,
     "peekM": 14,
-    "sliver": 44,
+    "sliver": 90,
     "sliverM": 14,
     "axis": "y",
     "covers": "all",
     "coverPages": [],
-    "color": "",
-    "alpha": 55,
-    "blur": 9,
-    "shadow": "none",
+    "color": "#EADFC8",
+    "alpha": 100,
+    "blur": 0,
+    "shadow": "line",
     "nudge": 0,
     "dur": "",
     "box": {
@@ -674,7 +674,7 @@
      "mb": "",
      "ml": ""
     },
-    "pattern": "lined",
+    "pattern": "",
     "patColor": "#000000",
     "patSize": 28,
     "patAlpha": 14,
@@ -1385,14 +1385,15 @@
    },
    "trans": "slide",
    "box": {
-    "shadow": "none",
-    "mt": "",
-    "mr": "",
+    "shadow": "line",
+    "mt": "4%",
+    "mr": "6%",
     "fit": false,
-    "ml": "",
+    "ml": "6%",
     "pl": "100",
     "plM": "30",
-    "card": "#0061fe"
+    "card": "#EADFC8",
+    "mb": "4%"
    }
   },
   "ipk7ns57": {
@@ -1858,7 +1859,12 @@
    "box": {
     "pl": "150",
     "plM": "20",
-    "card": "#0061fe"
+    "card": "#EADFC8",
+    "mt": "4%",
+    "mb": "4%",
+    "ml": "6%",
+    "mr": "6%",
+    "shadow": "line"
    }
   },
   "k2b6e868": {
@@ -2282,7 +2288,12 @@
    "excerpt": "",
    "featured": false,
    "box": {
-    "card": "#0061fe"
+    "card": "#EADFC8",
+    "mt": "4%",
+    "mb": "4%",
+    "ml": "6%",
+    "mr": "6%",
+    "shadow": "line"
    }
   },
   "ap7jj2t4": {
@@ -2561,7 +2572,12 @@
    "excerpt": "",
    "featured": false,
    "box": {
-    "card": "#0061fe"
+    "card": "#EADFC8",
+    "mt": "4%",
+    "mb": "4%",
+    "ml": "6%",
+    "mr": "6%",
+    "shadow": "line"
    }
   },
   "1bp9xrs5": {
@@ -2950,7 +2966,12 @@
     "gutterM": 24
    },
    "box": {
-    "card": "#0061fe"
+    "card": "#EADFC8",
+    "mt": "4%",
+    "mb": "4%",
+    "ml": "6%",
+    "mr": "6%",
+    "shadow": "line"
    }
   },
   "b2lr3tkr": {
@@ -4395,7 +4416,7 @@
     "mtM": "0",
     "shadow": "none",
     "fit": false,
-    "card": "",
+    "card": "#3A6FE4",
     "plM": "20",
     "prM": "20",
     "pl": "100",
@@ -4484,7 +4505,13 @@
     "gap": "",
     "gapM": ""
    },
-   "box": {}
+   "box": {
+    "card": "#F2B630",
+    "mt": "4%",
+    "mb": "4%",
+    "ml": "6%",
+    "mr": "6%"
+   }
   },
   "nsye72w3": {
    "id": "nsye72w3",
@@ -4688,7 +4715,7 @@
     "mr": "20%",
     "shadow": "none",
     "fit": false,
-    "card": "",
+    "card": "#F2B58A",
     "mrM": "0",
     "ml": "",
     "pt": "",
@@ -4725,7 +4752,7 @@
       "menu": "main",
       "marker": ">",
       "align": "left",
-      "style": "heading",
+      "style": "mono",
       "gap": 4,
       "gapM": 14,
       "pad": 40,
