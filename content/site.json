@@ -570,9 +570,8 @@
     "id": "menu",
     "name": "Menu",
     "pages": [
-     "8b78vbfw",
-     "nsye72w3",
-     "56ud3gky"
+     "56ud3gky",
+     "nsye72w3"
     ],
     "restPage": "56ud3gky",
     "edge": "right",
@@ -614,13 +613,12 @@
     "name": "Sheet 3",
     "pages": [
      "fji5ongj",
-     "uot2ueaf",
      "b2lr3tkr"
     ],
     "restPage": "",
     "edge": "bottom",
     "edgeM": "top",
-    "rest": "open",
+    "rest": "still",
     "peek": 90,
     "peekM": 14,
     "sliver": 90,
