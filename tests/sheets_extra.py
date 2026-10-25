@@ -33,7 +33,7 @@ async def run():
         # still sheet: stays put when something opens; hard shadow; nudge variable
         await ev("(function(){ var k = S.project.site.sheets.find(function(k){return k.id==='index'}); k.rest='still'; k.shadow='hard'; S.project.site.sheets.find(function(k){return k.id==='menu'}).nudge=14; changed(); })()")
         plan = await ev("JSON.stringify(bdSheetPlan(sheetModel(), sheetFocus(S.project.pages['zty6iib1']), null))")
-        ok('plan: a still sheet stays open when a page underneath opens', '"st":"open"' in plan.split('},{')[1])
+        ok('plan: a still sheet stays open when a page underneath opens', '"st":"open"' in plan.split('},{')[await ev("sheetList().map(function(k){return k.id}).indexOf('index')")])
         css = await ev("exportCSS()")
         ok('css: hard shadow on the sheet', '8px 8px 0 rgba(0, 0, 0, 0.1)' in css)
         ok('css: nudge variable + hover rule', '--k-nudge: 14px;' in css and ':hover:not(:has(a:hover))' in css)
@@ -82,10 +82,10 @@ async def run():
         bar = await ev("(function(){ var w = " + W + "; var b = w.document.getElementById('bd-ly-bar'); return [b.className.indexOf('is-off') < 0, Math.round(b.querySelector('i').getBoundingClientRect().right) === w.innerWidth]; })()")
         ok('scrollbar: one black line shows, on the far right edge of the window', bar == [True, True])
         # gradients: a sheet's paper and a page's card/behind colours can be solid or a two-colour gradient
-        await ev("(function(){ var ix = S.project.site.sheets.find(function(k){return k.id==='index'}); ix.color='#ebebeb'; ix.alpha=30; applyPath('fill.mode|site.sheets.1.color', 'grad'); applyPath('fill.a|site.sheets.1.color', '#ff0000'); applyPath('fill.angle|site.sheets.1.color', '90'); applyPath('fill.mode|page.sheetBg', 'grad'); changed(); })()")
+        await ev("(function(){ var ix = S.project.site.sheets.find(function(k){return k.id==='index'}); ix.color='#ebebeb'; ix.alpha=30; applyPath('fill.mode|site.sheets.' + sheetList().map(function(k){return k.id}).indexOf('index') + '.color', 'grad'); applyPath('fill.a|site.sheets.' + sheetList().map(function(k){return k.id}).indexOf('index') + '.color', '#ff0000'); applyPath('fill.angle|site.sheets.' + sheetList().map(function(k){return k.id}).indexOf('index') + '.color', '90'); applyPath('fill.mode|page.sheetBg', 'grad'); changed(); })()")
         css = await ev("exportCSS()")
         ok('gradient: a sheet\'s paper keeps its see-through on every stop', 'linear-gradient(90deg, rgba(255, 0, 0, 0.3), rgba(255, 255, 255, 0.3))' in css)
-        ok('gradient: back to solid keeps the first colour', await ev("(function(){ applyPath('fill.mode|site.sheets.1.color', 'solid'); return S.project.site.sheets[1].color; })()") == '#ff0000')
+        ok('gradient: back to solid keeps the first colour', await ev("(function(){ applyPath('fill.mode|site.sheets.' + sheetList().map(function(k){return k.id}).indexOf('index') + '.color', 'solid'); return S.project.site.sheets.find(function(k){return k.id==='index'}).color; })()") == '#ff0000')
         # --- sheet panel, fills, patterns, margin/padding, leave/appear, page card ---
         import re
         errs2 = errs
@@ -96,7 +96,7 @@ async def run():
         ok('left: sheet titles are buttons (%d)'%n, n>=2)
         await pg.locator('button.bd-ed-group-label.is-btn').nth(1).click(); await pg.wait_for_timeout(500)
         t = await ev("document.getElementById('bd-right').innerText")
-        t=t.lower(); ok('right: sheet settings show', all(x.lower() in t for x in ['Style','Margin & padding','Pages spread','On leave','On appear','On hover','Layout','Pattern']))
+        t=t.lower(); ok('right: sheet settings show', all(x.lower() in t for x in ['Style','Exact numbers','Pages spread','On leave','On appear','On hover','Layout','Pattern']))
         ok('right: page-only sections hidden', 'Space & card' not in t)
         # page click returns to page settings
         await ev("goPage(sheetList()[1].pages[0])"); await pg.wait_for_timeout(300)
@@ -104,7 +104,7 @@ async def run():
         ok('page click -> page settings with Sheet settings button', 'Space & card' in t and 'Sheet settings' in t)
         await ev("S.sheetSel = sheetList()[1].id; render()")
         # model edits
-        K = "S.project.site.sheets[1]"
+        K = "S.project.site.sheets.find(function(k){return k.id==='index'})"
         await ev(f"{K}.color='none'; {K}.pattern='grid'; {K}.out='hide'; {K}.lv='fold'; {K}.arrive='fade'; {K}.box={{ml:'20',pt:'30',mt:'10'}}; changed()")
         css = await ev("layerCSS(false)")
         blk = re.search(r'\.bd-ly-k\[data-k="'+(await ev(K+'.id'))+r'"\] \{[^}]*\}', css).group(0)
@@ -117,15 +117,15 @@ async def run():
         html = await ev("layerDoc(curPage(), 'view')")
         ok('markup: classes is-lv-fold + is-ap-fade', 'is-lv-fold' in html and 'is-ap-fade' in html)
         # gradient to clear
-        await ev(f"{K}.color='linear-gradient(90deg, #ff0000, #0000ff)'; applyPath('fill.ends|site.sheets.1.color','cx'); ")
+        await ev(f"{K}.color='linear-gradient(90deg, #ff0000, #0000ff)'; applyPath('fill.ends|site.sheets.' + sheetList().map(function(k){{return k.id}}).indexOf('index') + '.color','cx'); ")
         v = await ev(K+'.color')
         ok('gradient: colour -> clear stored (%s)'%v, v=='linear-gradient(90deg, #ff0000, transparent)')
         css = await ev("layerCSS(false)")
         ok('css: clear stop stays transparent', re.search(r'rgba\(255, 0, 0, [\d.]+\), transparent', css) is not None)
-        await ev(f"applyPath('fill.mode|site.sheets.1.color','none')")
+        await ev(f"applyPath('fill.mode|site.sheets.' + sheetList().map(function(k){{return k.id}}).indexOf('index') + '.color','none')")
         ok('fill mode None -> "none"', (await ev(K+'.color'))=='none')
         # page card opacity + blur + none
-        pid = await ev("sheetList()[1].pages[0]")
+        pid = await ev("sheetList().find(function(k){return k.id==='index'}).pages[0]")
         await ev(f"S.project.pages['{pid}'].box = {{card:'#ffffff', cardA:'40', blur:'6'}}; changed()")
         css = await ev("layerCSS(false)")
         ok('css: page card see-through + blur', 'rgba(255, 255, 255, 0.4)' in css and 'blur(6px)' in css)
@@ -171,48 +171,55 @@ async def run():
         rt = await ev("document.getElementById('bd-right').innerHTML")
         ok('behaviour: panel shows Starts, Side, On appear, On leave, On hover always', all(t in rt for t in ['Starts', 'Side', 'On appear', 'On leave', 'On hover', 'When another page opens']))
         await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; k.rest='open'; k.out='peek'; k.sliver=100; })()")
-        # --- layout map: drag the window onto the main page; hover; page decoration
-        await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; k.axis='x'; k.main=''; k.hover='lift'; S.sheetSel=k.id; S.preview=false; S.sel=null; render(); })()"); await pg.wait_for_timeout(500)
-        wbox = await ev("(function(){ var w = document.querySelector('#bd-right [data-sheetwin]'); var r = w.getBoundingClientRect(); return [r.x + r.width/2, r.y + r.height/2, r.width]; })()")
-        await pg.mouse.move(wbox[0], wbox[1]); await pg.mouse.down(); await pg.mouse.move(wbox[0] + wbox[2] * 0.9, wbox[1], steps=6); await pg.mouse.up(); await pg.wait_for_timeout(500)
-        ok('map: dragging the blue window onto the second page makes it the main page', await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; return k.main === sheetPanes(k)[1].id; })()"))
+        # --- layout drawing in the sheet panel: everything is dragged and clicked there
+        await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; k.axis='x'; k.main=''; k.hover='lift'; k.box={}; k.rest='still'; sheetPanes(k).forEach(function(q){ q.box={}; }); S.mode='desktop'; S.sheetSel=k.id; S.preview=false; S.sel=null; render(); })()"); await pg.wait_for_timeout(600)
+        SHB = "document.getElementById('bd-sheet').shadowRoot"
+        RT = "document.getElementById('bd-right')"
+        ok('layout: the right panel is wider with a sheet selected', await ev(f"{RT}.getBoundingClientRect().width") > 380)
+        ok('layout: the drawing is there with 4 sheet handles and 4 page handles', await ev(f"{RT}.querySelectorAll('svg.bd-lay [data-lh=sheet]').length") == 4 and await ev(f"{RT}.querySelectorAll('svg.bd-lay [data-lh=page]').length") == 4)
+        ok('layout: nothing draggable is left on the canvas', await ev(f"{SHB}.querySelectorAll('.bd-gh, .bd-gr').length") == 0)
+        ok('layout: no old grid switch', 'ui.grid' not in await ev(f"{RT}.innerHTML"))
+        async def drag(kind, side, frac):
+            g = await ev(f"(()=>{{const s=document.querySelector('#bd-right svg.bd-lay'); s.scrollIntoView({{block:'center'}}); const h=s.querySelector('[data-lh={kind}][data-s={side}]'); const r=h.getBoundingClientRect(); const sr=s.getBoundingClientRect(); const k=sr.width/360; return [r.x+r.width/2, r.y+r.height/2, sr.left, sr.top, k, +s.dataset.ox, +s.dataset.oy, +s.dataset.sc, +s.dataset.w, +s.dataset.h, +h.dataset.off]}})()")
+            x, y, sl, st, k, ox, oy, sc, W, H, off = g
+            tx = sl + (ox + W * frac * sc + off) * k if side in 'lr' else x
+            ty = st + (oy + H * frac * sc + off) * k if side in 'tb' else y
+            await pg.mouse.move(x, y); await pg.mouse.down(); await pg.mouse.move(tx, ty, steps=6); await pg.mouse.up(); await pg.wait_for_timeout(600)
+        await drag('sheet', 'r', 0.70)
+        ok('layout drag: the sheet’s right edge to 70% writes a 30% right margin', await ev("sheetList().filter(function(k){return k.id==='index'})[0].box.mr") == '30%')
+        await drag('sheet', 't', 0.20)
+        ok('layout drag: the sheet’s top edge to 20% writes a 20% top margin', await ev("sheetList().filter(function(k){return k.id==='index'})[0].box.mt") == '20%')
+        await ev("sheetList().filter(function(k){return k.id==='index'})[0].box={}; changed()"); await pg.wait_for_timeout(400)
+        await drag('page', 'l', 0.10)
+        ok('layout drag: a page’s left edge to 10% insets it 10%', await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; var q = sheetPanes(k)[0]; return q.box.ml; })()") == '10%')
+        await ev("S.mode='phone'; render()"); await pg.wait_for_timeout(500)
+        await drag('page', 't', 0.25)
+        ok('layout drag on phone writes only the phone value', await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; var q = sheetPanes(k)[0]; return q.box.mtM === '25%' && !q.box.mt; })()"))
+        await ev("S.mode='desktop'; render()"); await pg.wait_for_timeout(400)
+        n0 = await ev("sheetList().filter(function(k){return k.id==='index'})[0].pages.length")
+        ok('layout: a page with an x and a + add slot', await ev(f"{RT}.querySelectorAll('[data-act=lay-rm]').length") == n0 and await ev(f"{RT}.querySelectorAll('[data-act=lay-add]').length") == 1)
+        await ev(f"{RT}.querySelector('[data-act=lay-add]').dispatchEvent(new MouseEvent('click', {{bubbles: true}}))"); await pg.wait_for_timeout(400)
+        ok('layout: clicking + add shows the pages that are free', 'sheet-page-add' in await ev(f"{RT}.innerHTML") and 'lay-new' in await ev(f"{RT}.innerHTML"))
+        await ev(f"{RT}.querySelector('[data-act=lay-new]').dispatchEvent(new MouseEvent('click', {{bubbles: true}}))"); await pg.wait_for_timeout(500)
+        ok('layout: New page adds one to the sheet', await ev("sheetList().filter(function(k){return k.id==='index'})[0].pages.length") == n0 + 1)
+        await ev(f"{RT}.querySelectorAll('[data-act=lay-rm]')[{n0}].dispatchEvent(new MouseEvent('click', {{bubbles: true}}))"); await pg.wait_for_timeout(500)
+        ok('layout: the x takes the page off the sheet', await ev("sheetList().filter(function(k){return k.id==='index'})[0].pages.length") == n0)
+        await ev(f"{RT}.querySelectorAll('[data-act=lay-main]')[1].dispatchEvent(new MouseEvent('click', {{bubbles: true}}))"); await pg.wait_for_timeout(500)
+        ok('layout: set main makes the second page the one it opens on', await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; return k.main === sheetPanes(k)[1].id; })()"))
         doc = await ev("layerDoc(S.project.pages['b2lr3tkr'], 'export')")
-        ok('map: the published sheet starts on the main page (data-main=1, --i on the track)', 'data-main="1"' in doc)
+        ok('layout: the published sheet starts on the main page (data-main=1)', 'data-main="1"' in doc)
         css = await ev("exportCSS()")
-        ok('hover: a lifting sheet gets the class and the desktop hover rule', 'is-hv-lift' in await ev("layerDoc(S.project.pages['b2lr3tkr'], 'export')") and 'is-hv-lift:hover' in css)
+        ok('hover: a lifting sheet gets the class and the desktop hover rule', 'is-hv-lift' in doc and 'is-hv-lift:hover' in css)
         await ev("S.project.pages['b2lr3tkr'].pattern='dots'; S.project.pages['b2lr3tkr'].hover='lift'; changed();")
         css = await ev("exportCSS()")
         ok('page: its own decoration and hover lift override the sheet', 'radial-gradient' in css and '.bd-panel:hover' in css)
-        await ev("S.project.pages['b2lr3tkr'].pattern=''; S.project.pages['b2lr3tkr'].hover=''; var k=sheetList().filter(function(k){return k.id==='index'})[0]; k.main=''; k.hover=''; k.axis='y'; changed();")
-        # --- grid + drag to resize (desktop and phone), always snapping to the 5% grid
-        await ev("S.sheetSel=''; S.preview=false; S.inspect=false; S.mode='desktop'; S.project.pages['b2lr3tkr'].box = {}; goPage('b2lr3tkr'); render()"); await pg.wait_for_timeout(700)
-        SHB = "document.getElementById('bd-sheet').shadowRoot"
-        ok('grid: a line every 5% with the halves marked', await ev(f"{SHB}.querySelectorAll('.bd-gr i').length") == 38 and await ev(f"{SHB}.querySelectorAll('.bd-gr i.is-h').length") == 2)
-        ok('grid: four drag handles on a page', await ev(f"{SHB}.querySelectorAll('.bd-gh').length") == 4)
-        async def drag(side, frac, phone):
-            g = await ev(f"(()=>{{const h=[...{SHB}.querySelectorAll('.bd-gh')].find(x=>x.dataset.side==='{side}'); const r=h.getBoundingClientRect(); const s=document.getElementById('bd-sheet').getBoundingClientRect(); return [r.x+r.width/2, r.y+r.height/2, s.x, s.y, S.zoom]}})()")
-            x, y, sx, sy, z = g
-            W, H = (390, 780) if phone else (1280, 800)
-            tx = sx + (W * frac + 3) * z if side in 'lr' else x
-            ty = sy + (H * frac + 3) * z if side in 'tb' else y
-            await pg.mouse.move(x, y); await pg.mouse.down(); await pg.mouse.move(tx, ty, steps=6); await pg.mouse.up(); await pg.wait_for_timeout(700)
-        await drag('l', 0.30, False)
-        ok('drag: the left edge lands on the 30% line (384px of 1280)', abs(await ev(f"parseFloat([...{SHB}.querySelectorAll('.bd-gh')].find(x=>x.dataset.side==='l').dataset.dist)") - 384) < 1.5)
-        await drag('t', 0.20, False)
-        ok('drag: the top edge lands on the 20% line (160px of 800)', abs(await ev(f"parseFloat([...{SHB}.querySelectorAll('.bd-gh')].find(x=>x.dataset.side==='t').dataset.dist)") - 160) < 1.5)
-        await ev("S.mode='phone'; render()"); await pg.wait_for_timeout(700)
-        await drag('l', 0.50, True)
-        ok('drag on phone writes the phone value only and lands on 50% (195px of 390)', await ev("!!S.project.pages['b2lr3tkr'].box.mlM && /%$/.test(S.project.pages['b2lr3tkr'].box.ml)") and abs(await ev(f"parseFloat([...{SHB}.querySelectorAll('.bd-gh')].find(x=>x.dataset.side==='l').dataset.dist)") - 195) < 1.5)
-        await ev("S.mode='desktop'; S.sheetSel=sheetOf('b2lr3tkr').sheet.id; render()"); await pg.wait_for_timeout(700)
-        ok('grid: with a sheet selected the handles are the sheet’s', await ev(f"{SHB}.querySelectorAll('.bd-gh.is-sheet').length") == 4)
-        ok('grid: the switch turns it off', 'ui.grid' in await ev("document.getElementById('bd-right').innerHTML"))
-        await ev("S.grid=false; S.sheetSel=''; render()"); await pg.wait_for_timeout(500)
-        ok('grid: off draws nothing', await ev(f"{SHB}.querySelectorAll('.bd-gh, .bd-gr').length") == 0)
-        await ev("S.grid=true; S.project.pages['b2lr3tkr'].box = {}; render()")
-        await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='menu'})[0]; S.sheetSel=''; goPage(sheetStrip(k).id); })()"); await pg.wait_for_timeout(700)
-        ok('grid: the edge strip has one handle (how much of it shows)', await ev(f"{SHB}.querySelectorAll('.bd-gh.is-peek').length") == 1)
-        await drag('r', 0.15, False)
-        ok('drag: the peek amount snaps to 15% of the window (192px)', await ev("sheetList().filter(function(k){return k.id==='menu'})[0].peek") == 192)
+        await ev("S.project.pages['b2lr3tkr'].pattern=''; S.project.pages['b2lr3tkr'].hover=''; var k=sheetList().filter(function(k){return k.id==='index'})[0]; k.main=''; k.hover=''; k.axis='y'; k.box={}; sheetPanes(k).forEach(function(q){ q.box={}; }); changed();")
+        # the strip handle on the menu sheet
+        await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='menu'})[0]; S.mode='desktop'; S.sheetSel=k.id; render(); })()"); await pg.wait_for_timeout(600)
+        ok('layout: a peeking sheet has a strip handle', await ev(f"{RT}.querySelectorAll('svg.bd-lay [data-lh=peek]').length") == 1)
+        await drag('peek', 'r', 0.15)
+        ok('layout drag: the strip snaps to 15% of the window (192px)', await ev("sheetList().filter(function(k){return k.id==='menu'})[0].peek") == 192)
+        await ev("S.sheetSel=''; render()")
         # phone padding: a page on a sheet under a peeking menu never keeps the desktop's big left padding
         css = await ev("exportCSS()")
         ok('phone: one mobile block only', css.count('@media (max-width: 760px)') == 1)

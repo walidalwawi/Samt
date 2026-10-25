@@ -87,7 +87,7 @@ padding-right: max(16px, env(safe-area-inset-right, 0px));
 padding-block: 10px;
 display: grid;
 grid-template-rows: 44px minmax(0, 1fr) auto;
-grid-template-columns: 264px minmax(0, 1fr) 268px;
+grid-template-columns: 264px minmax(0, 1fr) var(--e-rw, 268px);
 grid-template-areas: "top top top" "left canvas right" "code code code";
 gap: 8px;
 }
@@ -95,10 +95,10 @@ gap: 8px;
 grid-template-rows: 44px minmax(0, 1fr) minmax(180px, 38%);
 }
 .bd-ed-app.has-wide-left {
-grid-template-columns: minmax(420px, 42%) minmax(0, 1fr) 268px;
+grid-template-columns: minmax(420px, 42%) minmax(0, 1fr) var(--e-rw, 268px);
 }
 .bd-ed-app.is-no-left {
-grid-template-columns: 0 minmax(0, 1fr) 268px;
+grid-template-columns: 0 minmax(0, 1fr) var(--e-rw, 268px);
 }
 .bd-ed-app.is-no-right {
 grid-template-columns: 264px minmax(0, 1fr) 0;
