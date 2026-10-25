@@ -653,9 +653,9 @@
     "restPage": "",
     "edge": "left",
     "edgeM": "top",
-    "rest": "open",
-    "peek": 200,
-    "peekM": 52,
+    "rest": "peek",
+    "peek": 90,
+    "peekM": 14,
     "sliver": 44,
     "sliverM": 14,
     "axis": "y",
@@ -667,7 +667,9 @@
     "shadow": "line",
     "nudge": 0,
     "dur": "",
-    "box": {},
+    "box": {
+     "mr": "15%"
+    },
     "pattern": "",
     "patColor": "#000000",
     "patSize": 28,
@@ -1383,7 +1385,7 @@
     "mr": "",
     "fit": false,
     "ml": "",
-    "pl": "150",
+    "pl": "100",
     "plM": "30"
    }
   },
@@ -4375,7 +4377,7 @@
    "box": {
     "mt": "",
     "mr": "0",
-    "mb": "40%",
+    "mb": "0",
     "mrM": "0",
     "mtM": "0",
     "shadow": "none",
