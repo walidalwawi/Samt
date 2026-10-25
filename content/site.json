@@ -4672,13 +4672,13 @@
     "prM": "24",
     "mr": "",
     "shadow": "soft",
-    "fit": true,
-    "card": "#ffffff",
+    "fit": false,
+    "card": "",
     "mrM": "0",
     "ml": "",
     "pt": "",
-    "mt": "0",
-    "mb": "50"
+    "mt": "",
+    "mb": ""
    },
    "sheetBg": "",
    "hover": "",

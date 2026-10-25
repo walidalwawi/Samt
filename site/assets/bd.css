@@ -1,4 +1,4 @@
-/* PUBLISHED mvnqnztv */
+/* PUBLISHED mvnqpbt1 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -2174,13 +2174,7 @@ padding-top: var(--bd-wt);
 padding-right: var(--bd-wr);
 padding-bottom: var(--bd-wb);
 padding-left: var(--bd-wl);
-background: rgba(255, 255, 255, 1);
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
-min-height: 0;
-}
-.bd-ly-pane[data-page="nsye72w3"] > .bd-panel {
-margin-top: 0px;
-margin-bottom: 50px;
 }
 .bd-ly-pane[data-page="b2lr3tkr"] {
 background: rgba(228, 225, 218, 0.55);
@@ -2843,9 +2837,7 @@ padding-bottom: var(--bd-wb);
 padding-left: 24px;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-panel {
-margin-top: 0px;
 margin-right: 0px;
-margin-bottom: 50px;
 width: auto;
 box-sizing: border-box;
 }
