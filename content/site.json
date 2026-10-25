@@ -605,13 +605,14 @@
     "name": "Menu",
     "pages": [
      "56ud3gky",
+     "8b78vbfw",
      "nsye72w3"
     ],
     "restPage": "56ud3gky",
     "edge": "left",
     "edgeM": "top",
     "rest": "peek",
-    "peek": 192,
+    "peek": 128,
     "peekM": 70,
     "sliver": 130,
     "sliverM": 14,
@@ -625,10 +626,10 @@
     "nudge": 100,
     "dur": "",
     "box": {
-     "mr": "",
-     "mt": "",
+     "mr": "55%",
+     "mt": "0",
      "mb": "",
-     "ml": "",
+     "ml": "0",
      "pt": ""
     },
     "pattern": "",
@@ -636,54 +637,9 @@
     "patSize": 28,
     "patAlpha": 14,
     "out": "peek",
-    "lv": "",
+    "lv": "rise",
     "arrive": "slide",
-    "main": "nsye72w3",
-    "hover": ""
-   },
-   {
-    "id": "index",
-    "name": "Index",
-    "pages": [
-     "fji5ongj",
-     "b2lr3tkr"
-    ],
-    "restPage": "fji5ongj",
-    "edge": "left",
-    "edgeM": "top",
-    "rest": "open",
-    "peek": 200,
-    "peekM": 0,
-    "sliver": 100,
-    "sliverM": 10,
-    "axis": "y",
-    "covers": "all",
-    "coverPages": [
-     "56ud3gky"
-    ],
-    "color": "",
-    "alpha": 0,
-    "blur": 10,
-    "shadow": "line",
-    "nudge": 300,
-    "dur": "",
-    "box": {
-     "mr": "0",
-     "mrM": "0",
-     "mtM": "0",
-     "mbM": "0",
-     "mlM": "0",
-     "plM": "0",
-     "mt": ""
-    },
-    "pattern": "lined",
-    "patColor": "#000000",
-    "patSize": 28,
-    "patAlpha": 10,
-    "out": "peek",
-    "lv": "slide",
-    "arrive": "slide",
-    "main": "fji5ongj",
+    "main": "",
     "hover": ""
    }
   ],
@@ -4678,14 +4634,14 @@
     "pr": "",
     "plM": "24",
     "prM": "24",
-    "mr": "40%",
+    "mr": "95%",
     "shadow": "soft",
-    "fit": false,
-    "card": "linear-gradient(180deg, #ffffff, #ffffff)",
+    "fit": true,
+    "card": "#ffffff",
     "mrM": "0",
-    "ml": "50",
+    "ml": "95%",
     "pt": "",
-    "mt": "50",
+    "mt": "0",
     "mb": "50"
    },
    "sheetBg": "",
@@ -4748,7 +4704,19 @@
     "radius": "",
     "maxW": ""
    },
-   "sheetBg": ""
+   "sheetBg": "",
+   "ownLayout": false,
+   "colset": {
+    "cols": 2,
+    "align": "spread",
+    "spans": [
+     5,
+     7
+    ],
+    "colsM": 1,
+    "gutter": 40,
+    "gutterM": 24
+   }
   }
  }
 }
