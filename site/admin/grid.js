@@ -19,6 +19,8 @@ var I = {};
 var p = {
 panel: '<rect x="2.5" y="3.5" width="15" height="13" rx="1"/><path d="M7.5 3.5v13"/>',
 more: '<circle cx="4.5" cy="10" r="1"/><circle cx="10" cy="10" r="1"/><circle cx="15.5" cy="10" r="1"/>',
+grip: '<circle cx="7.5" cy="5" r="1"/><circle cx="12.5" cy="5" r="1"/><circle cx="7.5" cy="10" r="1"/><circle cx="12.5" cy="10" r="1"/><circle cx="7.5" cy="15" r="1"/><circle cx="12.5" cy="15" r="1"/>',
+panelR: '<rect x="2.5" y="3.5" width="15" height="13" rx="1"/><path d="M12.5 3.5v13"/>',
 sliders: '<path d="M3 6h9M15 6h2M3 14h3M9 14h8"/><circle cx="13.5" cy="6" r="1.6"/><circle cx="7.5" cy="14" r="1.6"/>',
 desk: '<rect x="2.5" y="4" width="15" height="10" rx="1"/><path d="M7 17h6"/>',
 phone: '<rect x="6" y="2.5" width="8" height="15" rx="1.5"/><path d="M9 15h2"/>',
@@ -5023,7 +5025,7 @@ return '<button class="bd-ed-tool' + (phone ? "" : " is-on") + '" data-act="mode
 "preview": { label: "Preview", icon: I.eye, act: "preview", on: function () { return S.preview && !S.inspect; } },
 "publish": { label: "Save & publish", icon: I.up, act: "export", primary: true, disabled: function () { return S.publishing; }, text: function () { return S.publishing ? "Publishing…" : "Save & publish"; } },
 "status": { label: "Saved / published status", only: ["top"], html: function () { return '<span class="bd-ed-status bd-ed-hide-narrow"></span>'; } },
-"toggle-right": { label: "Right panel", icon: I.sliders, act: "toggle-right", iconOnly: true },
+"toggle-right": { label: "Right panel", icon: I.panelR, act: "toggle-right", iconOnly: true },
 "inspect": { label: "Style anything", icon: I.target, act: "inspect", iconOnly: true }
 };
 RAIL_TYPES.forEach(function (t) {
@@ -5596,21 +5598,16 @@ pins.label = "Header & footer · not shown with paper sheets";
 if (pins.pages.length) groups.push(pins);
 } else groups.push(pins);
 var h = '<div class="bd-ed-sec"><div class="bd-ed-actions"><button class="bd-ed-btn" data-act="page-add">' + I.plus + 'Page</button><button class="bd-ed-btn" data-act="blog-add">' + I.plus + 'Blog</button>' + (layersOn() ? '<button class="bd-ed-btn" data-act="sheet-add">' + I.plus + "Sheet</button>" : '<button class="bd-ed-btn" data-act="pin-add" data-val="top">' + I.plus + 'Header</button><button class="bd-ed-btn" data-act="pin-add" data-val="bottom">' + I.plus + "Footer</button>") + "</div>";
-var lf = S.layFilter || "";
 groups.forEach(function (g) {
 if (!g.pages.length && !g.pins) return;
-if (lf === "sheet" && !g.sheet) return;
-if (lf === "page" && (g.sheet || g.pins)) return;
-if (lf === "blog" && !g.pages.some(function (p) { return p.blog; })) return;
-var gl = esc(g.label) + (g.sheet ? ' <span class="bd-ed-hint">· ' + (g.sheet.rest === "open" ? "open" : g.sheet.rest === "still" ? "still" : g.sheet.rest === "peek" ? "peeks" : "hidden") + " · settings</span>" : "");
-h += '<div class="bd-ed-group' + (g.sheet ? " is-sheet" : "") + '">' + (g.sheet ? '<button class="bd-ed-group-label is-btn' + (S.sheetSel === g.sheet.id ? " is-on" : "") + '" data-act="sheet-sel" data-id="' + esc(g.sheet.id) + '">' + gl + "</button>" : '<div class="bd-ed-group-label">' + gl + "</div>");
+var gl = g.sheet ? "<b>" + esc(g.sheet.name || "Sheet") + '</b><span class="bd-ed-gtag">' + (g.sheet.rest === "open" ? "open" : g.sheet.rest === "still" ? "still" : g.sheet.rest === "peek" ? "peeks" : "hidden") + "</span>" + I.sliders : esc(g.label);
+h += '<div class="bd-ed-group' + (g.sheet ? " is-sheet" : "") + (g.pins ? " is-pins" : "") + '" data-gk="' + esc(g.key) + '"' + (g.sheet ? ' data-sheet="' + esc(g.sheet.id) + '"' : "") + '>' + (g.sheet ? '<div class="bd-ed-glabel"><span class="bd-ed-grip is-sheet" data-grip="sheet" data-id="' + esc(g.sheet.id) + '" title="Drag to change the stack order">' + I.grip + '</span><button class="bd-ed-group-label is-btn' + (S.sheetSel === g.sheet.id ? " is-on" : "") + '" data-act="sheet-sel" data-id="' + esc(g.sheet.id) + '">' + gl + "</button></div>" : '<div class="bd-ed-group-label">' + gl + "</div>");
 if (g.sheet && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">Empty.</div>';
 if (g.pins && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">None yet. A header or footer shows on every page, with its own columns.</div>';
 g.pages.forEach(function (p) {
-if (lf === "blog" && !p.blog) return;
 var st = g.sheet ? sheetStrip(g.sheet) : null;
 var tag = p.kind === "pin" ? (p.pin.place === "bottom" ? "foot" : "head") : st && st.id === p.id ? "edge" : p.blog ? "blog" : esc(p.num || "·");
-h += '<button class="bd-ed-pg' + (p.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + p.id + '"><b>' + tag + "</b><span>" + (p.slug === "" && p.kind !== "pin" ? "⌂ " : "") + esc(p.title) + "</span></button>";
+h += '<div class="bd-ed-pgw' + (p.id === S.pageId ? " is-on" : "") + '" data-pid="' + p.id + '">' + (p.kind === "pin" ? '<span class="bd-ed-grip is-off"></span>' : '<span class="bd-ed-grip" data-grip="page" data-id="' + p.id + '" title="Drag to move">' + I.grip + "</span>") + '<button class="bd-ed-pg' + (p.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + p.id + '"><b>' + tag + "</b><span>" + (p.slug === "" && p.kind !== "pin" ? "⌂ " : "") + esc(p.title) + "</span></button></div>";
 if (p.blog) {
 postsOf(p.id).forEach(function (q) {
 h += '<button class="bd-ed-pg is-post' + (q.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + q.id + '"><b>' + (q.featured ? "★" : "↳") + "</b><span>" + esc(q.title) + "</span></button>";
@@ -6042,6 +6039,108 @@ return h;
 }
 (function () {
 var d = null;
+/* LAYERS PANE: DRAG A PAGE (OR A SHEET) BY ITS GRIP */
+(function () {
+var D = null;
+function mark(x, y) {
+var el = document.elementFromPoint(x, y);
+document.querySelectorAll(".is-drop-before, .is-drop-after, .is-drop-in").forEach(function (n) { n.classList.remove("is-drop-before", "is-drop-after", "is-drop-in"); });
+D.row = D.grp = null;
+D.after = false;
+if (!el) return;
+var g = el.closest(".bd-ed-group");
+if (!g || g.classList.contains("is-pins")) return;
+if (D.kind === "sheet") {
+if (!g.hasAttribute("data-sheet") || g.getAttribute("data-sheet") === D.id) return;
+var r0 = g.getBoundingClientRect();
+D.grp = g;
+D.after = y > r0.top + r0.height / 2;
+g.classList.add(D.after ? "is-drop-after" : "is-drop-before");
+return;
+}
+D.grp = g;
+var row = el.closest(".bd-ed-pgw");
+if (row && row.getAttribute("data-pid") !== D.id && row.parentNode === g) {
+var r = row.getBoundingClientRect();
+D.row = row;
+D.after = y > r.top + r.height / 2;
+row.classList.add(D.after ? "is-drop-after" : "is-drop-before");
+} else g.classList.add("is-drop-in");
+}
+function finish() {
+var d = D;
+D = null;
+document.body.classList.remove("has-drag");
+document.querySelectorAll(".is-drag, .is-drop-before, .is-drop-after, .is-drop-in").forEach(function (n) { n.classList.remove("is-drag", "is-drop-before", "is-drop-after", "is-drop-in"); });
+if (!d || !d.moved || !d.grp) return;
+var K = S.project.site.sheets;
+if (d.kind === "sheet") {
+var from = K.map(function (k) { return k.id; }).indexOf(d.id);
+var to = K.map(function (k) { return k.id; }).indexOf(d.grp.getAttribute("data-sheet"));
+if (from < 0 || to < 0) return;
+snap();
+var mv = K.splice(from, 1)[0];
+to = K.indexOf(S.project.site.sheets.filter(function (k) { return k.id === d.grp.getAttribute("data-sheet"); })[0]);
+K.splice(to + (d.after ? 1 : 0), 0, mv);
+changed();
+return;
+}
+var id = d.id;
+var pg = S.project.pages[id];
+if (!pg) return;
+var tid = d.row ? d.row.getAttribute("data-pid") : "";
+var sid = d.grp.getAttribute("data-sheet");
+snap();
+var was = K.filter(function (k) { return (k.pages || []).indexOf(id) > -1; })[0];
+K.forEach(function (k) {
+if ((k.pages || []).indexOf(id) < 0) return;
+k.pages = k.pages.filter(function (x) { return x !== id; });
+if (!sid || k.id !== sid) {
+if (k.main === id) k.main = "";
+if (k.restPage === id) k.restPage = "";
+}
+});
+if (sid) {
+var t = K.filter(function (k) { return k.id === sid; })[0];
+if (!t) return;
+t.pages = t.pages || [];
+var at = tid ? t.pages.indexOf(tid) : -1;
+if (at < 0) t.pages.push(id);
+else t.pages.splice(at + (d.after ? 1 : 0), 0, id);
+} else {
+var key = d.grp.getAttribute("data-gk") || "";
+pg.section = key;
+var o = S.project.order;
+o.splice(o.indexOf(id), 1);
+var oi = tid ? o.indexOf(tid) : -1;
+if (oi < 0) {
+var last = -1;
+o.forEach(function (q, i) { var qq = S.project.pages[q]; if (qq && !qq.parent && qq.kind !== "pin" && (qq.section || "") === key && !sheetOf(q).sheet) last = i; });
+oi = last < 0 ? o.length : last + 1;
+} else oi += d.after ? 1 : 0;
+o.splice(oi, 0, id);
+}
+changed();
+}
+document.addEventListener("pointerdown", function (e) {
+var gp = e.target.closest && e.target.closest("[data-grip]");
+if (!gp || gp.classList.contains("is-off")) return;
+e.preventDefault();
+D = { kind: gp.getAttribute("data-grip"), id: gp.getAttribute("data-id"), x: e.clientX, y: e.clientY, moved: false };
+var host = gp.closest(".bd-ed-pgw, .bd-ed-group");
+if (host) host.classList.add("is-drag");
+try { gp.setPointerCapture(e.pointerId); } catch (err) {}
+});
+document.addEventListener("pointermove", function (e) {
+if (!D) return;
+if (!D.moved && Math.abs(e.clientY - D.y) + Math.abs(e.clientX - D.x) < 6) return;
+D.moved = true;
+document.body.classList.add("has-drag");
+mark(e.clientX, e.clientY);
+});
+document.addEventListener("pointerup", function () { if (D) finish(); });
+document.addEventListener("pointercancel", function () { if (D) finish(); });
+})();
 document.addEventListener("pointerdown", function (e) {
 var hd = e.target && e.target.closest && e.target.closest("[data-lh]");
 if (!hd) return;
@@ -6312,15 +6411,9 @@ h += '<div class="bd-ed-sec">' + adv("site-adv", "Advanced", '<span class="bd-ed
 + '<span class="bd-ed-label">Grid</span>' + row(dpIn("Units", "site.cols", "site.colsM", s.cols, s.colsM, "int"), dpIn("Gap", "site.gap", "site.gapM", s.gap, s.gapM, "int"), numIn("Free-grid row", "site.row", s.row, "int"))) + "</div>";
 return h;
 }
-/* THE LAYERS PANE: FILTER (.sheet .page .blog) + MASTER ABOVE THE LIST */
+/* THE LAYERS PANE: MASTER ABOVE THE LIST */
 function layersBarHTML() {
-var f = S.layFilter || "";
-var h = '<div class="bd-ed-layers"><div class="bd-ed-tabs" role="tablist">';
-[["sheet", ".sheet"], ["page", ".page"], ["blog", ".blog"]].forEach(function (t) {
-h += '<button data-act="lay-filter" data-val="' + t[0] + '" class="' + (f === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
-});
-h += '</div><button class="bd-ed-master' + (S.masterSel ? " is-on" : "") + '" data-act="master-sel"><b>Master</b><span>everything on the site</span></button></div>';
-return h;
+return '<div class="bd-ed-layers"><button class="bd-ed-master' + (S.masterSel ? " is-on" : "") + '" data-act="master-sel"><b>Master</b><span>everything on the site</span></button></div>';
 }
 function masterPanelHTML() {
 var T = [["styles", "Styles"], ["motion", "Motion"], ["site", "Site"]];
@@ -6719,6 +6812,7 @@ if (!layersOn()) h += '<div class="bd-ed-sec">' + adv("pg-stack", "Continue with
 var free = '<div class="bd-ed-seg"><button data-act="layout" data-val="master" class="' + (isMaster(pg) ? "is-on" : "") + '">Columns</button><button data-act="layout" data-val="free" class="' + (isMaster(pg) ? "" : "is-on") + '">Free grid</button></div><div class="bd-ed-hint">' + (isMaster(pg) ? "Blocks stack in columns. Free grid lets you place them anywhere, row by row." : "Blocks sit anywhere on the grid. Columns stacks them again in order.") + "</div>"
 + (S.mode === "phone" && !isMaster(pg) ? '<button class="bd-ed-btn" data-act="restack">' + I.restack + "Restack phone from desktop</button>" : "");
 h += '<div class="bd-ed-sec">' + adv("pg-adv", "Advanced layout", free, !isMaster(pg)) + "</div>";
+if (isMaster(pg)) h += '<div class="bd-ed-sec">' + adv("pg-cols", "Columns & grid", rulerCols(pg, S.mode === "phone"), false) + "</div>";
 h += '<div class="bd-ed-sec"><div class="bd-ed-hint">Add blocks from the rail. Tap a block to edit and style it; tap text again to type. Drag to reorder or move between columns. ' + I.target.replace("<svg", '<svg style="width:12px;height:12px;vertical-align:-2px"') + " in the rail styles anything on the page.</div></div>";
 R.innerHTML = h;
 }
@@ -7488,7 +7582,7 @@ sheet.style.width = sheetW + "px";
 var ruler = $("bd-ruler");
 ruler.className = "bd-ed-ruler" + (phone ? " is-phone" : "");
 ruler.style.maxWidth = sheetW + "px";
-ruler.innerHTML = (layersOn() && S.sheetSel && S.preview && !S.inspect ? '<span class="bd-ed-seg bd-ed-view"><button data-act="spread-view">Spread</button><button class="is-on" data-act="window-view">Window</button></span>' : "") + "<span>" + (S.inspect ? "Inspect · tap anything to style it · " + (phone ? "phone" : "desktop") : S.preview ? (layersOn() ? "Preview · the sheets move" : "Preview · menu and arrows work") : (phone ? "Phone" : "Desktop") + " · " + sheetW + 'px · <span id="bd-zoom">100%</span>' + (layersOn() && page.kind !== "pin" ? " · layers: Preview to see them move" : "")) + "</span>" + (master && !S.preview ? rulerCols(page, phone) : "<span>" + (master ? "Follows master" : "Free grid") + "</span>");
+ruler.innerHTML = (layersOn() && S.sheetSel && S.preview && !S.inspect ? '<span class="bd-ed-seg bd-ed-view"><button data-act="spread-view">Spread</button><button class="is-on" data-act="window-view">Window</button></span>' : "") + "<span>" + (S.inspect ? "Inspect · tap anything to style it · " + (phone ? "phone" : "desktop") : S.preview ? (layersOn() ? "Preview · the sheets move" : "Preview · menu and arrows work") : (phone ? "Phone" : "Desktop") + " · " + sheetW + 'px · <span id="bd-zoom">100%</span>' + (layersOn() && page.kind !== "pin" ? " · layers: Preview to see them move" : "")) + "</span>" + "<span>" + (master ? "Follows master" : "Free grid") + "</span>";
 if (!shadow) {
 shadow = sheet.attachShadow({ mode: "open" });
 bindCanvas();

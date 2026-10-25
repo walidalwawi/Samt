@@ -257,6 +257,23 @@ async def run():
         await ev("S.project.site.sheets.find(k => k.id==='index').color = 'linear-gradient(180deg, #ffffff, #8899ff)'; changed()")
         css = await ev("exportCSS()")
         ok('gradient: paper is painted on the panes, attached local, spread over every page of the sheet', 'local' in css and '200%' in css)
+        # layers pane: no filter, grips drag pages between sheets and reorder sheets, grid bar left the canvas
+        await ev("S.sheetSel=''; S.masterSel=false; S.sel=null; render()"); await pg.wait_for_timeout(400)
+        async def gdrag(src, dst, dy):
+            a = await pg.locator(src).first.bounding_box(); b2 = await pg.locator(dst).first.bounding_box()
+            await pg.mouse.move(a['x'] + a['width'] / 2, a['y'] + a['height'] / 2); await pg.mouse.down()
+            await pg.mouse.move(a['x'] + a['width'] / 2, a['y'] + a['height'] / 2 + 10, steps=3)
+            await pg.mouse.move(b2['x'] + b2['width'] / 2, b2['y'] + b2['height'] * dy, steps=8)
+            await pg.mouse.up(); await pg.wait_for_timeout(400)
+        st = lambda: ev("S.project.site.sheets.map(k => k.id + ':' + k.pages.join(',')).join('|')")
+        ok('layers: the .sheet/.page/.blog filter is gone', await pg.locator('[data-act=lay-filter]').count() == 0)
+        ok('canvas: the column grid bar is gone from the ruler', await pg.locator('#bd-ruler .bd-ed-rcols').count() == 0)
+        await gdrag('[data-pid="56ud3gky"] .bd-ed-grip', '[data-pid="nsye72w3"]', 0.2)
+        ok('layers drag: a page moves up inside its sheet', (await st()).startswith('menu:56ud3gky,nsye72w3'))
+        await gdrag('[data-pid="b2lr3tkr"] .bd-ed-grip', '[data-pid="nsye72w3"]', 0.8)
+        ok('layers drag: a page moves to another sheet', (await st()) == 'menu:56ud3gky,nsye72w3,b2lr3tkr|index:fji5ongj')
+        await gdrag('.bd-ed-grip.is-sheet[data-id="index"]', '.bd-ed-group[data-sheet="menu"]', 0.2)
+        ok('layers drag: a sheet moves in the stack', (await st()).startswith('index:'))
         ok('no page errors', not errs)
         await b.close()
     bad = [n for n, c in R if not c]
