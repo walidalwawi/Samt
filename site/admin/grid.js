@@ -3342,10 +3342,10 @@ var pl = plan[n];
 var panes = sheetPanes(k);
 var strip = sheetStrip(k);
 var onPage = pl.st === "peek" && strip ? strip : panes[pl.i] || strip;
-return '<section class="bd-ly-sheet bd-ly-k is-e-' + esc(k.edge || "left") + " is-em-" + esc(k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + (onPage ? " is-on-" + onPage.id : "") + (k.lv ? " is-lv-" + esc(k.lv) : "") + (k.hover === "lift" ? " is-hv-lift" : "") + (k.arrive === "fade" || k.arrive === "cut" ? " is-ap-" + k.arrive : "") + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-main="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(k.main)) + '" data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
+return '<section class="bd-ly-sheet bd-ly-k' + (strip ? "" : " is-paper") + ' is-e-' + esc(k.edge || "left") + " is-em-" + esc(k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + (onPage ? " is-on-" + onPage.id : "") + (k.lv ? " is-lv-" + esc(k.lv) : "") + (k.hover === "lift" ? " is-hv-lift" : "") + (k.arrive === "fade" || k.arrive === "cut" ? " is-ap-" + k.arrive : "") + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-main="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(k.main)) + '" data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
 + '<div class="bd-ly-body">\n<div class="bd-ly-track is-ax-' + (k.axis === "x" ? "x" : "y") + '" style="--n: ' + Math.max(1, panes.length) + "; --i: " + pl.i + ';">\n'
 + panes.map(function (q, j) {
-return '<div class="bd-ly-pane' + (j === pl.i ? " is-on" : "") + '" data-page="' + q.id + '" data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n' + layerBody(q, ctx) + "\n</div>";
+return '<div class="bd-ly-pane' + (j === pl.i ? " is-on" : "") + '" data-page="' + q.id + '" data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n<div class="bd-ly-paper">\n' + layerBody(q, ctx) + "\n</div>\n</div>";
 }).join("\n") + "\n</div>\n</div>\n"
 + (strip ? '<div class="bd-ly-strip">\n' + layerBody(strip, ctx) + "\n</div>\n" : "") + "</section>";
 }).join("\n");
@@ -3362,12 +3362,28 @@ function sheetBoxIns(k, n, phone) {
 return k.rest === "peek" ? sheetInsets(n, phone) : NO_INS;
 }
 /* A SHEET'S OWN MARGIN (OUTSIDE ITS EDGES, PX OR %) AND PADDING (INSIDE, PX) */
-function sheetEx(k, n, phone) {
+/* A SHEET WITHOUT A STRIP IS ONE PIECE OF PAPER: ITS MARGINS BELONG TO THE PAPER (THE FIRST PAGE'S START, THE LAST PAGE'S END, THE SIDES OF EVERY PAGE) AND SCROLL WITH IT, NOT TO A FIXED FRAME */
+function sheetPaperSides(k, q) {
+var P = sheetPanes(k).map(function (x) { return x.id; });
+var i = Math.max(0, P.indexOf(q && q.id));
+var N = Math.max(1, P.length);
+return k.axis === "x" ? { t: true, b: true, l: i === 0, r: i === N - 1 } : { l: true, r: true, t: i === 0, b: i === N - 1 };
+}
+function sheetPaperMargins(k, q, phone) {
+var sd = sheetPaperSides(k, q);
+var b = k.box || {};
+var o = {};
+["t", "r", "b", "l"].forEach(function (x) { o[x] = (sd[x] && boxLen(boxVal(b, "m" + x, phone), x)) || "0px"; });
+return o;
+}
+function sheetEx(k, n, phone, q) {
 var ins = sheetBoxIns(k, n, phone);
 var b = k.box || {};
 var ex = {};
+var paper = !sheetStrip(k);
+var sides = paper && q ? sheetPaperSides(k, q) : {};
 BOX_SIDES.forEach(function (sd) {
-var M = boxLen(boxVal(b, "m" + sd[0], phone), sd[0]);
+var M = paper && !sides[sd[0]] ? null : boxLen(boxVal(b, "m" + sd[0], phone), sd[0]);
 ex[sd[1]] = M != null ? "calc(" + ins[sd[1]] + "px + " + M + ")" : ins[sd[1]] + "px";
 });
 return ex;
@@ -3465,11 +3481,12 @@ K.forEach(function (k, n) {
 var ins = sheetEx(k, n, phone);
 var sel = '.bd-ly-k[data-k="' + k.id + '"]';
 var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
-var kmt = boxLen(boxVal(k.box || {}, "mt", phone), "t");
+var kmt = sheetStrip(k) ? boxLen(boxVal(k.box || {}, "mt", phone), "t") : null;
 var kbase = sheetBoxIns(k, n, phone).top;
-var d = [kmt != null ? "--k-mt: " + kmt + ";" : "", "top: " + (kmt != null ? "calc(" + kbase + "px + var(--k-mt) - var(--k-up, 0px))" : ins.top) + ";", "right: " + ins.right + ";", "bottom: " + ins.bottom + ";", "left: " + ins.left + ";", "--k-peek: " + peek + "px;", "--k-sliver: " + (k.out === "hide" ? -12 : (parseFloat(phone ? k.sliverM : k.sliver) || 0) + (k.rest === "peek" ? 0 : sheetInsets(n, phone)[(phone ? k.edgeM : k.edge) || "left"])) + "px;", "--k-strip: " + (sheetStrip(k) ? peek : 0) + "px;", "--k-nudge: " + (k.hover === "nudge" ? parseFloat(k.nudge) || 14 : parseFloat(k.nudge) || 0) + "px;", "box-shadow: " + sheetLine(k, phone) + ";"];
+var d = [kmt != null ? "--k-mt: " + kmt + ";" : "", "top: " + (kmt != null ? "calc(" + kbase + "px + var(--k-mt) - var(--k-up, 0px))" : ins.top) + ";", "right: " + ins.right + ";", "bottom: " + ins.bottom + ";", "left: " + ins.left + ";", "--k-peek: " + peek + "px;", "--k-sliver: " + (k.out === "hide" ? -12 : (parseFloat(phone ? k.sliverM : k.sliver) || 0) + (k.rest === "peek" ? 0 : sheetInsets(n, phone)[(phone ? k.edgeM : k.edge) || "left"])) + "px;", "--k-strip: " + (sheetStrip(k) ? peek : 0) + "px;", "--k-nudge: " + (k.hover === "nudge" ? parseFloat(k.nudge) || 14 : parseFloat(k.nudge) || 0) + "px;", "box-shadow: " + (sheetStrip(k) ? sheetLine(k, phone) : "none") + ";"];
 d = d.filter(Boolean);
-if (!phone) d = d.concat(["z-index: " + (2 + K.length - 1 - n) + ";", "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);", "backdrop-filter: blur(" + sheetBlur(k) + "px);"]);
+if (!phone) d = d.concat(["z-index: " + (2 + K.length - 1 - n) + ";"]);
+if (!phone && sheetStrip(k)) d = d.concat(["-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);", "backdrop-filter: blur(" + sheetBlur(k) + "px);"]);
 if (!phone && parseInt(k.dur, 10) > 0) d.push("--k-dur: " + parseInt(k.dur, 10) + "ms;");
 out.push(sel + " {\n" + d.join("\n") + "\n}");
 });
@@ -3512,7 +3529,12 @@ var padIns = sheetPadIns(k, n, phone);
 var panesK = sheetPanes(k);
 (k.pages || []).map(sheetPage).filter(Boolean).forEach(function (q) {
 var st = sheetStrip(k);
-var sel = st && st.id === q.id ? '.bd-ly-k[data-k="' + k.id + '"] > .bd-ly-strip' : '.bd-ly-pane[data-page="' + q.id + '"]';
+var sel = st && st.id === q.id ? '.bd-ly-k[data-k="' + k.id + '"] > .bd-ly-strip' : '.bd-ly-pane[data-page="' + q.id + '"] > .bd-ly-paper';
+if (!st) {
+var pm = sheetPaperMargins(k, q, phone);
+out.push(sel + " {\nmargin: " + pm.t + " " + pm.r + " 0 " + pm.l + ";\nmin-height: calc(100% - " + pm.t + " - " + pm.b + ");\nbox-shadow: " + sheetLine(k, phone) + ";\n" + (phone ? "" : "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);\nbackdrop-filter: blur(" + sheetBlur(k) + "px);\n") + "}");
+out.push('.bd-ly-pane[data-page="' + q.id + '"] {\n--pm-b: ' + pm.b + ';\n}');
+}
 if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPaper(k, k.alpha == null ? 55 : k.alpha) : sheetPaper(pagePaperK(k, q), k.alpha == null ? 55 : k.alpha, panesK.indexOf(q), panesK.length)) + ";\n}");
 if (!phone && q.sheetBg) out.push(sel + " {\nbackground: " + bgVal(q.sheetBg) + ";\n}");
 var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", st && st.id === q.id ? null : padIns, true);
@@ -3570,17 +3592,19 @@ var out = [
 ".bd-ly-sheet {\nposition: absolute;\n--lx: 0px;\n--ly: 0px;\n--lr: 0deg;\ntransform: translate3d(var(--lx), var(--ly), 0) rotate(var(--lr));\ntransition: transform var(--ly-dur) var(--ly-ease), box-shadow var(--ly-dur) var(--ly-ease), filter var(--ly-dur) var(--ly-ease);\nwill-change: transform;\n}",
 ".bd-ly-sheet.is-moving {\n--lr: var(--ly-tilt);\n}",
 ".bd-ly-sheet .bd-panel {\nmin-height: 0;\nbackground: transparent;\n}",
-".bd-ly-pane > .bd-panel {\nmin-height: 100%;\nbox-sizing: border-box;\n}",
+".bd-ly-pane > .bd-ly-paper {\ndisplay: flex;\nflex-direction: column;\nmin-height: 100%;\nbox-sizing: border-box;\n}",
+".bd-ly-paper > .bd-panel {\nflex: 1 0 auto;\nbox-sizing: border-box;\n}",
+".bd-ly-pane::after {\ncontent: \"\";\ndisplay: block;\nflex: none;\nheight: var(--pm-b, 0px);\n}",
 ".bd-ly-content {\ninset: 0;\nz-index: 1;\noverflow-y: auto;\n-webkit-overflow-scrolling: touch;\noverscroll-behavior: contain;\nbackground: var(--bd-page);\n}",
 Ls.reveal === "rise" ? ".bd-ly:not(.is-v-post) .bd-ly-content {\n--ly: 18px;\n}" : "",
 ".bd-ly-art {\ndisplay: none;\n}",
 ".bd-ly-art.is-shown {\ndisplay: block;\n}",
 contentInsetCSS(false),
 ".bd-ly-k {\n--kx: 0px;\n--ky: 0px;\n--kfx: 0deg;\n--kfy: 0deg;\n--ksx: 1;\n--ksy: 1;\noverflow: hidden;\ntransform: translate3d(var(--kx), var(--ky), 0) rotate(var(--lr)) perspective(2400px) rotateY(var(--kfy)) rotateX(var(--kfx)) scale(var(--ksx), var(--ksy));\ntransition: transform " + KD + " var(--ly-ease), box-shadow " + KD + " var(--ly-ease), top " + KD + " var(--ly-ease), right " + KD + " var(--ly-ease), bottom " + KD + " var(--ly-ease), left " + KD + " var(--ly-ease);\n}",
-Ls.lift ? ".bd-ly-k.is-moving {\nbox-shadow: 8px 8px 0 rgba(0, 0, 0, 0.06);\n}" : "",
+Ls.lift ? ".bd-ly-k.is-moving {\nbox-shadow: 8px 8px 0 rgba(0, 0, 0, 0.06);\n}\n.bd-ly-k.is-paper.is-moving {\nbox-shadow: none;\n}\n.bd-ly-k.is-paper.is-moving .bd-ly-paper {\nbox-shadow: 8px 8px 0 rgba(0, 0, 0, 0.06);\n}" : "",
 ".bd-ly.is-t-cut .bd-ly-k.is-r-open {\ntransition-duration: 0s;\n}",
 "#bd-ly .bd-ly-k[class*=\"is-lv-\"]:not(.is-lv-cut) {\ntransition-duration: " + KD + ";\n}",
-"@media (hover: hover) and (min-width: 761px) {\n#bd-ly .bd-ly-k.is-hv-lift:hover:not(:has(a:hover)) {\nbox-shadow: 0 16px 44px rgba(0, 0, 0, 0.22);\n}\n}",
+"@media (hover: hover) and (min-width: 761px) {\n#bd-ly .bd-ly-k.is-hv-lift:hover:not(:has(a:hover)) {\nbox-shadow: 0 16px 44px rgba(0, 0, 0, 0.22);\n}\n#bd-ly .bd-ly-k.is-paper.is-hv-lift:hover:not(:has(a:hover)) {\nbox-shadow: none;\n}\n#bd-ly .bd-ly-k.is-paper.is-hv-lift:hover:not(:has(a:hover)) .bd-ly-paper {\nbox-shadow: 0 16px 44px rgba(0, 0, 0, 0.22);\n}\n}",
 "#bd-ly .bd-ly-k.is-lv-cut,\n#bd-ly .bd-ly-k.is-ap-cut {\ntransition-duration: 0s;\n}",
 "#bd-ly .bd-ly-k.is-ap-fade {\nopacity: 1;\ntransition-property: transform, box-shadow, top, right, bottom, left, opacity;\n}",
 "#bd-ly .bd-ly-k.is-ap-fade.is-lift {\ntransition-property: transform, box-shadow, right, bottom, left, opacity;\n}",
@@ -3944,7 +3968,7 @@ return [":host {\nposition: relative;\n}", ".bd-site.is-strip {\nposition: relat
 var out = [":host {\nposition: relative;\n}"];
 if (w.k > -1) {
 /* A PAGE ON A SHEET: THE SHEET ITSELF SHRINKS TO THE PAGE'S MARGINS, WHAT LIES UNDERNEATH SHOWS AROUND IT */
-var ins = sheetEx(w.sheet, w.k, phone);
+var ins = sheetEx(w.sheet, w.k, phone, page);
 var padIns = sheetPadIns(w.sheet, w.k, phone);
 var b = page.box || {};
 var edge = [ins.top, ins.right, ins.bottom, ins.left];
@@ -6481,9 +6505,9 @@ body += '<section class="bd-ly-sheet bd-ly-k bd-sp-sheet is-e-' + esc(k.edge || 
 G.slots.forEach(function (s) {
 var q = s.q;
 var rel = { l: s.slot.l - G.rect.l, t: s.slot.t - G.rect.t, r: s.slot.r - G.rect.l, b: s.slot.b - G.rect.t };
-body += '<div class="bd-sp-slot" style="left:' + Math.round(rel.l) + "px;top:" + Math.round(rel.t) + "px;width:" + Math.round(rel.r - rel.l) + "px;height:" + Math.round(rel.b - rel.t) + 'px"><div class="bd-ly-pane is-on" data-page="' + q.id + '">' + layerBody(q, "view") + "</div></div>";
+body += '<div class="bd-sp-slot" style="left:' + Math.round(rel.l) + "px;top:" + Math.round(rel.t) + "px;width:" + Math.round(rel.r - rel.l) + "px;height:" + Math.round(rel.b - rel.t) + 'px"><div class="bd-ly-pane is-on" data-page="' + q.id + '"><div class="bd-ly-paper">' + layerBody(q, "view") + "</div></div></div>";
 if (st && st.id === q.id) {
-var sel = '.bd-ly-pane[data-page="' + q.id + '"]';
+var sel = '.bd-ly-pane[data-page="' + q.id + '"] > .bd-ly-paper';
 extra.push(sel + " {\nbackground: " + sheetPaper(k, k.alpha == null ? 55 : k.alpha) + ";\n}");
 var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", null, true);
 if (bx) extra.push(bx);
@@ -6499,7 +6523,7 @@ body += '<div class="bd-sp-win" style="' + px({ l: 0, t: 0, r: v.w, b: v.h }) + 
 body += "</div>";
 S.layerFocus = keep;
 var css = exportCSS();
-var sp = ["html, body {\nmargin: 0;\noverflow: hidden;\nbackground: #cfcdc6;\n}", "#bd-spread .bd-sp-sheet {\nposition: absolute;\ntransform: none;\ntransition: none;\noverflow: visible;\nbox-shadow: 0 2px 0 rgba(0,0,0,.08), 0 18px 48px rgba(0,0,0,.14);\n}", "#bd-spread .bd-sp-slot {\nposition: absolute;\noverflow: hidden;\n}", "#bd-spread .bd-sp-slot > .bd-ly-pane {\nposition: relative;\nheight: 100%;\noverflow: hidden;\n}", "#bd-spread .bd-sp-ghost {\nposition: absolute;\nborder: 1px dashed " + LAY_C.sheet + ";\nbackground: rgba(123,94,167,.06);\n}", "#bd-spread .bd-sp-ghost span {\nposition: absolute;\nright: 8px;\nbottom: 6px;\nfont: 12px/1 ui-monospace, Menlo, monospace;\ncolor: " + LAY_C.sheet + ";\n}", "#bd-spread .bd-sp-win {\nposition: absolute;\nborder: 3px solid " + LAY_C.win + ";\npointer-events: none;\nz-index: 5;\n}", "#bd-spread .bd-sp-win span {\nposition: absolute;\nleft: 0;\ntop: -22px;\nfont: 13px/1 ui-monospace, Menlo, monospace;\ncolor: " + LAY_C.win + ";\nwhite-space: nowrap;\n}", "#bd-spread .bd-sp-tap {\nposition: absolute;\nz-index: 6;\ndisplay: block;\ntext-decoration: none;\n}", "#bd-spread .bd-sp-tap span {\nposition: absolute;\nleft: 10px;\ntop: 10px;\nfont: 13px/1 ui-monospace, Menlo, monospace;\ncolor: " + LAY_C.page + ";\nbackground: rgba(255,255,255,.85);\npadding: 5px 8px;\nborder: 1px solid " + LAY_C.page + ";\n}", "#bd-spread .bd-sp-tap:hover {\noutline: 2px solid " + LAY_C.page + ";\noutline-offset: -2px;\n}"];
+var sp = ["html, body {\nmargin: 0;\noverflow: hidden;\nbackground: #cfcdc6;\n}", "#bd-spread .bd-sp-sheet {\nposition: absolute;\ntransform: none;\ntransition: none;\noverflow: visible;\nbox-shadow: 0 2px 0 rgba(0,0,0,.08), 0 18px 48px rgba(0,0,0,.14);\n}", "#bd-spread .bd-sp-slot {\nposition: absolute;\noverflow: hidden;\n}", "#bd-spread .bd-sp-slot > .bd-ly-pane {\nposition: relative;\nheight: 100%;\noverflow: hidden;\n}", "#bd-spread .bd-sp-ghost {\nposition: absolute;\nborder: 1px dashed " + LAY_C.sheet + ";\nbackground: rgba(123,94,167,.06);\n}", "#bd-spread .bd-sp-ghost span {\nposition: absolute;\nright: 8px;\nbottom: 6px;\nfont: 12px/1 ui-monospace, Menlo, monospace;\ncolor: " + LAY_C.sheet + ";\n}", "#bd-spread .bd-sp-win {\nposition: absolute;\nborder: 3px solid " + LAY_C.win + ";\npointer-events: none;\nz-index: 5;\n}", "#bd-spread .bd-sp-win span {\nposition: absolute;\nleft: 0;\ntop: -22px;\nfont: 13px/1 ui-monospace, Menlo, monospace;\ncolor: " + LAY_C.win + ";\nwhite-space: nowrap;\n}", "#bd-spread .bd-sp-tap {\nposition: absolute;\nz-index: 6;\ndisplay: block;\ntext-decoration: none;\n}", "#bd-spread .bd-sp-tap span {\nposition: absolute;\nleft: 10px;\ntop: 10px;\nfont: 13px/1 ui-monospace, Menlo, monospace;\ncolor: " + LAY_C.page + ";\nbackground: rgba(255,255,255,.85);\npadding: 5px 8px;\nborder: 1px solid " + LAY_C.page + ";\n}", "#bd-spread .bd-sp-tap:hover {\noutline: 2px solid " + LAY_C.page + ";\noutline-offset: -2px;\n}", "#bd-spread .bd-ly-paper {\nmargin: 0 !important;\nmin-height: 100% !important;\nbox-shadow: none !important;\n}", "#bd-spread .bd-ly-pane::after {\ndisplay: none;\n}"];
 var js = "<script>document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.bd-sp-tap');if(!a)return;e.preventDefault();try{parent.postMessage({bdSpreadPage:a.getAttribute('data-page')},'*');}catch(err){}});<\/script>";
 return "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>Spread</title>\n<style id=\"bd-prev-css\">\n" + css.replace(/<\/style/gi, "<\\/style") + "\n</style>\n<style>\n" + sp.join("\n") + "\n" + extra.join("\n") + "\n</style>\n</head>\n<body class=\"bd-spread-body\">\n" + body + "\n" + js + "\n</body>\n</html>";
 }

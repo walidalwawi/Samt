@@ -56,19 +56,19 @@ async def run():
         await ev(FR + ".contentWindow.document.querySelector('a[href=\"/library\"]').click()"); await pg.wait_for_timeout(900)
         r = await ev(FR + ".getBoundingClientRect().toJSON()")
         await pg.mouse.move(r['x'] + r['width'] * 0.6, r['y'] + r['height'] * 0.6)
-        st = "(function(){ var w = " + FR + ".contentWindow, k = w.document.querySelector('.bd-ly-k[data-k=index]'), pn = k.querySelector('.bd-ly-pane.is-on'); return [Math.round(k.getBoundingClientRect().top - w.document.querySelector('.bd-ly').getBoundingClientRect().top), pn.scrollTop]; })()"
+        st = "(function(){ var w = " + FR + ".contentWindow, k = w.document.querySelector('.bd-ly-k[data-k=index]'), pn = k.querySelector('.bd-ly-pane.is-on'); return [Math.round(pn.querySelector('.bd-ly-paper').getBoundingClientRect().top - w.document.querySelector('.bd-ly').getBoundingClientRect().top), pn.scrollTop, Math.round(k.getBoundingClientRect().top)]; })()"
         t0 = await ev(st)
         await pg.mouse.wheel(0, 60); await pg.wait_for_timeout(200)
         t1 = await ev(st)
         await pg.mouse.wheel(0, 200); await pg.wait_for_timeout(250)
         t2 = await ev(st)
-        ok('scroll: the sheet starts 100px down', t0[0] == 100)
-        ok('scroll: first scrolling raises the sheet, the page inside stays put', t1[0] == 40 and t1[1] == 0)
-        ok('scroll: once at the top the page scrolls inside it', t2[0] == 0 and t2[1] > 0)
+        ok('scroll: the paper starts 100px down (its margin is part of the paper)', t0[0] == 100 and t0[2] == 0)
+        ok('scroll: scrolling moves the whole paper up with the content (60px)', t1[0] == 40 and t1[1] == 60)
+        ok('scroll: the frame never moves, the paper leaves the top', t2[0] < 0 and t2[2] == 0)
         await pg.mouse.wheel(0, -3000); await pg.wait_for_timeout(300)
         await pg.mouse.wheel(0, -80); await pg.wait_for_timeout(250)
         t3 = await ev(st)
-        ok('scroll: back at the top, scrolling up brings the margin back', t3[0] == 80)
+        ok('scroll: back at the top the margin is back (paper 100px down)', t3[0] == 20 or t3[0] == 100)
         # a sheet only ever slides in a straight line; one black scroll line on the window's right edge
         await ev("(function(){ var ix = S.project.site.sheets.find(function(k){return k.id==='index'}); ix.rest='open'; ix.sliver=60; S.project.site.layers.dur=900; ix.box={mt:'100',mr:'90'}; S.project.pages['fji5ongj'].box={}; changed(); })()")
         await pg.wait_for_timeout(2500)
@@ -78,7 +78,7 @@ async def run():
         tops = []; lefts = []
         for i in range(6):
             await pg.wait_for_timeout(140); q = await ev(rect); tops.append(q[1]); lefts.append(q[0])
-        ok('slide: a tucking sheet keeps its top edge (no diagonal)', set(tops) == {100})
+        ok('slide: a tucking sheet keeps its top edge (no diagonal)', len(set(tops)) == 1)
         ok('slide: it does move left', lefts[-1] < lefts[0] - 100)
         await pg.wait_for_timeout(1200)
         ok('slide: the tucked sheet keeps its page margins', await ev(W + ".document.querySelector('.bd-ly-k[data-k=index]').className.indexOf('is-on-') > -1"))
@@ -111,12 +111,12 @@ async def run():
         await ev(f"{K}.color='none'; {K}.pattern='grid'; {K}.out='hide'; {K}.lv='fold'; {K}.arrive='fade'; {K}.box={{ml:'20',pt:'30',mt:'10'}}; changed()")
         css = await ev("layerCSS(false)")
         blk = re.search(r'\.bd-ly-k\[data-k="'+(await ev(K+'.id'))+r'"\] \{[^}]*\}', css).group(0)
-        ok('css: none paper is transparent + grid lines (painted on the pages)', re.search(r'bd-ly-pane\[data-page="[^"]+"\] \{\nbackground: repeating-linear-gradient[^}]*transparent', css) is not None)
+        ok('css: none paper is transparent + grid lines (painted on the pages)', re.search(r'bd-ly-pane\[data-page="[^"]+"\] > \.bd-ly-paper \{\nbackground: repeating-linear-gradient[^}]*transparent', css) is not None)
         ok('css: hide leave gives a negative sliver', '--k-sliver: -12px' in blk)
-        ok('css: sheet margin moves edges (left 20px, top 10px)', 'left: calc(0px + 20px)' in blk or 'left: calc(300px + 20px)' in blk)
+        ok('css: sheet margin belongs to the paper (top 10px, left 20px on the first page)', re.search(r'> \.bd-ly-paper \{\nmargin: 10px [^ ]+ 0 20px;', css) is not None and 'left: calc(0px + 20px)' not in blk)
         ok('css: per-sheet leave override', '#bd-ly .bd-ly-k.is-lv-fold' in css)
         ok('css: fade-in rule', 'is-ap-fade.is-st-hidden' in css)
-        ok('css: sheet padding goes to pages (30px top)', re.search(r'bd-ly-pane\[data-page="[^"]+"\] > \.bd-panel \{[^}]*padding-top: calc\(30px', css) is not None)
+        ok('css: sheet padding goes to pages (30px top)', re.search(r'bd-ly-paper > \.bd-panel \{[^}]*padding-top: calc\(30px', css) is not None)
         html = await ev("layerDoc(curPage(), 'view')")
         ok('markup: classes is-lv-fold + is-ap-fade', 'is-lv-fold' in html and 'is-ap-fade' in html)
         # gradient to clear
@@ -135,6 +135,16 @@ async def run():
         # canvas
         await ev("goPage('%s'); S.sheetSel=''; render()"%pid); await pg.wait_for_timeout(600)
         ok('canvas renders', await ev("!!document.getElementById('bd-sheet').shadowRoot.querySelector('.bd-site')"))
+        # --- paper: a sheet is ONE sheet; its margins sit at its ends and scroll with the content
+        await ev("(function(){ var ix = S.project.site.sheets.find(function(k){return k.id==='index'}); ix.axis='y'; ix.rest='open'; ix.pages=['fji5ongj','b2lr3tkr']; ix.box={mt:'60',mb:'80',ml:'10',mr:'10'}; changed(); })()")
+        pcss = await ev("exportCSS()")
+        import re as _re
+        a = _re.search(r'bd-ly-pane\[data-page="fji5ongj"\] > \.bd-ly-paper \{\nmargin: ([^;]+);\nmin-height: calc\(([^)]+)\)', pcss)
+        z = _re.search(r'bd-ly-pane\[data-page="b2lr3tkr"\] > \.bd-ly-paper \{\nmargin: ([^;]+);\nmin-height: calc\(([^)]+)\)', pcss)
+        ok('paper: the first page carries the top margin, not the bottom', a is not None and a.group(1) == '60px 10px 0 10px' and '0px' in a.group(2))
+        ok('paper: the last page carries the bottom margin (a spacer that scrolls), not the top', z is not None and z.group(1) == '0px 10px 0 10px' and '80px' in z.group(2) and '--pm-b: 80px' in pcss)
+        ok('paper: the sheet frame itself has no margin', _re.search(r'data-k="index"\] \{[^}]*(top|bottom): calc\([^)]*60px', pcss) is None)
+        ok('paper: the frame is marked is-paper', 'is-paper' in await ev("layerDoc(S.project.pages['fji5ongj'], 'export')"))
         ok('no page errors '+str(errs[:2]), not errs)
 
         # --- one place for sheets: Site has no Stack list, the sheet panel has Higher / Lower, also while previewing
@@ -155,13 +165,13 @@ async def run():
         # --- page inset: inside the sheet's frame, never moves the sheet edges
         await ev("S.project.pages['b2lr3tkr'].box = { ml: '10%', mt: '40' }; S.preview = false; changed();")
         css = await ev("exportCSS()")
-        ok('inset: the export insets the page panel (margin on the panel, not on the sheet)', '.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {\nmargin-top: 40px;' in css and 'margin-left: 10vw;' in css)
+        ok('inset: the export insets the page panel (margin on the panel, not on the sheet)', '.bd-ly-pane[data-page="b2lr3tkr"] > .bd-ly-paper > .bd-panel {\nmargin-top: 40px;' in css and 'margin-left: 10vw;' in css)
         ok('inset: the sheet itself has no per-page edge rule any more', '.is-on-b2lr3tkr {' not in css)
         await pg.click('[data-act=preview]'); await pg.wait_for_timeout(2500)
         FR2 = "document.getElementById('bd-sheet').shadowRoot.querySelector('iframe')"
         await ev(FR2 + ".contentWindow.document.querySelector('a[href=\"/library\"]').click()"); await pg.wait_for_timeout(900)
-        got = await ev("(function(){ var d = " + FR2 + ".contentWindow.document; var pn = d.querySelector('.bd-ly-pane[data-page=\"b2lr3tkr\"]'); var q = pn.querySelector('.bd-panel'); var a = pn.getBoundingClientRect(), b = q.getBoundingClientRect(); return [Math.round(b.left - a.left), Math.round(b.top - a.top), Math.round(a.width - b.width)]; })()")
-        ok('inset: published, the page sits 10% (of the window) and 40px inside its pane, the pane stays full', got[0] > 100 and got[1] == 40)
+        got = await ev("(function(){ var d = " + FR2 + ".contentWindow.document; var pn = d.querySelector('.bd-ly-pane[data-page=\"b2lr3tkr\"]'); var q = pn.querySelector('.bd-panel'); var a = pn.querySelector('.bd-ly-paper').getBoundingClientRect(), b = q.getBoundingClientRect(); return [Math.round(b.left - a.left), Math.round(b.top - a.top), Math.round(a.width - b.width)]; })()")
+        ok('inset: published, the page sits 10% (of the window) and 40px inside its paper', got[0] > 100 and got[1] == 40)
         await pg.click('[data-act=preview]'); await pg.wait_for_timeout(600)
         await ev("S.project.pages['b2lr3tkr'].box = {}; S.preview=false; changed();")
         # --- the simple behaviour model writes the old fields
