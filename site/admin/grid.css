@@ -87,27 +87,27 @@ padding-right: max(16px, env(safe-area-inset-right, 0px));
 padding-block: 10px;
 display: grid;
 grid-template-rows: 44px minmax(0, 1fr) auto;
-grid-template-columns: 264px minmax(0, 1fr) var(--e-rw, 268px);
-grid-template-areas: "top top top" "left canvas right" "code code code";
+grid-template-columns: 264px var(--e-rw, 340px) minmax(0, 1fr);
+grid-template-areas: "top top top" "left right canvas" "code code code";
 gap: 8px;
 }
 .bd-ed-app.has-code {
 grid-template-rows: 44px minmax(0, 1fr) minmax(180px, 38%);
 }
 .bd-ed-app.has-wide-left {
-grid-template-columns: minmax(420px, 42%) minmax(0, 1fr) var(--e-rw, 268px);
+grid-template-columns: minmax(420px, 42%) var(--e-rw, 340px) minmax(0, 1fr);
 }
 .bd-ed-app.is-no-left {
-grid-template-columns: 0 minmax(0, 1fr) var(--e-rw, 268px);
+grid-template-columns: 0 var(--e-rw, 340px) minmax(0, 1fr);
 }
 .bd-ed-app.is-no-right {
-grid-template-columns: 264px minmax(0, 1fr) 0;
+grid-template-columns: 264px 0 minmax(0, 1fr);
 }
 .bd-ed-app.has-wide-left.is-no-right {
-grid-template-columns: minmax(420px, 42%) minmax(0, 1fr) 0;
+grid-template-columns: minmax(420px, 42%) 0 minmax(0, 1fr);
 }
 .bd-ed-app.is-no-left.is-no-right {
-grid-template-columns: 0 minmax(0, 1fr) 0;
+grid-template-columns: 0 0 minmax(0, 1fr);
 }
 .bd-ed-app.is-no-left .bd-ed-left,
 .bd-ed-app.is-no-right .bd-ed-right {
@@ -989,6 +989,39 @@ background: var(--e-tint);
 display: block;
 padding-bottom: 6px;
 border-bottom: 1px solid var(--e-line);
+}
+
+/* LAYERS BAR · FILTER + MASTER */
+.bd-ed-layers {
+display: flex;
+flex-direction: column;
+gap: 6px;
+padding: 2px 0 6px;
+}
+.bd-ed-layers .bd-ed-tabs {
+margin: 0;
+}
+.bd-ed-master {
+display: flex;
+align-items: center;
+gap: 8px;
+width: 100%;
+padding: 8px 10px;
+border: 1px solid var(--e-line);
+border-radius: 6px;
+background: var(--e-surface);
+font: inherit;
+color: inherit;
+cursor: pointer;
+text-align: left;
+}
+.bd-ed-master.is-on {
+background: #111;
+color: #fff;
+}
+.bd-ed-master span {
+opacity: 0.6;
+font-size: 11px;
 }
 
 /* MOBILE */

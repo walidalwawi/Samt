@@ -48,20 +48,22 @@ async def run():
                         await noerr(zone, act + (' ' + val if val else ''))
                 except Exception as e:
                     rec(zone, act, False, str(e)[:100])
-        await pg.evaluate("S.mode = 'desk'; S.preview = false; S.inspect = false; S.codeOpen = false; S.leftTab = 'pages'; render();")
+        await pg.evaluate("S.mode = 'desk'; S.preview = false; S.inspect = false; S.codeOpen = false; S.leftTab = 'pages'; S.masterSel = false; render();")
         # left tabs: every field + safe button
         for tab in ['pages', 'styles', 'motion', 'site']:
-            await pg.evaluate(f"S.leftTab = '{tab}'; renderLeft();"); await pg.wait_for_timeout(200)
-            await pg.evaluate("document.querySelectorAll('#bd-left details').forEach(d => d.open = true)")
+            BOX = '#bd-left' if tab == 'pages' else '#bd-right'
+            SET = ("S.masterSel = false; S.leftTab = 'pages'; renderLeft();" if tab == 'pages' else f"S.sheetSel = ''; S.sel = null; S.masterSel = true; S.masterTab = '{tab}'; render();")
+            await pg.evaluate(SET); await pg.wait_for_timeout(200)
+            await pg.evaluate("document.querySelectorAll('" + BOX + " details').forEach(d => d.open = true)")
             await noerr('left/' + tab, 'renders')
-            binds = await pg.locator('#bd-left [data-bind]').evaluate_all("els => els.map(e => [e.getAttribute('data-bind'), e.tagName, e.type || '', e.getAttribute('data-type') || ''])")
+            binds = await pg.locator(BOX + ' [data-bind]').evaluate_all("els => els.map(e => [e.getAttribute('data-bind'), e.tagName, e.type || '', e.getAttribute('data-type') || ''])")
             seen = set()
             for path, tag, typ, dt in binds:
                 if path in seen or path.startswith('ui.'): continue
                 seen.add(path)
                 before = await pg.evaluate(SNAP)
                 try:
-                    el = pg.locator(f'#bd-left [data-bind="{path}"]').first
+                    el = pg.locator(f'{BOX} [data-bind="{path}"]').first
                     if tag == 'SELECT':
                         opts = await el.evaluate("e => Array.from(e.options).map(o => o.value)")
                         cur = await el.evaluate("e => e.value")
@@ -84,16 +86,16 @@ async def run():
                     rec('left/' + tab, path, applied, '' if changed else ('applied · nothing on this page uses it' if applied else 'did not apply'))
                 except Exception as e:
                     rec('left/' + tab, path, False, str(e)[:100])
-                await pg.evaluate("document.querySelectorAll('#bd-left details').forEach(d => d.open = true)")
+                await pg.evaluate("document.querySelectorAll('" + BOX + " details').forEach(d => d.open = true)")
                 if errs: rec('left/' + tab, path + ' error', False, errs[-1][:120]); errs.clear()
             # safe buttons
-            acts = await pg.locator('#bd-left [data-act]').evaluate_all("els => [...new Set(els.map(e => e.getAttribute('data-act')))]")
+            acts = await pg.locator(BOX + ' [data-act]').evaluate_all("els => [...new Set(els.map(e => e.getAttribute('data-act')))]")
             for act in acts:
                 if act in SKIP: continue
                 try:
-                    await pg.locator(f'#bd-left [data-act="{act}"]').first.click(timeout=2000); await pg.wait_for_timeout(200)
+                    await pg.locator(f'{BOX} [data-act="{act}"]').first.click(timeout=2000); await pg.wait_for_timeout(200)
                     await noerr('left/' + tab, 'button ' + act)
-                    await pg.evaluate(f"S.leftTab = '{tab}'; S.confirm = null; renderLeft(); document.querySelectorAll('#bd-left details').forEach(d => d.open = true)")
+                    await pg.evaluate(SET + f" S.confirm = null; document.querySelectorAll('{BOX} details').forEach(d => d.open = true)")
                 except Exception as e:
                     rec('left/' + tab, 'button ' + act, False, str(e)[:80])
         # right panel: page (underneath), page on a sheet, post, each block type

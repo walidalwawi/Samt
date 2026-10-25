@@ -5592,13 +5592,18 @@ pins.label = "Header & footer · not shown with paper sheets";
 if (pins.pages.length) groups.push(pins);
 } else groups.push(pins);
 var h = '<div class="bd-ed-sec"><div class="bd-ed-actions"><button class="bd-ed-btn" data-act="page-add">' + I.plus + 'Page</button><button class="bd-ed-btn" data-act="blog-add">' + I.plus + 'Blog</button>' + (layersOn() ? '<button class="bd-ed-btn" data-act="sheet-add">' + I.plus + "Sheet</button>" : '<button class="bd-ed-btn" data-act="pin-add" data-val="top">' + I.plus + 'Header</button><button class="bd-ed-btn" data-act="pin-add" data-val="bottom">' + I.plus + "Footer</button>") + "</div>";
+var lf = S.layFilter || "";
 groups.forEach(function (g) {
 if (!g.pages.length && !g.pins) return;
+if (lf === "sheet" && !g.sheet) return;
+if (lf === "page" && (g.sheet || g.pins)) return;
+if (lf === "blog" && !g.pages.some(function (p) { return p.blog; })) return;
 var gl = esc(g.label) + (g.sheet ? ' <span class="bd-ed-hint">· ' + (g.sheet.rest === "open" ? "open" : g.sheet.rest === "still" ? "still" : g.sheet.rest === "peek" ? "peeks" : "hidden") + " · settings</span>" : "");
 h += '<div class="bd-ed-group' + (g.sheet ? " is-sheet" : "") + '">' + (g.sheet ? '<button class="bd-ed-group-label is-btn' + (S.sheetSel === g.sheet.id ? " is-on" : "") + '" data-act="sheet-sel" data-id="' + esc(g.sheet.id) + '">' + gl + "</button>" : '<div class="bd-ed-group-label">' + gl + "</div>");
 if (g.sheet && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">Empty.</div>';
 if (g.pins && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">None yet. A header or footer shows on every page, with its own columns.</div>';
 g.pages.forEach(function (p) {
+if (lf === "blog" && !p.blog) return;
 var st = g.sheet ? sheetStrip(g.sheet) : null;
 var tag = p.kind === "pin" ? (p.pin.place === "bottom" ? "foot" : "head") : st && st.id === p.id ? "edge" : p.blog ? "blog" : esc(p.num || "·");
 h += '<button class="bd-ed-pg' + (p.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + p.id + '"><b>' + tag + "</b><span>" + (p.slug === "" && p.kind !== "pin" ? "⌂ " : "") + esc(p.title) + "</span></button>";
@@ -5808,6 +5813,7 @@ else cy += off;
 return '<g data-lh="' + kind + '" data-s="' + side + '" data-base="' + base + '" data-cur="' + cur + '" data-id="' + (id || "") + '" data-off="' + off + '" style="cursor:' + (vert ? "ew-resize" : "ns-resize") + '"><rect x="' + r1(cx - (vert ? 10 : 20)) + '" y="' + r1(cy - (vert ? 20 : 10)) + '" width="' + (vert ? 20 : 40) + '" height="' + (vert ? 40 : 20) + '" fill="transparent"/><rect x="' + r1(cx - (vert ? 3.5 : 12)) + '" y="' + r1(cy - (vert ? 12 : 3.5)) + '" width="' + (vert ? 7 : 24) + '" height="' + (vert ? 24 : 7) + '" rx="3" fill="' + col + '" stroke="#fff" stroke-width="1.2"/></g>';
 };
 var sr;
+var starId = "";
 var mi = 0;
 var panes = [];
 var handles = "";
@@ -5815,9 +5821,11 @@ var ins2 = null;
 if (k) {
 sr = laySheetRect(n, phone, v);
 panes = sheetPanes(k);
+var stripP = k.rest === "peek" ? sheetStrip(k) : null;
+starId = stripP ? stripP.id : (k.main && panes.some(function (q) { return q.id === k.main; }) ? k.main : (panes[0] ? panes[0].id : ""));
 var selI = pg ? panes.map(function (q) { return q.id; }).indexOf(pg.id) : -1;
-mi = selI > -1 ? selI : Math.max(0, panes.map(function (q) { return q.id; }).indexOf(k.main));
-o += '<rect x="' + X(sr.l) + '" y="' + Y(sr.t) + '" width="' + r1((sr.r - sr.l) * sc) + '" height="' + r1((sr.b - sr.t) * sc) + '" fill="rgba(76,186,58,.10)" stroke="#4cba3a" stroke-width="2.5"/>';
+mi = selI > -1 ? selI : Math.max(0, panes.map(function (q) { return q.id; }).indexOf(starId));
+o += '<rect x="' + X(sr.l) + '" y="' + Y(sr.t) + '" width="' + r1((sr.r - sr.l) * sc) + '" height="' + r1((sr.b - sr.t) * sc) + '" fill="rgba(76,186,58,.10)" stroke="#4cba3a" stroke-width="2.5"' + (k.rest === "peek" ? ' stroke-dasharray="6 4"' : "") + '/>';
 o += '<text x="' + (X(sr.l) + 5) + '" y="' + (Y(sr.b) - 6) + '" font-size="11" fill="#2f8f22">' + esc(String(k.name || "Sheet").slice(0, 18)) + " · " + (n + 1) + " of " + K.length + "</text>";
 } else if (pg) {
 ins2 = sheetInsets(1e9, phone);
@@ -5839,12 +5847,12 @@ var py = sr.t + dy + M.t;
 var pw = Math.max(8, sw - M.l - M.r);
 var ph = Math.max(8, sh - M.t - M.b);
 var cur = j === mi;
-o += '<g data-act="lay-page" data-id="' + q.id + '" style="cursor:pointer"><rect x="' + X(px) + '" y="' + Y(py) + '" width="' + r1(pw * sc) + '" height="' + r1(ph * sc) + '" fill="rgba(217,69,69,' + (cur ? ".08" : ".03") + ')" stroke="#d94545" stroke-width="2" ' + (cur ? "" : 'stroke-dasharray="5 3" stroke-opacity=".7"') + '/><text x="' + (X(px) + 6) + '" y="' + (Y(py) + 24) + '" font-size="11" fill="#c23b3b">' + esc(String(q.title || "").slice(0, Math.max(5, Math.floor(pw * sc / 6.5)))) + (k && q.id === k.main ? " ★" : "") + "</text></g>";
+o += '<g data-act="lay-page" data-id="' + q.id + '" style="cursor:pointer"><rect x="' + X(px) + '" y="' + Y(py) + '" width="' + r1(pw * sc) + '" height="' + r1(ph * sc) + '" fill="rgba(217,69,69,' + (cur ? ".08" : ".03") + ')" stroke="#d94545" stroke-width="2" ' + (cur ? "" : 'stroke-dasharray="5 3" stroke-opacity=".7"') + '/><text x="' + (X(px) + 6) + '" y="' + (Y(py) + 24) + '" font-size="11" fill="#c23b3b">' + esc(String(q.title || "").slice(0, Math.max(5, Math.floor(pw * sc / 6.5)))) + (k && q.id === starId ? " ★" : "") + "</text></g>";
 if (k) {
 var cx = X(px + pw) - 9;
 var cy = Y(py) + 9;
 o += '<g data-act="lay-rm" data-i="' + n + '" data-id="' + q.id + '" style="cursor:pointer"><circle cx="' + cx + '" cy="' + cy + '" r="8" fill="#d94545"/><path d="M' + (cx - 3) + " " + (cy - 3) + "l6 6m0 -6l-6 6" + '" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></g>';
-if (pw * sc > 70) o += '<g data-act="lay-main" data-i="' + n + '" data-id="' + q.id + '" style="cursor:pointer"><rect x="' + (X(px) + 4) + '" y="' + (Y(py) + 30) + '" width="46" height="15" rx="3" fill="' + (q.id === k.main ? "#d94545" : "none") + '" stroke="#d94545" stroke-width="1"/><text x="' + (X(px) + 27) + '" y="' + (Y(py) + 41) + '" font-size="9" text-anchor="middle" fill="' + (q.id === k.main ? "#fff" : "#c23b3b") + '">' + (q.id === k.main ? "main ★" : "set main") + "</text></g>";
+if (pw * sc > 70) o += '<g data-act="lay-main" data-i="' + n + '" data-id="' + q.id + '" style="cursor:pointer"><rect x="' + (X(px) + 4) + '" y="' + (Y(py) + 30) + '" width="46" height="15" rx="3" fill="' + (q.id === starId ? "#d94545" : "none") + '" stroke="#d94545" stroke-width="1"/><text x="' + (X(px) + 27) + '" y="' + (Y(py) + 41) + '" font-size="9" text-anchor="middle" fill="' + (q.id === starId ? "#fff" : "#c23b3b") + '">' + (q.id === starId ? "★ visible" : "make ★") + "</text></g>";
 }
 if (cur) {
 var bs = function (s) { return k ? (s === "l" ? sr.l : s === "r" ? v.w - sr.r : s === "t" ? sr.t : v.h - sr.b) : ins2[{ l: "left", r: "right", t: "top", b: "bottom" }[s]]; };
@@ -5867,7 +5875,7 @@ var sbx = e2 === "right" ? sr.r - pk2 : sr.l;
 var sby = e2 === "bottom" ? sr.b - pk2 : sr.t;
 var sbw = e2 === "left" || e2 === "right" ? pk2 : sr.r - sr.l;
 var sbh = e2 === "top" || e2 === "bottom" ? pk2 : sr.b - sr.t;
-o += '<g data-act="lay-page" data-id="' + st.id + '" style="cursor:pointer"><rect x="' + X(sbx) + '" y="' + Y(sby) + '" width="' + r1(sbw * sc) + '" height="' + r1(sbh * sc) + '" fill="rgba(76,186,58,.38)" stroke="#2f8f22" stroke-width="1.5"/><text x="' + (X(sbx) + 5) + '" y="' + (Y(sby) + 26) + '" font-size="10" fill="#1f6a16">' + esc(String(st.title || "").slice(0, 10)) + "</text></g>";
+o += '<g data-act="lay-page" data-id="' + st.id + '" style="cursor:pointer"><rect x="' + X(sbx) + '" y="' + Y(sby) + '" width="' + r1(sbw * sc) + '" height="' + r1(sbh * sc) + '" fill="rgba(76,186,58,.38)" stroke="#2f8f22" stroke-width="1.5"/><text x="' + (X(sbx) + 5) + '" y="' + (Y(sby) + 26) + '" font-size="10" fill="#1f6a16">' + "★ " + esc(String(st.title || "").slice(0, 10)) + "</text></g>";
 var inner = e2 === "right" ? sbx : e2 === "bottom" ? sby : e2 === "left" ? sbx + sbw : sby + sbh;
 var vs = e2 === "left" || e2 === "right";
 handles += hnd("peek", vs ? (e2 === "left" ? "r" : "l") : (e2 === "top" ? "b" : "t"), vs ? X(inner) : X(sbx + sbw / 2), vs ? Y(sby + sbh / 2) : Y(inner), 0, pk2, e2);
@@ -5882,7 +5890,7 @@ var P = "site.sheets." + n + ".";
 var used = sheetUsed();
 var free = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin" && !q.parent && used.indexOf(q.id) < 0; });
 var h = layoutDrawing(n, curPage());
-h += '<div class="bd-ed-hint">Blue = the window · green = this sheet (drag its edges) · red = a page on it (drag its edges to inset it) · × takes a page off · + adds one. ' + (S.mode === "phone" ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
+h += '<div class="bd-ed-hint">Blue = the window · green = this sheet (drag its edges) · red = a page on it (drag its edges to inset it) · × takes a page off · ★ = the page that shows · + adds one. ' + (S.mode === "phone" ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
 h += field("Pages spread", seg(P + "axis", k.axis === "x" ? "x" : "y", [["y", "Vertical"], ["x", "Horizontal"]]));
 if (S.layAdd === n) {
 h += '<div class="bd-ed-sec" style="margin:0"><span class="bd-ed-label">Put on this sheet</span>' + free.map(function (q) { return '<button class="bd-ed-btn" style="margin:2px 4px 2px 0" data-act="sheet-page-add" data-i="' + n + '" data-id="' + q.id + '">' + esc(q.title) + "</button>"; }).join("") + '<button class="bd-ed-btn" style="margin:2px 0" data-act="lay-new" data-i="' + n + '">' + I.plus + "New page</button>" + (free.length ? "" : '<div class="bd-ed-hint">Every page is already on a sheet.</div>') + "</div>";
@@ -5987,8 +5995,7 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-title">Behaviour</span>'
 + field("Starts", seg("smove." + n + "|start", mv.shown ? "shown" : "away", [["shown", "Shown"], ["away", "Away"]]))
 + field("Side" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), seg(P + (phone ? "edgeM" : "edge"), (phone ? k.edgeM : k.edge) || "left", SHEET_EDGES))
 + (mv.shown ? field("When another page opens", seg("smove." + n + "|other", mv.stay ? "stay" : "away", [["stay", "Stays shown"], ["away", "Goes away"]])) : "")
-+ (mv.stay ? '<div class="bd-ed-hint">Lies where it is. Opening one of its own pages slides it to that page; other pages open underneath or beside it.</div>' : field("Strip left showing (px)" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), '<input class="bd-ed-input bd-ed-n" inputmode="decimal" data-bind="smove.' + n + (phone ? "|stripM" : "|strip") + '" data-type="num" value="' + esc(phone ? mv.m : mv.d) + '"' + (phone && mv.d ? ' placeholder="' + esc(mv.d) + '"' : "") + ">") + '<div class="bd-ed-hint">0 = nothing shows. Drag the green strip’s inner edge in the layout.</div>')
-+ (!mv.shown && mv.d > 0 ? field("Strip shows", select(P + "restPage", strip ? strip.id : "", pages.map(function (q) { return [q.id, q.title]; }))) : "")
++ (mv.stay ? '<div class="bd-ed-hint">Lies where it is. Opening one of its own pages slides it to that page; other pages open underneath or beside it.</div>' : field("Showing at rest (px)" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), '<input class="bd-ed-input bd-ed-n" inputmode="decimal" data-bind="smove.' + n + (phone ? "|stripM" : "|strip") + '" data-type="num" value="' + esc(phone ? mv.m : mv.d) + '"' + (phone && mv.d ? ' placeholder="' + esc(mv.d) + '"' : "") + ">") + '<div class="bd-ed-hint">0 = nothing shows. Or drag the frame’s inner edge in the layout. Tap ★ on a page to make it the one that shows.</div>')
 + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-title">Style</span><span class="bd-ed-label">Background colour</span>' + fillIn("Colour", P + "color", k.color, "#E4E1DA")
 + '<span class="bd-ed-label">Background effect</span>' + row(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur below", P + "blur", k.blur))
@@ -6071,6 +6078,25 @@ h += '<div class="bd-ed-sec">' + adv("site-adv", "Advanced", '<span class="bd-ed
 + '<span class="bd-ed-label">Grid</span>' + row(dpIn("Units", "site.cols", "site.colsM", s.cols, s.colsM, "int"), dpIn("Gap", "site.gap", "site.gapM", s.gap, s.gapM, "int"), numIn("Free-grid row", "site.row", s.row, "int"))) + "</div>";
 return h;
 }
+/* THE LAYERS PANE: FILTER (.sheet .page .blog) + MASTER ABOVE THE LIST */
+function layersBarHTML() {
+var f = S.layFilter || "";
+var h = '<div class="bd-ed-layers"><div class="bd-ed-tabs" role="tablist">';
+[["sheet", ".sheet"], ["page", ".page"], ["blog", ".blog"]].forEach(function (t) {
+h += '<button data-act="lay-filter" data-val="' + t[0] + '" class="' + (f === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
+});
+h += '</div><button class="bd-ed-master' + (S.masterSel ? " is-on" : "") + '" data-act="master-sel"><b>Master</b><span>everything on the site</span></button></div>';
+return h;
+}
+function masterPanelHTML() {
+var T = [["styles", "Styles"], ["motion", "Motion"], ["site", "Site"]];
+if (T.map(function (t) { return t[0]; }).indexOf(S.masterTab) < 0) S.masterTab = "styles";
+var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Master</span><button class="bd-ed-btn" style="height:26px" data-act="master-done">Done</button></div><div class="bd-ed-hint">The settings of the whole site. A sheet or a page can override any of them.</div><div class="bd-ed-tabs" role="tablist">';
+T.forEach(function (t) {
+h += '<button data-act="master-tab" data-val="' + t[0] + '" class="' + (S.masterTab === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
+});
+return h + "</div></div>" + panelHTML(S.masterTab);
+}
 function renderLeft() {
 var L = $("bd-left");
 L.classList.toggle("is-open", S.leftOpen);
@@ -6082,7 +6108,8 @@ var LT = toolLayout().left.filter(function (id) { return !toolHidden(id) || id =
 if (S.codeOpen) S.leftTab = "code";
 else if (S.leftTab === "code") S.leftTab = "";
 if (LT.indexOf(S.leftTab) < 0 && S.leftTab !== "code") S.leftTab = LT.filter(function (id) { return id !== "code"; })[0] || "";
-var h = tabsHTML("left", S.leftTab);
+if (S.leftTab !== "code") S.leftTab = "pages";
+var h = S.leftTab === "code" ? tabsHTML("left", S.leftTab) : layersBarHTML();
 $("bd-app").classList.toggle("has-wide-left", S.leftTab === "code");
 L.classList.toggle("has-codepane", S.leftTab === "code");
 if (S.leftTab === "code") {
@@ -6353,6 +6380,7 @@ return;
 }
 var RT = toolLayout().right.filter(function (id) { return !toolHidden(id); });
 if (RT.indexOf(S.rightTab) < 0) S.rightTab = "sel";
+if (S.masterSel) S.rightTab = "sel";
 var rtabs = RT.length ? tabsHTML("right", S.rightTab, '<button data-act="right-tab" data-val="sel" class="' + (S.rightTab === "sel" ? "is-on" : "") + '">Selected</button>') : "";
 if (RT.length && S.rightTab !== "sel") {
 R.innerHTML = rtabs + panelHTML(S.rightTab);
@@ -6376,6 +6404,10 @@ var pg = curPage();
 var h = "";
 if (S.sel === "__menu" && !S.preview) {
 R.innerHTML = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Menu</span><button class="bd-ed-btn" style="height:26px" data-act="deselect">Done</button></div><div class="bd-ed-hint">Applies on every page.</div></div>' + navPanel();
+return;
+}
+if (S.masterSel && !e) {
+R.innerHTML = masterPanelHTML();
 return;
 }
 var sk = S.sheetSel ? sheetList().map(function (k) { return k.id; }).indexOf(S.sheetSel) : -1;
@@ -7149,7 +7181,7 @@ var hl = wide && S.hideLeft;
 var hr = wide && S.hideRight;
 app.classList.toggle("is-no-left", !!hl);
 app.classList.toggle("is-no-right", !!hr);
-app.style.setProperty("--e-rw", S.sheetSel && wide ? "400px" : "268px");
+app.style.setProperty("--e-rw", (S.sheetSel || S.masterSel) && wide ? "420px" : "340px");
 document.querySelectorAll('[data-act="toggle-left"]').forEach(function (b) { b.classList.toggle("is-on", wide ? !hl : !!S.leftOpen); b.setAttribute("aria-label", hl ? "Show left panel" : "Hide left panel"); });
 document.querySelectorAll('[data-act="toggle-right"]').forEach(function (b) { b.classList.toggle("is-on", wide ? !hr : !!S.rightOpen); b.setAttribute("aria-label", hr ? "Show right panel" : "Hide right panel"); });
 requestAnimationFrame(fitSheet);
@@ -7987,6 +8019,7 @@ node.focus();
 function goPage(id) {
 if (S.live) endEdit();
 S.sheetSel = "";
+S.masterSel = false;
 S.pageId = id;
 S.sel = null;
 S.confirm = null;
@@ -8740,7 +8773,7 @@ setTimeout(function () { go(mine); }, 3600);
 },
 "lay-page": function () { S.pageId = b.getAttribute("data-id"); S.sel = null; render(); },
 "lay-rm": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; if (!k) return; snap(); var id = b.getAttribute("data-id"); k.pages = (k.pages || []).filter(function (x) { return x !== id; }); if (k.main === id) k.main = ""; if (k.restPage === id) k.restPage = ""; changed(); },
-"lay-main": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; if (!k) return; snap(); k.main = b.getAttribute("data-id"); changed(); },
+"lay-main": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; if (!k) return; snap(); if (k.rest === "peek") { k.restPage = b.getAttribute("data-id"); k.main = ""; } else k.main = b.getAttribute("data-id"); changed(); },
 "lay-add": function () { var i = +b.getAttribute("data-i"); S.layAdd = S.layAdd === i ? -1 : i; render(); },
 "lay-new": function () {
 var i = +b.getAttribute("data-i");
@@ -8757,6 +8790,10 @@ k.pages = (k.pages || []).concat([p.id]);
 S.layAdd = -1;
 changed();
 },
+"lay-filter": function () { S.layFilter = S.layFilter === val ? "" : val; renderLeft(); },
+"master-sel": function () { S.masterSel = true; S.sheetSel = ""; S.sel = null; if (S.live) endEdit(); render(); },
+"master-done": function () { S.masterSel = false; render(); },
+"master-tab": function () { S.masterTab = val; render(); },
 "sheet-done": function () { S.sheetSel = ""; render(); },
 "sheet-del": function () { snap(); S.sheetSel = ""; S.project.site.sheets.splice(+b.getAttribute("data-i"), 1); changed(); },
 "sheet-up": function () { var K = S.project.site.sheets; var i = +b.getAttribute("data-i"); if (i < 1) return; snap(); K.splice(i - 1, 0, K.splice(i, 1)[0]); changed(); },
