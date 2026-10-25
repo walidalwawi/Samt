@@ -1,4 +1,4 @@
-/* PUBLISHED mvnrrm2s */
+/* PUBLISHED mvnrukqy */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1861,10 +1861,10 @@ overflow-y: auto;
 overscroll-behavior: contain;
 }
 .bd-ly-k[data-k="menu"] {
---k-mt: 10vh;
+--k-mt: 15vh;
 top: calc(0px + var(--k-mt) - var(--k-up, 0px));
 right: 0px;
-bottom: calc(0px + 5vh);
+bottom: 0px;
 left: 0px;
 --k-peek: 320px;
 --k-sliver: 130px;
@@ -1897,7 +1897,7 @@ left: 0px;
 --k-peek: 90px;
 --k-sliver: 44px;
 --k-strip: 0px;
---k-nudge: 0px;
+--k-nudge: 14px;
 box-shadow: none;
 z-index: 2;
 -webkit-backdrop-filter: blur(10.3px);
@@ -2380,7 +2380,9 @@ padding-bottom: var(--bd-wb);
 padding-left: var(--bd-wl);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-panel {
+margin-top: 0px;
 margin-right: 20vw;
+min-height: calc(100% - 0px - 0px);
 width: auto;
 box-sizing: border-box;
 }
@@ -2388,7 +2390,7 @@ box-sizing: border-box;
 background: rgba(78, 122, 39, 0.7);
 }
 .bd-ly-pane[data-page="fji5ongj"] {
-background: rgba(228, 225, 218, 0.55);
+background: repeating-linear-gradient(180deg, transparent 0, transparent 27px, rgba(0, 0, 0, 0.14) 27px, rgba(0, 0, 0, 0.14) 28px) local, rgba(228, 225, 218, 0.55);
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-panel {
 padding-top: 50px;
@@ -2406,7 +2408,7 @@ width: auto;
 box-sizing: border-box;
 }
 .bd-ly-pane[data-page="b2lr3tkr"] {
-background: rgba(228, 225, 218, 0.55);
+background: repeating-linear-gradient(180deg, transparent 0, transparent 27px, rgba(0, 0, 0, 0.14) 27px, rgba(0, 0, 0, 0.14) 28px) local, rgba(228, 225, 218, 0.55);
 }
 .bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
 padding-top: 50px;
@@ -2781,10 +2783,10 @@ padding-top: calc(70px + var(--bd-wt));
 padding-left: calc(0px + var(--bd-wl));
 }
 .bd-ly-k[data-k="menu"] {
---k-mt: 10vh;
+--k-mt: 15vh;
 top: calc(0px + var(--k-mt) - var(--k-up, 0px));
 right: 0px;
-bottom: calc(0px + 5vh);
+bottom: 0px;
 left: 0px;
 --k-peek: 70px;
 --k-sliver: 14px;
@@ -2811,7 +2813,7 @@ left: 0px;
 --k-peek: 14px;
 --k-sliver: 84px;
 --k-strip: 0px;
---k-nudge: 0px;
+--k-nudge: 14px;
 box-shadow: none;
 }
 .bd-ly .bd-ly-k.is-em-top.is-st-open {
@@ -3043,7 +3045,9 @@ padding-bottom: var(--bd-wb);
 padding-left: 24px;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-panel {
+margin-top: 0px;
 margin-right: 0px;
+min-height: calc(100% - 0px - 0px);
 width: auto;
 box-sizing: border-box;
 }

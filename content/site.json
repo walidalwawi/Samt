@@ -593,8 +593,8 @@
     "dur": "",
     "box": {
      "mr": "",
-     "mt": "10%",
-     "mb": "5%",
+     "mt": "15%",
+     "mb": "",
      "ml": "",
      "pt": ""
     },
@@ -674,15 +674,15 @@
      "mb": "",
      "ml": ""
     },
-    "pattern": "",
+    "pattern": "lined",
     "patColor": "#000000",
     "patSize": 28,
     "patAlpha": 14,
     "out": "peek",
-    "lv": "",
+    "lv": "slide",
     "arrive": "slide",
     "main": "fji5ongj",
-    "hover": ""
+    "hover": "nudge"
    }
   ],
   "editor": {
@@ -4692,7 +4692,7 @@
     "mrM": "0",
     "ml": "",
     "pt": "",
-    "mt": "",
+    "mt": "0",
     "mb": ""
    },
    "sheetBg": "",
