@@ -16,12 +16,12 @@
   "labelW": 100,
   "labelWM": 88,
   "colors": {
-   "page": "#0C0C0B",
-   "panel": "#EADFC8",
+   "page": "#c2c2c2",
+   "panel": "#d6d6d6",
    "ink": "#16140F",
    "rule": "#16140F"
   },
-  "sans": "Newsreader",
+  "sans": "Instrument Sans",
   "mono": "Courier Prime",
   "fs": 23.5,
   "lh": 29.6,
@@ -51,7 +51,7 @@
     "italic": false,
     "textCase": "none",
     "tracking": 0,
-    "color": ""
+    "color": "#000000"
    },
    "heading": {
     "font": "sans",
@@ -571,8 +571,8 @@
     "name": "Menu",
     "pages": [
      "8b78vbfw",
-     "nsye72w3",
-     "56ud3gky"
+     "56ud3gky",
+     "nsye72w3"
     ],
     "restPage": "56ud3gky",
     "edge": "left",
@@ -585,15 +585,15 @@
     "axis": "x",
     "covers": "all",
     "coverPages": [],
-    "color": "#B9A27A",
-    "alpha": 100,
-    "blur": 0,
+    "color": "#ffffff",
+    "alpha": 90,
+    "blur": 10,
     "shadow": "line",
     "nudge": 100,
     "dur": "",
     "box": {
      "mr": "",
-     "mt": "15%",
+     "mt": "10%",
      "mb": "",
      "ml": "",
      "pt": ""
@@ -629,8 +629,8 @@
     "covers": "all",
     "coverPages": [],
     "color": "#EADFC8",
-    "alpha": 100,
-    "blur": 0,
+    "alpha": 0,
+    "blur": 10,
     "shadow": "line",
     "nudge": 0,
     "dur": "",
@@ -1358,7 +1358,7 @@
     "ml": "6%",
     "pl": "100",
     "plM": "30",
-    "card": "#EADFC8",
+    "card": "",
     "mb": "4%"
    }
   },
@@ -1825,7 +1825,7 @@
    "box": {
     "pl": "150",
     "plM": "20",
-    "card": "#EADFC8",
+    "card": "",
     "mt": "4%",
     "mb": "4%",
     "ml": "6%",
@@ -2254,7 +2254,7 @@
    "excerpt": "",
    "featured": false,
    "box": {
-    "card": "#EADFC8",
+    "card": "",
     "mt": "4%",
     "mb": "4%",
     "ml": "6%",
@@ -2538,7 +2538,7 @@
    "excerpt": "",
    "featured": false,
    "box": {
-    "card": "#EADFC8",
+    "card": "",
     "mt": "4%",
     "mb": "4%",
     "ml": "6%",
@@ -2932,7 +2932,7 @@
     "gutterM": 24
    },
    "box": {
-    "card": "#EADFC8",
+    "card": "",
     "mt": "4%",
     "mb": "4%",
     "ml": "6%",
@@ -4382,7 +4382,7 @@
     "mtM": "0",
     "shadow": "none",
     "fit": false,
-    "card": "#3A6FE4",
+    "card": "",
     "plM": "20",
     "prM": "20",
     "pl": "100",
@@ -4681,7 +4681,7 @@
     "mr": "20%",
     "shadow": "none",
     "fit": false,
-    "card": "#F2B58A",
+    "card": "#ebebeb",
     "mrM": "0",
     "ml": "",
     "pt": "",
@@ -4760,7 +4760,9 @@
     "colsM": 1,
     "gutter": 40,
     "gutterM": 24
-   }
+   },
+   "hover": "",
+   "pattern": ""
   }
  }
 }
