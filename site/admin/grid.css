@@ -1297,6 +1297,50 @@ font-size: 12px;
 color: var(--e-ink);
 }
 
+/* LAYOUT DRAWING · CARDS, WINDOW AND RESULT */
+.bd-lay-box {
+padding: 12px 10px 8px;
+background: var(--e-tint);
+border: 1px solid var(--e-line);
+border-radius: 14px;
+}
+.bd-lay-res {
+display: flex;
+gap: 10px;
+margin-top: 8px;
+}
+.bd-lay-fig {
+flex: 1;
+margin: 0;
+padding: 10px;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 8px;
+background: var(--e-tint);
+border: 1px solid var(--e-line);
+border-radius: 14px;
+}
+.bd-lay-fig svg {
+display: block;
+max-width: 100%;
+height: auto;
+}
+.bd-lay-fig figcaption {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 1px;
+font-size: 12px;
+text-align: center;
+}
+.bd-lay-fig figcaption span {
+font-family: var(--e-mono);
+font-size: 10px;
+letter-spacing: 0.04em;
+text-transform: uppercase;
+color: var(--e-mute);
+}
 /* MOBILE */
 @media (max-width: 980px) {
 .bd-ed-app {

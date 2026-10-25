@@ -5786,7 +5786,7 @@ return gridPx(boxLen(boxVal(box || {}, "m" + s, phone), s));
 BOX_VIEW = null;
 }
 }
-var LAY_C = { sheet: "#7b5ea7", sheetFill: "rgba(123,94,167,.2)", page: "#d23b3b", pageFill: "rgba(210,59,59,.2)", win: "#2e9bd6", winFill: "rgba(46,155,214,.16)", half: "#ff4d00" };
+var LAY_C = { sheet: "#7b5ea7", sheetFill: "rgba(123,94,167,.07)", page: "#6b6862", pageFill: "rgba(255,255,255,.9)", win: "#d9573b", winFill: "rgba(217,87,59,.07)", half: "#d9573b", salmon: "#ebb0a0" };
 /* THE ★ PAGE: THE ONE THE WINDOW SITS ON AT REST */
 function layStar(k) {
 var pages = (k.pages || []).map(sheetPage).filter(Boolean);
@@ -5980,11 +5980,11 @@ var o = '<svg class="bd-lay" viewBox="0 0 ' + DW + " " + VH + '" width="100%" ro
 var sx = v.w / 20, sy = v.h / 20;
 for (var x = Math.floor(B.l / sx) * sx; x <= B.r; x += sx) {
 var ix = Math.round(x / sx), hx = ((ix % 20) + 20) % 20 === 10, qx = ix % 5 === 0;
-o += '<line x1="' + X(x) + '" y1="0" x2="' + X(x) + '" y2="' + VH + '" stroke="' + (hx ? LAY_C.half : "currentColor") + '" stroke-opacity="' + (hx ? .55 : qx ? .18 : .07) + '" stroke-width="' + (hx ? 1 : .6) + '"/>';
+o += '<line x1="' + X(x) + '" y1="0" x2="' + X(x) + '" y2="' + VH + '" stroke="' + (hx ? LAY_C.half : "currentColor") + '" stroke-opacity="' + (hx ? .22 : qx ? .09 : .035) + '" stroke-width="' + (hx ? 1 : .6) + '"/>';
 }
 for (var y = Math.floor(B.t / sy) * sy; y <= B.b; y += sy) {
 var iy = Math.round(y / sy), hy = ((iy % 20) + 20) % 20 === 10, qy = iy % 5 === 0;
-o += '<line x1="0" y1="' + Y(y) + '" x2="' + DW + '" y2="' + Y(y) + '" stroke="' + (hy ? LAY_C.half : "currentColor") + '" stroke-opacity="' + (hy ? .55 : qy ? .18 : .07) + '" stroke-width="' + (hy ? 1 : .6) + '"/>';
+o += '<line x1="0" y1="' + Y(y) + '" x2="' + DW + '" y2="' + Y(y) + '" stroke="' + (hy ? LAY_C.half : "currentColor") + '" stroke-opacity="' + (hy ? .22 : qy ? .09 : .035) + '" stroke-width="' + (hy ? 1 : .6) + '"/>';
 }
 var rect = function (r, attrs) { return '<rect x="' + X(r.l) + '" y="' + Y(r.t) + '" width="' + Lx(Math.max(0, r.r - r.l)) + '" height="' + Lx(Math.max(0, r.b - r.t)) + '" ' + attrs + "/>"; };
 /* THE OTHER SHEETS, DASHED, WHERE THEY LIE AT REST */
@@ -5995,14 +5995,30 @@ o += '<text x="' + (X(og.rect.r) - 4) + '" y="' + (Y(og.rect.b) - 5) + '" text-a
 /* WHERE IT GOES WHEN A PAGE UNDERNEATH OPENS */
 if (G.ghost) o += rect(G.ghost, 'fill="none" stroke="' + LAY_C.sheet + '" stroke-dasharray="2 3" stroke-opacity=".9"');
 /* THIS SHEET */
-o += rect(G.rect, 'fill="' + LAY_C.sheetFill + '" stroke="' + LAY_C.sheet + '" stroke-width="2"' + (G.hidden ? ' stroke-dasharray="6 4"' : ""));
-o += '<text x="' + (X(G.rect.r) - 4) + '" y="' + (Y(G.rect.b) + 11) + '" text-anchor="end" font-size="10" fill="' + LAY_C.sheet + '">' + esc(String(k.name || "Sheet").slice(0, 18)) + " · " + (n + 1) + " of " + K.length + (G.hidden ? " · hidden at rest" : "") + "</text>";
+o += rect(G.rect, 'rx="12" fill="' + LAY_C.sheetFill + '" stroke="' + LAY_C.sheet + '" stroke-opacity=".7" stroke-width="1.5"' + (G.hidden ? ' stroke-dasharray="6 4"' : ""));
+o += '<text x="' + (X(G.rect.l) + 4) + '" y="' + (Y(G.rect.t) - 6) + '" font-size="10" fill="' + LAY_C.sheet + '">' + esc(String(k.name || "Sheet").slice(0, 18)) + " · " + (n + 1) + " of " + K.length + (G.hidden ? " · hidden at rest" : "") + "</text>";
+var card = function (b, q, cur, isStar, below) {
+var bx = X(b.l), by = Y(b.t), bw = Lx(Math.max(0, b.r - b.l)), bh = Lx(Math.max(0, b.b - b.t));
+var c = '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" rx="9" fill="#fff" stroke="rgba(0,0,0,.14)" stroke-width="1"/>';
+if (bw > 40 && bh > 30) {
+c += '<rect x="' + r1(bx + 10) + '" y="' + r1(by + 10) + '" width="' + r1(bw * .42) + '" height="5" rx="2.5" fill="rgba(0,0,0,.2)"/>';
+[.8, .66, .74].forEach(function (f, i) { if (by + 26 + i * 8 < by + bh - 10) c += '<rect x="' + r1(bx + 10) + '" y="' + r1(by + 22 + i * 8) + '" width="' + r1((bw - 20) * f) + '" height="3" rx="1.5" fill="rgba(0,0,0,.1)"/>'; });
+if (bh > 80) c += '<rect x="' + r1(bx + 10) + '" y="' + r1(by + bh * .44) + '" width="' + r1(bw - 20) + '" height="' + r1(bh * .3) + '" rx="6" fill="' + LAY_C.salmon + '"/>';
+}
+if (below === null) return c;
+var nm = esc(String(q.title || "").slice(0, Math.max(4, Math.floor(bw / 6.2))));
+var tag = (isStar ? "★ " : "") + nm + (k.rest === "peek" && isStar ? " · strip" : "");
+if (below) return c + '<text x="' + r1(bx + bw / 2) + '" y="' + r1(by + bh + 14) + '" text-anchor="middle" font-size="10.5" fill="' + (cur ? "#1f1e1c" : "#6b6862") + '"' + (cur ? ' font-weight="600"' : "") + ">" + tag + "</text>";
+return c + '<text x="' + r1(bx + 10) + '" y="' + r1(by + bh - 9) + '" font-size="10.5" fill="' + (cur ? "#1f1e1c" : "#6b6862") + '"' + (cur ? ' font-weight="600"' : "") + ">" + tag + "</text>";
+};
 /* ITS PAGES */
 var focusId = pg && G.pages.some(function (q) { return q.id === pg.id; }) ? pg.id : (G.pages[G.star] || {}).id;
 var handles = "";
+var dimPass = "";
+var brightPass = "";
 var hnd = function (kind, side, cx, cy, col, extra) {
 var vert = side === "l" || side === "r";
-return '<g data-lh="' + kind + '" data-s="' + side + '" ' + (extra || "") + ' style="cursor:' + (vert ? "ew-resize" : "ns-resize") + '"><rect x="' + r1(cx - (vert ? 10 : 20)) + '" y="' + r1(cy - (vert ? 20 : 10)) + '" width="' + (vert ? 20 : 40) + '" height="' + (vert ? 40 : 20) + '" fill="transparent"/><rect x="' + r1(cx - (vert ? 3.5 : 12)) + '" y="' + r1(cy - (vert ? 12 : 3.5)) + '" width="' + (vert ? 7 : 24) + '" height="' + (vert ? 24 : 7) + '" rx="3" fill="' + col + '" stroke="#fff" stroke-width="1.2"/></g>';
+return '<g data-lh="' + kind + '" data-s="' + side + '" ' + (extra || "") + ' style="cursor:' + (vert ? "ew-resize" : "ns-resize") + '"><rect x="' + r1(cx - (vert ? 10 : 20)) + '" y="' + r1(cy - (vert ? 20 : 10)) + '" width="' + (vert ? 20 : 40) + '" height="' + (vert ? 40 : 20) + '" fill="transparent"/><rect x="' + r1(cx - (vert ? 2.5 : 9)) + '" y="' + r1(cy - (vert ? 9 : 2.5)) + '" width="' + (vert ? 5 : 18) + '" height="' + (vert ? 18 : 5) + '" rx="3" fill="' + col + '" stroke="#fff" stroke-width="1.2"/></g>';
 };
 G.slots.forEach(function (s) {
 var q = s.q;
@@ -6010,23 +6026,27 @@ var b = s.box;
 var cur = q.id === focusId;
 var isStar = s.i === G.star;
 var w = Lx(Math.max(0, b.r - b.l));
-o += '<g data-act="lay-page" data-id="' + q.id + '" style="cursor:pointer">' + rect(b, 'fill="' + LAY_C.pageFill + '" fill-opacity="' + (cur ? 1 : .45) + '" stroke="' + LAY_C.page + '" stroke-width="' + (cur ? 2 : 1.2) + '"' + (cur ? "" : ' stroke-dasharray="5 3"')) + '<text x="' + (X(b.l) + 6) + '" y="' + (Y(b.b) - 7) + '" font-size="11" fill="' + LAY_C.page + '">' + (isStar ? "★ " : "") + esc(String(q.title || "").slice(0, Math.max(4, Math.floor(w / 6.5)))) + (k.rest === "peek" && isStar ? " · strip" : "") + "</text></g>";
+var belowLbl = G.ax === "x";
+dimPass += '<g data-act="lay-page" data-id="' + q.id + '" style="cursor:pointer">' + card(b, q, cur, isStar, belowLbl) + "</g>";
+brightPass += card(b, q, cur, isStar, null);
 var cx = X(b.r) - 9, cy = Y(b.t) + 9;
-o += '<g data-act="lay-rm" data-i="' + n + '" data-id="' + q.id + '" style="cursor:pointer"><circle cx="' + cx + '" cy="' + cy + '" r="7" fill="' + LAY_C.page + '"/><path d="M' + (cx - 3) + " " + (cy - 3) + "l6 6m0 -6l-6 6" + '" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></g>';
+o += '<g data-act="lay-rm" data-i="' + n + '" data-id="' + q.id + '" style="cursor:pointer"><circle cx="' + cx + '" cy="' + cy + '" r="7" fill="#6b6862"/><path d="M' + (cx - 3) + " " + (cy - 3) + "l6 6m0 -6l-6 6" + '" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></g>';
 if (cur) {
 var off = 16;
 var ex = ' data-id="' + q.id + '"';
-handles += hnd("page", "l", X(b.l) + off, Y((b.t + b.b) / 2), LAY_C.page, ex + ' data-off="' + off + '"') + hnd("page", "r", X(b.r) - off, Y((b.t + b.b) / 2), LAY_C.page, ex + ' data-off="' + (-off) + '"') + hnd("page", "t", X((b.l + b.r) / 2), Y(b.t) + off, LAY_C.page, ex + ' data-off="' + off + '"') + hnd("page", "b", X((b.l + b.r) / 2), Y(b.b) - off, LAY_C.page, ex + ' data-off="' + (-off) + '"');
+handles += hnd("page", "l", X(b.l) + off, Y((b.t + b.b) / 2), "#4a4843", ex + ' data-off="' + off + '"') + hnd("page", "r", X(b.r) - off, Y((b.t + b.b) / 2), "#4a4843", ex + ' data-off="' + (-off) + '"') + hnd("page", "t", X((b.l + b.r) / 2), Y(b.t) + off, "#4a4843", ex + ' data-off="' + off + '"') + hnd("page", "b", X((b.l + b.r) / 2), Y(b.b) - off, "#4a4843", ex + ' data-off="' + (-off) + '"');
 }
 });
+o += '<clipPath id="bd-lay-win-' + n + '"><rect x="' + X(0) + '" y="' + Y(0) + '" width="' + Lx(v.w) + '" height="' + Lx(v.h) + '" rx="9"/></clipPath>';
+o += '<g opacity=".55">' + dimPass + '</g><g clip-path="url(#bd-lay-win-' + n + ')" pointer-events="none">' + brightPass + "</g>";
 /* THE + TAB PAST THE LAST PAGE */
 var endA = G.ax === "x" ? G.rect.r : G.rect.b;
 var tabX = G.ax === "x" ? X(endA) + 6 : X((G.rect.l + G.rect.r) / 2) - 34;
 var tabY = G.ax === "x" ? Y((G.rect.t + G.rect.b) / 2) - 11 : Y(endA) + 6;
 o += '<g data-act="lay-add" data-i="' + n + '" style="cursor:pointer"><rect x="' + tabX + '" y="' + tabY + '" width="68" height="22" rx="4" fill="rgba(0,0,0,.03)" stroke="currentColor" stroke-opacity=".45" stroke-dasharray="4 3"/><text x="' + (tabX + 34) + '" y="' + (tabY + 15) + '" text-anchor="middle" font-size="11" fill="currentColor" opacity=".7">+ page</text></g>';
 /* THE WINDOW */
-o += rect({ l: 0, t: 0, r: v.w, b: v.h }, 'fill="' + LAY_C.winFill + '" stroke="' + LAY_C.win + '" stroke-width="2"');
-o += '<text x="' + (X(0) + 4) + '" y="' + (Y(0) - 4) + '" font-size="10" fill="' + LAY_C.win + '">window · ' + (phone ? "phone" : "desktop") + " " + v.w + "×" + v.h + "</text>";
+o += rect({ l: 0, t: 0, r: v.w, b: v.h }, 'rx="9" fill="' + LAY_C.winFill + '" stroke="' + LAY_C.win + '" stroke-width="2.5" pointer-events="none"');
+o += '<text x="' + (X(0) + 6) + '" y="' + (Y(0) - 5) + '" font-size="10" font-weight="600" fill="' + LAY_C.win + '">window</text>';
 /* ▼ WHERE THE WINDOW SITS AT REST (DRAG ONTO A PAGE), ▽ WHERE THE SHEET GOES WHEN A PAGE UNDERNEATH OPENS */
 var mk = function (cx, cy, dir, hollow, lh) {
 var p = dir === "down" ? "M" + (cx - 8) + " " + (cy - 10) + "h16l-8 10z" : "M" + (cx + 10) + " " + (cy - 8) + "v16l-10-8z";
@@ -6045,6 +6065,44 @@ handles += hnd("sheet", "l", X(r.l), Y((r.t + r.b) / 2), LAY_C.sheet) + hnd("she
 }
 return o + handles + "</svg>";
 }
+/* THE RESULT, LIKE THE OPEN / CLOSED THUMBNAILS: WHAT THE WINDOW SHOWS AT REST AND WHEN A PAGE UNDERNEATH OPENS */
+function layResult(n) {
+var phone = S.mode === "phone";
+var G = sheetGeo(n, phone);
+var k = G.k;
+var v = G.v;
+var TW = 132;
+var t = TW / v.w;
+var TH = Math.round(v.h * t);
+var clip = function (r) {
+if (!r) return null;
+var c = { l: Math.max(0, r.l), t: Math.max(0, r.t), r: Math.min(v.w, r.r), b: Math.min(v.h, r.b) };
+return c.r - c.l > 0.5 && c.b - c.t > 0.5 ? c : null;
+};
+var lines = function (x, y, w, h, dark) {
+var c = "";
+for (var i = 0; i < 5 && 10 + i * 8 < h - 6; i++) c += '<rect x="' + (x + 8) + '" y="' + (y + 10 + i * 8) + '" width="' + Math.max(4, (w - 16) * (i % 2 ? .6 : .85)) + '" height="3" rx="1.5" fill="rgba(0,0,0,' + (dark ? .16 : .08) + ')"/>';
+return c;
+};
+var thumb = function (r, label, note) {
+var o = '<svg viewBox="0 0 ' + TW + " " + TH + '" width="' + TW + '" height="' + TH + '" aria-hidden="true"><rect width="' + TW + '" height="' + TH + '" rx="8" fill="#fff" stroke="rgba(0,0,0,.14)"/>' + lines(0, 0, TW, TH, false);
+if (r) {
+var x = r.l * t, y = r.t * t, w = (r.r - r.l) * t, h = (r.b - r.t) * t;
+o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="6" fill="' + esc(k.color || "#E4E1DA") + '" fill-opacity=".92" stroke="' + LAY_C.sheet + '" stroke-opacity=".6"/>' + lines(x, y, w, h, true);
+if (h > 36 && w > 30) o += '<rect x="' + (x + 8) + '" y="' + (y + h * .5) + '" width="' + (w - 16) + '" height="' + h * .26 + '" rx="4" fill="' + LAY_C.salmon + '"/>';
+}
+o += '<rect x="1" y="1" width="' + (TW - 2) + '" height="' + (TH - 2) + '" rx="8" fill="none" stroke="' + LAY_C.win + '" stroke-width="2"/></svg>';
+return '<figure class="bd-lay-fig">' + o + "<figcaption><b>" + label + "</b><span>" + note + "</span></figcaption></figure>";
+};
+var rest = G.hidden ? null : clip(G.rect);
+var away;
+var awayNote;
+if (G.hidden) { away = null; awayNote = "hidden"; }
+else if (G.ghost) { away = clip(G.ghost); awayNote = away ? "tucks away" : "slides out"; }
+else if (k.rest === "open" && k.out === "hide") { away = null; awayNote = "hides"; }
+else { away = rest; awayNote = k.rest === "peek" ? "stays on its edge" : "stays"; }
+return '<div class="bd-lay-res">' + thumb(rest, "At rest", G.hidden ? "hidden" : "what shows") + thumb(away, "A page underneath opens", awayNote) + "</div>";
+}
 function sheetLayoutHTML(n) {
 var k = sheetList()[n];
 var P = "site.sheets." + n + ".";
@@ -6052,7 +6110,7 @@ var phone = S.mode === "phone";
 var used = sheetUsed();
 var free = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin" && !q.parent && used.indexOf(q.id) < 0; });
 var G = sheetGeo(n, phone);
-var h = layoutDrawing(n, curPage());
+var h = '<div class="bd-lay-box">' + layoutDrawing(n, curPage()) + "</div>" + layResult(n);
 h += '<div class="bd-lay-cap">' + layCaption(n, phone) + "</div>";
 if (G.cutSide || (G.N > 1 && ((G.star === G.N - 1 && G.mEnd > 0.5) || (G.star === 0 && G.mStart > 0.5)))) h += field("The ★ page is", '<span class="bd-ed-seg"><button class="' + (k.rest === "peek" ? "is-on" : "") + '" data-act="lay-strip" data-i="' + n + '" data-val="1">A strip · stays on the edge</button><button class="' + (k.rest !== "peek" ? "is-on" : "") + '" data-act="lay-strip" data-i="' + n + '" data-val="0">A page · slides like the others</button></span>');
 h += '<div class="bd-ed-hint"><i class="bd-lay-sw" style="background:' + LAY_C.sheet + '"></i>this sheet — drag its edges · <i class="bd-lay-sw" style="background:' + LAY_C.page + '"></i>its pages — drag their edges to inset · <i class="bd-lay-sw" style="background:' + LAY_C.win + '"></i>the window, always 100% · dashed = the other sheets at rest · ▼ drag onto a page to make it ★ · ▽ drag to set where the sheet goes when a page underneath opens · × takes a page off · ' + (phone ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
