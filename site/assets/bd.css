@@ -1,4 +1,4 @@
-/* PUBLISHED mvnlcpyj */
+/* PUBLISHED mvnlhwqj */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1890,7 +1890,7 @@ backdrop-filter: blur(5px);
 }
 .bd-ly-k[data-k="index"] {
 top: 0px;
-right: calc(0px + 200px);
+right: calc(0px + 0px);
 bottom: 0px;
 left: 0px;
 --k-peek: 200px;
@@ -2177,7 +2177,11 @@ background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-panel {
+margin-top: 50px;
 margin-right: 40vw;
+margin-bottom: 50px;
+margin-left: 50px;
+min-height: calc(100% - 50px - 50px);
 width: auto;
 box-sizing: border-box;
 }
@@ -2217,6 +2221,7 @@ padding-left: calc(192px + 100px);
 .bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
 margin-right: 0px;
 margin-bottom: 40vh;
+margin-left: 0px;
 min-height: calc(100% - 0px - 40vh);
 width: auto;
 box-sizing: border-box;
@@ -2841,7 +2846,11 @@ padding-bottom: var(--bd-wb);
 padding-left: 24px;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-panel {
+margin-top: 50px;
 margin-right: 0px;
+margin-bottom: 50px;
+margin-left: 50px;
+min-height: calc(100% - 50px - 50px);
 width: auto;
 box-sizing: border-box;
 }
@@ -2870,6 +2879,7 @@ padding-left: 20px;
 margin-top: 0px;
 margin-right: 0px;
 margin-bottom: 40vh;
+margin-left: 0px;
 min-height: calc(100% - 0px - 40vh);
 width: auto;
 box-sizing: border-box;

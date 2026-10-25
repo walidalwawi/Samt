@@ -668,7 +668,7 @@
     "nudge": 300,
     "dur": "",
     "box": {
-     "mr": "200",
+     "mr": "0",
      "mrM": "0",
      "mtM": "0",
      "mbM": "0",
@@ -4394,7 +4394,8 @@
     "pl": "100",
     "pr": "50",
     "pt": "50",
-    "pb": "50"
+    "pb": "50",
+    "ml": "0"
    },
    "sheetBg": "linear-gradient(180deg, #ebebeb, transparent)"
   },
@@ -4682,8 +4683,10 @@
     "fit": false,
     "card": "linear-gradient(180deg, #ffffff, #ffffff)",
     "mrM": "0",
-    "ml": "",
-    "pt": ""
+    "ml": "50",
+    "pt": "",
+    "mt": "50",
+    "mb": "50"
    },
    "sheetBg": "",
    "hover": "",
