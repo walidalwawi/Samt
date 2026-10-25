@@ -1024,6 +1024,26 @@ opacity: 0.6;
 font-size: 11px;
 }
 
+/* LAYOUT DRAWING */
+.bd-lay-cap {
+margin: 8px 0 4px;
+padding: 8px 10px;
+background: var(--e-tint);
+border-radius: 6px;
+font-size: 12px;
+line-height: 1.45;
+}
+.bd-lay-sw {
+display: inline-block;
+width: 9px;
+height: 9px;
+border-radius: 2px;
+margin-right: 3px;
+vertical-align: -1px;
+}
+.bd-ed-ruler .bd-ed-view {
+margin-left: auto;
+}
 /* MOBILE */
 @media (max-width: 980px) {
 .bd-ed-app {

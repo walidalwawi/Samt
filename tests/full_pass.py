@@ -18,6 +18,9 @@ async def run():
         pg = await ctx.new_page(); errs = []
         pg.on('pageerror', lambda e: errs.append(str(e)))
         await pg.goto('http://127.0.0.1:8765/admin'); await pg.wait_for_timeout(3000)
+        ev = pg.evaluate
+        # A KNOWN SET OF SHEETS, WHATEVER THE LIVE SITE HAS RIGHT NOW
+        await ev("S.project.site.layers.on = true; S.project.site.sheets = [Object.assign(clone(SHEET_DEFAULTS), { id: 'menu', name: 'Menu', axis: 'x', rest: 'peek', edge: 'left', edgeM: 'top', peek: 300, peekM: 70, restPage: '56ud3gky', pages: ['nsye72w3', '56ud3gky'], box: {} }), Object.assign(clone(SHEET_DEFAULTS), { id: 'index', name: 'Index', axis: 'y', rest: 'open', out: 'peek', sliver: 100, edge: 'left', main: 'fji5ongj', pages: ['fji5ongj', 'b2lr3tkr'], box: {} })]; ['nsye72w3','56ud3gky','fji5ongj','b2lr3tkr','zty6iib1'].forEach(function (id) { S.project.pages[id].box = {}; }); changed();"); await pg.wait_for_timeout(600)
         async def noerr(zone, what):
             if errs:
                 rec(zone, what, False, errs[-1][:120]); errs.clear()
