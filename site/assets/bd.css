@@ -1,4 +1,4 @@
-/* PUBLISHED mvnqs3ev */
+/* PUBLISHED mvnqt7vs */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -1896,7 +1896,7 @@ bottom: 0px;
 left: 192px;
 --k-peek: 90px;
 --k-sliver: 44px;
---k-strip: 0px;
+--k-strip: 90px;
 --k-nudge: 0px;
 box-shadow: 1px 0 0 rgba(0, 0, 0, 0.12);
 z-index: 2;
@@ -2163,9 +2163,6 @@ padding-left: calc(282px + 100px);
 .bd-ly-art[data-id="ipk7ns57"] > .bd-panel {
 padding-left: calc(282px + 150px);
 }
-.bd-ly-k[data-k="menu"] > .bd-ly-strip {
-background: rgba(228, 225, 218, 0.7);
-}
 .bd-ly-pane[data-page="nsye72w3"] {
 background: rgba(228, 225, 218, 0.7);
 }
@@ -2176,25 +2173,20 @@ padding-bottom: var(--bd-wb);
 padding-left: var(--bd-wl);
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
-.bd-ly-pane[data-page="b2lr3tkr"] {
+.bd-ly-k[data-k="menu"] > .bd-ly-strip {
+background: rgba(228, 225, 218, 0.7);
+}
+.bd-ly-k[data-k="glg17d2m"] > .bd-ly-strip {
 background: rgba(228, 225, 218, 0.55);
 }
-.bd-ly-pane[data-page="b2lr3tkr"] {
+.bd-ly-k[data-k="glg17d2m"] > .bd-ly-strip {
 background: linear-gradient(180deg, #ebebeb, transparent);
 }
-.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
+.bd-ly-k[data-k="glg17d2m"] > .bd-ly-strip > .bd-panel {
 padding-top: 50px;
 padding-right: 50px;
 padding-bottom: 50px;
 padding-left: 100px;
-}
-.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
-margin-right: 0px;
-margin-bottom: 0px;
-margin-left: 0px;
-min-height: calc(100% - 0px - 0px);
-width: auto;
-box-sizing: border-box;
 }
 .bd-ly-pane[data-page="fji5ongj"] {
 background: rgba(228, 225, 218, 0.55);
@@ -2604,7 +2596,7 @@ bottom: 0px;
 left: 0px;
 --k-peek: 14px;
 --k-sliver: 14px;
---k-strip: 0px;
+--k-strip: 14px;
 --k-nudge: 0px;
 box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
 }
@@ -2841,20 +2833,11 @@ margin-right: 0px;
 width: auto;
 box-sizing: border-box;
 }
-.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
+.bd-ly-k[data-k="glg17d2m"] > .bd-ly-strip > .bd-panel {
 padding-top: 50px;
 padding-right: 20px;
 padding-bottom: 50px;
 padding-left: 20px;
-}
-.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
-margin-top: 0px;
-margin-right: 0px;
-margin-bottom: 0px;
-margin-left: 0px;
-min-height: calc(100% - 0px - 0px);
-width: auto;
-box-sizing: border-box;
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-panel {
 padding-top: 50px;
