@@ -274,6 +274,16 @@ async def run():
         ok('layers drag: a page moves to another sheet', (await st()) == 'menu:56ud3gky,nsye72w3,b2lr3tkr|index:fji5ongj')
         await gdrag('.bd-ed-grip.is-sheet[data-id="index"]', '.bd-ed-group[data-sheet="menu"]', 0.2)
         ok('layers drag: a sheet moves in the stack', (await st()).startswith('index:'))
+        # revert: a visible top-bar button, asks first, puts the site back to what is published
+        await ev("S.project.site.name = 'REVERT-PROBE'; changed();"); await pg.wait_for_timeout(700)
+        ok('revert: the top-bar Revert button is on once something is unpublished', await pg.locator('#bd-top [data-act=revert]:not([disabled])').count() == 1)
+        await pg.click('#bd-top [data-act=revert]'); await pg.wait_for_timeout(200)
+        ok('revert: it asks first, in the bar', await pg.locator('#bd-top [data-act=discard-yes]').count() == 1)
+        await pg.click('#bd-top [data-act=confirm-no]'); await pg.wait_for_timeout(200)
+        ok('revert: Keep leaves the edit alone', await ev("S.project.site.name") == 'REVERT-PROBE' and await pg.locator('#bd-top [data-act=revert]').count() == 1)
+        await pg.click('#bd-top [data-act=revert]'); await pg.click('#bd-top [data-act=discard-yes]'); await pg.wait_for_timeout(3000)
+        ok('revert: Discard brings back the published site', await ev("S.project.site.name") != 'REVERT-PROBE' and not await ev("hasDraft()"))
+        ok('revert: the button goes grey again', await pg.locator('#bd-top [data-act=revert][disabled]').count() == 1)
         ok('no page errors', not errs)
         await b.close()
     bad = [n for n, c in R if not c]

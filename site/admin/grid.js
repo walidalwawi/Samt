@@ -4827,6 +4827,8 @@ el.textContent = text;
 el.classList.toggle("is-warn", !!warn);
 el.title = "Edits are kept in this browser until you press Publish";
 }
+var rv = document.querySelector('[data-act="revert"]');
+if (rv) rv.disabled = !/^Not published/.test(text || "");
 }
 function scheduleSave() {
 if (!S.project) return;
@@ -4960,6 +4962,8 @@ function discardDraft() {
 lsDel(DRAFT_STORE);
 S.confirm = null;
 closePop();
+S.undo = [];
+S.redo = [];
 loadSite();
 }
 
@@ -4976,7 +4980,7 @@ if (!opts.skipCode) renderCode();
 var TOOL_ZONES = { top: ["Top bar", "btn"], rail: ["Rail", "btn"], left: ["Left panel", "panel"], right: ["Right panel", "panel"] };
 var RAIL_TYPES = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["notes", "Notes"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"], ["quote", "Quote"], ["toggle", "Fold-out list"], ["product", "Product"], ["sep1"], ["menubtn", "Menu"], ["sheetmenu", "Sheet menu"], ["ptitle", "Page title"], ["pager", "Page arrows"], ["sep2"], ["posts", "Blog posts"], ["postinfo", "Post info"], ["sep3"]];
 var TOOL_DEFAULT = {
-top: ["toggle-left", "brand", "projects", "mode", "undo", "redo", "code-btn", "preview", "publish", "status", "toggle-right"],
+top: ["toggle-left", "brand", "projects", "mode", "undo", "redo", "code-btn", "preview", "revert", "publish", "status", "toggle-right"],
 rail: RAIL_TYPES.map(function (t) { return t.length > 1 ? "add:" + t[0] : t[0]; }).concat(["inspect"]),
 left: ["pages", "styles", "motion", "site", "code"],
 right: []
@@ -5048,6 +5052,10 @@ return '<button class="bd-ed-tool' + (phone ? "" : " is-on") + '" data-act="mode
 "redo": { label: "Redo", icon: I.redo, act: "redo", iconOnly: true, disabled: function () { return !S.redo.length; } },
 "code-btn": { label: "Code", icon: I.code, act: "code", on: function () { return S.codeOpen; } },
 "preview": { label: "Preview", icon: I.eye, act: "preview", on: function () { return S.preview && !S.inspect; } },
+"revert": { label: "Revert", only: ["top"], html: function () {
+if (S.confirm === "discard") return '<span class="bd-ed-confirm is-inline">Throw away unpublished changes? <button class="bd-ed-btn is-danger" data-act="discard-yes">Discard</button><button class="bd-ed-btn" data-act="confirm-no">Keep</button></span>';
+return '<button class="bd-ed-btn" data-act="revert"' + (hasDraft() ? "" : " disabled") + ' title="Go back to what is live — throws away everything not yet published">' + I.undo + '<span class="bd-ed-hide-narrow">Revert</span></button>';
+} },
 "publish": { label: "Save & publish", icon: I.up, act: "export", primary: true, disabled: function () { return S.publishing; }, text: function () { return S.publishing ? "Publishing…" : "Save & publish"; } },
 "status": { label: "Saved / published status", only: ["top"], html: function () { return '<span class="bd-ed-status bd-ed-hide-narrow"></span>'; } },
 "toggle-right": { label: "Right panel", icon: I.panelR, act: "toggle-right", iconOnly: true },
@@ -9147,6 +9155,7 @@ var A = {
 "projects": function () { if (pop.hidden) openPop(); else closePop(); },
 "zip": exportZip,
 "discard": function () { S.confirm = "discard"; openPop(); },
+"revert": function () { S.confirm = "discard"; renderTop(); },
 "discard-yes": discardDraft,
 "sign-out": function () { closePop(); lock("Key forgotten on this device."); },
 "reload": loadSite,
@@ -9247,7 +9256,7 @@ changed();
 "sheet-page-down": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; var j = +b.getAttribute("data-j"); if (!k || j >= k.pages.length - 1) return; snap(); k.pages.splice(j + 1, 0, k.pages.splice(j, 1)[0]); changed(); },
 "sheet-cover": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; var id = b.getAttribute("data-id"); if (!k) return; snap(); var c = k.coverPages = k.coverPages || []; var x = c.indexOf(id); if (x > -1) c.splice(x, 1); else c.push(id); changed(); },
 "ly-preset": function () { var v = b.getAttribute("data-val"); if (!LAYER_PRESETS[v]) return; snap(); Object.assign(S.project.site.layers, clone(LAYER_PRESETS[v])); changed(); },
-"confirm-no": function () { var was = S.confirm; S.confirm = null; if (was === "discard") openPop(); else renderLeft(); },
+"confirm-no": function () { var was = S.confirm; S.confirm = null; if (was === "discard") { renderTop(); if (!$("bd-pop").hidden) openPop(); } else renderLeft(); },
 "mode": function () { if (S.live) endEdit(); S.mode = val; render(); },
 "undo": doUndo,
 "redo": doRedo,
