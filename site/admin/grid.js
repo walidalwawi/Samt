@@ -2277,7 +2277,7 @@ function layoutRules(page, phone) {
 var r = isMaster(page) ? flowRules(page, phone) : posRules(page, phone ? "m" : "d");
 var g = galleryRules(page, phone);
 var b = blockRules(page, phone);
-var x = layersOn() || page.kind === "pin" ? "" : pageBoxCSS(page, phone, ".bd-panel.bd-pg-" + page.id, null) + (!phone && page.sheetBg ? '\n.bd-site[data-bd-page="' + page.slug + '"] {\nbackground: ' + bgVal(page.sheetBg) + ";\n}" : "");
+var x = layersOn() || page.kind === "pin" ? "" : pageBoxCSS(page, phone, ".bd-panel.bd-pg-" + page.id, null) + (!phone && effPage(page).sheetBg ? '\n.bd-site[data-bd-page="' + page.slug + '"] {\nbackground: ' + bgVal(effPage(page).sheetBg) + ";\n}" : "");
 return r + (g ? "\n" + g : "") + (b ? "\n" + b : "") + (x.trim() ? "\n" + x.trim() : "");
 }
 /* PAGE BOX — SPACE AROUND AND INSIDE A PAGE, AND A CARD FOR IT TO SIT ON. NUMBERS ARE PX; % IS OF THE WINDOW (TOP/BOTTOM OF ITS HEIGHT, SIDES OF ITS WIDTH) */
@@ -2297,7 +2297,30 @@ return m[1] + u;
 function boxVal(b, k, phone) {
 return phone && b[k + "M"] !== "" && b[k + "M"] != null ? b[k + "M"] : b[k];
 }
+/* POST PAGES: THE MASTER LOOK (site.postBox) UNDER EACH POST'S OWN SPACE & CARD */
+function effPage(q) {
+if (!q || !q.parent || typeof S === "undefined" || !S.project) return q;
+var pb = S.project.site.postBox;
+if (!pb) return q;
+var own = q.box || {};
+var m = {};
+Object.keys(pb).forEach(function (k) {
+if (k === "sheetBg") return;
+var v = pb[k];
+if (v !== "" && v != null && v !== false) m[k] = v;
+});
+Object.keys(own).forEach(function (k) {
+var v = own[k];
+if (v === "" || v == null || v === false || (k === "shadow" && v === "none")) return;
+m[k] = v;
+});
+var c = Object.assign({}, q);
+c.box = m;
+if (!c.sheetBg && pb.sheetBg) c.sheetBg = pb.sheetBg;
+return c;
+}
 function pageBoxCSS(q, phone, sel, ins, noMargin) {
+q = effPage(q);
 var b = q.box || {};
 var passed = !!ins;
 ins = ins || { top: 0, right: 0, bottom: 0, left: 0 };
@@ -3453,6 +3476,7 @@ return out.join("\n");
 }
 /* A PAGE'S INSET: HOW FAR THE PAGE SITS INSIDE ITS SHEET'S FRAME (THE SHEET'S PAPER SHOWS AROUND IT) */
 function insetCSS(q, phone, sel) {
+q = effPage(q);
 var b = q.box || {};
 var d = [];
 var M = {};
@@ -3907,6 +3931,7 @@ BOX_VIEW = null;
 }
 }
 function layerEditCSSIn(page, phone) {
+page = effPage(page);
 var w = sheetOf(page.id);
 var menu = sheetMenuCSS(false) + (phone ? "\n" + sheetMenuCSS(true) : "");
 if (w.strip) {
@@ -6407,6 +6432,8 @@ var oneMenu = layersOn() && s.menus.length === 1;
 if (oneMenu) h += '<div class="bd-ed-sec"><span class="bd-ed-label">Menu · the links on the menu sheet</span>' + menuEditor(s.menus[0].id, true) + '<div class="bd-ed-hint">Add pages, links or headings and put them in order. The Menu page on its sheet shows this list.</div></div>';
 else h += '<div class="bd-ed-sec"><span class="bd-ed-label">Menus</span>' + menuPicker("ui.menuEdit", S.menuEdit) + menuEditor(S.menuEdit || s.menus[0].id) + '<div class="bd-ed-hint">A menu is the list of links a Menu block or the overlay shows. Make as many as you like; each Menu block picks one.</div>' + (s.menus.length > 1 ? '<button class="bd-ed-btn is-danger is-sm" data-act="menu-del" data-id="' + esc(S.menuEdit || s.menus[0].id) + '">Delete this menu</button>' : "") + "</div>";
 h += '<div class="bd-ed-sec">' + adv("site-sections", "Page groups (Pages tab)", '<div class="bd-ed-hint">Groups only sort the Pages list and number pages. They don’t decide what shows in a menu.</div>' + secs) + "</div>";
+var pbHTML = pageBoxPanel({ id: "", box: s.postBox || {}, sheetBg: (s.postBox || {}).sheetBg || "" }).replace(/page\.box\./g, "site.postBox.").replace(/page\.sheetBg/g, "site.postBox.sheetBg").replace("Space & card", "Every post page · space &amp; card");
+h += pbHTML.replace('<span class="bd-ed-title">', '<span class="bd-ed-hint">The look of all blog post pages. A post can still set its own under Space &amp; card. Blank = nothing set.</span><span class="bd-ed-title">');
 h += '<div class="bd-ed-sec">' + adv("site-adv", "Advanced", '<span class="bd-ed-label">Master placement</span>' + masterPanel()
 + '<span class="bd-ed-label">Grid</span>' + row(dpIn("Units", "site.cols", "site.colsM", s.cols, s.colsM, "int"), dpIn("Gap", "site.gap", "site.gapM", s.gap, s.gapM, "int"), numIn("Free-grid row", "site.row", s.row, "int"))) + "</div>";
 return h;
