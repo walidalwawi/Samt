@@ -1,4 +1,4 @@
-/* PUBLISHED restyle1 */
+/* PUBLISHED mvnsri7w */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -1868,23 +1868,9 @@ left: 0px;
 --k-strip: 320px;
 --k-nudge: 100px;
 box-shadow: 1px 0 0 rgba(0, 0, 0, 0.12);
-z-index: 4;
+z-index: 3;
 -webkit-backdrop-filter: blur(5px);
 backdrop-filter: blur(5px);
-}
-.bd-ly-k[data-k="fmqzc8z3"] {
-top: 0px;
-right: 0px;
-bottom: 0px;
-left: 0px;
---k-peek: 200px;
---k-sliver: 364px;
---k-strip: 0px;
---k-nudge: 0px;
-box-shadow: -1px 0 0 rgba(0, 0, 0, 0.1);
-z-index: 3;
--webkit-backdrop-filter: blur(10.3px);
-backdrop-filter: blur(10.3px);
 }
 .bd-ly-k[data-k="glg17d2m"] {
 top: 0px;
@@ -2845,17 +2831,6 @@ left: 0px;
 --k-strip: 70px;
 --k-nudge: 100px;
 box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
-}
-.bd-ly-k[data-k="fmqzc8z3"] {
-top: 0px;
-right: 0px;
-bottom: 0px;
-left: 0px;
---k-peek: 52px;
---k-sliver: 84px;
---k-strip: 0px;
---k-nudge: 0px;
-box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 .bd-ly-k[data-k="glg17d2m"] {
 top: 0px;

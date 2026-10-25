@@ -610,40 +610,6 @@
     "layPg": false
    },
    {
-    "id": "fmqzc8z3",
-    "name": "Sheet 3",
-    "pages": [
-     "ehi03jwk"
-    ],
-    "restPage": "",
-    "edge": "left",
-    "edgeM": "top",
-    "rest": "open",
-    "peek": 200,
-    "peekM": 52,
-    "sliver": 44,
-    "sliverM": 14,
-    "axis": "y",
-    "covers": "all",
-    "coverPages": [],
-    "color": "#E4E1DA",
-    "alpha": 55,
-    "blur": 9,
-    "shadow": "line",
-    "nudge": 0,
-    "dur": "",
-    "box": {},
-    "pattern": "",
-    "patColor": "#000000",
-    "patSize": 28,
-    "patAlpha": 14,
-    "out": "peek",
-    "lv": "",
-    "arrive": "slide",
-    "main": "",
-    "hover": ""
-   },
-   {
     "id": "glg17d2m",
     "name": "Sheet 3",
     "pages": [
