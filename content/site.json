@@ -1351,16 +1351,17 @@
    },
    "trans": "slide",
    "box": {
-    "shadow": "line",
+    "shadow": "soft",
     "mt": "4%",
     "mr": "6%",
     "fit": false,
     "ml": "6%",
     "pl": "100",
     "plM": "30",
-    "card": "",
+    "card": "linear-gradient(180deg, #ffffff, #ffffff)",
     "mb": "4%"
-   }
+   },
+   "sheetBg": "none"
   },
   "ipk7ns57": {
    "id": "ipk7ns57",
@@ -1831,7 +1832,8 @@
     "ml": "6%",
     "mr": "6%",
     "shadow": "line"
-   }
+   },
+   "trans": ""
   },
   "k2b6e868": {
    "id": "k2b6e868",
@@ -2254,13 +2256,14 @@
    "excerpt": "",
    "featured": false,
    "box": {
-    "card": "",
+    "card": "linear-gradient(180deg, #ffffff, #ffffff)",
     "mt": "4%",
     "mb": "4%",
     "ml": "6%",
     "mr": "6%",
     "shadow": "line"
-   }
+   },
+   "sheetBg": ""
   },
   "ap7jj2t4": {
    "id": "ap7jj2t4",
@@ -2538,7 +2541,7 @@
    "excerpt": "",
    "featured": false,
    "box": {
-    "card": "",
+    "card": "linear-gradient(180deg, #ffffff, #ffffff)",
     "mt": "4%",
     "mb": "4%",
     "ml": "6%",
@@ -2932,7 +2935,7 @@
     "gutterM": 24
    },
    "box": {
-    "card": "",
+    "card": "linear-gradient(180deg, #ffffff, #ffffff)",
     "mt": "4%",
     "mb": "4%",
     "ml": "6%",
@@ -4681,7 +4684,7 @@
     "mr": "20%",
     "shadow": "none",
     "fit": false,
-    "card": "#ebebeb",
+    "card": "",
     "mrM": "0",
     "ml": "",
     "pt": "",
