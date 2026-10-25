@@ -1,4 +1,4 @@
-/* PUBLISHED mvnrmv5h */
+/* PUBLISHED mvnror53 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -2387,24 +2387,6 @@ box-sizing: border-box;
 .bd-ly-k[data-k="menu"] > .bd-ly-strip {
 background: rgba(78, 122, 39, 0.7);
 }
-.bd-ly-pane[data-page="b2lr3tkr"] {
-background: rgba(228, 225, 218, 0.55);
-}
-.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
-padding-top: 50px;
-padding-right: 50px;
-padding-bottom: 50px;
-padding-left: calc(320px + 100px);
-}
-.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
-margin-top: 0px;
-margin-right: 0px;
-margin-bottom: 0px;
-margin-left: 0px;
-min-height: calc(100% - 0px - 0px);
-width: auto;
-box-sizing: border-box;
-}
 .bd-ly-pane[data-page="fji5ongj"] {
 background: rgba(228, 225, 218, 0.55);
 }
@@ -2415,6 +2397,24 @@ padding-bottom: 50px;
 padding-left: calc(320px + 100px);
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-panel {
+margin-top: 0px;
+margin-right: 0px;
+margin-bottom: 0px;
+margin-left: 0px;
+min-height: calc(100% - 0px - 0px);
+width: auto;
+box-sizing: border-box;
+}
+.bd-ly-pane[data-page="b2lr3tkr"] {
+background: rgba(228, 225, 218, 0.55);
+}
+.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
+padding-top: 50px;
+padding-right: 50px;
+padding-bottom: 50px;
+padding-left: calc(320px + 100px);
+}
+.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
 margin-top: 0px;
 margin-right: 0px;
 margin-bottom: 0px;
@@ -3047,13 +3047,13 @@ margin-right: 0px;
 width: auto;
 box-sizing: border-box;
 }
-.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
+.bd-ly-pane[data-page="fji5ongj"] > .bd-panel {
 padding-top: calc(70px + 50px);
-padding-right: 20px;
+padding-right: 50px;
 padding-bottom: 50px;
 padding-left: 20px;
 }
-.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
+.bd-ly-pane[data-page="fji5ongj"] > .bd-panel {
 margin-top: 0px;
 margin-right: 0px;
 margin-bottom: 0px;
@@ -3062,13 +3062,13 @@ min-height: calc(100% - 0px - 0px);
 width: auto;
 box-sizing: border-box;
 }
-.bd-ly-pane[data-page="fji5ongj"] > .bd-panel {
+.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
 padding-top: calc(70px + 50px);
-padding-right: 50px;
+padding-right: 20px;
 padding-bottom: 50px;
 padding-left: 20px;
 }
-.bd-ly-pane[data-page="fji5ongj"] > .bd-panel {
+.bd-ly-pane[data-page="b2lr3tkr"] > .bd-panel {
 margin-top: 0px;
 margin-right: 0px;
 margin-bottom: 0px;
