@@ -1,4 +1,4 @@
-/* PUBLISHED mvnkj0l3 */
+/* PUBLISHED mvnlcpyj */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;1,400&display=swap");
 
@@ -2163,16 +2163,17 @@ padding-left: calc(192px + 150px);
 padding-left: calc(192px + 150px);
 }
 .bd-ly-k[data-k="menu"] > .bd-ly-strip {
-background: repeating-linear-gradient(180deg, transparent 0, transparent 27px, rgba(0, 0, 0, 0.14) 27px, rgba(0, 0, 0, 0.14) 28px) local, rgba(228, 225, 218, 0.7);
+background: rgba(228, 225, 218, 0.7);
 }
 .bd-ly-pane[data-page="nsye72w3"] {
-background: radial-gradient(circle, rgba(0, 0, 0, 0.14) 1px, transparent 1.6px) 0 0 / 28px 28px local, rgba(228, 225, 218, 0.7);
+background: rgba(228, 225, 218, 0.7);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-panel {
 padding-top: var(--bd-wt);
 padding-right: var(--bd-wr);
 padding-bottom: var(--bd-wb);
 padding-left: var(--bd-wl);
+background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1));
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-panel {

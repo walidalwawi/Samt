@@ -631,7 +631,7 @@
      "ml": "",
      "pt": ""
     },
-    "pattern": "lined",
+    "pattern": "",
     "patColor": "#000000",
     "patSize": 28,
     "patAlpha": 14,
@@ -4680,14 +4680,14 @@
     "mr": "40%",
     "shadow": "soft",
     "fit": false,
-    "card": "",
+    "card": "linear-gradient(180deg, #ffffff, #ffffff)",
     "mrM": "0",
     "ml": "",
     "pt": ""
    },
    "sheetBg": "",
    "hover": "",
-   "pattern": "dots"
+   "pattern": "none"
   },
   "56ud3gky": {
    "id": "56ud3gky",
