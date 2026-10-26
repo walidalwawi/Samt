@@ -297,11 +297,10 @@
    "libFix": 1
   },
   "layout": {
-   "cols": 2,
+   "cols": 1,
    "align": "spread",
    "spans": [
-    5,
-    7
+    12
    ],
    "colsM": 1,
    "gutter": 40,
@@ -577,7 +576,7 @@
     "edge": "bottom",
     "edgeM": "top",
     "rest": "peek",
-    "peek": 384,
+    "peek": 160,
     "peekM": 70,
     "sliver": 130,
     "sliverM": 14,
@@ -591,10 +590,10 @@
     "nudge": 100,
     "dur": "",
     "box": {
-     "mr": "25%",
+     "mr": "",
      "mt": "",
      "mb": "30%",
-     "ml": "20%",
+     "ml": "",
      "pt": ""
     },
     "pattern": "lined",
@@ -4666,10 +4665,11 @@
    },
    "ownLayout": true,
    "colset": {
-    "cols": 1,
+    "cols": 2,
     "align": "spread",
     "spans": [
-     12
+     6,
+     6
     ],
     "colsM": 1,
     "gutter": 40,
@@ -4677,19 +4677,20 @@
    },
    "box": {
     "maxW": "",
-    "pl": "",
-    "pr": "",
+    "pl": "0",
+    "pr": "0",
     "plM": "24",
     "prM": "24",
-    "mr": "20%",
+    "mr": "0",
     "shadow": "none",
     "fit": false,
     "card": "",
     "mrM": "0",
-    "ml": "",
-    "pt": "",
+    "ml": "0",
+    "pt": "0",
     "mt": "0",
-    "mb": ""
+    "mb": "0",
+    "pb": "0"
    },
    "sheetBg": "",
    "hover": "",
@@ -4749,9 +4750,17 @@
     "fit": false,
     "mrM": "0%",
     "radius": "",
-    "maxW": ""
+    "maxW": "",
+    "mr": "0",
+    "mt": "0",
+    "mb": "0",
+    "ml": "0",
+    "pl": "0",
+    "pb": "0",
+    "pr": "0",
+    "pt": "0"
    },
-   "sheetBg": "",
+   "sheetBg": "#ffffff",
    "ownLayout": false,
    "colset": {
     "cols": 2,
