@@ -525,17 +525,30 @@ if (!Array.isArray(L.spans) || L.spans.length !== L.cols) L.spans = SPAN_PRESETS
 return L;
 }
 function lay(page) {
-return page && (page.kind === "pin" || page.ownLayout) && page.colset ? page.colset : S.project.site.layout;
+if (page && (page.kind === "pin" || page.ownLayout) && page.colset) return page.colset;
+if (page && page.parent && S.project.site.postLayout) return S.project.site.postLayout;
+return S.project.site.layout;
 }
 function layWho(page) {
-return page.kind === "pin" ? "pin" : page.ownLayout ? "page" : "site";
+return page.kind === "pin" ? "pin" : page.ownLayout ? "page" : page.parent ? "post" : "site";
 }
 function layFor(who) {
+if (who === "post") {
+if (!S.project.site.postLayout) S.project.site.postLayout = fixLayout(clone(S.project.site.layout));
+return S.project.site.postLayout;
+}
 return who === "site" ? S.project.site.layout : curPage().colset;
+}
+function layPath(who) {
+return who === "site" ? "site.layout" : who === "post" ? "site.postLayout" : "page.colset";
+}
+/* POSTS THAT FOLLOW THE POST MASTER'S COLUMNS */
+function postCols(page) {
+return !!(page && page.parent && !page.ownLayout && page.kind !== "pin" && S.project.site.postLayout);
 }
 function isSpreadPage(page) {
 var L = lay(page);
-return isSpread(S.project.site) || (page.kind !== "pin" && page.ownLayout && !!page.colset && (L.cols > 1 || L.align === "spread"));
+return isSpread(S.project.site) || ((postCols(page) || (page.kind !== "pin" && page.ownLayout && !!page.colset)) && (L.cols > 1 || L.align === "spread"));
 }
 function nCols(page) {
 if (!page || !isMaster(page)) return 1;
@@ -559,6 +572,8 @@ var p = S.project.pages[id];
 if (!p || !(p.kind === "pin" || p.ownLayout) || !p.colset || p.colset.cols < 2) return;
 out.push(".bd-cols.bd-cl-" + p.id + " {\ngrid-template-columns: " + colTemplate(p.colset, phone) + ";\ncolumn-gap: " + (phone ? p.colset.gutterM : p.colset.gutter) + "px;\n}");
 });
+var PL = s.postLayout;
+if (PL && PL.cols > 1) out.splice(1, 0, ".bd-cols.bd-cl-posts {\ngrid-template-columns: " + colTemplate(PL, phone) + ";\ncolumn-gap: " + (phone ? PL.gutterM : PL.gutter) + "px;\n}");
 return out.join("\n");
 }
 var BD_FILL_TYPES = ["ptitle", "menubtn", "pager", "posts", "postinfo", "quote", "toggle", "product"];
@@ -725,6 +740,7 @@ pg.stack = pg.stack || [];
 pg.pin = Object.assign({ place: "top", fixed: false, show: "all", pages: [], h: "", hM: "", gap: "", gapM: "" }, pg.pin || {});
 });
 s.layout = fixLayout(s.layout);
+if (s.postLayout) s.postLayout = fixLayout(s.postLayout);
 p.order.forEach(function (id) {
 var pg = p.pages[id];
 if (pg.layout && typeof pg.layout === "object") {
@@ -2360,6 +2376,7 @@ if (sideM) d.push("width: auto;");
 if (w) d.push("max-width: " + w + ";");
 if (w && noMargin) d.push("margin: 0;");
 if (!phone) {
+if (b.ink) d.push("color: " + b.ink + ";", "--bd-ink: " + b.ink + ";");
 if (b.card) {
 var ca = b.cardA === "" || b.cardA == null ? 100 : parseFloat(b.cardA);
 d.push("background: " + fillCSS(b.card, isNaN(ca) ? 100 : ca) + ";");
@@ -2388,19 +2405,23 @@ return '<label class="bd-ed-field"><span class="bd-ed-label">' + sd[1] + '</span
 var onSheet = layersOn() && sheetOf(pg.id).k > -1;
 var pinSh = onSheet && !!sheetPin(sheetOf(pg.id).sheet) && sheetPin(sheetOf(pg.id).sheet) !== pg.id;
 var own = !onSheet || !!pg.indep;
+var pinMe = onSheet && sheetPin(sheetOf(pg.id).sheet) === pg.id;
+var pinStill = pinMe && (sheetOf(pg.id).sheet.pages || []).some(function (id) { var o = S.project.pages[id]; return id !== pg.id && o && o.scroll === "own"; });
 return '<div class="bd-ed-sec"><span class="bd-ed-title">Space & card' + (ph ? " · phone" : "") + "</span>"
 + '<span class="bd-ed-label">' + (onSheet ? "Inset" : "Margin") + ' · ' + (onSheet ? "how far the page sits inside its sheet" : "outside the page") + "</span>" + four("m")
 + '<span class="bd-ed-label">Padding · inside the page</span>' + four("p")
 
 + '<div class="bd-ed-hint">Numbers are px. 20% = a fifth of the window (top and bottom of its height, sides of its width). Blank = the site’s.' + (ph ? " Blank on phone = same as desktop." : "") + "</div>"
-+ (onSheet ? field("This page is", '<span class="bd-ed-seg"><button class="' + (pg.indep ? "" : "is-on") + '" data-act="page-indep" data-val="">Part of the sheet</button><button class="' + (pg.indep ? "is-on" : "") + '" data-act="page-indep" data-val="1">Independent</button></span>') + '<div class="bd-ed-hint">' + (pg.indep ? "Independent: its own card, colour, blur and decoration" + (pinSh ? ", and it can scroll without moving the rest of the sheet." : ".") : "Part of the sheet: the same paper, and it scrolls with the sheet.") + "</div>" : "")
++ (onSheet ? field("This page is", '<span class="bd-ed-seg"><button class="' + (pg.indep ? "" : "is-on") + '" data-act="page-indep" data-val="">Part of the sheet</button><button class="' + (pg.indep ? "is-on" : "") + '" data-act="page-indep" data-val="1">Independent</button></span>') + '<div class="bd-ed-hint">' + (pg.indep ? "Independent: its own card, colour, blur and decoration." : "Part of the sheet: the same paper as the rest of the sheet.") + "</div>" : "")
 + (own ? fillIn("Card colour", "page.box.card", b.card || "", "#ffffff", "None") + fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site")
 + row(numIn("Corners", "page.box.radius", b.radius == null ? "" : b.radius, "blank"), numIn("Card see-through %", "page.box.cardA", b.cardA == null ? "" : b.cardA, "blank"), numIn("Blur behind", "page.box.blur", b.blur == null ? "" : b.blur, "blank")) : "")
++ (ph ? "" : colorIn("Text colour", "page.box.ink", b.ink || "", S.project.site.colors.ink, "Site"))
 + field("Max width" + (ph ? " · phone" : ""), input("page.box.maxW" + (ph ? "M" : ""), (ph ? b.maxWM : b.maxW) || "", "", ' placeholder="720 or 60%"'))
 + (own ? field("Shadow", seg("page.box.shadow", b.shadow || "none", [["none", "None"], ["line", "Line"], ["hard", "Hard"], ["soft", "Soft"]])) : "")
 + sw("Card only as tall as what’s on it", "page.box.fit", !!b.fit)
 + (onSheet && own ? '<span class="bd-ed-label">Inherits the sheet unless set</span>' + field("Decoration", select("page.pattern", pg.pattern || "", [["", "Inherit from sheet"], ["none", "None"]].concat(SHEET_PATTERNS.filter(function (x) { return x[0]; })))) + field("On hover", seg("page.hover", pg.hover || "", [["", "Inherit"], ["lift", "Lift"]])) : "")
-+ (onSheet && own && pinSh ? field("Scrolls", seg("page.scroll", pg.scroll === "own" ? "own" : "sheet", [["sheet", "With the sheet"], ["own", "On its own"]])) : "")
++ (onSheet && pinSh ? field("Scrolls", seg("page.scroll", pg.scroll === "own" ? "own" : "sheet", [["sheet", "With the sheet"], ["own", "On its own"]])) + '<div class="bd-ed-hint">' + (pg.scroll === "own" ? "On its own: this page scrolls and the pinned page stays still." : "With the sheet: the pinned page moves with this page as it scrolls.") + "</div>" : "")
++ (pinMe ? field("While the other page scrolls", '<span class="bd-ed-seg"><button class="' + (pinStill ? "" : "is-on") + '" data-act="pin-still" data-val="">Moves with it</button><button class="' + (pinStill ? "is-on" : "") + '" data-act="pin-still" data-val="1">Stays still</button></span>') : "")
 + (tail || "")
 + "</div>";
 }
@@ -3104,7 +3125,7 @@ var html = function (list) { return list.map(function (e) { return elHTML(e, ctx
 if (!flow) return '<div class="bd-grid">\n' + html(sortedEls(page, "d")) + "\n</div>";
 var n = nCols(page);
 if (n < 2) return '<div class="bd-flow">\n' + html(page.els) + "\n</div>";
-var out = '<div class="bd-cols is-c' + n + (page.kind === "pin" || page.ownLayout ? " bd-cl-" + page.id : "") + '">';
+var out = '<div class="bd-cols is-c' + n + (page.kind === "pin" || page.ownLayout ? " bd-cl-" + page.id : postCols(page) ? " bd-cl-posts" : "") + '">';
 for (var c = 1; c <= n; c++) {
 out += '\n<div class="bd-col bd-flow" data-col="' + c + '">\n' + html(page.els.filter(function (e) { return colOf(e, page) === c; })) + "\n</div>";
 }
@@ -3450,7 +3471,7 @@ var onPage = pl.st === "peek" && strip ? strip : panes[pl.i] || strip;
 return '<section class="bd-ly-sheet bd-ly-k' + (strip ? "" : " is-paper") + ' is-e-' + esc(k.edge || "left") + " is-em-" + esc(k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + (onPage ? " is-on-" + onPage.id : "") + (k.lv ? " is-lv-" + esc(k.lv) : "") + (k.hover === "lift" ? " is-hv-lift" : "") + (k.arrive === "fade" || k.arrive === "cut" ? " is-ap-" + k.arrive : "") + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-main="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(k.main)) + '" data-pin="' + panes.map(function (q) { return q.id; }).indexOf(sheetPin(k)) + '" data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
 + '<div class="bd-ly-body">\n<div class="bd-ly-track is-ax-' + (k.axis === "x" ? "x" : "y") + '" style="--n: ' + Math.max(1, panes.length) + "; --i: " + pl.i + ';">\n'
 + panes.map(function (q, j) {
-return '<div class="bd-ly-pane' + (j === pl.i ? " is-on" : "") + '"' + (q.indep && q.scroll === "own" ? " data-own" : "") + ' data-page="' + q.id + '" data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n<div class="bd-ly-paper">\n' + layerBody(q, ctx) + "\n</div>\n</div>";
+return '<div class="bd-ly-pane' + (j === pl.i ? " is-on" : "") + '"' + (q.scroll === "own" ? " data-own" : "") + ' data-page="' + q.id + '" data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n<div class="bd-ly-paper">\n' + layerBody(q, ctx) + "\n</div>\n</div>";
 }).join("\n") + "\n</div>\n</div>\n"
 + (strip ? '<div class="bd-ly-strip">\n' + layerBody(strip, ctx) + "\n</div>\n" : "") + "</section>";
 }).join("\n");
@@ -4981,7 +5002,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#5a6bd0";
+var BD_BUILD = "#7cb518";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -5806,6 +5827,7 @@ var st = g.sheet ? sheetStrip(g.sheet) : null;
 var tag = p.kind === "pin" ? (p.pin.place === "bottom" ? "foot" : "head") : st && st.id === p.id ? "edge" : p.blog ? "blog" : esc(p.num || "·");
 h += '<div class="bd-ed-pgw' + (p.id === S.pageId ? " is-on" : "") + '" data-pid="' + p.id + '">' + (p.kind === "pin" ? '<span class="bd-ed-grip is-off"></span>' : '<span class="bd-ed-grip" data-grip="page" data-id="' + p.id + '" title="Drag to move">' + I.grip + "</span>") + '<button class="bd-ed-pg' + (p.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + p.id + '"><b>' + tag + "</b><span>" + (p.slug === "" && p.kind !== "pin" ? "⌂ " : "") + esc(p.title) + "</span></button></div>";
 if (p.blog) {
+h += '<button class="bd-ed-pg is-post is-pmaster' + (S.postMaster ? " is-on" : "") + '" data-act="post-master" data-id="' + p.id + '"><b>▤</b><span>All posts · master</span></button>';
 postsOf(p.id).forEach(function (q) {
 h += '<button class="bd-ed-pg is-post' + (q.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + q.id + '"><b>' + (q.featured ? "★" : "↳") + "</b><span>" + esc(q.title) + "</span></button>";
 });
@@ -6296,7 +6318,7 @@ if (G.N === 2) swapHits += '<g data-swap="' + s.i + '" data-i="' + n + '" data-b
 {
 /* FLAGS ON THE CARD: PIN · INDEPENDENT · OWN SCROLL — DRAWN IN THE CARD'S HALF SO THEY ALWAYS FIT */
 var pinned = sheetPin(k) === q.id;
-var fl = [["pin", "PIN", pinned, true], ["indep", "IND", !!q.indep, true], ["own", "OWN", q.scroll === "own", !!q.indep && !!sheetPin(k) && !pinned]];
+var fl = [["pin", "PIN", pinned, true], ["indep", "IND", !!q.indep, true], ["own", "OWN", q.scroll === "own", !!sheetPin(k) && !pinned]];
 var fx = X(s.slot.l) + 5;
 var fy = G.ax === "x" ? Y(s.slot.b) - 22 : Y(s.slot.t) + 5;
 if (pinned) flagBtns += '<rect x="' + r1(X(b.l)) + '" y="' + r1(Y(b.t) + 4) + '" width="4" height="' + r1(Math.max(0, Lx(b.b - b.t) - 8)) + '" rx="2" fill="#1f1e1c" pointer-events="none"/>';
@@ -6667,6 +6689,11 @@ q.box = q.box || {};
 var ins = s.side === "l" ? s.res.pos - sl.slot.l : s.side === "r" ? sl.slot.r - s.res.pos : s.side === "t" ? s.res.pos - sl.slot.t : sl.slot.b - s.res.pos;
 ins = Math.max(0, ins);
 var len = s.side === "l" || s.side === "r" ? G.v.w : G.v.h;
+var opp = { l: "r", r: "l", t: "b", b: "t" }[s.side];
+var ov = boxVal(q.box, "m" + opp, phone);
+var on = parseFloat(ov) || 0;
+var oPx = /%\s*$/.test(String(ov)) ? on / 100 * len : on;
+ins = Math.min(ins, Math.max(0, len * 0.9 - oPx));
 q.box["m" + s.side + (phone ? "M" : "")] = ins < 0.5 ? "0" : Math.round(ins / len * 10000) / 100 + "%";
 } else if (s.kind === "sheet") {
 var L = G.L, N = G.N, star = G.star, ins2 = G.ins;
@@ -6848,11 +6875,29 @@ var oneMenu = layersOn() && s.menus.length === 1;
 if (oneMenu) h += '<div class="bd-ed-sec"><span class="bd-ed-label">Menu · the links on the menu sheet</span>' + menuEditor(s.menus[0].id, true) + '<div class="bd-ed-hint">Add pages, links or headings and put them in order. The Menu page on its sheet shows this list.</div></div>';
 else h += '<div class="bd-ed-sec"><span class="bd-ed-label">Menus</span>' + menuPicker("ui.menuEdit", S.menuEdit) + menuEditor(S.menuEdit || s.menus[0].id) + '<div class="bd-ed-hint">A menu is the list of links a Menu block or the overlay shows. Make as many as you like; each Menu block picks one.</div>' + (s.menus.length > 1 ? '<button class="bd-ed-btn is-danger is-sm" data-act="menu-del" data-id="' + esc(S.menuEdit || s.menus[0].id) + '">Delete this menu</button>' : "") + "</div>";
 h += '<div class="bd-ed-sec">' + adv("site-sections", "Page groups (Pages tab)", '<div class="bd-ed-hint">Groups only sort the Pages list and number pages. They don’t decide what shows in a menu.</div>' + secs) + "</div>";
-var pbHTML = pageBoxPanel({ id: "", box: s.postBox || {}, sheetBg: (s.postBox || {}).sheetBg || "" }).replace(/page\.box\./g, "site.postBox.").replace(/page\.sheetBg/g, "site.postBox.sheetBg").replace("Space & card", "Every post page · space &amp; card");
-h += pbHTML.replace('<span class="bd-ed-title">', '<span class="bd-ed-hint">The look of all blog post pages. A post can still set its own under Space &amp; card. Blank = nothing set.</span><span class="bd-ed-title">');
+h += '<div class="bd-ed-sec"><span class="bd-ed-title">Blog posts</span><div class="bd-ed-hint">Columns, colours and space for every post live in the post master.</div><button class="bd-ed-btn" data-act="post-master">' + I.sliders + "All posts · master</button></div>";
 h += '<div class="bd-ed-sec">' + adv("site-adv", "Advanced", '<span class="bd-ed-label">Master placement</span>' + masterPanel()
 + '<span class="bd-ed-label">Grid</span>' + row(dpIn("Units", "site.cols", "site.colsM", s.cols, s.colsM, "int"), dpIn("Gap", "site.gap", "site.gapM", s.gap, s.gapM, "int"), numIn("Free-grid row", "site.row", s.row, "int"))) + "</div>";
 return h;
+}
+/* THE POST MASTER: COLUMNS, COLOURS, SPACE AND CARD FOR EVERY BLOG POST (site.postLayout + site.postBox) */
+function postFollows(q) {
+var b = q.box || {};
+var ownBox = Object.keys(b).some(function (k) { var v = b[k]; return !(v === "" || v == null || v === false || (k === "shadow" && v === "none")); });
+return !q.ownLayout && !ownBox && !q.sheetBg;
+}
+function postMasterHTML() {
+var s = S.project.site;
+var all = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.parent && q.kind !== "pin"; });
+var nf = all.filter(postFollows).length;
+var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">All posts · master</span><button class="bd-ed-btn" style="height:26px" data-act="post-master-done">Done</button></div><div class="bd-ed-hint">Every blog post follows these. A post can still set its own in its panel; its red Inherit all button brings it back here.</div>'
++ '<div class="bd-ed-pfollow">' + all.map(function (q) { var f = postFollows(q); return '<button class="bd-ed-pf' + (f ? " is-f" : "") + '" data-act="page" data-id="' + q.id + '" title="' + esc(q.title) + (f ? " · follows the master" : " · has its own settings") + '"><i></i><span>' + esc(q.title) + "</span><b>" + (f ? "master" : "own") + "</b></button>"; }).join("") + "</div>"
++ (S.confirm === "posts" ? '<div class="bd-ed-confirm">Drop the own columns, colours and space of ' + (all.length - nf) + ' post' + (all.length - nf === 1 ? "" : "s") + '? Their words and blocks stay; what most posts share moves into the master first. <button class="bd-ed-btn bd-ed-inherit" data-act="posts-follow-yes">Make all follow</button><button class="bd-ed-btn" data-act="inherit-no">Keep</button></div>'
+: '<button class="bd-ed-btn bd-ed-inherit"' + (nf === all.length ? " disabled" : "") + ' data-act="posts-follow-ask">' + (nf === all.length ? "All " + all.length + " posts follow the master" : "Make all " + all.length + " posts follow (" + (all.length - nf) + " have their own)") + "</button>")
++ "</div>";
+h += '<div class="bd-ed-sec"><span class="bd-ed-title">Columns' + (S.mode === "phone" ? " · phone" : "") + '</span>' + rulerCols({ kind: "page", parent: "posts" }, S.mode === "phone", true) + '<div class="bd-ed-hint">Blocks keep the column they are in. With one column every block stacks.</div></div>';
+var pb = pageBoxPanel({ id: "", box: s.postBox || {}, sheetBg: (s.postBox || {}).sheetBg || "" }).replace(/page\.box\./g, "site.postBox.").replace(/page\.sheetBg/g, "site.postBox.sheetBg").replace("Space & card", "Space, card &amp; colour");
+return h + pb;
 }
 /* THE LAYERS PANE: MASTER ABOVE THE LIST */
 function layersBarHTML() {
@@ -7180,6 +7225,10 @@ if (S.masterSel && !e) {
 R.innerHTML = masterPanelHTML();
 return;
 }
+if (S.postMaster && !e) {
+R.innerHTML = postMasterHTML();
+return;
+}
 var sk = S.sheetSel ? sheetList().map(function (k) { return k.id; }).indexOf(S.sheetSel) : -1;
 if (sk > -1 && !e) {
 R.innerHTML = sheetPanelHTML(sk);
@@ -7222,7 +7271,7 @@ h += '<label class="bd-ed-check"><input type="checkbox" data-act="pin-page" data
 h += '<div class="bd-ed-hint">Add blocks from the rail like any page. Its columns are set in the bar above the canvas.</div></div>';
 } else {
 var s = S.project.site;
-h += inheritBar("page") + '<div class="bd-ed-sec"><span class="bd-ed-title">Page</span>'
+h += inheritBar("page") + (pg.parent ? '<div class="bd-ed-sec"><div class="bd-ed-hint">' + (postFollows(pg) ? "This post follows All posts · master." : "This post has its own settings. Inherit all brings it back to All posts · master.") + '</div><button class="bd-ed-btn" data-act="post-master">' + I.sliders + "Edit All posts · master</button></div>" : "") + '<div class="bd-ed-sec"><span class="bd-ed-title">Page</span>'
 + field("Title in menu", input("page.title", pg.title))
 + field("Heading on the page", input("page.h1", pg.h1, "", ' placeholder="' + esc(pg.title) + '"'))
 + row(field("Group", select("page.section", pg.section, [["", "No group"]].concat(s.sections.map(function (x) { return [x.key, x.label]; })))), field("Number", input("page.num", pg.num)))
@@ -7980,26 +8029,26 @@ if (window.ResizeObserver) {
 new ResizeObserver(function () { fitSheet(); }).observe(document.getElementById("bd-sheet"));
 new ResizeObserver(function () { fitSheet(); }).observe(document.getElementById("bd-stage"));
 }
-function rulerCols(page, phone) {
-var L = lay(page);
-var who = layWho(page);
+function rulerCols(page, phone, master) {
+var who = master ? "post" : layWho(page);
+var L = master ? layFor("post") : lay(page);
 var pin = page.kind === "pin";
 var h = '<span class="bd-ed-rcols">';
-if (!pin) h += '<span class="bd-ed-seg">' + [["site", "Site"], ["page", "This page"]].map(function (o) { return '<button data-act="page-own" data-val="' + o[0] + '" class="' + ((o[0] === "page") === !!page.ownLayout ? "is-on" : "") + '">' + o[1] + "</button>"; }).join("") + "</span>";
-else h += "<b>" + (page.pin.place === "bottom" ? "Footer" : "Header") + "</b>";
+if (!pin && !master) h += '<span class="bd-ed-seg">' + (page.parent ? [["post", "All posts"], ["page", "This post"]] : [["site", "Site"], ["page", "This page"]]).map(function (o) { return '<button data-act="page-own" data-val="' + o[0] + '" class="' + ((o[0] === "page") === !!page.ownLayout ? "is-on" : "") + '">' + o[1] + "</button>"; }).join("") + "</span>";
+else if (pin) h += "<b>" + (page.pin.place === "bottom" ? "Footer" : "Header") + "</b>";
 if (phone) {
 h += L.cols < 2 ? "<span>1 column on phone</span>" : '<span>Phone</span><span class="bd-ed-seg">' + [1, 2].map(function (n) { return '<button data-act="lay-colsM" data-who="' + who + '" data-val="' + n + '" class="' + (L.colsM === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</span>"
-+ (L.cols > 1 ? '<label class="bd-ed-rnum">Gutter<input class="bd-ed-input" inputmode="decimal" data-bind="' + (who === "site" ? "site.layout" : "page.colset") + '.gutterM" data-type="int" value="' + L.gutterM + '"></label>' : "");
++ (L.cols > 1 ? '<label class="bd-ed-rnum">Gutter<input class="bd-ed-input" inputmode="decimal" data-bind="' + layPath(who) + '.gutterM" data-type="int" value="' + L.gutterM + '"></label>' : "");
 return h + "</span>";
 }
 h += '<span class="bd-ed-seg">' + [1, 2, 3].map(function (n) { return '<button data-act="lay-cols" data-who="' + who + '" data-val="' + n + '" class="' + (L.cols === n ? "is-on" : "") + '">' + n + (n === 1 ? " col" : "") + "</button>"; }).join("") + "</span>";
-if (L.cols === 1 && !pin) h += '<span class="bd-ed-seg">' + [["center", "Centred"], ["spread", "Spread"]].map(function (o) { return '<button data-act="set" data-path="' + (who === "page" ? "page.colset" : "site.layout") + '.align" data-val="' + o[0] + '" class="' + (L.align === o[0] ? "is-on" : "") + '">' + o[1] + "</button>"; }).join("") + "</span>";
+if (L.cols === 1 && !pin) h += '<span class="bd-ed-seg">' + [["center", "Centred"], ["spread", "Spread"]].map(function (o) { return '<button data-act="set" data-path="' + layPath(who) + '.align" data-val="' + o[0] + '" class="' + (L.align === o[0] ? "is-on" : "") + '">' + o[1] + "</button>"; }).join("") + "</span>";
 if (L.cols > 1) {
 h += '<select class="bd-ed-input bd-ed-rsel" data-act-select="lay-spans" data-who="' + who + '" aria-label="Column widths">' + SPAN_PRESETS[L.cols].map(function (sp) {
 var v = sp.join("-");
 return '<option value="' + v + '"' + (L.spans.join("-") === v ? " selected" : "") + ">" + sp.join(" · ") + "</option>";
 }).join("") + "</select>"
-+ '<label class="bd-ed-rnum">Gutter<input class="bd-ed-input" inputmode="decimal" data-bind="' + (who === "site" ? "site.layout" : "page.colset") + '.gutter" data-type="int" value="' + L.gutter + '"></label>';
++ '<label class="bd-ed-rnum">Gutter<input class="bd-ed-input" inputmode="decimal" data-bind="' + layPath(who) + '.gutter" data-type="int" value="' + L.gutter + '"></label>';
 }
 return h + "</span>";
 }
@@ -8817,6 +8866,7 @@ function goPage(id) {
 if (S.live) endEdit();
 S.sheetSel = "";
 S.masterSel = false;
+S.postMaster = false;
 S.pageId = id;
 S.sel = null;
 S.confirm = null;
@@ -9597,8 +9647,64 @@ S.layAdd = -1;
 changed();
 },
 "lay-filter": function () { S.layFilter = S.layFilter === val ? "" : val; renderLeft(); },
-"master-sel": function () { S.masterSel = true; S.sheetSel = ""; S.sel = null; if (S.live) endEdit(); render(); },
+"master-sel": function () { S.masterSel = true; S.postMaster = false; S.sheetSel = ""; S.sel = null; if (S.live) endEdit(); render(); },
 "master-done": function () { S.masterSel = false; render(); },
+"post-master": function () {
+if (S.live) endEdit();
+S.postMaster = true;
+S.masterSel = false;
+S.sheetSel = "";
+S.sel = null;
+S.confirm = null;
+var cp = curPage();
+if (!cp || !cp.parent) {
+var first = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.parent && q.kind !== "pin"; })[0];
+if (first) S.pageId = first.id;
+}
+render();
+},
+"post-master-done": function () { S.postMaster = false; S.confirm = null; render(); },
+"posts-follow-ask": function () { S.confirm = "posts"; renderRight(); },
+"posts-follow-yes": function () {
+S.confirm = null;
+snap();
+var site = S.project.site;
+var P = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.parent && q.kind !== "pin"; });
+/* WHAT MOST POSTS SHARE MOVES INTO THE MASTER FIRST, SO THE POSTS KEEP THEIR LOOK */
+var most = function (vals) {
+var c = {};
+vals.forEach(function (v) { var k = JSON.stringify(v); c[k] = (c[k] || 0) + 1; });
+var best = null, n = 0;
+Object.keys(c).forEach(function (k) { if (c[k] > n) { n = c[k]; best = k; } });
+return best == null ? undefined : JSON.parse(best);
+};
+var pb = site.postBox = site.postBox || {};
+var keys = {};
+P.forEach(function (q) { Object.keys(q.box || {}).forEach(function (k) { keys[k] = 1; }); });
+Object.keys(keys).forEach(function (k) {
+var cur = pb[k];
+if (!(cur === "" || cur == null || cur === false || (k === "shadow" && cur === "none") || (k === "card" && cur === "none"))) return;
+var v = most(P.map(function (q) { return (q.box || {})[k]; }).filter(function (v) { return !(v === "" || v == null || v === false); }));
+if (v !== undefined) pb[k] = v;
+});
+if (!pb.sheetBg || pb.sheetBg === "none") {
+var sb = most(P.map(function (q) { return q.sheetBg; }).filter(function (v) { return v; }));
+if (sb !== undefined) pb.sheetBg = sb;
+}
+if (!site.postLayout || JSON.stringify(site.postLayout) === JSON.stringify(site.layout)) {
+var cl = most(P.filter(function (q) { return q.ownLayout && q.colset; }).map(function (q) { return q.colset; }));
+if (cl) site.postLayout = fixLayout(clone(cl));
+}
+layFor("post");
+S.project.order.forEach(function (id) {
+var q = S.project.pages[id];
+if (!q || !q.parent || q.kind === "pin") return;
+q.box = {};
+delete q.sheetBg;
+q.ownLayout = false;
+});
+changed();
+},
 "master-tab": function () { S.masterTab = val; render(); },
 "sheet-done": function () { S.sheetSel = ""; render(); },
 "sheet-del": function () { snap(); S.sheetSel = ""; S.project.site.sheets.splice(+b.getAttribute("data-i"), 1); changed(); },
@@ -9646,7 +9752,8 @@ var on = val === "page";
 if (!!pg.ownLayout === on) return;
 snap();
 pg.ownLayout = on;
-if (on && !pg.colset) pg.colset = fixLayout(clone(S.project.site.layout));
+if (!on && pg.parent) layFor("post");
+if (on && !pg.colset) pg.colset = fixLayout(clone(lay(pg)));
 changed();
 },
 "lay-cols": function () {
@@ -9781,6 +9888,10 @@ var pg = curPage();
 if (!pg) return;
 ["indep", "scroll", "sheetBg", "pattern", "hover", "trans", "transDur", "header"].forEach(function (x) { delete pg[x]; });
 pg.box = {};
+if (pg.parent) {
+pg.ownLayout = false;
+layFor("post");
+}
 }
 changed();
 },
@@ -9821,10 +9932,22 @@ var bx = q.box || {};
 delete q.sheetBg;
 delete q.pattern;
 delete q.hover;
-delete q.scroll;
 }
 }
-if (f === "own" && q.indep) q.scroll = q.scroll === "own" ? "sheet" : "own";
+if (f === "own") q.scroll = q.scroll === "own" ? "sheet" : "own";
+changed();
+},
+"pin-still": function () {
+var pg = curPage();
+var k = sheetOf(pg.id).sheet;
+if (!k) return;
+snap();
+(k.pages || []).forEach(function (id) {
+var o = S.project.pages[id];
+if (id === pg.id || !o) return;
+if (val === "1") o.scroll = "own";
+else delete o.scroll;
+});
 changed();
 },
 "page-indep": function () {
@@ -9837,7 +9960,6 @@ var bx = pg.box || {};
 delete pg.sheetBg;
 delete pg.pattern;
 delete pg.hover;
-delete pg.scroll;
 }
 changed();
 },

@@ -16,7 +16,7 @@ async def run():
         await pg.goto('http://127.0.0.1:8765/admin'); await pg.wait_for_timeout(3000)
         ev = pg.evaluate
         # A KNOWN SET OF SHEETS, WHATEVER THE LIVE SITE HAS RIGHT NOW
-        await ev("S.project.site.layers.on = true; S.project.site.sheets = [Object.assign(clone(SHEET_DEFAULTS), { id: 'menu', name: 'Menu', axis: 'x', rest: 'peek', edge: 'left', edgeM: 'top', peek: 300, peekM: 70, restPage: '56ud3gky', pages: ['nsye72w3', '56ud3gky'], box: {} }), Object.assign(clone(SHEET_DEFAULTS), { id: 'index', name: 'Index', axis: 'y', rest: 'open', out: 'peek', sliver: 100, edge: 'left', main: 'fji5ongj', pages: ['fji5ongj', 'b2lr3tkr'], box: {} })]; ['nsye72w3','56ud3gky','fji5ongj','b2lr3tkr','zty6iib1'].forEach(function (id) { S.project.pages[id].box = {}; }); changed();"); await pg.wait_for_timeout(600)
+        await ev("S.project.site.layers.on = true; S.project.site.sheets = [Object.assign(clone(SHEET_DEFAULTS), { id: 'menu', name: 'Menu', axis: 'x', rest: 'peek', edge: 'left', edgeM: 'top', peek: 300, peekM: 70, restPage: '56ud3gky', pages: ['nsye72w3', '56ud3gky'], box: {} }), Object.assign(clone(SHEET_DEFAULTS), { id: 'index', name: 'Index', axis: 'y', rest: 'open', out: 'peek', sliver: 100, edge: 'left', main: 'fji5ongj', pages: ['fji5ongj', 'b2lr3tkr'], box: {} })]; ['nsye72w3','56ud3gky','fji5ongj','b2lr3tkr','zty6iib1'].forEach(function (id) { if (S.project.pages[id]) S.project.pages[id].box = {}; }); changed();"); await pg.wait_for_timeout(600)
         ev = pg.evaluate
         sh = "document.getElementById('bd-sheet').shadowRoot"
         await ev("sheetList().forEach(function(k){ if (k.id === 'menu') { k.peek = 300; k.peekM = 70; k.out = 'peek'; } if (k.id === 'index') { k.box = {}; } }); changed();")
@@ -319,7 +319,7 @@ async def run():
         await ev("S.project.pages['nsye72w3'].scroll = 'sheet'; changed();"); await pg.wait_for_timeout(300)
         ok('indep: scrolling with the sheet is the default', 'data-own' not in await ev("layerDoc(S.project.pages['nsye72w3'], 'export')"))
         await pg.click('#bd-right [data-act=page-indep][data-val=""]'); await pg.wait_for_timeout(400)
-        ok('indep: back to part of the sheet clears the own look', await ev("S.project.pages['nsye72w3'].indep") == False and await ev("!S.project.pages['nsye72w3'].scroll"))
+        ok('indep: back to part of the sheet clears the own look but keeps how it scrolls', await ev("S.project.pages['nsye72w3'].indep") == False and await ev("S.project.pages['nsye72w3'].scroll === 'sheet'"))
         ok('pin: the build colour circle is in the top bar', await pg.locator('#bd-top .bd-ed-build').count() == 1)
         await ev("S.project.site.name = 'REVERT-PROBE'; changed();"); await pg.wait_for_timeout(700)
         ok('revert: the top-bar Revert button is on once something is unpublished', await pg.locator('#bd-top [data-act=revert]:not([disabled])').count() == 1)
@@ -354,6 +354,34 @@ async def run():
         ok('inherit: the sheet panel starts with the red button', await pg.locator('#bd-right .bd-ed-inherit[data-act=inherit-ask]').count() == 1)
         await pg.click('#bd-right [data-act=inherit-ask]'); await pg.click('#bd-right [data-act=inherit-yes]'); await pg.wait_for_timeout(300)
         ok('inherit: a sheet goes back to the defaults but keeps its pages', await ev("(function(){ var k = sheetList()[1]; return k.color === '#E4E1DA' && k.alpha === 55 && k.blur === 9 && k.pattern === '' && Object.keys(k.box).length === 0 && k.pages.length === 2; })()"))
+        # --- scroll on its own without Independent; the pinned page can stay still
+        await ev("(function(){ var k = sheetList().filter(function(k){return k.pin})[0]; var o = k.pages.filter(function(id){return id !== k.pin})[0]; var q = S.project.pages[o]; q.indep = false; delete q.scroll; S.masterSel = false; S.postMaster = false; S.sheetSel = ''; S.sel = null; S.confirm = null; S.pageId = o; render(); })()")
+        ok('scroll: a page that is part of the sheet can scroll on its own', await pg.locator('#bd-right [data-path="page.scroll"][data-val=own]').count() == 1)
+        await pg.click('#bd-right [data-path="page.scroll"][data-val=own]'); await pg.wait_for_timeout(300)
+        ok('scroll: on its own marks the pane without Independent', await ev("(function(){ var k = sheetList().filter(function(k){return k.pin})[0]; var o = k.pages.filter(function(id){return id !== k.pin})[0]; return !S.project.pages[o].indep && layerDoc(S.project.pages[o], 'export').indexOf('data-own') > -1; })()"))
+        await ev("(function(){ var k = sheetList().filter(function(k){return k.pin})[0]; S.pageId = k.pin; render(); })()")
+        ok('scroll: the pinned page shows Moves with it / Stays still, on Stays still', await pg.locator('#bd-right [data-act=pin-still][data-val="1"].is-on').count() == 1)
+        await pg.click('#bd-right [data-act=pin-still][data-val=""]'); await pg.wait_for_timeout(300)
+        ok('scroll: Moves with it puts the other page back to scrolling with the sheet', await ev("(function(){ var k = sheetList().filter(function(k){return k.pin})[0]; var o = k.pages.filter(function(id){return id !== k.pin})[0]; return !S.project.pages[o].scroll; })()"))
+        await pg.click('#bd-right [data-act=pin-still][data-val="1"]'); await pg.wait_for_timeout(300)
+        ok('scroll: Stays still sets the other page to scroll on its own', await ev("(function(){ var k = sheetList().filter(function(k){return k.pin})[0]; var o = k.pages.filter(function(id){return id !== k.pin})[0]; return S.project.pages[o].scroll === 'own'; })()"))
+        # --- text colour on a page
+        await ev("(function(){ var q = S.project.pages[S.pageId]; q.box = q.box || {}; q.box.ink = '#123456'; changed(); })()")
+        ok('colour: a page can set its own text colour', await ev("exportCSS().indexOf('color: #123456;') > -1 && exportCSS().indexOf('--bd-ink: #123456;') > -1"))
+        # --- All posts · master
+        await ev("(function(){ S.pageId = Object.values(S.project.pages).filter(function(q){return q.blog})[0].id; render(); })()")
+        ok('posts: the blog lists an All posts · master row', await pg.locator('#bd-left .is-pmaster').count() == 1)
+        await pg.click('#bd-left .is-pmaster'); await pg.wait_for_timeout(400)
+        ok('posts: the master panel opens with columns and space & card', await pg.locator('#bd-right [data-act=lay-cols][data-who=post]').count() == 3 and await pg.locator('#bd-right [data-bind="site.postBox.mt"]').count() == 1)
+        await ev("(function(){ var P = Object.values(S.project.pages).filter(function(q){return q.parent}); P.forEach(function(q, i){ q.ownLayout = true; q.colset = fixLayout({ cols: 2, spans: [5, 7] }); q.box = { mt: '4%', shadow: 'line', card: i ? '#ffffff' : '#000000' }; }); delete S.project.site.postLayout; S.project.site.postBox = {}; render(); })()")
+        await pg.click('#bd-right [data-act=posts-follow-ask]'); await pg.click('#bd-right [data-act=posts-follow-yes]'); await pg.wait_for_timeout(400)
+        ok('posts: Make all follow moves what most posts share into the master', await ev("(function(){ var s = S.project.site; return s.postBox.mt === '4%' && s.postBox.shadow === 'line' && s.postBox.card === '#ffffff' && s.postLayout.cols === 2 && s.postLayout.spans.join() === '5,7'; })()"))
+        ok('posts: and every post follows', await ev("Object.values(S.project.pages).filter(function(q){return q.parent}).every(function(q){ return !q.ownLayout && Object.keys(q.box).length === 0 && postFollows(q); })"))
+        ok('posts: a following post exports the master columns', await ev("(function(){ var q = Object.values(S.project.pages).filter(function(q){return q.parent})[0]; return exportPage(q).indexOf('bd-cl-posts') > -1 && /\\.bd-cols\\.bd-cl-posts \\{\\ngrid-template-columns: minmax\\(0, 5fr\\) minmax\\(0, 7fr\\)/.test(exportCSS()); })()"))
+        await pg.click('#bd-right [data-act=lay-cols][data-who=post][data-val="3"]'); await pg.wait_for_timeout(300)
+        ok('posts: changing the master columns changes every post', await ev("S.project.site.postLayout.cols === 3 && /bd-cl-posts \\{\\ngrid-template-columns: minmax\\(0, [0-9]+fr\\) minmax\\(0, [0-9]+fr\\) minmax/.test(exportCSS())"))
+        await ev("(function(){ var q = Object.values(S.project.pages).filter(function(q){return q.parent})[0]; S.pageId = q.id; S.postMaster = false; render(); })()")
+        ok('posts: a post panel links to the post master', await pg.locator('#bd-right [data-act=post-master]').count() == 1)
         ok('no page errors', not errs)
         await b.close()
     bad = [n for n, c in R if not c]
