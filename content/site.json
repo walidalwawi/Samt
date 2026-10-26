@@ -586,7 +586,7 @@
      "aj2hm4y8"
     ],
     "color": "#ffffff",
-    "alpha": 80,
+    "alpha": 50,
     "blur": 10,
     "shadow": "none",
     "nudge": 100,
@@ -4719,12 +4719,13 @@
     "pb": "5%",
     "card": "",
     "radius": "",
-    "shadow": "none"
+    "shadow": "soft"
    },
    "indep": true,
    "sheetBg": "",
    "pattern": "none",
-   "scroll": "own"
+   "scroll": "own",
+   "hover": ""
   },
   "56ud3gky": {
    "id": "56ud3gky",
@@ -4776,7 +4777,7 @@
    },
    "box": {
     "mtM": "",
-    "fit": false,
+    "fit": true,
     "mrM": "0%",
     "maxW": "",
     "mr": "0",

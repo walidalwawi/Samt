@@ -1,4 +1,4 @@
-/* PUBLISHED mvpdahaz */
+/* PUBLISHED mvpddetg */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2716,13 +2716,14 @@ backdrop-filter: blur(11.2px);
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
-background: rgba(255, 255, 255, 0.8);
+background: rgba(255, 255, 255, 0.5);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
 padding-top: 5vh;
 padding-right: 5vw;
 padding-bottom: 5vh;
 padding-left: 5vw;
+box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
 margin-top: 0vh;
@@ -2744,13 +2745,14 @@ backdrop-filter: blur(11.2px);
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
-background: rgba(255, 255, 255, 0.8);
+background: rgba(255, 255, 255, 0.5);
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper > .bd-panel {
 padding-top: 5vh;
 padding-right: 5vw;
 padding-bottom: 5vh;
 padding-left: 5vw;
+min-height: 0;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper > .bd-panel {
 margin-right: 0px;
