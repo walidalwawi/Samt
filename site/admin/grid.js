@@ -682,13 +682,15 @@ if (!s.indepV1) {
 layIndepIn(p);
 s.indepV1 = true;
 }
-if (!s.stayV1) {
-layStayIn(p);
-s.stayV1 = true;
-}
 sheetFix(p);
 sheetPinOrder(p);
 s.motion = Object.assign({ gDur: 450, gEase: "ease", tease: 8, open: 24 }, s.motion || {});
+/* THE GLASS: WHAT IS STUCK TO THE WINDOW ITSELF AND NEVER MOVES WHILE PAPER SLIDES UNDER IT */
+s.glass = Object.assign({ menu: "", at: "bottom", color: "", alpha: 92, blur: 8 }, s.glass || {});
+if (!s.glassV1) {
+layGlassIn(p);
+s.glassV1 = true;
+}
 if (s.mt === undefined) {
 var ot = s.top != null ? s.top : 48;
 var op = s.pad != null ? s.pad : 33;
@@ -2408,20 +2410,18 @@ var own = !onSheet || !!pg.indep;
 var pinMe = onSheet && sheetPin(sheetOf(pg.id).sheet) === pg.id;
 var pinStill = pinMe && (sheetOf(pg.id).sheet.pages || []).some(function (id) { var o = S.project.pages[id]; return id !== pg.id && o && o.scroll === "own"; });
 return '<div class="bd-ed-sec"><span class="bd-ed-title">Space & card' + (ph ? " · phone" : "") + "</span>"
-+ '<span class="bd-ed-label">' + (onSheet ? "Inset" : "Margin") + ' · ' + (onSheet ? "how far the page sits inside its sheet" : "outside the page") + "</span>" + four("m")
++ (onSheet ? "" : '<span class="bd-ed-label">Margin · outside the page</span>' + four("m"))
 + '<span class="bd-ed-label">Padding · inside the page</span>' + four("p")
 
 + '<div class="bd-ed-hint">Numbers are px. 20% = a fifth of the window (top and bottom of its height, sides of its width). Blank = the site’s.' + (ph ? " Blank on phone = same as desktop." : "") + "</div>"
-+ (onSheet ? field("This page is", '<span class="bd-ed-seg"><button class="' + (pg.indep ? "" : "is-on") + '" data-act="page-indep" data-val="">Part of the sheet</button><button class="' + (pg.indep ? "is-on" : "") + '" data-act="page-indep" data-val="1">Independent</button></span>') + '<div class="bd-ed-hint">' + (pg.indep ? "Independent: its own card, colour, blur and decoration." : "Part of the sheet: the same paper as the rest of the sheet.") + "</div>" : "")
-+ (own ? fillIn("Card colour", "page.box.card", b.card || "", "#ffffff", "None") + fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site")
++ (onSheet ? field("This page is", '<span class="bd-ed-seg"><button class="' + (pg.indep ? "" : "is-on") + '" data-act="page-indep" data-val="">Part of the sheet</button><button class="' + (pg.indep ? "is-on" : "") + '" data-act="page-indep" data-val="1">Independent</button></span>') + '<div class="bd-ed-hint">' + (pg.indep ? "Independent: its own card, colour, blur and decoration, taped onto the sheet. It still shares the sheet\u2019s edges and scroll." : "Part of the sheet: printed on the same paper.") + "</div>" : "")
++ (own ? fillIn("Card colour", "page.box.card", b.card || "", "#ffffff", "None") + (onSheet ? "" : fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site"))
 + row(numIn("Corners", "page.box.radius", b.radius == null ? "" : b.radius, "blank"), numIn("Card see-through %", "page.box.cardA", b.cardA == null ? "" : b.cardA, "blank"), numIn("Blur behind", "page.box.blur", b.blur == null ? "" : b.blur, "blank")) : "")
 + (ph ? "" : colorIn("Text colour", "page.box.ink", b.ink || "", S.project.site.colors.ink, "Site"))
 + field("Max width" + (ph ? " · phone" : ""), input("page.box.maxW" + (ph ? "M" : ""), (ph ? b.maxWM : b.maxW) || "", "", ' placeholder="720 or 60%"'))
 + (own ? field("Shadow", seg("page.box.shadow", b.shadow || "none", [["none", "None"], ["line", "Line"], ["hard", "Hard"], ["soft", "Soft"]])) : "")
 + sw("Card only as tall as what’s on it", "page.box.fit", !!b.fit)
 + (onSheet && own ? '<span class="bd-ed-label">Inherits the sheet unless set</span>' + field("Decoration", select("page.pattern", pg.pattern || "", [["", "Inherit from sheet"], ["none", "None"]].concat(SHEET_PATTERNS.filter(function (x) { return x[0]; })))) + field("On hover", seg("page.hover", pg.hover || "", [["", "Inherit"], ["lift", "Lift"]])) : "")
-+ (onSheet && pinSh ? field("Scrolls", seg("page.scroll", pg.scroll === "own" ? "own" : "sheet", [["sheet", "With the sheet"], ["own", "On its own"]])) + '<div class="bd-ed-hint">' + (pg.scroll === "own" ? "On its own: this page scrolls and the pinned page stays still." : "With the sheet: the pinned page moves with this page as it scrolls.") + "</div>" : "")
-+ (pinMe ? field("While the other page scrolls", '<span class="bd-ed-seg"><button class="' + (pinStill ? "" : "is-on") + '" data-act="pin-still" data-val="">Moves with it</button><button class="' + (pinStill ? "is-on" : "") + '" data-act="pin-still" data-val="1">Stays still</button></span>') : "")
 + (tail || "")
 + "</div>";
 }
@@ -3241,6 +3241,7 @@ return { id: id, pi: pi, N: P.length, x: x, key: key, edge: edge, len: "max(0px,
 }
 /* THE PINNED PAGE EITHER SLIDES TO THE WINDOW'S EDGE WHEN THE OTHER PAGE OPENS (DEFAULT) OR STAYS EXACTLY WHERE IT IS (A BAND THAT NEVER MOVES; THE OTHER PAGE SLIDES IN BESIDE IT) — PHONE CAN DIFFER */
 function sheetPinStay(k, phone) {
+return false;
 if (!sheetPin(k)) return false;
 return (phone && k.pinModeM ? k.pinModeM : k.pinMode) === "stay";
 }
@@ -3264,31 +3265,7 @@ var sel = '#bd-ly .bd-ly-k[data-k="' + k.id + '"]';
 var ax = g.x ? "x" : "y";
 var dd = "clamp(-1, calc(var(--i) - " + g.pi + "), 1)";
 var f = g.pi === 0 ? "clamp(0, calc(var(--i) - 0), 1)" : "calc(" + dd + " * " + dd + ")";
-if (sheetPinStay(k, phone)) {
-/* STAYS PUT: THE PINNED PANE CANCELS THE SLIDE AND LIES ABOVE; THE OTHER PANE KEEPS CLEAR OF THE BAND */
-out.push(sel + " {\n--k-stay: 1;\n}");
-out.push(sel + " .bd-ly-track.is-ax-" + ax + " {\ntransform: " + (g.x ? "translate3d(calc(var(--i) * -100% / var(--n)), 0, 0)" : "translate3d(0, calc(var(--i) * -100% / var(--n)), 0)") + ";\n}");
-out.push(sel + " .bd-ly-pane {\ntranslate: none;\ntransform: none;\npadding: 0;\nclip-path: none;\nz-index: auto;\n}");
-out.push(sel + " .bd-ly-pane:nth-child(" + (g.pi + 1) + ") {\ntranslate: " + (g.x ? "calc((var(--i) - " + g.pi + ") * 100%) 0" : "0 calc((var(--i) - " + g.pi + ") * 100%)") + ";\nz-index: 2;\ntransition: translate " + KD + " var(--ly-ease);\n}");
-var pq = sheetPage(g.id);
-var qb = (pq && pq.box) || {};
-[["t", "bottom"], ["b", "top"], ["l", "right"], ["r", "left"]].forEach(function (sd) {
-var raw = boxVal(qb, "m" + sd[0], phone);
-var len = boxLen(raw, sd[0]);
-if (len == null) return;
-var vertical = sd[0] === "t" || sd[0] === "b";
-var view = vertical ? (phone ? 780 : 800) : (phone ? 390 : 1280);
-var n = parseFloat(raw) || 0;
-var pct = /%\s*$/.test(String(raw)) ? n : n / view * 100;
-if (pct < 50) return;
-var wcs = BOX_VIEW ? (vertical ? BOX_VIEW.h : BOX_VIEW.w) + "px" : vertical ? "100vh" : "100vw";
-out.push(sel + " .bd-ly-pane:not(:nth-child(" + (g.pi + 1) + ")) {\nbox-sizing: border-box;\npadding-" + sd[1] + ": max(0px, calc(" + wcs + " - " + len + "));\n}");
-});
-out.push(sel + ",\n" + sel + " .bd-ly-pane {\npointer-events: none;\n}\n" + sel + " .bd-ly-paper {\npointer-events: auto;\n}");
-return;
-}
 if (phone) out.push(sel + " .bd-ly-pane {\ntranslate: none;\nz-index: auto;\npadding: 0;\nclip-path: none;\n}");
-if (phone) out.push(sel + " {\n--k-stay: 0;\n}");
 var ff = "max(" + f + ", var(--k-hold, 0))";
 var tf = "translate3d(calc(var(--k-sx, 0px) * -1 * " + ff + "), calc(var(--k-sy, 0px) * -1 * " + ff + "), 0)";
 /* THE SHEET SCROLLS AS ONE: THE OTHER PAGE SCROLLS AND THE PINNED PAGE MOVES WITH IT (RUNTIME --k-sx / --k-sy); ONLY THE SLIDE KEEPS THE PINNED PAGE IN THE WINDOW */
@@ -3475,7 +3452,7 @@ var onPage = pl.st === "peek" && strip ? strip : panes[pl.i] || strip;
 return '<section class="bd-ly-sheet bd-ly-k' + (strip ? "" : " is-paper") + ' is-e-' + esc(k.edge || "left") + " is-em-" + esc(k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + (onPage ? " is-on-" + onPage.id : "") + (k.lv ? " is-lv-" + esc(k.lv) : "") + (k.hover === "lift" ? " is-hv-lift" : "") + (k.arrive === "fade" || k.arrive === "cut" ? " is-ap-" + k.arrive : "") + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-main="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(k.main)) + '" data-pin="' + panes.map(function (q) { return q.id; }).indexOf(sheetPin(k)) + '" data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
 + '<div class="bd-ly-body">\n<div class="bd-ly-track is-ax-' + (k.axis === "x" ? "x" : "y") + '" style="--n: ' + Math.max(1, panes.length) + "; --i: " + pl.i + ';">\n'
 + panes.map(function (q, j) {
-return '<div class="bd-ly-pane' + (j === pl.i ? " is-on" : "") + '"' + (q.scroll === "own" ? " data-own" : "") + ' data-page="' + q.id + '" data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n<div class="bd-ly-paper">\n' + layerBody(q, ctx) + "\n</div>\n</div>";
+return '<div class="bd-ly-pane' + (j === pl.i ? " is-on" : "") + '"' + "" + ' data-page="' + q.id + '" data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n<div class="bd-ly-paper">\n' + layerBody(q, ctx) + "\n</div>\n</div>";
 }).join("\n") + "\n</div>\n</div>\n"
 + (strip ? '<div class="bd-ly-strip">\n' + layerBody(strip, ctx) + "\n</div>\n" : "") + "</section>";
 }).join("\n");
@@ -3483,7 +3460,7 @@ S.layerFocus = keep;
 S.layerBack = keepB;
 var tr = layerTrans(f.k < 0 ? S.project.pages[f.id] : null);
 return '<div class="bd-ly is-t-' + tr + (f.k < 0 ? " is-v-post" : "") + '" id="bd-ly" data-trans="' + esc(layerTrans(null)) + '" data-dur="' + Ls.dur + '" data-focus="' + esc(f.id) + '" data-home="' + esc(sheetHome()) + '">\n'
-+ '<div class="bd-ly-sheet bd-ly-content" id="bd-ly-content" tabindex="-1">\n' + arts + "\n</div>\n" + sheets + '\n<div class="bd-ly-bar is-off" id="bd-ly-bar" aria-hidden="true"><i></i></div>\n</div>';
++ '<div class="bd-ly-sheet bd-ly-content" id="bd-ly-content" tabindex="-1">\n' + arts + "\n</div>\n" + sheets + '\n<div class="bd-ly-bar is-off" id="bd-ly-bar" aria-hidden="true"><i></i></div>\n' + glassHTML() + "\n</div>";
 }
 /* HOW FAR THE PEEKING SHEETS ABOVE PUSH A SHEET (OR THE PAGES UNDERNEATH) IN FROM EACH EDGE */
 var NO_INS = { left: 0, right: 0, top: 0, bottom: 0 };
@@ -3500,13 +3477,7 @@ var N = Math.max(1, P.length);
 return k.axis === "x" ? { t: true, b: true, l: i === 0, r: i === N - 1 } : { l: true, r: true, t: i === 0, b: i === N - 1 };
 }
 function sheetPaperMargins(k, q, phone) {
-if (q && q.indep && sheetPin(k)) {
-/* AN INDEPENDENT PAGE ON A PINNED SHEET OWNS ITS PAPER: ITS OWN MARGINS, NOT THE SHEET'S */
-var ob = q.box || {};
-var oo = {};
-["t", "r", "b", "l"].forEach(function (x) { oo[x] = boxLen(boxVal(ob, "m" + x, phone), x) || "0px"; });
-return oo;
-}
+/* THE PAPER'S MARGINS ARE THE SHEET'S, FOR EVERY PAGE ON IT */
 var sd = sheetPaperSides(k, q);
 var b = k.box || {};
 var o = {};
@@ -3681,9 +3652,7 @@ if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPap
 if (!phone && q.sheetBg) out.push(sel + " {\nbackground: " + bgVal(q.sheetBg) + ";\n}");
 var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", st && st.id === q.id ? null : padIns, true);
 if (bx) out.push(bx);
-if (!(st && st.id === q.id) && !(q.indep && sheetPin(k))) {
-var ix = insetCSS(q, phone, sel + " > .bd-panel");
-if (ix) out.push(ix);
+if (!(st && st.id === q.id)) {
 if (!phone && q.hover === "lift") out.push("@media (hover: hover) and (min-width: 761px) {\n" + sel + " > .bd-panel:hover {\nbox-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);\n}\n}");
 }
 });
@@ -3724,7 +3693,8 @@ sheetBoxCSS(true),
 sheetPinCSS(true),
 sheetStateCSS("is-em-", sheetEdges(true)),
 sheetMenuCSS(true),
-layerPageCSS(true)
+layerPageCSS(true),
+glassCSS(true)
 ].filter(Boolean).join("\n");
 var ease = (LAYER_EASE[Ls.ease] || LAYER_EASE.paper)[1];
 var KD = "var(--ly-pdur, var(--k-dur, var(--ly-dur)))";
@@ -3766,6 +3736,7 @@ sheetPinCSS(false),
 sheetStateCSS("is-e-", sheetEdges(false)),
 sheetMenuCSS(false),
 layerPageCSS(false),
+glassCSS(false),
 ".is-t-unfold .bd-ly-art.is-enter {\ntransform-origin: 50% 0;\nanimation: bd-ly-unfold var(--ly-pdur, var(--ly-dur)) var(--ly-ease) both;\n}",
 "@keyframes bd-ly-unfold {\nfrom {\ntransform: perspective(1600px) rotateX(-88deg);\n}\nto {\ntransform: none;\n}\n}",
 "@media (prefers-reduced-motion: reduce) {\n.bd-ly-sheet,\n.bd-ly-track {\ntransition-duration: 1ms;\n}\n}"
@@ -3831,7 +3802,7 @@ function pinLen() {
 model.forEach(function (m) {
 if (!m.track.classList.contains("is-ax-x")) return;
 var kids = Array.prototype.slice.call(m.track.children);
-var stay = m.pin > -1 && getComputedStyle(m.el).getPropertyValue("--k-stay").trim() === "1";
+var stay = false;
 var pp = kids.filter(function (pn, ix) { return !(stay && ix === m.pin); }).map(function (pn) { return pn.querySelector(".bd-ly-paper"); }).filter(Boolean);
 if (stay && kids[m.pin] && kids[m.pin].querySelector(".bd-ly-paper")) kids[m.pin].querySelector(".bd-ly-paper").style.minHeight = "";
 if (pp.length < 2) return;
@@ -4209,8 +4180,6 @@ out.push(".bd-site.is-layered::before {\ncontent: \"\";\nposition: absolute;\nto
 out.push(".bd-site.is-layered .bd-panel {\nposition: relative;\nbackground: transparent;\nmargin: 0;\n}");
 var bx = pageBoxCSS(page, phone, ".bd-site.is-layered .bd-panel.bd-pg-" + page.id, padIns, true);
 if (bx) out.push(bx);
-var ixc = insetCSS(page, phone, ".bd-site.is-layered .bd-panel.bd-pg-" + page.id);
-if (ixc) out.push(ixc);
 if (phone) {
 var bb = page.box || {};
 var bxc = pageBoxCSS({ box: { card: bb.card, radius: bb.radius, shadow: bb.shadow, fit: bb.fit } }, false, ".bd-site.is-layered .bd-panel.bd-pg-" + page.id, null);
@@ -5076,7 +5045,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#9d174d";
+var BD_BUILD = "#15803d";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6072,6 +6041,16 @@ k.pages = (k.pages || []).filter(function (id, i, a) { var q = p.pages[id]; retu
 if (k.pin && (k.pages.indexOf(k.pin) < 0 || k.pages.length < 2 || k.rest === "peek")) k.pin = "";
 if (k.pin && k.rest !== "still") k.rest = "still";
 if (k.hover === "nudge" && k.rest !== "peek") k.hover = "";
+/* ONE SHEET, ONE PIECE: PAGES ON IT NEVER OWN GEOMETRY. NO OWN SCROLL, NO OWN MARGINS, NO STAYS-PUT BAND */
+delete k.pinMode;
+delete k.pinModeM;
+k.pages.forEach(function (id) {
+var q = p.pages[id];
+if (!q) return;
+delete q.scroll;
+delete q.sheetBg;
+if (q.box) ["mt", "mr", "mb", "ml", "mtM", "mrM", "mbM", "mlM"].forEach(function (x) { delete q.box[x]; });
+});
 if (k.restPage && k.pages.indexOf(k.restPage) < 0) k.restPage = "";
 if (k.main && k.pages.indexOf(k.main) < 0) k.main = "";
 if (k.rest !== "peek" || k.pages.length < 2) return;
@@ -6167,25 +6146,6 @@ k.restPage = "";
 }
 /* ONCE: A PINNED SHEET WHOSE PHONE MARGINS CUT IT INTO A BAND (A BIG CROSS MARGIN) MOVES THE BAND TO THE PINNED PAGE ITSELF AND STAYS PUT ON PHONE, SO THE OTHER PAGE IS NO LONGER SQUEEZED INTO THE BAND */
 function layStayIn(p) {
-((p.site || {}).sheets || []).forEach(function (k) {
-if (!k || !k.pin || !k.box || k.pinModeM) return;
-var q = p.pages[k.pin];
-if (!q) return;
-var ax = k.axis === "x" ? "x" : "y";
-var cross = ax === "x" ? ["mtM", "mbM"] : ["mlM", "mrM"];
-var along = ax === "x" ? ["mlM", "mrM"] : ["mtM", "mbM"];
-var cut = cross.filter(function (key) { var v = String(k.box[key] == null ? "" : k.box[key]); return /%\s*$/.test(v) && parseFloat(v) >= 50; });
-if (!cut.length) return;
-q.indep = true;
-q.box = Object.assign({}, q.box || {});
-cross.concat(along).forEach(function (key) {
-var v = k.box[key];
-if (v == null || v === "") return;
-q.box[key] = v;
-k.box[key] = "";
-});
-k.pinModeM = "stay";
-});
 }
 /* ONCE: A STRIP THAT PEEKS FROM THE LEFT/TOP LIES AT THE END OF ITS SHEET, FROM THE RIGHT/BOTTOM AT THE START, SO THE SPREAD READS THE RIGHT WAY ROUND */
 function layMigrateOrderIn(p) {
@@ -6392,7 +6352,7 @@ if (G.N === 2) swapHits += '<g data-swap="' + s.i + '" data-i="' + n + '" data-b
 {
 /* FLAGS ON THE CARD: PIN · INDEPENDENT · OWN SCROLL — DRAWN IN THE CARD'S HALF SO THEY ALWAYS FIT */
 var pinned = sheetPin(k) === q.id;
-var fl = [["pin", "PIN", pinned, true], ["indep", "IND", !!q.indep, true], ["own", "OWN", q.scroll === "own", !!sheetPin(k) && !pinned]];
+var fl = [["pin", "PIN", pinned, true]];
 var fx = X(s.slot.l) + 5;
 var fy = G.ax === "x" ? Y(s.slot.b) - 22 : Y(s.slot.t) + 5;
 if (pinned) flagBtns += '<rect x="' + r1(X(b.l)) + '" y="' + r1(Y(b.t) + 4) + '" width="4" height="' + r1(Math.max(0, Lx(b.b - b.t) - 8)) + '" rx="2" fill="#1f1e1c" pointer-events="none"/>';
@@ -6435,7 +6395,7 @@ var h = field("Pages spread", seg(P + "axis", k.axis === "x" ? "x" : "y", [["y",
 h += '<div class="bd-lay-box">' + layoutDrawing(n, curPage()) + "</div>";
 if (!sheetFull(k)) h += '<button class="bd-ed-btn" data-act="lay-add" data-i="' + n + '">+ page</button>';
 {
-h += '<div class="bd-ed-hint">two windows wide, two high · tap a half to put the <i class="bd-lay-sw" style="background:' + LAY_C.win + '"></i>window there · the <i class="bd-lay-sw" style="background:' + LAY_C.sheet + '"></i>sheet covers two halves, the join between its pages always lies on the window’s edge · drag a page across the join to swap them · drag its outer edges to resize — the end of the sheet only shows when you scroll to it · drag a page from Layers onto a card to replace it · PIN keeps a page in the window · IND gives it its own look · OWN lets it scroll on its own · × takes a page off · ' + (phone ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
+h += '<div class="bd-ed-hint">two windows wide, two high · tap a half to put the <i class="bd-lay-sw" style="background:' + LAY_C.win + '"></i>window there · the <i class="bd-lay-sw" style="background:' + LAY_C.sheet + '"></i>sheet covers two halves, the join between its pages always lies on the window’s edge · drag a page across the join to swap them · drag its outer edges to resize — the end of the sheet only shows when you scroll to it · drag a page from Layers onto a card to replace it · PIN keeps a page in the window · pages on a sheet always scroll and end together · × takes a page off · ' + (phone ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
 }
 if (S.layAdd === n) {
 h += '<div class="bd-ed-sec" style="margin:0"><span class="bd-ed-label">Put on this sheet</span>' + free.map(function (q) { return '<button class="bd-ed-btn" style="margin:2px 4px 2px 0" data-act="sheet-page-add" data-i="' + n + '" data-id="' + q.id + '">' + esc(q.title) + "</button>"; }).join("") + '<button class="bd-ed-btn" style="margin:2px 0" data-act="lay-new" data-i="' + n + '">' + I.plus + "New page</button>" + (free.length ? "" : '<div class="bd-ed-hint">Every page is already on a sheet.</div>') + "</div>";
@@ -6824,8 +6784,6 @@ var sel = '.bd-ly-pane[data-page="' + q.id + '"] > .bd-ly-paper';
 extra.push(sel + " {\nbackground: " + sheetPaper(k, k.alpha == null ? 55 : k.alpha) + ";\n}");
 var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", null, true);
 if (bx) extra.push(bx);
-var ix = insetCSS(q, phone, sel + " > .bd-panel");
-if (ix) extra.push(ix);
 }
 });
 body += "</section>";
@@ -6864,11 +6822,8 @@ var strip = sheetStrip(k);
 var free = all.filter(function (q) { return used.indexOf(q.id) < 0 && !q.parent; });
 var LV = [["", "Site"]].concat(LAYER_TRANS);
 var h = '<div class="bd-ed-sec"><span class="bd-ed-title">Layout</span>' + field("Name", input(P + "name", k.name || "")) + sheetLayoutHTML(n)
-+ (pages.length > 1 ? field("Pinned page", select(P + "pin", sheetPin(k), [["", "None"]].concat(pages.map(function (q) { return [q.id, q.title]; }))))
-+ (sheetPin(k) ? field("When the other page opens", seg(P + "pinMode", k.pinMode === "stay" ? "stay" : "", [["", "Pinned slides to the edge"], ["stay", "Pinned stays put"]])) : "")
-+ (sheetPin(k) && phone ? field("Phone <b class=\"bd-ed-ph\">phone</b>", seg(P + "pinModeM", k.pinModeM || "", [["", "Same as desktop"], ["slide", "Slides"], ["stay", "Stays put"]])) : "")
-+ (sheetPin(k) && !sheetPinStay(k, phone) ? field("Pages underneath keep clear of it", seg(P + "pinPad", k.pinPad === "off" ? "off" : "", [["", "Yes"], ["off", "No"]])) : "")
-+ '<div class="bd-ed-hint">A pinned page never leaves the window. Slides to the edge: the sheet slides to its other page only as far as the pinned page stays against the edge. Stays put: the pinned page is a band that never moves and the other page opens beside it; give the pinned page its own margins (an independent page owns its paper) to shape the band, and the other page keeps clear of it. The sheet lies above everything and is not Home.</div>' : "") + "</div>";
++ (sheetPin(k) ? field("Pages underneath keep clear of it", seg(P + "pinPad", k.pinPad === "off" ? "off" : "", [["", "Yes"], ["off", "No"]]))
++ '<div class="bd-ed-hint">The pinned page never leaves the window: the sheet slides to its other page only as far as the pinned page stays against the edge, and both scroll as one. The sheet lies above everything and is not Home. Anything that must stay still while paper moves goes on the glass (Master → Site).</div>' : "") + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-title">Style</span><span class="bd-ed-label">Background colour</span>' + fillIn("Colour", P + "color", k.color, "#E4E1DA")
 + '<span class="bd-ed-label">Background effect</span>' + row(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur below", P + "blur", k.blur))
 + '<span class="bd-ed-label">Background decoration</span>' + field("Pattern", select(P + "pattern", k.pattern || "", SHEET_PATTERNS))
@@ -6893,7 +6848,7 @@ return '<label class="bd-ed-check"><input type="checkbox" data-act="sheet-cover"
 }).join("") + '<div class="bd-ed-hint">On any other page underneath, this sheet slides away completely. Pages on sheets higher in the stack never move it: they just lie over it.</div>' : "")
 + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Stack · ' + (n + 1) + " of " + sheetList().length + ", top to bottom</span>"
-+ '<div class="bd-ed-actions"><button class="bd-ed-btn" data-act="sheet-up" data-i="' + n + '">' + I.up + 'Higher</button><button class="bd-ed-btn" data-act="sheet-down" data-i="' + n + '">' + I.dn + 'Lower</button><button class="bd-ed-btn is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve · pages stay</button></div></div>";
++ '<div class="bd-ed-hint">Drag the sheet\u2019s grip in Layers to change the stack.</div><div class="bd-ed-actions"><button class="bd-ed-btn is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve · pages stay</button></div></div>";
 return h;
 }
 /* PUT A PAGE ON A SHEET ("" = underneath, "new" = a fresh sheet) */
@@ -6938,7 +6893,8 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-label">Page frame</span>'
 + row(dpIn("Paragraph indent", "site.indent", "site.indentM", s.indent, s.indentM, "int"))
 + '<div class="bd-ed-hint">Columns are set in the bar above the canvas.</div></div>';
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title at the top", "site.header", s.header) + '<div class="bd-ed-hint">Writes each page’s heading above its content. A page can switch it off in its own panel (Show the title). Or leave this off and place a Page title block where you want it.</div>' + (s.header ? sw("Number above the title", "site.showNum", s.showNum) : "") + (layersOn() ? "" : sw("Floating menu button", "site.menu", s.menu) + sw("Page arrows at the end", "site.pager", s.pager)) + sw("Click images to zoom", "site.zoom", s.zoom) + '<div class="bd-ed-hint">Tap an image to see it full screen. One image can opt out in its own panel.</div>'
-+ (!layersOn() && (s.menu || hasMenuButton()) ? '<button class="bd-ed-btn" data-act="menu-style">' + I.sliders + "Style the menu</button>" : "") + '<div class="bd-ed-hint">' + (layersOn() ? "With paper sheets the menu is a page on a sheet, so there is no floating button, page arrows, header or footer." : "Or add Menu, Page title and Page arrows blocks to the header and footer.") + "</div></div>";
++ (!layersOn() && (s.menu || hasMenuButton()) ? '<button class="bd-ed-btn" data-act="menu-style">' + I.sliders + "Style the menu</button>" : "") + '<div class="bd-ed-hint">' + (layersOn() ? "With paper sheets the menu is a page on a sheet; what must stay still lives on the glass below." : "Or add Menu, Page title and Page arrows blocks to the header and footer.") + "</div></div>";
+if (layersOn()) h += glassPanel();
 var secs = s.sections.map(function (x, i) {
 return '<div class="bd-ed-list-row">' + input("site.sections." + i + ".key", x.key, "", ' aria-label="Section key"') + input("site.sections." + i + ".label", x.label, "", ' aria-label="Section label"') + '<button class="bd-ed-x" data-act="del-section" data-i="' + i + '" aria-label="Remove section">' + I.x + "</button></div>";
 }).join("") + '<button class="bd-ed-btn" data-act="add-section">' + I.plus + "Section</button>";
@@ -6972,6 +6928,47 @@ var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title
 h += '<div class="bd-ed-sec"><span class="bd-ed-title">Columns' + (S.mode === "phone" ? " · phone" : "") + '</span>' + rulerCols({ kind: "page", parent: "posts" }, S.mode === "phone", true) + '<div class="bd-ed-hint">Blocks keep the column they are in. With one column every block stacks.</div></div>';
 var pb = pageBoxPanel({ id: "", box: s.postBox || {}, sheetBg: (s.postBox || {}).sheetBg || "" }).replace(/page\.box\./g, "site.postBox.").replace(/page\.sheetBg/g, "site.postBox.sheetBg").replace("Space & card", "Space, card &amp; colour");
 return h + pb;
+}
+/* THE GLASS: A MENU BAR STUCK TO THE WINDOW. IT NEVER MOVES WHILE PAPER SLIDES UNDER IT, SO NO SHEET EVER NEEDS A BAND */
+function glassPanel() {
+var g = S.project.site.glass;
+return '<div class="bd-ed-sec"><span class="bd-ed-title">On the glass</span>' + field("Menu bar", seg("site.glass.menu", g.menu || "", [["", "Off"], ["phone", "Phone"], ["desktop", "Desktop"], ["both", "Both"]]))
++ (g.menu ? field("At the", seg("site.glass.at", g.at === "top" ? "top" : "bottom", [["top", "Top"], ["bottom", "Bottom"]])) + fillIn("Colour", "site.glass.color", g.color || "", S.project.site.colors.panel, "Panel") + row(numIn("See-through %", "site.glass.alpha", g.alpha), numIn("Blur below", "site.glass.blur", g.blur)) : "")
++ '<div class="bd-ed-hint">The glass is the window itself. A bar stuck to it shows the sheet menu\u2019s links and never moves while the paper slides, which is how a phone keeps its menu without breaking a sheet into a band.</div></div>';
+}
+function glassHTML() {
+var s = S.project.site;
+var g = s.glass || {};
+if (!g.menu) return "";
+var e = { props: { menu: s.nav.menu, marker: "", align: "left", style: "heading", gap: 0, gapM: 0, pad: 0, padM: 0, mark: s.name } };
+var inner = sheetMenuHTML(e, "bd-glass-menu").replace(/^<nav[^>]*>/, "").replace(/<\/nav>$/, "");
+return '<nav class="bd-glass is-at-' + (g.at === "top" ? "top" : "bottom") + " is-on-" + esc(g.menu) + '" aria-label="Menu">\n' + inner + "\n</nav>";
+}
+function glassCSS(phone) {
+var s = S.project.site;
+var g = s.glass || {};
+if (!g.menu) return "";
+if (phone) return [".bd-glass.is-on-desktop {\ndisplay: none;\n}", ".bd-glass.is-on-phone {\ndisplay: flex;\n}", ".bd-glass {\npadding: 10px max(14px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));\n}", ".bd-glass.is-at-top {\npadding-top: calc(10px + env(safe-area-inset-top, 0px));\npadding-bottom: 10px;\n}"].join("\n");
+var a = g.alpha == null ? 92 : parseFloat(g.alpha);
+var bl = parseFloat(g.blur) || 0;
+return [
+".bd-glass {\nposition: fixed;\nleft: 0;\nright: 0;\n" + (g.at === "top" ? "top: 0;" : "bottom: 0;") + "\nz-index: 60;\ndisplay: " + (g.menu === "phone" ? "none" : "flex") + ";\nalign-items: center;\njustify-content: space-between;\ngap: 18px;\npadding: 12px 24px;\nbox-sizing: border-box;\nbackground: " + fillCSS(g.color || s.colors.panel, isNaN(a) ? 92 : a) + ";\n" + (bl ? "-webkit-backdrop-filter: blur(" + bl + "px);\nbackdrop-filter: blur(" + bl + "px);\n" : "") + "color: var(--bd-ink);\nfont-family: var(--bd-mono);\nfont-size: var(--bd-fs);\nline-height: var(--bd-lh);\n}",
+".bd-glass .bd-ly-list {\ndisplay: flex;\nflex-wrap: wrap;\ngap: 4px 18px;\nmargin: 0;\npadding: 0;\nlist-style: none;\n}",
+".bd-glass .bd-ly-mark {\nmargin: 0;\nwhite-space: nowrap;\n}",
+".bd-glass .bd-ly-a {\ncolor: inherit;\ntext-decoration: none;\n}",
+".bd-glass .bd-ly-a.is-current {\ntext-decoration: underline;\ntext-underline-offset: 3px;\n}"
+].join("\n");
+}
+/* ONCE: A PHONE BAND (PINNED PAGE THAT STAYED PUT) BECOMES A MENU BAR ON THE GLASS */
+function layGlassIn(p) {
+var s = p.site;
+(s.sheets || []).forEach(function (k) {
+if (!k) return;
+var d = k.pinMode === "stay", m = (k.pinModeM || k.pinMode) === "stay";
+if (d && m) s.glass.menu = "both";
+else if (m) s.glass.menu = s.glass.menu === "desktop" ? "both" : "phone";
+else if (d) s.glass.menu = s.glass.menu === "phone" ? "both" : "desktop";
+});
 }
 /* THE LAYERS PANE: MASTER ABOVE THE LIST */
 function layersBarHTML() {
@@ -7372,7 +7369,7 @@ if (pgw && pgw.k < 0) {
 var mt = (LAYER_TRANS.filter(function (o) { return o[0] === layerTrans(null); })[0] || LAYER_TRANS[0])[1].split(" · ")[0];
 tail = '<span class="bd-ed-title">Opens with</span>' + row(field("The sheets above get out of the way", select("page.trans", pg.trans || "", [["", "Site · " + mt]].concat(LAYER_TRANS))), numIn("Speed (ms)", "page.transDur", pg.transDur || "", "blank"));
 }
-if (pgw && pgw.k > -1 && !pg.parent) h += '<div class="bd-ed-sec"><span class="bd-ed-title">Where it lies · ' + esc(pgw.sheet.name || "Sheet") + '</span><div class="bd-lay-box">' + layoutDrawing(pgw.k, pg, "page") + '</div><div class="bd-ed-hint">The whole sheet stays drawn for reference. The <i class="bd-lay-sw" style="background:' + LAY_C.page + '"></i>handles on this page set its margins inside the sheet. Snaps to 5%.</div></div>';
+if (pgw && pgw.k > -1 && !pg.parent) h += '<div class="bd-ed-sec"><span class="bd-ed-title">Where it lies · ' + esc(pgw.sheet.name || "Sheet") + '</span><div class="bd-lay-box">' + layoutDrawing(pgw.k, pg) + '</div><div class="bd-ed-hint">One piece of paper: the handles resize the whole sheet, and every page on it shares its edges. Snaps to 5%.</div></div>';
 h += pageBoxPanel(pg) + (tail ? '<div class="bd-ed-sec">' + tail + "</div>" : "");
 if (!layersOn()) h += '<div class="bd-ed-sec">' + adv("pg-stack", "Continue with other pages", '<div class="bd-ed-hint">Chosen pages scroll on below this one, like one long page.</div>' + stack) + "</div>";
 }
