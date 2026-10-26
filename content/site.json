@@ -674,7 +674,7 @@
   "indepV1": true,
   "postBox": {
    "mt": "10%",
-   "card": "linear-gradient(180deg, #ffffff, #551029)",
+   "card": "linear-gradient(180deg, #4e7a27, #551029)",
    "sheetBg": "none",
    "shadow": "soft",
    "fit": false,
