@@ -1,4 +1,4 @@
-/* PUBLISHED mvp7fs8g */
+/* PUBLISHED mvp7hgsi */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2254,17 +2254,13 @@ backdrop-filter: blur(11.2px);
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
-background: repeating-linear-gradient(180deg, transparent 0, transparent 27px, rgba(0, 0, 0, 0.14) 27px, rgba(0, 0, 0, 0.14) 28px) local, rgba(255, 255, 255, 0.9);
-}
-.bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
-background: #ffffff;
+background: repeating-linear-gradient(180deg, transparent 0, transparent 27px, rgba(0, 0, 0, 0.14) 27px, rgba(0, 0, 0, 0.14) 28px) local, rgba(228, 225, 218, 0.9);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
 padding-top: 5vh;
 padding-right: 5vw;
 padding-bottom: 5vh;
 padding-left: 5vw;
-background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1));
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
@@ -2292,10 +2288,7 @@ backdrop-filter: blur(11.2px);
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
-background: repeating-linear-gradient(180deg, transparent 0, transparent 27px, rgba(0, 0, 0, 0.14) 27px, rgba(0, 0, 0, 0.14) 28px) local, rgba(255, 255, 255, 0.9);
-}
-.bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
-background: #ffffff;
+background: radial-gradient(circle, rgba(0, 0, 0, 0.14) 1px, transparent 1.6px) 0 0 / 28px 28px local, rgba(228, 225, 218, 0.9);
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper > .bd-panel {
 padding-top: 5vh;

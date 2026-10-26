@@ -582,8 +582,10 @@
     "sliverM": 14,
     "axis": "x",
     "covers": "all",
-    "coverPages": [],
-    "color": "#ffffff",
+    "coverPages": [
+     "aj2hm4y8"
+    ],
+    "color": "",
     "alpha": 90,
     "blur": 10,
     "shadow": "none",
@@ -600,13 +602,13 @@
      "mrM": "10%",
      "mbM": ""
     },
-    "pattern": "lined",
+    "pattern": "dots",
     "patColor": "#000000",
     "patSize": 28,
     "patAlpha": 14,
     "out": "peek",
     "lv": "rise",
-    "arrive": "fade",
+    "arrive": "slide",
     "main": "nsye72w3",
     "hover": "nudge",
     "layPg": false,
@@ -4706,11 +4708,11 @@
     "mt": "0%",
     "mb": "0",
     "pb": "5%",
-    "card": "linear-gradient(180deg, #ffffff, #ffffff)",
+    "card": "",
     "shadow": "soft"
    },
    "indep": true,
-   "sheetBg": "#ffffff",
+   "sheetBg": "",
    "hover": "lift",
    "scroll": "own",
    "pattern": "lined"
@@ -4780,7 +4782,7 @@
     "pr": "5%",
     "pt": "5%"
    },
-   "sheetBg": "#ffffff",
+   "sheetBg": "",
    "ownLayout": false,
    "colset": {
     "cols": 2,
