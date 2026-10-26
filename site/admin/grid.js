@@ -4907,7 +4907,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#e0457b";
+var BD_BUILD = "#2fa58a";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6181,6 +6181,7 @@ return c + '<text x="' + r1(bx + 10) + '" y="' + r1(by + bh - 9) + '" font-size=
 /* ITS PAGES */
 var focusId = pg && G.pages.some(function (q) { return q.id === pg.id; }) ? pg.id : (G.pages[G.star] || {}).id;
 var rmBtns = "";
+var swapHits = "";
 var handles = "";
 var dimPass = "";
 var brightPass = "";
@@ -6198,11 +6199,14 @@ var belowLbl = G.ax === "x";
 dimPass += "<g>" + card(b, q, cur, isStar, belowLbl) + "</g>";
 brightPass += card(b, q, cur, isStar, null);
 var cx = X(b.r) - 9, cy = Y(b.t) + 9;
+var scx = Math.floor(((s.slot.l + s.slot.r) / 2 + cc * v.w) / v.w), scy = Math.floor(((s.slot.t + s.slot.b) / 2 + rr * v.h) / v.h);
+var inWin = scx === cc && scy === rr;
+if (G.N === 2) swapHits += '<g data-swap="' + s.i + '" data-i="' + n + '" data-bx="' + X(b.l) + '" data-by="' + Y(b.t) + '" data-bw="' + Lx(Math.max(0, b.r - b.l)) + '" data-bh="' + Lx(Math.max(0, b.b - b.t)) + '"' + (inWin ? "" : ' data-act="lay-cell" data-c="' + scx + '" data-r="' + scy + '"') + ' style="cursor:grab">' + rect(b, 'fill="transparent"') + "</g>";
 rmBtns += '<g data-act="lay-rm" data-i="' + n + '" data-id="' + q.id + '" style="cursor:pointer"><circle cx="' + cx + '" cy="' + cy + '" r="7" fill="#6b6862"/><path d="M' + (cx - 3) + " " + (cy - 3) + "l6 6m0 -6l-6 6" + '" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></g>';
 });
 o += '<clipPath id="bd-lay-win-' + n + '"><rect x="' + X(0) + '" y="' + Y(0) + '" width="' + Lx(v.w) + '" height="' + Lx(v.h) + '" rx="9"/></clipPath>';
 o += '<g opacity=".55">' + dimPass + '</g><g clip-path="url(#bd-lay-win-' + n + ')" pointer-events="none">' + brightPass + "</g>";
-o += cellsHit + rmBtns;
+o += cellsHit + swapHits + rmBtns;
 /* THE WINDOW */
 o += rect({ l: 0, t: 0, r: v.w, b: v.h }, 'rx="9" fill="' + LAY_C.winFill + '" stroke="' + LAY_C.win + '" stroke-width="2.5" pointer-events="none"');
 o += '<text x="' + (X(0) + 6) + '" y="' + (Y(0) - 5) + '" font-size="10" font-weight="600" fill="' + LAY_C.win + '">window</text>';
@@ -6224,7 +6228,7 @@ var h = field("Pages spread", seg(P + "axis", k.axis === "x" ? "x" : "y", [["y",
 h += '<div class="bd-lay-box">' + layoutDrawing(n, curPage()) + "</div>";
 if (!sheetFull(k)) h += '<button class="bd-ed-btn" data-act="lay-add" data-i="' + n + '">+ page</button>';
 {
-h += '<div class="bd-ed-hint">two windows wide, two high · tap a half to put the <i class="bd-lay-sw" style="background:' + LAY_C.win + '"></i>window there · the <i class="bd-lay-sw" style="background:' + LAY_C.sheet + '"></i>sheet covers two halves, the join between its pages always lies on the window’s edge · drag its outer edges to resize — the end of the sheet only shows when you scroll to it · × takes a page off · ' + (phone ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
+h += '<div class="bd-ed-hint">two windows wide, two high · tap a half to put the <i class="bd-lay-sw" style="background:' + LAY_C.win + '"></i>window there · the <i class="bd-lay-sw" style="background:' + LAY_C.sheet + '"></i>sheet covers two halves, the join between its pages always lies on the window’s edge · drag a page across the join to swap them · drag its outer edges to resize — the end of the sheet only shows when you scroll to it · × takes a page off · ' + (phone ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
 }
 if (S.layAdd === n) {
 h += '<div class="bd-ed-sec" style="margin:0"><span class="bd-ed-label">Put on this sheet</span>' + free.map(function (q) { return '<button class="bd-ed-btn" style="margin:2px 4px 2px 0" data-act="sheet-page-add" data-i="' + n + '" data-id="' + q.id + '">' + esc(q.title) + "</button>"; }).join("") + '<button class="bd-ed-btn" style="margin:2px 0" data-act="lay-new" data-i="' + n + '">' + I.plus + "New page</button>" + (free.length ? "" : '<div class="bd-ed-hint">Every page is already on a sheet.</div>') + "</div>";
@@ -6336,6 +6340,70 @@ mark(e.clientX, e.clientY);
 });
 document.addEventListener("pointerup", function () { if (D) finish(); });
 document.addEventListener("pointercancel", function () { if (D) finish(); });
+})();
+/* DRAG A PAGE OF THE SHEET ALONG ITS SPREAD TO SWAP THE ORDER; A TAP STILL PUTS THE WINDOW ON IT */
+(function () {
+var W = null;
+document.addEventListener("pointerdown", function (e) {
+var g = e.target && e.target.closest && e.target.closest("[data-swap]");
+if (!g || (e.target.closest && e.target.closest("[data-act=lay-rm]"))) return;
+var svg = g.ownerSVGElement;
+if (!svg || !svg.classList.contains("bd-lay")) return;
+var r = svg.getBoundingClientRect();
+W = { g: g, svg: svg, x0: e.clientX, y0: e.clientY, k: r.width / 380, sc: +svg.getAttribute("data-sc"), ax: svg.getAttribute("data-axis"), w: +svg.getAttribute("data-w"), h: +svg.getAttribute("data-h"), n: +g.getAttribute("data-i"), i: +g.getAttribute("data-swap"), moved: false, along: 0, ghost: null };
+try { g.setPointerCapture(e.pointerId); } catch (err) {}
+});
+document.addEventListener("pointermove", function (e) {
+if (!W) return;
+var dx = e.clientX - W.x0, dy = e.clientY - W.y0;
+if (!W.moved && Math.hypot(dx, dy) < 7) return;
+if (!W.moved) {
+W.moved = true;
+var gh = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+gh.setAttribute("x", W.g.getAttribute("data-bx"));
+gh.setAttribute("y", W.g.getAttribute("data-by"));
+gh.setAttribute("width", W.g.getAttribute("data-bw"));
+gh.setAttribute("height", W.g.getAttribute("data-bh"));
+gh.setAttribute("rx", "9");
+gh.setAttribute("fill", "rgba(217,87,59,.16)");
+gh.setAttribute("stroke", "#d9573b");
+gh.setAttribute("stroke-width", "1.5");
+gh.setAttribute("stroke-dasharray", "5 3");
+gh.setAttribute("pointer-events", "none");
+W.svg.appendChild(gh);
+W.ghost = gh;
+}
+var a = W.ax === "x" ? dx : dy;
+W.along = a / W.k / W.sc / (W.ax === "x" ? W.w : W.h);
+var t = W.ax === "x" ? (a / W.k) + ",0" : "0," + (a / W.k);
+W.ghost.setAttribute("transform", "translate(" + t + ")");
+});
+function done(e) {
+if (!W) return;
+var w = W;
+W = null;
+if (w.ghost && w.ghost.parentNode) w.ghost.parentNode.removeChild(w.ghost);
+if (!w.moved) return;
+var swallow = function (ev) { ev.stopPropagation(); ev.preventDefault(); };
+document.addEventListener("click", swallow, true);
+setTimeout(function () { document.removeEventListener("click", swallow, true); }, 0);
+var k = sheetList()[w.n];
+if (!k || e.type === "pointercancel") return;
+var P = sheetPanes(k).map(function (q) { return q.id; });
+if (P.length !== 2) return;
+var toward = w.i === 0 ? w.along > 0.3 : w.along < -0.3;
+if (!toward) return;
+snap();
+var A = (k.pages || []).slice();
+var tops = A.map(function (id, ix) { return { id: id, ix: ix }; }).filter(function (o) { var q = S.project.pages[o.id]; return q && !q.parent; });
+if (tops.length !== 2) return;
+A[tops[0].ix] = tops[1].id;
+A[tops[1].ix] = tops[0].id;
+k.pages = A;
+changed();
+}
+document.addEventListener("pointerup", done);
+document.addEventListener("pointercancel", done);
 })();
 document.addEventListener("pointerdown", function (e) {
 var hd = e.target && e.target.closest && e.target.closest("[data-lh]");
