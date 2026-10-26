@@ -395,6 +395,16 @@ font-size: 12px;
 .bd-ed-btn.is-danger {
 color: var(--e-warn);
 }
+.bd-ed-btn.bd-ed-inherit {
+background: #d2332a;
+border-color: #d2332a;
+color: #ffffff;
+font-weight: 600;
+}
+.bd-ed-inh .bd-ed-inherit:not([data-act="inherit-yes"]) {
+width: 100%;
+height: 34px;
+}
 
 /* PAGE LIST */
 .bd-ed-group + .bd-ed-group {

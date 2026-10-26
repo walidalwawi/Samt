@@ -4981,7 +4981,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#c9a227";
+var BD_BUILD = "#5a6bd0";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6739,10 +6739,16 @@ var sp = ["html, body {\nmargin: 0;\noverflow: hidden;\nbackground: #cfcdc6;\n}"
 var js = "<script>document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.bd-sp-tap');if(!a)return;e.preventDefault();try{parent.postMessage({bdSpreadPage:a.getAttribute('data-page')},'*');}catch(err){}});<\/script>";
 return "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>Spread</title>\n<style id=\"bd-prev-css\">\n" + css.replace(/<\/style/gi, "<\\/style") + "\n</style>\n<style>\n" + sp.join("\n") + "\n" + extra.join("\n") + "\n</style>\n</head>\n<body class=\"bd-spread-body\">\n" + body + "\n" + js + "\n</body>\n</html>";
 }
+/* THE RED "INHERIT ALL" BAR AT THE TOP OF EVERY PAGE AND SHEET PANEL: ASKS FIRST, THEN DROPS EVERY OVERRIDE SO IT FOLLOWS THE MASTER AGAIN */
+function inheritBar(kind, i) {
+var attrs = ' data-kind="' + kind + '" data-i="' + (i == null ? "" : i) + '"';
+if (S.confirm === "inherit") return '<div class="bd-ed-sec bd-ed-inh"><div class="bd-ed-confirm">Reset every setting of this ' + kind + ' to the master? <button class="bd-ed-btn bd-ed-inherit" data-act="inherit-yes"' + attrs + '>Inherit all</button><button class="bd-ed-btn" data-act="inherit-no">Keep</button></div></div>';
+return '<div class="bd-ed-sec bd-ed-inh"><button class="bd-ed-btn bd-ed-inherit" data-act="inherit-ask"' + attrs + ">Inherit all</button></div>";
+}
 function sheetPanelHTML(n) {
 var k = sheetList()[n];
 if (!k) return "";
-return '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Sheet · ' + esc(k.name || "Sheet") + '</span><button class="bd-ed-btn" style="height:26px" data-act="sheet-done">Done</button></div><div class="bd-ed-hint">Everything here is for the whole sheet. Tap a page to edit that page instead.</div></div>' + sheetEditHTML(n);
+return inheritBar("sheet", n) + '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Sheet · ' + esc(k.name || "Sheet") + '</span><button class="bd-ed-btn" style="height:26px" data-act="sheet-done">Done</button></div><div class="bd-ed-hint">Everything here is for the whole sheet. Tap a page to edit that page instead.</div></div>' + sheetEditHTML(n);
 }
 function sheetEditHTML(n) {
 var k = sheetList()[n];
@@ -7216,7 +7222,7 @@ h += '<label class="bd-ed-check"><input type="checkbox" data-act="pin-page" data
 h += '<div class="bd-ed-hint">Add blocks from the rail like any page. Its columns are set in the bar above the canvas.</div></div>';
 } else {
 var s = S.project.site;
-h += '<div class="bd-ed-sec"><span class="bd-ed-title">Page</span>'
+h += inheritBar("page") + '<div class="bd-ed-sec"><span class="bd-ed-title">Page</span>'
 + field("Title in menu", input("page.title", pg.title))
 + field("Heading on the page", input("page.h1", pg.h1, "", ' placeholder="' + esc(pg.title) + '"'))
 + row(field("Group", select("page.section", pg.section, [["", "No group"]].concat(s.sections.map(function (x) { return [x.key, x.label]; })))), field("Number", input("page.num", pg.num)))
@@ -9758,6 +9764,26 @@ location.reload();
 "page-up": function () { movePage(-1); },
 "page-down": function () { movePage(1); },
 "page-del": function () { S.confirm = "page"; renderLeft(); },
+"inherit-ask": function () { S.confirm = "inherit"; renderRight(); },
+"inherit-no": function () { S.confirm = null; renderRight(); },
+"inherit-yes": function () {
+var kind = b.getAttribute("data-kind");
+S.confirm = null;
+snap();
+if (kind === "sheet") {
+var k = sheetList()[+b.getAttribute("data-i")];
+if (!k) return;
+var d = clone(SHEET_DEFAULTS);
+["color", "alpha", "blur", "shadow", "nudge", "dur", "box", "pattern", "patColor", "patSize", "patAlpha", "lv", "arrive", "hover", "covers", "coverPages", "edge", "edgeM", "sliver", "sliverM", "out", "peek", "peekM"].forEach(function (x) { k[x] = d[x]; });
+["pinPad", "pinMode", "pinModeM", "layPg"].forEach(function (x) { delete k[x]; });
+} else {
+var pg = curPage();
+if (!pg) return;
+["indep", "scroll", "sheetBg", "pattern", "hover", "trans", "transDur", "header"].forEach(function (x) { delete pg[x]; });
+pg.box = {};
+}
+changed();
+},
 "page-del-yes": delPage,
 "make-home": makeHome,
 "add": function () { if (S.live) endEdit(); addEl(b.getAttribute("data-type")); },
