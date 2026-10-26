@@ -65,9 +65,14 @@ Styles → Blocks sets the default look per block type (BLOCK_STYLE); a block's 
 
 ## Tests (tests/, run from the repo root with the local server tests/serve.py pointing at the samt checkout)
 - tests/full_pass.py presses every top-bar and rail button, opens every left tab and changes every field and safe button, then selects a page underneath, a page on a sheet, a post and one block of every type and changes every field, switch and choice on the right. It writes TESTS.md (643 checks). Judged by "did the model change" plus a note when nothing in the export uses it.
-- tests/sheets_extra.py: canvas margins (px, %, phone), edge page minimum, still plan, hard shadow, nudge, site switches, single menu, blur only under sheets, margin-first scrolling, straight slides, scroll line, gradients, sheet panel, none/clear fills, patterns, sheet margin/padding, leave/appear, page card (96 checks).
+- tests/sheets_extra.py (105 checks incl. pin and Home): canvas margins (px, %, phone), edge page minimum, still plan, hard shadow, nudge, site switches, single menu, blur only under sheets, margin-first scrolling, straight slides, scroll line, gradients, sheet panel, none/clear fills, patterns, sheet margin/padding, leave/appear, page card (96 checks).
 - tests/states.py renders every site state (journal, library, about, post, about-from-post, back, post→library, a plain page) on desktop and phone from the current content; compare two runs pixel by pixel. Baseline = the live publish.
 - audit.py / ui_test.py / tools_test.py / prev_test.py in the session notes cover block masters, tools and the preview.
+
+## Pinned page, Home, build colour
+- Pinned page (sheet.pin = page id, set in the sheet panel "Pinned page"): the page never leaves the window. The sheet still slides between its two pages, but sheetPinCSS clamps the track transform (`clamp(-1, calc(var(--i) - pi), 1) * L`, L = window − the pinned page's outer margin, kept ≥ 48px short of the window) so the pinned page stops against the window edge; the other pane gets padding of L so its scroll reaches its end. A pinned sheet is forced rest=still, sorted to the top of site.sheets (sheetPinOrder), never hidden/tucked (bdSheetPlan: `pin > -1`), returns to its ★ page when a page underneath opens, lets clicks through around its paper (pointer-events), and pads the pages underneath by L on its edge unless pinPad="off" (sheetInsets, nominal px). Once (site.pinV1): the page holding the sheet menu is pinned.
+- Home has no flag any more with layers on: sheetHomeSheet() = first page of the first non-pinned open/still sheet; homeSync (in changed()) gives that page slug "" and the previous "" page a slug of its title. The Home button is hidden with layers on.
+- Build colour: BD_BUILD in grid.js is shown as a circle in the top bar (.bd-ed-build); change it to a new colour on every release and tell Walid, so a refresh shows whether the newest editor loaded.
 
 ## Delivery format — non-negotiable
 - Complete file replacements only. Never partial diffs.
