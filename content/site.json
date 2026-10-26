@@ -638,8 +638,8 @@
     "dur": "",
     "box": {
      "mr": "15%",
-     "mt": "",
-     "mb": "",
+     "mt": "15%",
+     "mb": "15%",
      "ml": ""
     },
     "pattern": "",
@@ -649,10 +649,10 @@
     "out": "peek",
     "lv": "slide",
     "arrive": "slide",
-    "main": "fji5ongj",
+    "main": "b2lr3tkr",
     "hover": "nudge",
     "vc": 0,
-    "vr": 0,
+    "vr": 1,
     "pin": "",
     "pinPad": "off"
    }
