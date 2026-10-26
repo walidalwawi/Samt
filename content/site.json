@@ -16,8 +16,8 @@
   "labelW": 100,
   "labelWM": 88,
   "colors": {
-   "page": "#38571a",
-   "panel": "#4e7a27",
+   "page": "#263e0f",
+   "panel": "#0042a9",
    "ink": "#16140F",
    "rule": "#16140F"
   },
@@ -585,17 +585,17 @@
     "coverPages": [],
     "color": "none",
     "alpha": 0,
-    "blur": 10,
-    "shadow": "none",
+    "blur": 0,
+    "shadow": "line",
     "nudge": 0,
     "dur": "",
     "box": {
      "ml": "",
-     "mr": "70%",
+     "mr": "75%",
      "mt": "",
      "mb": ""
     },
-    "pattern": "grid",
+    "pattern": "",
     "patColor": "#000000",
     "patSize": 28,
     "patAlpha": 14,
@@ -606,9 +606,7 @@
     "hover": "",
     "vc": 1,
     "vr": 0,
-    "pin": "56ud3gky",
-    "pinMode": "",
-    "pinPad": ""
+    "pin": "56ud3gky"
    },
    {
     "id": "glg17d2m",
@@ -637,7 +635,7 @@
     "nudge": 0,
     "dur": "",
     "box": {},
-    "pattern": "",
+    "pattern": "grid",
     "patColor": "#000000",
     "patSize": 28,
     "patAlpha": 14,
@@ -677,9 +675,9 @@
    "cardA": "",
    "pt": "5%",
    "pr": "5%",
-   "pl": "5%",
+   "pl": "10%",
    "mr": "5%",
-   "ml": "0%",
+   "ml": "-5%",
    "plM": "30",
    "mb": "4%",
    "pb": "5%",
@@ -690,11 +688,11 @@
    "cols": 2,
    "align": "spread",
    "spans": [
-    4,
-    8
+    6,
+    6
    ],
    "colsM": 1,
-   "gutter": 40,
+   "gutter": 50,
    "gutterM": 24
   }
  },
@@ -4520,7 +4518,9 @@
     "gap": "",
     "gapM": ""
    },
-   "box": {},
+   "box": {
+    "ink": ""
+   },
    "ownLayout": false,
    "colset": {
     "cols": 2,
