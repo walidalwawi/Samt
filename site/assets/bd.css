@@ -1,4 +1,4 @@
-/* PUBLISHED mvp3rytm */
+/* PUBLISHED mvp4949r */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2223,8 +2223,8 @@ width: auto;
 background: rgba(242, 182, 48, 1);
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
-margin: 0px 0px 0 70vw;
-min-height: calc(100% - 0px - 0px);
+margin: 30vh 0px 0 0px;
+min-height: calc(100% - 30vh - 0px);
 box-shadow: none;
 -webkit-backdrop-filter: blur(11.2px);
 backdrop-filter: blur(11.2px);
@@ -2254,7 +2254,7 @@ width: auto;
 box-sizing: border-box;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
-margin: 0px 35vw 0 0px;
+margin: 0px 0px 0 0px;
 min-height: calc(100% - 0px - 0px);
 box-shadow: none;
 -webkit-backdrop-filter: blur(11.2px);
@@ -2992,7 +2992,7 @@ margin-left: 6vw;
 width: auto;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
-margin: 91.03vh 0px 0 70vw;
+margin: 91.03vh 0px 0 0px;
 min-height: calc(100% - 91.03vh - 0px);
 box-shadow: none;
 }
@@ -3015,8 +3015,8 @@ width: auto;
 box-sizing: border-box;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
-margin: 91.03vh 35vw 0 0px;
-min-height: calc(100% - 91.03vh - 0px);
+margin: 0px 0px 0 0px;
+min-height: calc(100% - 0px - 0px);
 box-shadow: none;
 }
 .bd-ly-pane[data-page="nsye72w3"] {
