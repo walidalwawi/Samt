@@ -72,7 +72,7 @@ function pinLen() {
 model.forEach(function (m) {
 if (!m.track.classList.contains("is-ax-x")) return;
 var kids = Array.prototype.slice.call(m.track.children);
-var stay = m.pin > -1 && getComputedStyle(m.el).getPropertyValue("--k-stay").trim() === "1";
+var stay = false;
 var pp = kids.filter(function (pn, ix) { return !(stay && ix === m.pin); }).map(function (pn) { return pn.querySelector(".bd-ly-paper"); }).filter(Boolean);
 if (stay && kids[m.pin] && kids[m.pin].querySelector(".bd-ly-paper")) kids[m.pin].querySelector(".bd-ly-paper").style.minHeight = "";
 if (pp.length < 2) return;
@@ -273,13 +273,6 @@ root.className = root.className.replace(/\bis-t-[a-z]+\b/g, "").replace(/\s+/g, 
 dur = td || base;
 if (td) root.style.setProperty("--ly-pdur", td + "ms");
 else root.style.removeProperty("--ly-pdur");
-if (f.k < 0 && tr === "unfold" && !reduce && (pf.k > -1 || pf.id !== f.id)) {
-ta.classList.remove("is-enter");
-void ta.offsetWidth;
-ta.classList.add("is-enter");
-clearTimeout(ta.bdEnter);
-ta.bdEnter = setTimeout(function () { ta.classList.remove("is-enter"); }, dur + 60);
-}
 }
 if (f.k < 0) {
 var a = art(f.id);

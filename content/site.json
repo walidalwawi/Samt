@@ -583,9 +583,9 @@
     "axis": "x",
     "covers": "all",
     "coverPages": [],
-    "color": "#E4E1DA",
-    "alpha": 55,
-    "blur": 9,
+    "color": "none",
+    "alpha": 100,
+    "blur": 0,
     "shadow": "line",
     "nudge": 0,
     "dur": "",
@@ -606,9 +606,7 @@
     "hover": "",
     "vc": 1,
     "vr": 0,
-    "pin": "56ud3gky",
-    "pinMode": "",
-    "pinPad": ""
+    "pin": "56ud3gky"
    },
    {
     "id": "glg17d2m",
@@ -626,7 +624,7 @@
     "sliver": 44,
     "sliverM": 14,
     "axis": "y",
-    "covers": "some",
+    "covers": "all",
     "coverPages": [
      "56ud3gky"
     ],
@@ -696,7 +694,16 @@
    "colsM": 1,
    "gutter": 50,
    "gutterM": 24
-  }
+  },
+  "glass": {
+   "menu": "",
+   "at": "bottom",
+   "color": "",
+   "alpha": 92,
+   "blur": 8
+  },
+  "glassV1": true,
+  "oneV1": true
  },
  "order": [
   "56ud3gky",
@@ -818,8 +825,7 @@
     "gutterM": 20
    },
    "blog": true,
-   "box": {},
-   "indep": false
+   "box": {}
   },
   "aj2hm4y8": {
    "id": "aj2hm4y8",
@@ -1742,7 +1748,6 @@
    "excerpt": "",
    "featured": false,
    "box": {},
-   "trans": "",
    "ownLayout": false
   },
   "k2b6e868": {
@@ -4463,7 +4468,13 @@
     "gutter": 40,
     "gutterM": 24
    },
-   "box": {}
+   "box": {
+    "card": "#38571a",
+    "cardA": 90,
+    "blur": 90,
+    "shadow": "none",
+    "fit": false
+   }
   },
   "56ud3gky": {
    "id": "56ud3gky",
@@ -4514,7 +4525,9 @@
    },
    "box": {
     "ink": "",
-    "mr": "0"
+    "card": "#38571a",
+    "cardA": 90,
+    "blur": 90
    },
    "ownLayout": false,
    "colset": {
@@ -4527,8 +4540,7 @@
     "colsM": 1,
     "gutter": 40,
     "gutterM": 24
-   },
-   "indep": false
+   }
   }
  }
 }
