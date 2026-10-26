@@ -1,11 +1,11 @@
-/* PUBLISHED mvpm4w8r */
+/* PUBLISHED mvpmn3ad */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
 /* TOKENS */
 :root {
---bd-page: #ffffff;
---bd-panel: #ffffff;
+--bd-page: #38571a;
+--bd-panel: #4e7a27;
 --bd-ink: #16140F;
 --bd-rule: #16140F;
 --bd-sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
@@ -2672,43 +2672,40 @@ box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
 margin: 0px 0px 0 0px;
 min-height: calc(100% - 0px - 0px);
-box-shadow: none;
--webkit-backdrop-filter: blur(10.3px);
-backdrop-filter: blur(10.3px);
+box-shadow: -1px 0 0 rgba(0, 0, 0, 0.1);
+-webkit-backdrop-filter: blur(11.2px);
+backdrop-filter: blur(11.2px);
 }
 .bd-ly-pane[data-page="nsye72w3"] {
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
-background: rgba(254, 180, 63, 1);
+background: rgba(78, 122, 39, 0.3);
+}
+.bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
+background: transparent;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
-padding-top: 5vh;
-padding-right: 5vw;
-padding-bottom: 5vh;
-padding-left: 5vw;
-}
-.bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
-margin-top: 0vh;
-margin-right: 0vw;
-margin-bottom: 0px;
-margin-left: 0vw;
-min-height: calc(100% - 0vh - 0px);
-width: auto;
-box-sizing: border-box;
+padding-top: var(--bd-wt);
+padding-right: var(--bd-wr);
+padding-bottom: var(--bd-wb);
+padding-left: var(--bd-wl);
+background: transparent;
+-webkit-backdrop-filter: blur(90px);
+backdrop-filter: blur(90px);
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
 margin: 0px 80vw 0 0px;
 min-height: calc(100% - 0px - 0px);
-box-shadow: none;
--webkit-backdrop-filter: blur(10.3px);
-backdrop-filter: blur(10.3px);
+box-shadow: -1px 0 0 rgba(0, 0, 0, 0.1);
+-webkit-backdrop-filter: blur(11.2px);
+backdrop-filter: blur(11.2px);
 }
 .bd-ly-pane[data-page="56ud3gky"] {
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
-background: rgba(254, 180, 63, 1);
+background: rgba(78, 122, 39, 0.3);
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper > .bd-panel {
 padding-top: 5vh;
@@ -2726,14 +2723,14 @@ box-sizing: border-box;
 margin: 0px 0px 0 0px;
 min-height: calc(100% - 0px - 0px);
 box-shadow: -1px 0 0 rgba(0, 0, 0, 0.1);
--webkit-backdrop-filter: blur(10.3px);
-backdrop-filter: blur(10.3px);
+-webkit-backdrop-filter: blur(11.2px);
+backdrop-filter: blur(11.2px);
 }
 .bd-ly-pane[data-page="fji5ongj"] {
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-ly-paper {
-background: rgba(226, 36, 0, 1);
+background: rgba(56, 87, 26, 0.3);
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-ly-paper > .bd-panel {
 padding-top: var(--bd-wt);
@@ -2745,14 +2742,14 @@ padding-left: calc(256px + var(--bd-wl));
 margin: 0px 0px 0 0px;
 min-height: calc(100% - 0px - 0px);
 box-shadow: -1px 0 0 rgba(0, 0, 0, 0.1);
--webkit-backdrop-filter: blur(10.3px);
-backdrop-filter: blur(10.3px);
+-webkit-backdrop-filter: blur(11.2px);
+backdrop-filter: blur(11.2px);
 }
 .bd-ly-pane[data-page="b2lr3tkr"] {
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="b2lr3tkr"] > .bd-ly-paper {
-background: rgba(226, 36, 0, 1);
+background: rgba(56, 87, 26, 0.3);
 }
 .bd-ly-pane[data-page="b2lr3tkr"] > .bd-ly-paper > .bd-panel {
 padding-top: var(--bd-wt);
@@ -3595,30 +3592,21 @@ width: auto;
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
 margin: 0px 0px 0 0px;
 min-height: calc(100% - 0px - 0px);
-box-shadow: none;
+box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 .bd-ly-pane[data-page="nsye72w3"] {
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
-padding-top: 5vh;
-padding-right: 24px;
-padding-bottom: 5vh;
-padding-left: 24px;
-}
-.bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
-margin-top: 0vh;
-margin-right: 0px;
-margin-bottom: 0px;
-margin-left: 0vw;
-min-height: calc(100% - 0vh - 0px);
-width: auto;
-box-sizing: border-box;
+padding-top: var(--bd-wt);
+padding-right: var(--bd-wr);
+padding-bottom: var(--bd-wb);
+padding-left: var(--bd-wl);
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
 margin: 0px 80vw 0 0px;
 min-height: calc(100% - 0px - 0px);
-box-shadow: none;
+box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 .bd-ly-pane[data-page="56ud3gky"] {
 --pm-b: 0px;

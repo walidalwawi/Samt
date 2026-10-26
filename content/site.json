@@ -16,8 +16,8 @@
   "labelW": 100,
   "labelWM": 88,
   "colors": {
-   "page": "#ffffff",
-   "panel": "#ffffff",
+   "page": "#38571a",
+   "panel": "#4e7a27",
    "ink": "#16140F",
    "rule": "#16140F"
   },
@@ -587,10 +587,10 @@
      "fji5ongj",
      "ipk7ns57"
     ],
-    "color": "#feb43f",
-    "alpha": 100,
-    "blur": 9,
-    "shadow": "none",
+    "color": "#4e7a27",
+    "alpha": 30,
+    "blur": 10,
+    "shadow": "line",
     "nudge": 0,
     "dur": "",
     "box": {
@@ -634,9 +634,9 @@
     "coverPages": [
      "56ud3gky"
     ],
-    "color": "#e22400",
-    "alpha": 100,
-    "blur": 9,
+    "color": "#38571a",
+    "alpha": 30,
+    "blur": 10,
     "shadow": "line",
     "nudge": 0,
     "dur": "",
@@ -822,7 +822,8 @@
     "gutterM": 20
    },
    "blog": true,
-   "box": {}
+   "box": {},
+   "indep": false
   },
   "aj2hm4y8": {
    "id": "aj2hm4y8",
@@ -4467,22 +4468,13 @@
     "gutterM": 24
    },
    "box": {
-    "maxW": "",
-    "pl": "5%",
-    "pr": "5%",
-    "plM": "24",
-    "prM": "24",
-    "mr": "0%",
-    "fit": false,
-    "mrM": "0",
-    "ml": "0%",
-    "pt": "5%",
-    "mt": "0%",
-    "mb": "0",
-    "pb": "5%"
+    "blur": 90,
+    "cardA": 100,
+    "card": "none"
    },
-   "indep": false,
-   "scroll": "own"
+   "scroll": "own",
+   "indep": true,
+   "sheetBg": "none"
   },
   "56ud3gky": {
    "id": "56ud3gky",
