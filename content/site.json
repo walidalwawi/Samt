@@ -593,7 +593,7 @@
      "mr": "",
      "mt": "",
      "mb": "",
-     "ml": "80%",
+     "ml": "75%",
      "pt": "",
      "mtM": "91.03%"
     },
@@ -604,10 +604,10 @@
     "out": "peek",
     "lv": "rise",
     "arrive": "fade",
-    "main": "56ud3gky",
+    "main": "nsye72w3",
     "hover": "nudge",
     "layPg": false,
-    "vc": 0,
+    "vc": 1,
     "vr": 0,
     "pin": "56ud3gky",
     "pinPad": ""
@@ -649,10 +649,10 @@
     "out": "peek",
     "lv": "slide",
     "arrive": "slide",
-    "main": "fji5ongj",
+    "main": "b2lr3tkr",
     "hover": "nudge",
     "vc": 0,
-    "vr": 0,
+    "vr": 1,
     "pin": "",
     "pinPad": "off"
    }
