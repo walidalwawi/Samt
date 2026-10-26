@@ -1,4 +1,4 @@
-/* PUBLISHED mvp36jvf */
+/* PUBLISHED mvp37bhr */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -1890,7 +1890,7 @@ overscroll-behavior: contain;
 .bd-ly-k[data-k="menu"] {
 top: 0px;
 right: 0px;
-bottom: calc(0px + 30vh);
+bottom: 0px;
 left: 0px;
 --k-peek: 160px;
 --k-sliver: 130px;
@@ -2692,7 +2692,7 @@ padding-left: calc(0px + var(--bd-wl));
 .bd-ly-k[data-k="menu"] {
 top: 0px;
 right: 0px;
-bottom: calc(0px + 30vh);
+bottom: 0px;
 left: 0px;
 --k-peek: 70px;
 --k-sliver: 14px;
