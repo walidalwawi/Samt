@@ -1,4 +1,4 @@
-/* PUBLISHED mvp7ey75 */
+/* PUBLISHED mvp7fs8g */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2298,20 +2298,11 @@ background: repeating-linear-gradient(180deg, transparent 0, transparent 27px, r
 background: #ffffff;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper > .bd-panel {
-padding-top: 0px;
-padding-right: 0px;
-padding-bottom: 0px;
-padding-left: 0px;
+padding-top: 5vh;
+padding-right: 5vw;
+padding-bottom: 5vh;
+padding-left: 5vw;
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
-}
-.bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper > .bd-panel {
-margin-top: 5vh;
-margin-right: 5vw;
-margin-bottom: 5vh;
-margin-left: 0px;
-min-height: calc(100% - 5vh - 5vh);
-width: auto;
-box-sizing: border-box;
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-ly-paper {
 margin: 15vh 15vw 0 0px;
@@ -3069,17 +3060,13 @@ box-shadow: none;
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper > .bd-panel {
-padding-top: 0px;
-padding-right: 0px;
-padding-bottom: 0px;
-padding-left: 0px;
+padding-top: 5vh;
+padding-right: 5vw;
+padding-bottom: 5vh;
+padding-left: 5vw;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper > .bd-panel {
-margin-top: 5vh;
 margin-right: 0vw;
-margin-bottom: 5vh;
-margin-left: 0px;
-min-height: calc(100% - 5vh - 5vh);
 width: auto;
 box-sizing: border-box;
 }
