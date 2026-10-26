@@ -3804,7 +3804,27 @@ var i = parseInt(m.track.style.getPropertyValue("--i"), 10) || 0;
 var pn = kids[i];
 if (i !== m.pin && pn && !pn.hasAttribute("data-own")) pn.scrollBy(e.deltaX, e.deltaY);
 }, { passive: true });
+/* SAFARI ONLY SCROLLS A PANE THAT TAKES POINTER EVENTS: THE OTHER PANES TAKE THEM, CLIPPED TO THEIR PAPER, SO CLICKS AROUND THE PAPER STILL REACH WHAT LIES BENEATH */
+m.hit = kids.filter(function (pn, ix) { return ix !== m.pin && getComputedStyle(pn).clipPath === "none"; });
+m.hit.forEach(function (pn) {
+pn.addEventListener("scroll", function () { hitClip(pn); }, { passive: true });
 });
+});
+function hitClip(pn) {
+var pp = pn.querySelector(".bd-ly-paper");
+if (!pp) return;
+var r = pn.getBoundingClientRect();
+var q = pp.getBoundingClientRect();
+var px = function (v) { return Math.max(0, Math.round(v)) + "px"; };
+pn.style.pointerEvents = "auto";
+pn.style.clipPath = "inset(" + px(q.top - r.top) + " " + px(r.right - q.right) + " " + px(r.bottom - q.bottom) + " " + px(q.left - r.left) + ")";
+}
+function hitAll() {
+model.forEach(function (m) { (m.hit || []).forEach(hitClip); });
+}
+hitAll();
+window.addEventListener("resize", hitAll);
+window.addEventListener("load", hitAll);
 function onPage(m, st, i) {
 m.el.style.removeProperty("--k-up");
 var id = st === "peek" && m.strip ? m.strip : m.panes[i] || m.strip;
@@ -4033,6 +4053,7 @@ cur = next;
 F = f.id;
 setTimeout(bar, 30);
 setTimeout(bar, dur + 80);
+setTimeout(hitAll, dur + 80);
 root.classList.toggle("is-v-post", f.k < 0);
 root.setAttribute("data-focus", F);
 mark();
@@ -5003,7 +5024,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#b5179e";
+var BD_BUILD = "#8b5a2b";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
