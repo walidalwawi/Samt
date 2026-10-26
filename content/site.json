@@ -609,10 +609,10 @@
     "out": "peek",
     "lv": "rise",
     "arrive": "slide",
-    "main": "nsye72w3",
+    "main": "56ud3gky",
     "hover": "nudge",
     "layPg": false,
-    "vc": 0,
+    "vc": 1,
     "vr": 0,
     "pin": "56ud3gky",
     "pinPad": ""
@@ -633,14 +633,16 @@
     "sliver": 90,
     "sliverM": 14,
     "axis": "y",
-    "covers": "all",
-    "coverPages": [],
+    "covers": "some",
+    "coverPages": [
+     "aj2hm4y8"
+    ],
     "color": "",
     "alpha": 0,
     "blur": 10,
     "shadow": "none",
     "nudge": 0,
-    "dur": "",
+    "dur": 0,
     "box": {
      "mr": "15%",
      "mt": "15%",
@@ -658,10 +660,10 @@
     "out": "peek",
     "lv": "slide",
     "arrive": "slide",
-    "main": "b2lr3tkr",
-    "hover": "nudge",
+    "main": "fji5ongj",
+    "hover": "",
     "vc": 0,
-    "vr": 1,
+    "vr": 0,
     "pin": "",
     "pinPad": "off"
    }
@@ -4709,13 +4711,13 @@
     "mb": "0",
     "pb": "5%",
     "card": "",
-    "shadow": "soft"
+    "radius": "",
+    "shadow": "none"
    },
    "indep": true,
    "sheetBg": "",
-   "hover": "lift",
-   "scroll": "own",
-   "pattern": "lined"
+   "pattern": "none",
+   "scroll": "own"
   },
   "56ud3gky": {
    "id": "56ud3gky",

@@ -1,4 +1,4 @@
-/* PUBLISHED mvp7hgsi */
+/* PUBLISHED mvp7m65l */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -1906,7 +1906,7 @@ left: 0px;
 --k-peek: 90px;
 --k-sliver: 90px;
 --k-strip: 0px;
---k-nudge: 14px;
+--k-nudge: 0px;
 box-shadow: none;
 z-index: 2;
 }
@@ -2254,14 +2254,13 @@ backdrop-filter: blur(11.2px);
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
-background: repeating-linear-gradient(180deg, transparent 0, transparent 27px, rgba(0, 0, 0, 0.14) 27px, rgba(0, 0, 0, 0.14) 28px) local, rgba(228, 225, 218, 0.9);
+background: rgba(228, 225, 218, 0.9);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
 padding-top: 5vh;
 padding-right: 5vw;
 padding-bottom: 5vh;
 padding-left: 5vw;
-box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
 margin-top: 0vh;
@@ -2271,11 +2270,6 @@ margin-left: 0vw;
 min-height: calc(100% - 0vh - 0px);
 width: auto;
 box-sizing: border-box;
-}
-@media (hover: hover) and (min-width: 761px) {
-.bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel:hover {
-box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
-}
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
 margin: 0px 75vw 0 0px;
@@ -2744,7 +2738,7 @@ left: 0px;
 --k-peek: 14px;
 --k-sliver: 14px;
 --k-strip: 0px;
---k-nudge: 14px;
+--k-nudge: 0px;
 box-shadow: none;
 }
 #bd-ly .bd-ly-k[data-k="menu"] .bd-ly-track.is-ax-x {
