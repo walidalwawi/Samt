@@ -583,8 +583,8 @@
     "axis": "x",
     "covers": "all",
     "coverPages": [],
-    "color": "none",
-    "alpha": 0,
+    "color": "#e22400",
+    "alpha": 70,
     "blur": 0,
     "shadow": "line",
     "nudge": 0,
@@ -628,7 +628,7 @@
     "coverPages": [
      "56ud3gky"
     ],
-    "color": "#38571a",
+    "color": "none",
     "alpha": 30,
     "blur": 10,
     "shadow": "line",
@@ -668,10 +668,10 @@
   "indepV1": true,
   "postBox": {
    "mt": "10%",
-   "card": "#4e7a27",
+   "card": "none",
    "sheetBg": "none",
    "shadow": "soft",
-   "fit": false,
+   "fit": true,
    "cardA": "",
    "pt": "5%",
    "pr": "5%",
@@ -4462,14 +4462,12 @@
     "gutterM": 24
    },
    "box": {
-    "mt": "15%",
-    "ml": "10%",
-    "mb": "10%",
-    "mr": "5%",
-    "card": "#da5100"
+    "fit": true,
+    "card": ""
    },
+   "indep": true,
    "scroll": "own",
-   "indep": true
+   "sheetBg": ""
   },
   "56ud3gky": {
    "id": "56ud3gky",
@@ -4519,7 +4517,8 @@
     "gapM": ""
    },
    "box": {
-    "ink": ""
+    "ink": "",
+    "mr": "0"
    },
    "ownLayout": false,
    "colset": {
