@@ -3823,25 +3823,26 @@ function hitAll() {
 model.forEach(function (m) { (m.hit || []).forEach(hitClip); });
 pinLen();
 }
-/* A PINNED PAGE THAT MOVES WITH THE OTHER PAGE'S SCROLL GETS PAPER AS LONG AS THAT PAGE, SO THE SHEET ENDS AS ONE */
+/* PAGES SIDE BY SIDE ON ONE SHEET END ON THE SAME LINE: EVERY PAPER IS AS LONG AS THE LONGEST PAGE AND GROWS WITH IT */
 function pinLen() {
 model.forEach(function (m) {
-if (m.pin < 0 || !m.track.classList.contains("is-ax-x")) return;
-var kids = m.track.children;
-var pp = kids[m.pin] && kids[m.pin].querySelector(".bd-ly-paper");
-if (!pp) return;
-var i = parseInt(m.track.style.getPropertyValue("--i"), 10) || 0;
-if (i === m.pin) i = m.pin ? 0 : 1;
-var pn = kids[i];
-var op = pn && pn.querySelector(".bd-ly-paper");
-var follows = op && !pn.hasAttribute("data-own") && getComputedStyle(kids[m.pin]).transform !== "none";
-pp.style.minHeight = follows ? Math.ceil(op.getBoundingClientRect().height) + "px" : "";
+if (!m.track.classList.contains("is-ax-x")) return;
+var kids = Array.prototype.slice.call(m.track.children);
+var stay = m.pin > -1 && kids[m.pin] && getComputedStyle(kids[m.pin]).transform === "none";
+var pp = kids.filter(function (pn, ix) { return !(stay && ix === m.pin); }).map(function (pn) { return pn.querySelector(".bd-ly-paper"); }).filter(Boolean);
+if (stay && kids[m.pin] && kids[m.pin].querySelector(".bd-ly-paper")) kids[m.pin].querySelector(".bd-ly-paper").style.minHeight = "";
+if (pp.length < 2) return;
+pp.forEach(function (x) { x.style.minHeight = ""; });
+/* THE BOTTOM EDGES LINE UP EVEN WHEN THE PAPERS START AT DIFFERENT HEIGHTS */
+var top = pp.map(function (x) { var pn = x.parentNode; return x.getBoundingClientRect().top - pn.getBoundingClientRect().top + pn.scrollTop; });
+var end = Math.max.apply(null, pp.map(function (x, n) { return top[n] + x.getBoundingClientRect().height; }));
+pp.forEach(function (x, n) { x.style.minHeight = Math.ceil(end - top[n]) + "px"; });
 });
 }
 hitAll();
 if (window.ResizeObserver) {
 var ro = new ResizeObserver(function () { pinLen(); });
-model.forEach(function (m) { if (m.pin > -1) Array.prototype.forEach.call(m.track.querySelectorAll(".bd-ly-paper"), function (x) { ro.observe(x); }); });
+model.forEach(function (m) { if (m.track.classList.contains("is-ax-x")) Array.prototype.forEach.call(m.track.querySelectorAll(".bd-ly-paper"), function (x) { ro.observe(x); }); });
 }
 window.addEventListener("resize", hitAll);
 window.addEventListener("load", hitAll);
@@ -5044,7 +5045,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#475569";
+var BD_BUILD = "#db2777";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
