@@ -4483,8 +4483,8 @@
     "mb": "0",
     "pb": "5%"
    },
-   "indep": true,
-   "sheetBg": ""
+   "indep": false,
+   "scroll": "own"
   },
   "56ud3gky": {
    "id": "56ud3gky",
