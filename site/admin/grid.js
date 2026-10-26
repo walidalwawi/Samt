@@ -3821,8 +3821,28 @@ pn.style.clipPath = "inset(" + px(q.top - r.top) + " " + px(r.right - q.right) +
 }
 function hitAll() {
 model.forEach(function (m) { (m.hit || []).forEach(hitClip); });
+pinLen();
+}
+/* A PINNED PAGE THAT MOVES WITH THE OTHER PAGE'S SCROLL GETS PAPER AS LONG AS THAT PAGE, SO THE SHEET ENDS AS ONE */
+function pinLen() {
+model.forEach(function (m) {
+if (m.pin < 0 || !m.track.classList.contains("is-ax-x")) return;
+var kids = m.track.children;
+var pp = kids[m.pin] && kids[m.pin].querySelector(".bd-ly-paper");
+if (!pp) return;
+var i = parseInt(m.track.style.getPropertyValue("--i"), 10) || 0;
+if (i === m.pin) i = m.pin ? 0 : 1;
+var pn = kids[i];
+var op = pn && pn.querySelector(".bd-ly-paper");
+var follows = op && !pn.hasAttribute("data-own") && getComputedStyle(kids[m.pin]).transform !== "none";
+pp.style.minHeight = follows ? Math.ceil(op.getBoundingClientRect().height) + "px" : "";
+});
 }
 hitAll();
+if (window.ResizeObserver) {
+var ro = new ResizeObserver(function () { pinLen(); });
+model.forEach(function (m) { if (m.pin > -1) Array.prototype.forEach.call(m.track.querySelectorAll(".bd-ly-paper"), function (x) { ro.observe(x); }); });
+}
 window.addEventListener("resize", hitAll);
 window.addEventListener("load", hitAll);
 function onPage(m, st, i) {
@@ -5024,7 +5044,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#8b5a2b";
+var BD_BUILD = "#475569";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
