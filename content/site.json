@@ -569,8 +569,8 @@
     "id": "menu",
     "name": "Menu",
     "pages": [
-     "56ud3gky",
-     "nsye72w3"
+     "nsye72w3",
+     "56ud3gky"
     ],
     "restPage": "",
     "edge": "bottom",
@@ -590,10 +590,10 @@
     "nudge": 100,
     "dur": "",
     "box": {
-     "mr": "",
+     "mr": "75%",
      "mt": "",
      "mb": "",
-     "ml": "75%",
+     "ml": "",
      "pt": "",
      "mtM": "91.03%"
     },
@@ -604,7 +604,7 @@
     "out": "peek",
     "lv": "rise",
     "arrive": "fade",
-    "main": "nsye72w3",
+    "main": "56ud3gky",
     "hover": "nudge",
     "layPg": false,
     "vc": 1,
@@ -649,10 +649,10 @@
     "out": "peek",
     "lv": "slide",
     "arrive": "slide",
-    "main": "b2lr3tkr",
+    "main": "fji5ongj",
     "hover": "nudge",
     "vc": 0,
-    "vr": 1,
+    "vr": 0,
     "pin": "",
     "pinPad": "off"
    }
