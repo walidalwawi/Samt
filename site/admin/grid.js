@@ -657,6 +657,10 @@ if (!s.layOrderV1) {
 layMigrateOrderIn(p);
 s.layOrderV1 = true;
 }
+if (!s.unparkV1) {
+layUnparkIn(p);
+s.unparkV1 = true;
+}
 sheetFix(p);
 s.motion = Object.assign({ gDur: 450, gEase: "ease", tease: 8, open: 24 }, s.motion || {});
 if (s.mt === undefined) {
@@ -5850,6 +5854,33 @@ k.pages.splice(want, 0, id);
 function sheetFull(k) {
 return (k.pages || []).filter(function (id) { var q = sheetPage(id); return q && !q.parent; }).length >= 2;
 }
+/* ONCE: A PARKED STRIP BECOMES PLAIN PAPER — ITS ★ PAGE KEEPS THE SAME VISIBLE SLICE AS A MARGIN AT THE OUTER END OF THE SHEET, THE JOIN BETWEEN THE PAGES LIES ON THE WINDOW'S EDGE */
+function layUnparkIn(p) {
+((p.site || {}).sheets || []).forEach(function (k) {
+if (!k || k.rest !== "peek") return;
+var ids = (k.pages || []).filter(function (id) { return p.pages[id] && p.pages[id].kind !== "pin" && !p.pages[id].parent; });
+if (!ids.length) { k.rest = "open"; k.restPage = ""; return; }
+var id = k.restPage && ids.indexOf(k.restPage) > -1 ? k.restPage : ids[0];
+var star = ids.indexOf(id), N = ids.length;
+k.box = k.box || {};
+var W = 1280, H = 800, WM = 390, HM = 780;
+[false, true].forEach(function (ph) {
+var e = (ph ? k.edgeM : k.edge) || (ph ? "top" : "left");
+var ax = ph ? (e === "left" || e === "right" ? "x" : "y") : (k.axis === "x" ? "x" : "y");
+var L = ph ? (ax === "x" ? WM : HM) : (ax === "x" ? W : H);
+var pk = Math.max(0, parseFloat(ph ? (k.peekM === "" || k.peekM == null ? k.peek : k.peekM) : k.peek) || 0);
+var aS = ax === "x" ? "l" : "t", aE = ax === "x" ? "r" : "b";
+var M = ph ? "M" : "";
+var pct = Math.round((L - Math.min(L, pk)) / L * 10000) / 100;
+if (pct <= 0) return;
+var key = star === N - 1 ? aE : aS;
+k.box["m" + key + M] = pct + "%";
+});
+k.rest = "still";
+k.main = id;
+k.restPage = "";
+});
+}
 /* ONCE: A STRIP THAT PEEKS FROM THE LEFT/TOP LIES AT THE END OF ITS SHEET, FROM THE RIGHT/BOTTOM AT THE START, SO THE SPREAD READS THE RIGHT WAY ROUND */
 function layMigrateOrderIn(p) {
 ((p.site || {}).sheets || []).forEach(function (k) {
@@ -5942,15 +5973,10 @@ k.box = k.box || {};
 var cut = N > 1 && ((star === N - 1 && mEnd > 0.5) ? "start" : (star === 0 && mStart > 0.5) ? "end" : "");
 var vis = cut === "start" ? L - mEnd : cut === "end" ? L - mStart : L;
 var strip = false;
-if (cut) {
-if (g.strip != null) { strip = !!g.strip; k.layPg = !strip; }
-else if (k.rest === "peek") strip = true;
-else if (!k.layPg && !G.cutSide && vis < L * 0.5) strip = true;
-}
 var sp = G.pages[star];
 if (phone) {
 /* THE PHONE ONLY HAS ITS OWN NUMBERS; WHAT THE SHEET IS (STRIP OR PAGE) IS DECIDED ON THE DESKTOP */
-if (k.rest === "peek" && cut) {
+if (false) {
 k.edgeM = cut === "start" ? (ax === "x" ? "left" : "top") : (ax === "x" ? "right" : "bottom");
 k.peekM = Math.max(0, Math.round(vis));
 k.box["m" + (cut === "start" ? aE : aS) + M] = "";
@@ -5990,41 +6016,6 @@ k.box["m" + aE] = pct(mEnd, aE);
 }
 k.box["m" + cS + M] = pct(mCS, cS);
 k.box["m" + cE + M] = pct(mCE, cE);
-}
-/* THE SENTENCE UNDER THE DRAWING — WHAT THE GEOMETRY MEANS */
-function layCaption(n, phone) {
-var G = sheetGeo(n, phone);
-var k = G.k;
-var sp = G.pages[G.star];
-var name = sp ? "★ " + esc(sp.title) : "the sheet";
-var v = G.v;
-var pc = function (px, len) { return Math.round(px / len * 100) + "%"; };
-if (G.hidden) return "At rest: hidden. It appears when one of its pages opens.";
-if (k.rest === "peek") {
-var e = (phone ? k.edgeM : k.edge) || "left";
-var w = parseFloat(phone ? k.peekM : k.peek) || 0;
-return "At rest: " + name + " shows " + pc(w, e === "left" || e === "right" ? v.w : v.h) + " of the window on the " + e + ", the rest of the sheet lies beyond it. It stays there when another page opens; the sheet slides out beside it.";
-}
-var full = G.rect.l <= 0.5 && G.rect.t <= 0.5 && G.rect.r >= v.w - 0.5 && G.rect.b >= v.h - 0.5;
-var s = "At rest: " + name + (full ? " fills the window." : " shows, with what lies under the sheet around it.");
-if (k.rest === "still" || !G.away) return s + " It stays put when a page underneath opens.";
-return s + " When a page underneath opens it slides " + G.away.edge + (G.away.hide || G.away.vis <= 0.5 ? ", out of sight." : ", leaving " + pc(G.away.vis, G.away.edge === "left" || G.away.edge === "right" ? v.w : v.h) + " showing.");
-}
-/* A STRIP SHEET DRAWN AS IT LOOKS WHEN ITS OTHER PAGE IS OPEN: THE TWO PAGES SHARE THE WINDOW, THE SEAM BETWEEN THEM IS WHAT YOU DRAG */
-/* EVERY TWO-PAGE SHEET IS DRAWN WITH ITS SEAM: A SHEET THAT IS NOT PARKED YET HAS A SEAM AT THE END (NOTHING PEEKS), THE PAGE IT STARTS ON IS ITS "STRIP" */
-function stripEdge(k, phone, ax, idx) {
-var e = (phone ? k.edgeM : k.edge) || (phone ? "top" : "left");
-if (sheetStrip(k)) return e;
-return ax === "x" ? (idx === 0 ? "right" : "left") : (idx === 0 ? "bottom" : "top");
-}
-function stripModel(G) {
-var k = G.k;
-var st = sheetStrip(k);
-if (!st) {
-var id = (k.main && G.pages.some(function (q) { return q.id === k.main; })) ? k.main : G.pages[0].id;
-st = G.pages.filter(function (q) { return q.id === id; })[0];
-}
-return { st: st, pane: G.pages.filter(function (q) { return q.id !== st.id; })[0] };
 }
 /* THE LAYOUT DRAWING — DRAWN FROM sheetGeo; EVERY HANDLE WRITES THROUGH layWrite */
 function layoutDrawing(n, pg) {
@@ -6120,45 +6111,6 @@ handles += hnd("sheet", "l", X(r.l), Y((r.t + r.b) / 2), LAY_C.sheet) + hnd("she
 }
 return o + handles + "</svg>";
 }
-/* THE RESULT, LIKE THE OPEN / CLOSED THUMBNAILS: WHAT THE WINDOW SHOWS AT REST AND WHEN A PAGE UNDERNEATH OPENS */
-function layResult(n) {
-var phone = S.mode === "phone";
-var G = sheetGeo(n, phone);
-var k = G.k;
-var v = G.v;
-var TW = 132;
-var t = TW / v.w;
-var TH = Math.round(v.h * t);
-var clip = function (r) {
-if (!r) return null;
-var c = { l: Math.max(0, r.l), t: Math.max(0, r.t), r: Math.min(v.w, r.r), b: Math.min(v.h, r.b) };
-return c.r - c.l > 0.5 && c.b - c.t > 0.5 ? c : null;
-};
-var lines = function (x, y, w, h, dark) {
-var c = "";
-for (var i = 0; i < 5 && 10 + i * 8 < h - 6; i++) c += '<rect x="' + (x + 8) + '" y="' + (y + 10 + i * 8) + '" width="' + Math.max(4, (w - 16) * (i % 2 ? .6 : .85)) + '" height="3" rx="1.5" fill="rgba(0,0,0,' + (dark ? .16 : .08) + ')"/>';
-return c;
-};
-var thumb = function (rs, label, note) {
-var list = !rs ? [] : Array.isArray(rs) ? rs : [rs];
-var o = '<svg viewBox="0 0 ' + TW + " " + TH + '" width="' + TW + '" height="' + TH + '" aria-hidden="true"><rect width="' + TW + '" height="' + TH + '" rx="8" fill="#fff" stroke="rgba(0,0,0,.14)"/>' + lines(0, 0, TW, TH, false);
-list.forEach(function (r) {
-var x = r.l * t, y = r.t * t, w = (r.r - r.l) * t, h = (r.b - r.t) * t;
-o += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="6" fill="' + esc(k.color || "#E4E1DA") + '" fill-opacity=".92" stroke="' + LAY_C.sheet + '" stroke-opacity=".6"/>' + lines(x, y, w, h, true);
-if (h > 36 && w > 30) o += '<rect x="' + (x + 8) + '" y="' + (y + h * .5) + '" width="' + (w - 16) + '" height="' + h * .26 + '" rx="4" fill="' + LAY_C.salmon + '"/>';
-});
-o += '<rect x="1" y="1" width="' + (TW - 2) + '" height="' + (TH - 2) + '" rx="8" fill="none" stroke="' + LAY_C.win + '" stroke-width="2"/></svg>';
-return '<figure class="bd-lay-fig">' + o + "<figcaption><b>" + label + "</b><span>" + note + "</span></figcaption></figure>";
-};
-var rest = G.hidden ? null : clip(G.rect);
-var away;
-var awayNote;
-if (G.hidden) { away = null; awayNote = "hidden"; }
-else if (G.ghost) { away = clip(G.ghost); awayNote = away ? "tucks away" : "slides out"; }
-else if (k.rest === "open" && k.out === "hide") { away = null; awayNote = "hides"; }
-else { away = rest; awayNote = k.rest === "peek" ? "stays on its edge" : "stays"; }
-return '<div class="bd-lay-res">' + thumb(rest, "At rest", G.hidden ? "hidden" : "what shows") + thumb(away, "A page underneath opens", awayNote) + "</div>";
-}
 function sheetLayoutHTML(n) {
 var k = sheetList()[n];
 var P = "site.sheets." + n + ".";
@@ -6166,13 +6118,12 @@ var phone = S.mode === "phone";
 var used = sheetUsed();
 var free = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin" && !q.parent && used.indexOf(q.id) < 0; });
 var G = sheetGeo(n, phone);
-var h = '<div class="bd-lay-box">' + layoutDrawing(n, curPage()) + "</div>" + layResult(n);
-h += '<div class="bd-lay-cap">' + layCaption(n, phone) + "</div>";
+var h = field("Pages spread", seg(P + "axis", k.axis === "x" ? "x" : "y", [["y", "Vertical"], ["x", "Horizontal"]]));
+h += '<div class="bd-lay-box">' + layoutDrawing(n, curPage()) + "</div>";
 if (!sheetFull(k)) h += '<button class="bd-ed-btn" data-act="lay-add" data-i="' + n + '">+ page</button>';
 {
-h += '<div class="bd-ed-hint">the canvas is two windows wide and two high · tap a half to put the <i class="bd-lay-sw" style="background:' + LAY_C.win + '"></i>window there · the <i class="bd-lay-sw" style="background:' + LAY_C.sheet + '"></i>sheet covers two halves — drag any of its edges to resize it · × takes a page off · ' + (phone ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
+h += '<div class="bd-ed-hint">two windows wide, two high · tap a half to put the <i class="bd-lay-sw" style="background:' + LAY_C.win + '"></i>window there · the <i class="bd-lay-sw" style="background:' + LAY_C.sheet + '"></i>sheet covers two halves, the join between its pages always lies on the window’s edge · drag its outer edges to resize — the end of the sheet only shows when you scroll to it · × takes a page off · ' + (phone ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
 }
-h += field("Pages spread", seg(P + "axis", k.axis === "x" ? "x" : "y", [["y", "Vertical"], ["x", "Horizontal"]]));
 if (S.layAdd === n) {
 h += '<div class="bd-ed-sec" style="margin:0"><span class="bd-ed-label">Put on this sheet</span>' + free.map(function (q) { return '<button class="bd-ed-btn" style="margin:2px 4px 2px 0" data-act="sheet-page-add" data-i="' + n + '" data-id="' + q.id + '">' + esc(q.title) + "</button>"; }).join("") + '<button class="bd-ed-btn" style="margin:2px 0" data-act="lay-new" data-i="' + n + '">' + I.plus + "New page</button>" + (free.length ? "" : '<div class="bd-ed-hint">Every page is already on a sheet.</div>') + "</div>";
 }
@@ -6323,15 +6274,6 @@ var cur = d.kind === "sheet" ? G.rect[d.side] : (G.slots.filter(function (s) { r
 if (vert) tx = (pos - cur) * d.sc; else ty = (pos - cur) * d.sc;
 d.res = { pos: pos };
 txt = Math.round(pos / (vert ? d.w : d.h) * 100) + "%";
-} else if (d.kind === "seam") {
-var Lq = G.L, bq = G.star === 0 ? Lq : 0;
-var alq = d.axis === "x" ? p.x : p.y;
-var pq = snapTo(Math.max(0, Math.min(Lq, alq)), Lq);
-var dq = G.star === 0 ? Lq - pq : pq;
-d.res = { peek: Lq - dq };
-var shq = (pq - (G.slots[0] ? (d.axis === "x" ? G.slots[0].box.r : G.slots[0].box.b) : bq)) * d.sc;
-if (d.axis === "x") tx = shq; else ty = shq;
-txt = Math.round((Lq - dq) / Lq * 100) + "% shows at rest";
 } else if (d.kind === "win") {
 var L = G.L;
 var along = d.axis === "x" ? p.x : p.y;
@@ -6401,22 +6343,6 @@ else if (s.side === alongEnd) g.mEnd = Math.max(0, N * L - (pos + star * L) - I[
 else if (s.side === "l" || s.side === "t") g.mCS = Math.max(0, pos - I[s.side]);
 else g.mCE = Math.max(0, (s.side === "r" ? G.v.w : G.v.h) - pos - I[s.side]);
 layWrite(s.n, phone, g);
-} else if (s.kind === "seam") {
-var pk = Math.max(0, Math.round(s.res.peek));
-var Lk = G.L;
-if (!sheetStrip(k)) {
-if (pk > Lk - 1) return;
-var SM = stripModel(G);
-var ee = stripEdge(k, phone, phone ? (k.edgeM === "left" || k.edgeM === "right" ? "x" : "y") : G.ax, G.pages.indexOf(SM.st));
-k.restPage = SM.st.id;
-k.rest = "peek";
-if (phone) k.edgeM = ee; else k.edge = ee;
-if (phone) k.peekM = Math.max(1, pk); else k.peek = Math.max(1, pk);
-} else if (pk >= Lk - 1) {
-k.rest = "open";
-k.main = k.restPage;
-} else if (phone) k.peekM = pk;
-else k.peek = pk;
 } else if (s.kind === "win") {
 if (s.res.star === G.star) return;
 layWrite(s.n, phone, { star: s.res.star });

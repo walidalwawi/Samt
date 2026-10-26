@@ -145,6 +145,8 @@ async def run():
         ok('paper: the last page carries the bottom margin (a spacer that scrolls), not the top', z is not None and z.group(1) == '0px 10px 0 10px' and '80px' in z.group(2) and '--pm-b: 80px' in pcss)
         ok('paper: the sheet frame itself has no margin', _re.search(r'data-k="index"\] \{[^}]*(top|bottom): calc\([^)]*60px', pcss) is None)
         ok('paper: the frame is marked is-paper', 'is-paper' in await ev("layerDoc(S.project.pages['fji5ongj'], 'export')"))
+        r = await ev("(function(){ var p = { pages: { a: {id:'a'}, b: {id:'b'} }, site: { sheets: [ { id: 's', axis: 'x', rest: 'peek', edge: 'left', edgeM: 'top', peek: 300, peekM: 70, restPage: 'b', pages: ['a','b'], box: {} } ] } }; layUnparkIn(p); var k = p.site.sheets[0]; return [k.rest, k.main, k.restPage, k.box.mr, k.box.mbM]; })()")
+        ok('unpark: a parked 300px strip becomes plain paper with the same slice (right margin 76.56%), the join on the window edge ' + str(r), r[0] == 'still' and r[1] == 'b' and r[2] == '' and r[3] == '76.56%')
         ok('no page errors '+str(errs[:2]), not errs)
 
         # --- one place for sheets: Site has no Stack list, the sheet panel has Higher / Lower, also while previewing
@@ -182,7 +184,7 @@ async def run():
         ok('behaviour: Goes away with a strip = open + peek out + sliver', await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; sheetMove(k, 'other', 'away'); sheetMove(k, 'strip', 25); return k.rest === 'open' && k.out === 'peek' && k.sliver === 25; })()"))
         await ev("S.sheetSel='index'; S.preview=false; S.sel=null; render()")
         rt = await ev("document.getElementById('bd-right').innerHTML")
-        ok('behaviour: the panel says what the drawing means, then On appear, On leave, On hover', all(t in rt for t in ['At rest', 'bd-lay-cap', 'On appear', 'On leave', 'On hover']))
+        ok('behaviour: the panel has the pages spread first, the drawing, then On appear, On leave, On hover; no At rest thumbnails', all(t in rt for t in ['Pages spread', 'On appear', 'On leave', 'On hover']) and 'bd-lay-res' not in rt and rt.index('Pages spread') < rt.index('bd-lay-box'))
         await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; k.rest='open'; k.out='peek'; k.sliver=100; })()")
         # --- layout drawing in the sheet panel: everything is dragged and clicked there
         await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; k.axis='x'; k.main=''; k.hover='lift'; k.box={}; k.rest='still'; sheetPanes(k).forEach(function(q){ q.box={}; }); S.mode='desktop'; S.sheetSel=k.id; S.preview=false; S.sel=null; render(); })()"); await pg.wait_for_timeout(600)
@@ -245,9 +247,7 @@ async def run():
         await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; S.sheetSel=k.id; render(); })()"); await pg.wait_for_timeout(400)
         # the strip handle on the menu sheet
         await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='menu'})[0]; S.mode='desktop'; S.sheetSel=k.id; render(); })()"); await pg.wait_for_timeout(600)
-        ok('layout: the caption never says strip', 'strip' not in (await ev(f"{RT}.querySelector('.bd-lay-cap').textContent")).lower())
         ok('canvas: the Menu sheet is drawn the same way: four halves, two pages, four sheet edges', await ev(f"{RT}.querySelectorAll('svg.bd-lay [data-act=lay-cell]').length") == 3 and await ev(f"{RT}.querySelectorAll('svg.bd-lay [data-lh=sheet]').length") == 4 and await ev(f"{RT}.querySelectorAll('svg.bd-lay [data-lh=page]').length") == 0)
-        ok('canvas: the caption never says strip', 'strip' not in (await ev(f"{RT}.querySelector('.bd-lay-cap').textContent")).lower())
         ok('limit: a sheet with two pages cannot take a third (drag or add)', await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='menu'})[0]; return sheetFull(k); })()"))
         await ev("S.sheetSel=''; render()")
         # phone padding: a page on a sheet under a peeking menu never keeps the desktop's big left padding
