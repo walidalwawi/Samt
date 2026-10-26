@@ -586,7 +586,7 @@ indexColor: "#E4E1DA", indexAlpha: 55, indexBlur: 9, sliver: 44, sliverM: 14, in
 ease: "paper", dur: 460, menuDur: 460, tilt: 0, lift: true, reveal: "focus", focusBlur: 3, trans: "slide"
 };
 /* HOW A POST OR PAGE OPENS — THE INDEX SHEET GETS OUT OF THE WAY (SITE DEFAULT, EVERY PAGE CAN OVERRIDE) */
-var LAYER_TRANS = [["slide", "Slide away"], ["fold", "Fold back · hinge on the edge"], ["unfold", "Unfold · the post swings down"], ["squash", "Concertina · squash into the edge"], ["drop", "Drop · falls to the bottom"], ["push", "Push · slides off the other side"], ["rise", "Rise · lifts off the top"], ["cut", "Cut · no motion"]];
+var LAYER_TRANS = [["slide", "Slide away"], ["drop", "Drop · falls to the bottom"], ["push", "Push · slides off the other side"], ["rise", "Rise · lifts off the top"], ["cut", "Cut · no motion"]];
 function layerTrans(page) {
 var t = page && page.trans;
 var ok = function (x) { return LAYER_TRANS.some(function (o) { return o[0] === x; }); };
@@ -597,8 +597,8 @@ return ok(m) ? m : "slide";
 var LAYER_EASE = { paper: ["Paper", "cubic-bezier(.2,.8,.2,1)"], slide: ["Even slide", "cubic-bezier(.65,0,.35,1)"], drag: ["Heavy drag", "cubic-bezier(.7,0,.25,1)"], stop: ["Stop-motion", "steps(6, end)"], straight: ["Straight", "linear"] };
 var LAYER_PRESETS = {
 paper: { ease: "paper", dur: 460, menuDur: 460, tilt: 0, lift: true, reveal: "focus" },
-drag: { ease: "drag", dur: 720, menuDur: 640, tilt: 0.6, lift: true, reveal: "focus" },
-stop: { ease: "stop", dur: 540, menuDur: 540, tilt: 1, lift: false, reveal: "none" },
+drag: { ease: "drag", dur: 720, menuDur: 640, tilt: 0, lift: true, reveal: "focus" },
+stop: { ease: "stop", dur: 540, menuDur: 540, tilt: 0, lift: false, reveal: "none" },
 quiet: { ease: "slide", dur: 320, menuDur: 320, tilt: 0, lift: false, reveal: "none" },
 still: { ease: "straight", dur: 120, menuDur: 120, tilt: 0, lift: false, reveal: "none" }
 };
@@ -678,19 +678,20 @@ if (!s.pinV1) {
 layPinMenuIn(p);
 s.pinV1 = true;
 }
-if (!s.indepV1) {
-layIndepIn(p);
-s.indepV1 = true;
-}
-sheetFix(p);
-sheetPinOrder(p);
-s.motion = Object.assign({ gDur: 450, gEase: "ease", tease: 8, open: 24 }, s.motion || {});
 /* THE GLASS: WHAT IS STUCK TO THE WINDOW ITSELF AND NEVER MOVES WHILE PAPER SLIDES UNDER IT */
 s.glass = Object.assign({ menu: "", at: "bottom", color: "", alpha: 92, blur: 8 }, s.glass || {});
 if (!s.glassV1) {
 layGlassIn(p);
 s.glassV1 = true;
 }
+/* ONCE: A PAGE'S OWN MARGINS BECOME THE SHEET'S (BEFORE sheetFix DROPS THEM), SO NOTHING MOVES WHEN THE MODEL TIGHTENS */
+if (!s.oneV1) {
+layOneIn(p);
+s.oneV1 = true;
+}
+sheetFix(p);
+sheetPinOrder(p);
+s.motion = Object.assign({ gDur: 450, gEase: "ease", tease: 8, open: 24 }, s.motion || {});
 if (s.mt === undefined) {
 var ot = s.top != null ? s.top : 48;
 var op = s.pad != null ? s.pad : 33;
@@ -2405,16 +2406,12 @@ return '<label class="bd-ed-field"><span class="bd-ed-label">' + sd[1] + '</span
 }).join("") + "</div>";
 };
 var onSheet = layersOn() && sheetOf(pg.id).k > -1;
-var pinSh = onSheet && !!sheetPin(sheetOf(pg.id).sheet) && sheetPin(sheetOf(pg.id).sheet) !== pg.id;
-var own = !onSheet || !!pg.indep;
-var pinMe = onSheet && sheetPin(sheetOf(pg.id).sheet) === pg.id;
-var pinStill = pinMe && (sheetOf(pg.id).sheet.pages || []).some(function (id) { var o = S.project.pages[id]; return id !== pg.id && o && o.scroll === "own"; });
+var own = true;
 return '<div class="bd-ed-sec"><span class="bd-ed-title">Space & card' + (ph ? " · phone" : "") + "</span>"
 + (onSheet ? "" : '<span class="bd-ed-label">Margin · outside the page</span>' + four("m"))
 + '<span class="bd-ed-label">Padding · inside the page</span>' + four("p")
 
 + '<div class="bd-ed-hint">Numbers are px. 20% = a fifth of the window (top and bottom of its height, sides of its width). Blank = the site’s.' + (ph ? " Blank on phone = same as desktop." : "") + "</div>"
-+ (onSheet ? field("This page is", '<span class="bd-ed-seg"><button class="' + (pg.indep ? "" : "is-on") + '" data-act="page-indep" data-val="">Part of the sheet</button><button class="' + (pg.indep ? "is-on" : "") + '" data-act="page-indep" data-val="1">Independent</button></span>') + '<div class="bd-ed-hint">' + (pg.indep ? "Independent: its own card, colour, blur and decoration, taped onto the sheet. It still shares the sheet\u2019s edges and scroll." : "Part of the sheet: printed on the same paper.") + "</div>" : "")
 + (own ? fillIn("Card colour", "page.box.card", b.card || "", "#ffffff", "None") + (onSheet ? "" : fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site"))
 + row(numIn("Corners", "page.box.radius", b.radius == null ? "" : b.radius, "blank"), numIn("Card see-through %", "page.box.cardA", b.cardA == null ? "" : b.cardA, "blank"), numIn("Blur behind", "page.box.blur", b.blur == null ? "" : b.blur, "blank")) : "")
 + (ph ? "" : colorIn("Text colour", "page.box.ink", b.ink || "", S.project.site.colors.ink, "Site"))
@@ -3510,7 +3507,7 @@ var o = { left: 0, right: 0, top: 0, bottom: 0 };
 sheetList().forEach(function (k, n) {
 if (n >= upto) return;
 if (k.rest !== "peek") {
-var pp = k.pinPad === "off" ? null : sheetPinPx(k, phone);
+var pp = sheetPinPx(k, phone);
 if (pp) o[pp.edge] += pp.px;
 return;
 }
@@ -3550,13 +3547,7 @@ out.push(sel + ".is-st-hidden {\n" + V(x) + "\n}");
 TR.forEach(function (t) {
 var d = {};
 var sl = "var(--k-sliver)";
-if (t === "fold") {
-if (horiz) d.kfy = e === "left" ? "84deg" : "-84deg";
-else d.kfx = e === "top" ? "-84deg" : "84deg";
-} else if (t === "squash") {
-if (horiz) d.ksx = "var(--k-sqx, 0.04)";
-else d.ksy = "var(--k-sqy, 0.04)";
-} else if (t === "drop") d.ky = "calc(100% - " + sl + ")";
+if (t === "drop") d.ky = "calc(100% - " + sl + ")";
 else if (t === "rise") d.ky = "calc(" + sl + " - 100%)";
 else if (t === "push") d.kx = horiz && !low ? "calc(" + sl + " - 100%)" : "calc(100% - " + sl + ")";
 else d[ax] = away(sl);
@@ -4003,13 +3994,6 @@ root.className = root.className.replace(/\bis-t-[a-z]+\b/g, "").replace(/\s+/g, 
 dur = td || base;
 if (td) root.style.setProperty("--ly-pdur", td + "ms");
 else root.style.removeProperty("--ly-pdur");
-if (f.k < 0 && tr === "unfold" && !reduce && (pf.k > -1 || pf.id !== f.id)) {
-ta.classList.remove("is-enter");
-void ta.offsetWidth;
-ta.classList.add("is-enter");
-clearTimeout(ta.bdEnter);
-ta.bdEnter = setTimeout(function () { ta.classList.remove("is-enter"); }, dur + 60);
-}
 }
 if (f.k < 0) {
 var a = art(f.id);
@@ -5045,7 +5029,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#15803d";
+var BD_BUILD = "#b45309";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -5820,10 +5804,10 @@ if (Lz.on) {
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span><div class="bd-ed-hint">How every sheet moves, unless a sheet sets its own. Preview to watch.</div><div class="bd-ed-actions">' + [["paper", "Paper"], ["drag", "Heavy drag"], ["stop", "Stop-motion"], ["quiet", "Quiet"], ["still", "Still"]].map(function (x) {
 return '<button class="bd-ed-btn" data-act="ly-preset" data-val="' + x[0] + '">' + x[1] + "</button>";
 }).join("") + "</div>"
-+ field("A post or page opens with", select("site.layers.trans", Lz.trans || "slide", LAYER_TRANS)) + '<div class="bd-ed-hint">Any page can pick its own: select it, Page → Opens with.</div>'
++ field("A post or page underneath opens with", select("site.layers.trans", Lz.trans || "slide", LAYER_TRANS)) + '<div class="bd-ed-hint">How the sheets above get out of the way, in a straight line. A sheet can set its own in its panel.</div>'
 + field("Feel", select("site.layers.ease", Lz.ease, Object.keys(LAYER_EASE).map(function (k) { return [k, LAYER_EASE[k][0]]; })))
 + row(numIn("Every sheet (ms)", "site.layers.dur", Lz.dur), field("", '<div class="bd-ed-hint">A sheet can set its own speed and leave: tap its title in Pages.</div>'))
-+ row(numIn("Tilt while moving (°)", "site.layers.tilt", Lz.tilt), numIn("Out-of-focus blur", "site.layers.focusBlur", Lz.focusBlur))
++ row(numIn("Out-of-focus blur", "site.layers.focusBlur", Lz.focusBlur))
 + sw("Hard shadow while moving", "site.layers.lift", Lz.lift)
 + field("The post underneath", seg("site.layers.reveal", Lz.reveal, [["focus", "Comes into focus"], ["rise", "Rises"], ["none", "As is"]])) + "</div>";
 }
@@ -6035,6 +6019,17 @@ return i < 0 ? 0 : i;
 function sheetFix(p) {
 var site = p && p.site;
 if (!site || !site.sheets) return;
+/* STRAIGHT LINES ONLY: NO FOLD, CONCERTINA OR TILT; THE SITE DECIDES HOW A PAGE OPENS, NOT THE PAGE */
+var okT = function (x) { return LAYER_TRANS.some(function (o) { return o[0] === x; }); };
+if (site.layers) {
+site.layers.tilt = 0;
+if (!okT(site.layers.trans)) site.layers.trans = "slide";
+}
+Object.keys(p.pages || {}).forEach(function (id) {
+var q = p.pages[id];
+if (q) { delete q.trans; delete q.transDur; }
+});
+site.sheets.forEach(function (k) { if (k && k.lv && !okT(k.lv)) k.lv = ""; });
 site.sheets.forEach(function (k) {
 if (!k) return;
 k.pages = (k.pages || []).filter(function (id, i, a) { var q = p.pages[id]; return q && q.kind !== "pin" && a.indexOf(id) === i; });
@@ -6044,11 +6039,15 @@ if (k.hover === "nudge" && k.rest !== "peek") k.hover = "";
 /* ONE SHEET, ONE PIECE: PAGES ON IT NEVER OWN GEOMETRY. NO OWN SCROLL, NO OWN MARGINS, NO STAYS-PUT BAND */
 delete k.pinMode;
 delete k.pinModeM;
+delete k.pinPad;
 k.pages.forEach(function (id) {
 var q = p.pages[id];
 if (!q) return;
 delete q.scroll;
 delete q.sheetBg;
+delete q.indep;
+delete q.trans;
+delete q.transDur;
 if (q.box) ["mt", "mr", "mb", "ml", "mtM", "mrM", "mbM", "mlM"].forEach(function (x) { delete q.box[x]; });
 });
 if (k.restPage && k.pages.indexOf(k.restPage) < 0) k.restPage = "";
@@ -6072,15 +6071,34 @@ var id = (k.pages || []).filter(function (x) { var q = p.pages[x]; return q && (
 if (id) k.pin = id;
 });
 }
-/* ONCE: A PAGE ON A SHEET THAT ALREADY HAS ITS OWN LOOK IS INDEPENDENT */
-function layIndepIn(p) {
-var on = {};
-((p.site || {}).sheets || []).forEach(function (k) { (k.pages || []).forEach(function (id) { on[id] = true; }); });
-Object.keys(p.pages || {}).forEach(function (id) {
-var q = p.pages[id];
-if (!q || !on[id] || q.indep) return;
-var b = q.box || {};
-if (b.card || b.cardA || b.blur || b.radius || (b.shadow && b.shadow !== "none") || q.sheetBg || q.pattern || q.hover) q.indep = true;
+/* ONCE: A PAGE LYING ON A SHEET NEVER OWNS GEOMETRY. THE START MARGIN OF THE FIRST PAGE AND THE END MARGIN OF THE LAST PAGE MOVE ONTO THE SHEET (WHEN THE SHEET HAS NONE); AN INSET ON A SHEET THAT HAD NO OWN-PAPER PAGE BECOMES PADDING; EVERYTHING ELSE IS DROPPED BY sheetFix */
+function layOneIn(p) {
+((p.site || {}).sheets || []).forEach(function (k) {
+if (!k) return;
+var ids = (k.pages || []).filter(function (id) { return p.pages[id] && p.pages[id].kind !== "pin" && !p.pages[id].parent; });
+if (!ids.length) return;
+k.box = k.box || {};
+var x = k.axis === "x";
+var st = x ? "l" : "t", en = x ? "r" : "b";
+var first = p.pages[ids[0]], last = p.pages[ids[ids.length - 1]];
+["", "M"].forEach(function (m) {
+var a = first.box && first.box["m" + st + m], z = last.box && last.box["m" + en + m];
+if (a != null && a !== "" && (k.box["m" + st + m] == null || k.box["m" + st + m] === "")) k.box["m" + st + m] = a;
+if (z != null && z !== "" && (k.box["m" + en + m] == null || k.box["m" + en + m] === "")) k.box["m" + en + m] = z;
+});
+ids.forEach(function (id) {
+var q = p.pages[id], b = q.box;
+if (!b || (q.indep && k.pin)) return;
+["t", "r", "b", "l"].forEach(function (sd) {
+["", "M"].forEach(function (m) {
+var v = b["m" + sd + m];
+if (v == null || v === "" || (b["p" + sd + m] != null && b["p" + sd + m] !== "")) return;
+if ((q === first && sd === st) || (q === last && sd === en)) return;
+if (/%\s*$/.test(String(v))) return;
+b["p" + sd + m] = v;
+});
+});
+});
 });
 }
 function sheetPinOrder(p) {
@@ -6822,8 +6840,7 @@ var strip = sheetStrip(k);
 var free = all.filter(function (q) { return used.indexOf(q.id) < 0 && !q.parent; });
 var LV = [["", "Site"]].concat(LAYER_TRANS);
 var h = '<div class="bd-ed-sec"><span class="bd-ed-title">Layout</span>' + field("Name", input(P + "name", k.name || "")) + sheetLayoutHTML(n)
-+ (sheetPin(k) ? field("Pages underneath keep clear of it", seg(P + "pinPad", k.pinPad === "off" ? "off" : "", [["", "Yes"], ["off", "No"]]))
-+ '<div class="bd-ed-hint">The pinned page never leaves the window: the sheet slides to its other page only as far as the pinned page stays against the edge, and both scroll as one. The sheet lies above everything and is not Home. Anything that must stay still while paper moves goes on the glass (Master → Site).</div>' : "") + "</div>";
++ (sheetPin(k) ? '<div class="bd-ed-hint">The pinned page never leaves the window: the sheet slides to its other page only as far as the pinned page stays against the edge, and both scroll as one. The sheet lies above everything and is not Home. Anything that must stay still while paper moves goes on the glass (Master → Site).</div>' : "") + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-title">Style</span><span class="bd-ed-label">Background colour</span>' + fillIn("Colour", P + "color", k.color, "#E4E1DA")
 + '<span class="bd-ed-label">Background effect</span>' + row(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur below", P + "blur", k.blur))
 + '<span class="bd-ed-label">Background decoration</span>' + field("Pattern", select(P + "pattern", k.pattern || "", SHEET_PATTERNS))
@@ -6838,11 +6855,11 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-title">Animation</span>' + field
 h += '<details class="bd-ed-sec bd-ed-fold"><summary class="bd-ed-title">Exact numbers' + (phone ? " · phone" : "") + "</summary>"
 + '<span class="bd-ed-label">Margin · moves the sheet’s edges in</span>' + sheetFour(P, b, "m", phone)
 + '<span class="bd-ed-label">Padding · space around its pages</span>' + sheetFour(P, b, "p", phone)
-+ (k.rest === "open" ? field("Slides away to" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), seg(P + (phone ? "edgeM" : "edge"), (phone ? k.edgeM : k.edge) || "left", SHEET_EDGES)) : "")
++ '<div class="bd-ed-hint">Margin: px, or % of the window. Padding: px. The drawing writes these; type here to fine-tune. Blank = none.' + (phone ? " Blank on phone = same as desktop." : "") + "</div></details>";
+h += '<div class="bd-ed-sec"><span class="bd-ed-title">When a page underneath opens</span>' + (k.rest === "open" ? field("Slides away to" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), seg(P + (phone ? "edgeM" : "edge"), (phone ? k.edgeM : k.edge) || "left", SHEET_EDGES)) : "")
 + (k.rest === "open" ? field("Left showing when it slides away (px)" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), numIn("", P + (phone ? "sliverM" : "sliver"), phone ? k.sliverM : k.sliver)) : "")
 + field("At rest", '<span class="bd-ed-seg"><button class="' + (k.rest !== "hidden" ? "is-on" : "") + '" data-act="lay-hide" data-i="' + n + '" data-val="0">As drawn</button><button class="' + (k.rest === "hidden" ? "is-on" : "") + '" data-act="lay-hide" data-i="' + n + '" data-val="1">Hidden</button></span>')
-+ '<div class="bd-ed-hint">Margin: px, or % of the window. Padding: px. The drawing writes these; type here to fine-tune. Blank = none.' + (phone ? " Blank on phone = same as desktop." : "") + "</div></details>";
-h += '<div class="bd-ed-sec">' + field("Lies over", seg(P + "covers", k.covers === "some" ? "some" : "all", [["all", "Every page"], ["some", "Chosen pages"]]))
++ field("Lies over", seg(P + "covers", k.covers === "some" ? "some" : "all", [["all", "Every page"], ["some", "Chosen pages"]]))
 + (k.covers === "some" ? all.filter(function (q) { return (k.pages || []).indexOf(q.id) < 0; }).map(function (q) {
 return '<label class="bd-ed-check"><input type="checkbox" data-act="sheet-cover" data-i="' + n + '" data-id="' + q.id + '"' + ((k.coverPages || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc(q.title) + "</label>";
 }).join("") + '<div class="bd-ed-hint">On any other page underneath, this sheet slides away completely. Pages on sheets higher in the stack never move it: they just lie over it.</div>' : "")
@@ -7365,12 +7382,8 @@ stack += '<label class="bd-ed-check"><input type="checkbox" data-act="stack-page
 var pgw = layersOn() ? sheetOf(pg.id) : null;
 if (pgw && !pg.parent) h += '<div class="bd-ed-sec">' + (pgw.k < 0 ? '<div class="bd-ed-hint">This page lies underneath the sheets. Drag it by its grip in Layers onto a card or an empty part of a sheet’s drawing to lay it on that sheet.</div>' : "") + (pgw.k > -1 ? '<div class="bd-ed-hint">' + (pgw.strip ? "This page is the sheet’s edge: drawn on the part that peeks out, always there." : "The page fills the part of the sheet it lies on. It looks like part of the paper unless you give it a card below.") + '</div><button class="bd-ed-btn" data-act="sheet-sel" data-id="' + esc(pgw.sheet.id) + '">' + I.sliders + "Sheet settings</button>" : "") + "</div>";
 var tail = "";
-if (pgw && pgw.k < 0) {
-var mt = (LAYER_TRANS.filter(function (o) { return o[0] === layerTrans(null); })[0] || LAYER_TRANS[0])[1].split(" · ")[0];
-tail = '<span class="bd-ed-title">Opens with</span>' + row(field("The sheets above get out of the way", select("page.trans", pg.trans || "", [["", "Site · " + mt]].concat(LAYER_TRANS))), numIn("Speed (ms)", "page.transDur", pg.transDur || "", "blank"));
-}
 if (pgw && pgw.k > -1 && !pg.parent) h += '<div class="bd-ed-sec"><span class="bd-ed-title">Where it lies · ' + esc(pgw.sheet.name || "Sheet") + '</span><div class="bd-lay-box">' + layoutDrawing(pgw.k, pg) + '</div><div class="bd-ed-hint">One piece of paper: the handles resize the whole sheet, and every page on it shares its edges. Snaps to 5%.</div></div>';
-h += pageBoxPanel(pg) + (tail ? '<div class="bd-ed-sec">' + tail + "</div>" : "");
+h += pageBoxPanel(pg);
 if (!layersOn()) h += '<div class="bd-ed-sec">' + adv("pg-stack", "Continue with other pages", '<div class="bd-ed-hint">Chosen pages scroll on below this one, like one long page.</div>' + stack) + "</div>";
 }
 var free = '<div class="bd-ed-seg"><button data-act="layout" data-val="master" class="' + (isMaster(pg) ? "is-on" : "") + '">Columns</button><button data-act="layout" data-val="free" class="' + (isMaster(pg) ? "" : "is-on") + '">Free grid</button></div><div class="bd-ed-hint">' + (isMaster(pg) ? "Blocks stack in columns. Free grid lets you place them anywhere, row by row." : "Blocks sit anywhere on the grid. Columns stacks them again in order.") + "</div>"
@@ -9602,9 +9615,7 @@ return '<a class="bd-ed-proj" href="' + esc(x.admin) + '" target="_blank" rel="n
 + '<button class="bd-ed-btn is-primary" data-act="export"' + (S.publishing ? " disabled" : "") + ">" + I.up + "Publish</button>"
 + '<button class="bd-ed-btn" data-act="zip">' + I.down + "Download zip</button>"
 + '<button class="bd-ed-btn" data-act="view-out">' + I.code + "Generated code</button>"
-+ (hasDraft() ? '<button class="bd-ed-btn is-danger" data-act="discard">' + I.undo + "Discard changes</button>" : "")
 + "</div>";
-if (S.confirm === "discard") h += '<div class="bd-ed-confirm">Throw away everything not yet published? <button class="bd-ed-btn is-danger" data-act="discard-yes">Discard</button><button class="bd-ed-btn" data-act="confirm-no">Keep</button></div>';
 h += '</div><div class="bd-ed-sec"><div class="bd-ed-actions"><button class="bd-ed-btn" data-act="sign-out">' + I.x + "Forget GitHub key on this device</button></div></div>";
 pop.innerHTML = h;
 pop.hidden = false;
@@ -9995,43 +10006,6 @@ var q = S.project.pages[id];
 if (!k || !q) return;
 snap();
 if (f === "pin") k.pin = sheetPin(k) === id ? "" : id;
-if (f === "indep") {
-q.indep = !q.indep;
-if (!q.indep) {
-var bx = q.box || {};
-["card", "cardA", "blur", "radius", "shadow"].forEach(function (x) { delete bx[x]; });
-delete q.sheetBg;
-delete q.pattern;
-delete q.hover;
-}
-}
-if (f === "own") q.scroll = q.scroll === "own" ? "sheet" : "own";
-changed();
-},
-"pin-still": function () {
-var pg = curPage();
-var k = sheetOf(pg.id).sheet;
-if (!k) return;
-snap();
-(k.pages || []).forEach(function (id) {
-var o = S.project.pages[id];
-if (id === pg.id || !o) return;
-if (val === "1") o.scroll = "own";
-else delete o.scroll;
-});
-changed();
-},
-"page-indep": function () {
-var pg = curPage();
-snap();
-pg.indep = val === "1";
-if (!pg.indep) {
-var bx = pg.box || {};
-["card", "cardA", "blur", "radius", "shadow"].forEach(function (x) { delete bx[x]; });
-delete pg.sheetBg;
-delete pg.pattern;
-delete pg.hover;
-}
 changed();
 },
 "layout": function () {
