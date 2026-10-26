@@ -381,6 +381,7 @@ async def run():
         await pg.click('#bd-right [data-act=lay-cols][data-who=post][data-val="3"]'); await pg.wait_for_timeout(300)
         ok('posts: changing the master columns changes every post', await ev("S.project.site.postLayout.cols === 3 && /bd-cl-posts \\{\\ngrid-template-columns: minmax\\(0, [0-9]+fr\\) minmax\\(0, [0-9]+fr\\) minmax/.test(exportCSS())"))
         await ev("(function(){ var q = Object.values(S.project.pages).filter(function(q){return q.parent})[0]; S.pageId = q.id; S.postMaster = false; render(); })()")
+        ok('plan: a still sheet below stays put (and on its page) when a page on a sheet above opens, whatever it lies over', await ev("(function(){ var K = [{ rest: 'still', main: 1, pin: 1, covers: null, panes: ['a', 'm'] }, { rest: 'still', main: 0, pin: -1, covers: ['m'], panes: ['j', 'l'] }]; var r = bdSheetPlan(K, { id: 'a', k: 0, i: 0 }, [{ st: 'open', i: 1 }, { st: 'open', i: 1 }]); var u = bdSheetPlan(K, { id: 'x', k: -1, i: 0 }, null); return r[1].st === 'open' && r[1].i === 1 && u[1].st === 'hidden'; })()"))
         ok('posts: a post panel links to the post master', await pg.locator('#bd-right [data-act=post-master]').count() == 1)
         ok('no page errors', not errs)
         await b.close()

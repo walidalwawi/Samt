@@ -3386,7 +3386,8 @@ var pane = p ? p.i : k.main || 0;
 var cov = !k.covers || k.covers.indexOf(f.id) > -1 || k.panes.indexOf(f.id) > -1;
 if (f.k === n) return { st: "open", i: f.i };
 if (k.pin > -1) return { st: "open", i: k.main };
-if (k.rest === "still") return { st: cov ? "open" : "hidden", i: pane };
+/* A STILL SHEET BELOW THE PAGE THAT OPENS STAYS WHERE IT IS: THAT PAGE ALREADY LIES OVER IT */
+if (k.rest === "still") return { st: cov || (f.k > -1 && n > f.k) ? "open" : "hidden", i: pane };
 if (f.k > -1 && n > f.k && p) return { st: p.st, i: p.i };
 if (!cov) return { st: "hidden", i: pane };
 if (k.rest === "open") return { st: f.k < 0 || n < f.k ? "tuck" : "open", i: pane };
@@ -5002,7 +5003,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#7cb518";
+var BD_BUILD = "#b5179e";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6816,7 +6817,7 @@ h += '<details class="bd-ed-sec bd-ed-fold"><summary class="bd-ed-title">Exact n
 h += '<div class="bd-ed-sec">' + field("Lies over", seg(P + "covers", k.covers === "some" ? "some" : "all", [["all", "Every page"], ["some", "Chosen pages"]]))
 + (k.covers === "some" ? all.filter(function (q) { return (k.pages || []).indexOf(q.id) < 0; }).map(function (q) {
 return '<label class="bd-ed-check"><input type="checkbox" data-act="sheet-cover" data-i="' + n + '" data-id="' + q.id + '"' + ((k.coverPages || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc(q.title) + "</label>";
-}).join("") + '<div class="bd-ed-hint">On any other page this sheet slides away completely.</div>' : "")
+}).join("") + '<div class="bd-ed-hint">On any other page underneath, this sheet slides away completely. Pages on sheets higher in the stack never move it: they just lie over it.</div>' : "")
 + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Stack · ' + (n + 1) + " of " + sheetList().length + ", top to bottom</span>"
 + '<div class="bd-ed-actions"><button class="bd-ed-btn" data-act="sheet-up" data-i="' + n + '">' + I.up + 'Higher</button><button class="bd-ed-btn" data-act="sheet-down" data-i="' + n + '">' + I.dn + 'Lower</button><button class="bd-ed-btn is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve · pages stay</button></div></div>";
