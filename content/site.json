@@ -582,24 +582,20 @@
     "sliverM": 14,
     "axis": "x",
     "covers": "all",
-    "coverPages": [
-     "aj2hm4y8",
-     "fji5ongj",
-     "ipk7ns57"
-    ],
-    "color": "#4e7a27",
-    "alpha": 30,
+    "coverPages": [],
+    "color": "none",
+    "alpha": 0,
     "blur": 10,
-    "shadow": "line",
+    "shadow": "none",
     "nudge": 0,
     "dur": "",
     "box": {
      "ml": "",
-     "mr": "80%",
+     "mr": "70%",
      "mt": "",
      "mb": ""
     },
-    "pattern": "",
+    "pattern": "grid",
     "patColor": "#000000",
     "patSize": 28,
     "patAlpha": 14,
@@ -611,8 +607,8 @@
     "vc": 1,
     "vr": 0,
     "pin": "56ud3gky",
-    "pinPad": "",
-    "pinMode": ""
+    "pinMode": "",
+    "pinPad": ""
    },
    {
     "id": "glg17d2m",
@@ -4468,13 +4464,14 @@
     "gutterM": 24
    },
    "box": {
-    "blur": 90,
-    "cardA": 100,
-    "card": "none"
+    "mt": "15%",
+    "ml": "10%",
+    "mb": "10%",
+    "mr": "5%",
+    "card": "#da5100"
    },
    "scroll": "own",
-   "indep": true,
-   "sheetBg": "none"
+   "indep": true
   },
   "56ud3gky": {
    "id": "56ud3gky",
@@ -4484,7 +4481,6 @@
    "slug": "menu",
    "section": "",
    "desc": "",
-   "header": false,
    "layout": "master",
    "css": "",
    "els": [
@@ -4524,23 +4520,7 @@
     "gap": "",
     "gapM": ""
    },
-   "box": {
-    "mtM": "55%",
-    "fit": false,
-    "mrM": "80%",
-    "maxW": "",
-    "mr": "0",
-    "mt": "",
-    "mb": "",
-    "ml": "0",
-    "pl": "5%",
-    "pb": "5%",
-    "pr": "5%",
-    "pt": "5%",
-    "mbM": "110%",
-    "mlM": "60%",
-    "ink": ""
-   },
+   "box": {},
    "ownLayout": false,
    "colset": {
     "cols": 2,
