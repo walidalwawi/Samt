@@ -1,4 +1,4 @@
-/* PUBLISHED mvp7cdaj */
+/* PUBLISHED mvp7ey75 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2260,19 +2260,19 @@ background: repeating-linear-gradient(180deg, transparent 0, transparent 27px, r
 background: #ffffff;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
-padding-top: 0px;
-padding-right: 0px;
-padding-bottom: 0px;
-padding-left: 0px;
+padding-top: 5vh;
+padding-right: 5vw;
+padding-bottom: 5vh;
+padding-left: 5vw;
 background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1));
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
-margin-top: 0px;
-margin-right: 20vw;
+margin-top: 0vh;
+margin-right: 0vw;
 margin-bottom: 0px;
-margin-left: 0px;
-min-height: calc(100% - 0px - 0px);
+margin-left: 0vw;
+min-height: calc(100% - 0vh - 0px);
 width: auto;
 box-sizing: border-box;
 }
@@ -2305,11 +2305,11 @@ padding-left: 0px;
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper > .bd-panel {
-margin-top: 0px;
-margin-right: 0px;
-margin-bottom: 0px;
+margin-top: 5vh;
+margin-right: 5vw;
+margin-bottom: 5vh;
 margin-left: 0px;
-min-height: calc(100% - 0px - 0px);
+min-height: calc(100% - 5vh - 5vh);
 width: auto;
 box-sizing: border-box;
 }
@@ -3046,17 +3046,17 @@ box-shadow: none;
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
-padding-top: 0px;
+padding-top: 5vh;
 padding-right: 24px;
-padding-bottom: 0px;
+padding-bottom: 5vh;
 padding-left: 24px;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
-margin-top: 0px;
+margin-top: 0vh;
 margin-right: 0px;
 margin-bottom: 0px;
-margin-left: 0px;
-min-height: calc(100% - 0px - 0px);
+margin-left: 0vw;
+min-height: calc(100% - 0vh - 0px);
 width: auto;
 box-sizing: border-box;
 }
@@ -3075,11 +3075,11 @@ padding-bottom: 0px;
 padding-left: 0px;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper > .bd-panel {
-margin-top: 0px;
+margin-top: 5vh;
 margin-right: 0vw;
-margin-bottom: 0px;
+margin-bottom: 5vh;
 margin-left: 0px;
-min-height: calc(100% - 0px - 0px);
+min-height: calc(100% - 5vh - 5vh);
 width: auto;
 box-sizing: border-box;
 }
