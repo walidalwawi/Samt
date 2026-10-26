@@ -572,15 +572,15 @@
      "56ud3gky",
      "nsye72w3"
     ],
-    "restPage": "56ud3gky",
+    "restPage": "",
     "edge": "bottom",
     "edgeM": "top",
-    "rest": "peek",
+    "rest": "still",
     "peek": 160,
     "peekM": 70,
     "sliver": 130,
     "sliverM": 14,
-    "axis": "y",
+    "axis": "x",
     "covers": "all",
     "coverPages": [],
     "color": "#ffffff",
@@ -590,11 +590,12 @@
     "nudge": 100,
     "dur": "",
     "box": {
-     "mr": "",
+     "mr": "35%",
      "mt": "",
      "mb": "",
-     "ml": "",
-     "pt": ""
+     "ml": "70%",
+     "pt": "",
+     "mtM": "91.03%"
     },
     "pattern": "lined",
     "patColor": "#000000",
@@ -665,7 +666,8 @@
    "custom": []
   },
   "followV1": true,
-  "layOrderV1": true
+  "layOrderV1": true,
+  "unparkV1": true
  },
  "order": [
   "f0kgkfxt",
