@@ -582,8 +582,10 @@
     "sliverM": 14,
     "axis": "x",
     "covers": "all",
-    "coverPages": [],
-    "color": "#E4E1DA",
+    "coverPages": [
+     "aj2hm4y8"
+    ],
+    "color": "",
     "alpha": 55,
     "blur": 9,
     "shadow": "line",
@@ -591,7 +593,7 @@
     "dur": "",
     "box": {
      "ml": "",
-     "mr": "70%",
+     "mr": "80%",
      "mt": "",
      "mb": ""
     },
@@ -606,7 +608,9 @@
     "hover": "",
     "vc": 1,
     "vr": 0,
-    "pin": "56ud3gky"
+    "pin": "56ud3gky",
+    "pinPad": "",
+    "pinMode": ""
    },
    {
     "id": "glg17d2m",
@@ -4483,7 +4487,7 @@
     "plM": "24",
     "prM": "24",
     "mr": "0%",
-    "fit": true,
+    "fit": false,
     "mrM": "0",
     "ml": "0%",
     "pt": "5%",
@@ -4491,7 +4495,7 @@
     "mb": "0",
     "pb": "5%"
    },
-   "indep": false
+   "indep": true
   },
   "56ud3gky": {
    "id": "56ud3gky",
@@ -4569,7 +4573,7 @@
     "gutter": 40,
     "gutterM": 24
    },
-   "indep": true
+   "indep": false
   }
  }
 }
