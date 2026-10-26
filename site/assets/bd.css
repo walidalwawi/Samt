@@ -1,4 +1,4 @@
-/* PUBLISHED mvpdhucc */
+/* PUBLISHED mvpdpkql */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2664,6 +2664,7 @@ margin-bottom: 4vh;
 margin-left: calc(256px + 6vw);
 padding-left: 150px;
 width: auto;
+background: transparent;
 box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
 }
 .bd-ly-art[data-id="k2b6e868"] > .bd-panel {
@@ -2709,8 +2710,8 @@ background: rgba(242, 182, 48, 1);
 margin: 15vh 0px 0 0px;
 min-height: calc(100% - 15vh - 0px);
 box-shadow: none;
--webkit-backdrop-filter: blur(11.2px);
-backdrop-filter: blur(11.2px);
+-webkit-backdrop-filter: blur(7.1px);
+backdrop-filter: blur(7.1px);
 }
 .bd-ly-pane[data-page="nsye72w3"] {
 --pm-b: 0px;
@@ -2738,8 +2739,8 @@ box-sizing: border-box;
 margin: 15vh 80vw 0 0px;
 min-height: calc(100% - 15vh - 0px);
 box-shadow: none;
--webkit-backdrop-filter: blur(11.2px);
-backdrop-filter: blur(11.2px);
+-webkit-backdrop-filter: blur(7.1px);
+backdrop-filter: blur(7.1px);
 }
 .bd-ly-pane[data-page="56ud3gky"] {
 --pm-b: 0px;
@@ -2764,14 +2765,14 @@ box-sizing: border-box;
 margin: 0px 15vw 0 0px;
 min-height: calc(100% - 0px - 0px);
 box-shadow: none;
--webkit-backdrop-filter: blur(11.2px);
-backdrop-filter: blur(11.2px);
+-webkit-backdrop-filter: blur(7.1px);
+backdrop-filter: blur(7.1px);
 }
 .bd-ly-pane[data-page="fji5ongj"] {
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-ly-paper {
-background: rgba(228, 225, 218, 0);
+background: rgba(235, 235, 235, 0.5);
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-ly-paper > .bd-panel {
 padding-top: 50px;
@@ -2792,14 +2793,14 @@ box-sizing: border-box;
 margin: 0px 15vw 0 0px;
 min-height: calc(100% - 0px - 0px);
 box-shadow: none;
--webkit-backdrop-filter: blur(11.2px);
-backdrop-filter: blur(11.2px);
+-webkit-backdrop-filter: blur(7.1px);
+backdrop-filter: blur(7.1px);
 }
 .bd-ly-pane[data-page="b2lr3tkr"] {
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="b2lr3tkr"] > .bd-ly-paper {
-background: rgba(228, 225, 218, 0);
+background: rgba(235, 235, 235, 0.5);
 }
 .bd-ly-pane[data-page="b2lr3tkr"] > .bd-ly-paper > .bd-panel {
 padding-top: 50px;

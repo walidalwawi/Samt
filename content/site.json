@@ -587,7 +587,7 @@
     ],
     "color": "#ffffff",
     "alpha": 50,
-    "blur": 10,
+    "blur": 5,
     "shadow": "none",
     "nudge": 100,
     "dur": "",
@@ -610,9 +610,9 @@
     "lv": "rise",
     "arrive": "slide",
     "main": "56ud3gky",
-    "hover": "lift",
+    "hover": "",
     "layPg": false,
-    "vc": 0,
+    "vc": 1,
     "vr": 0,
     "pin": "56ud3gky",
     "pinPad": ""
@@ -638,9 +638,9 @@
      "56ud3gky",
      "aj2hm4y8"
     ],
-    "color": "",
-    "alpha": 0,
-    "blur": 10,
+    "color": "#ebebeb",
+    "alpha": 50,
+    "blur": 5,
     "shadow": "none",
     "nudge": 0,
     "dur": 0,
@@ -688,9 +688,9 @@
   "indepV1": true,
   "postBox": {
    "mt": "",
-   "card": "",
-   "sheetBg": "",
-   "shadow": "none"
+   "card": "none",
+   "sheetBg": "none",
+   "shadow": "soft"
   }
  },
  "order": [
@@ -901,22 +901,19 @@
     "mb": "0",
     "mr": "0",
     "ml": "0",
-    "shadow": "none",
     "fit": false,
-    "radius": "",
     "pt": "50",
     "pr": "50",
     "pb": "50",
     "pl": "100",
     "mtM": "",
-    "card": "",
     "mrM": "",
     "mbM": "",
     "mlM": "0",
     "maxWM": "",
     "plM": "20"
    },
-   "sheetBg": ""
+   "indep": false
   },
   "aj2hm4y8": {
    "id": "aj2hm4y8",
