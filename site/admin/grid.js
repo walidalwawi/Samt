@@ -5029,7 +5029,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#b45309";
+var BD_BUILD = "#7c3aed";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -5192,7 +5192,7 @@ if (!opts.skipCode) renderCode();
 var TOOL_ZONES = { top: ["Top bar", "btn"], rail: ["Rail", "btn"], left: ["Left panel", "panel"], right: ["Right panel", "panel"] };
 var RAIL_TYPES = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["notes", "Notes"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"], ["quote", "Quote"], ["toggle", "Fold-out list"], ["product", "Product"], ["sep1"], ["menubtn", "Menu"], ["sheetmenu", "Sheet menu"], ["ptitle", "Page title"], ["pager", "Page arrows"], ["sep2"], ["posts", "Blog posts"], ["postinfo", "Post info"], ["sep3"]];
 var TOOL_DEFAULT = {
-top: ["toggle-left", "brand", "projects", "mode", "undo", "redo", "code-btn", "preview", "revert", "publish", "status", "toggle-right"],
+top: ["toggle-left", "brand", "projects", "mode", "undo", "redo", "desk", "code-btn", "preview", "revert", "publish", "status", "toggle-right"],
 rail: RAIL_TYPES.map(function (t) { return t.length > 1 ? "add:" + t[0] : t[0]; }).concat(["inspect"]),
 left: ["pages", "styles", "motion", "site", "code"],
 right: []
@@ -5262,6 +5262,7 @@ return '<button class="bd-ed-tool' + (phone ? "" : " is-on") + '" data-act="mode
 } },
 "undo": { label: "Undo", icon: I.undo, act: "undo", iconOnly: true, disabled: function () { return !S.undo.length; } },
 "redo": { label: "Redo", icon: I.redo, act: "redo", iconOnly: true, disabled: function () { return !S.redo.length; } },
+"desk": { label: "Desk", icon: I.panel, act: "desk", on: function () { return !!S.desk && layersOn(); } },
 "code-btn": { label: "Code", icon: I.code, act: "code", on: function () { return S.codeOpen; } },
 "preview": { label: "Preview", icon: I.eye, act: "preview", on: function () { return S.preview && !S.inspect; } },
 "revert": { label: "Revert", only: ["top"], html: function () {
@@ -6653,7 +6654,7 @@ if (!svg || !svg.classList.contains("bd-lay")) return;
 e.preventDefault();
 e.stopPropagation();
 var r = svg.getBoundingClientRect();
-d = { hd: hd, svg: svg, kind: hd.getAttribute("data-lh"), side: hd.getAttribute("data-s") || "", id: hd.getAttribute("data-id") || "", n: +svg.getAttribute("data-n"), bx: +svg.getAttribute("data-bx"), by: +svg.getAttribute("data-by"), sc: +svg.getAttribute("data-sc"), w: +svg.getAttribute("data-w"), h: +svg.getAttribute("data-h"), axis: svg.getAttribute("data-axis"), k: r.width / +svg.getAttribute("data-dw"), off: parseFloat(hd.getAttribute("data-off")) || 0, phone: S.mode === "phone", r: r, x0: e.clientX, y0: e.clientY, res: null };
+d = { hd: hd, svg: svg, kind: hd.getAttribute("data-lh"), side: hd.getAttribute("data-s") || "", id: hd.getAttribute("data-id") || "", n: +(hd.getAttribute("data-n") != null ? hd.getAttribute("data-n") : svg.getAttribute("data-n")), bx: +svg.getAttribute("data-bx"), by: +svg.getAttribute("data-by"), sc: +svg.getAttribute("data-sc"), w: +svg.getAttribute("data-w"), h: +svg.getAttribute("data-h"), axis: svg.getAttribute("data-axis"), k: r.width / +svg.getAttribute("data-dw"), off: parseFloat(hd.getAttribute("data-off")) || 0, phone: S.mode === "phone", r: r, x0: e.clientX, y0: e.clientY, res: null };
 var lab = document.createElementNS("http://www.w3.org/2000/svg", "text");
 lab.setAttribute("font-size", "11");
 lab.setAttribute("fill", LAY_C.half);
@@ -6765,6 +6766,92 @@ layWrite(s.n, phone, { star: s.res.star });
 layWrite(s.n, phone, { away: s.res.away });
 }
 changed();
+}
+/* THE DESK: THE WHOLE SITE AS PAPER ON A DESK. THE WINDOW IS THE GLASS, EVERY SHEET LIES WHERE IT REALLY LIES, A PIN SITS ON THE PINNED PAGE. DRAG A SHEET'S EDGES TO RESIZE THE WHOLE SHEET (THE SAME HANDLES AS THE SHEET DRAWING: layApply WRITES THE MODEL) */
+function deskPaper(k) {
+var c = k && typeof k.color === "string" && /^#[0-9a-f]{3,8}$/i.test(k.color) ? k.color : "#ece9e2";
+return c;
+}
+function deskHTML(phone) {
+var K = sheetList();
+var v = gridView(phone);
+var s = S.project.site;
+var g = s.glass || {};
+var cur = curPage();
+var selK = S.sheetSel ? K.map(function (k) { return k.id; }).indexOf(S.sheetSel) : (cur ? sheetOf(cur.id).k : -1);
+var geos = K.map(function (k, n) { return sheetGeo(n, phone); });
+var B = { l: 0, t: 0, r: v.w, b: v.h };
+geos.forEach(function (G) { B = { l: Math.min(B.l, G.rect.l), t: Math.min(B.t, G.rect.t), r: Math.max(B.r, G.rect.r), b: Math.max(B.b, G.rect.b) }; });
+var pad = v.w * 0.07;
+B = { l: B.l - pad, t: B.t - pad - v.h * 0.05, r: B.r + pad, b: B.b + pad };
+var DW = 760;
+var sc = DW / (B.r - B.l);
+var VH = Math.round((B.b - B.t) * sc);
+var r1 = function (x) { return Math.round(x * 10) / 10; };
+var X = function (x) { return r1((x - B.l) * sc); };
+var Y = function (y) { return r1((y - B.t) * sc); };
+var Lx = function (x) { return r1(x * sc); };
+var rect = function (r, attrs) { return '<rect x="' + X(r.l) + '" y="' + Y(r.t) + '" width="' + Lx(Math.max(0, r.r - r.l)) + '" height="' + Lx(Math.max(0, r.b - r.t)) + '" ' + attrs + "/>"; };
+var o = '<svg class="bd-lay bd-desk-svg" viewBox="0 0 ' + DW + " " + VH + '" width="100%" role="img" aria-label="The desk: the window and every sheet on it" data-n="0" data-bx="' + B.l + '" data-by="' + B.t + '" data-sc="' + sc + '" data-w="' + v.w + '" data-h="' + v.h + '" data-axis="y" data-dw="' + DW + '">';
+o += '<defs><clipPath id="bd-desk-win">' + rect({ l: 0, t: 0, r: v.w, b: v.h }, 'rx="4"') + "</clipPath></defs>";
+o += '<rect x="0" y="0" width="' + DW + '" height="' + VH + '" fill="#c9c9c3"/>';
+var sx = v.w / 20, sy = v.h / 20;
+for (var x = Math.floor(B.l / sx) * sx; x <= B.r; x += sx) o += '<line x1="' + X(x) + '" y1="0" x2="' + X(x) + '" y2="' + VH + '" stroke="#000" stroke-opacity=".05" stroke-width=".6"/>';
+for (var y = Math.floor(B.t / sy) * sy; y <= B.b; y += sy) o += '<line x1="0" y1="' + Y(y) + '" x2="' + DW + '" y2="' + Y(y) + '" stroke="#000" stroke-opacity=".05" stroke-width=".6"/>';
+/* THE PAPER, BOTTOM OF THE STACK FIRST: A SHADOW LINE, THE SHEET, ITS PAGES. DIMMED OUTSIDE THE WINDOW, BRIGHT INSIDE IT */
+var paper = "", hits = "", pins = "", handles = "", names = "";
+for (var n = K.length - 1; n >= 0; n--) {
+var G = geos[n], k = G.k;
+var sel = n === selK;
+var fill = deskPaper(k);
+var al = Math.max(0.55, Math.min(1, (parseFloat(k.alpha == null ? 55 : k.alpha) || 0) / 100 + 0.35));
+var clear = (parseFloat(k.alpha) || 0) < 20 || k.color === "none";
+var sh = k.shadow === "hard" ? 6 : k.shadow === "line" ? 2 : 3;
+paper += '<g class="bd-desk-sheet' + (sel ? " is-sel" : "") + '">';
+paper += rect({ l: G.rect.l + sh / sc, t: G.rect.t + sh / sc, r: G.rect.r + sh / sc, b: G.rect.b + sh / sc }, 'fill="#000" fill-opacity=".14"');
+G.slots.forEach(function (sl) {
+paper += rect(sl.slot, 'fill="' + fill + '" fill-opacity="' + (clear ? 0.5 : al) + '" stroke="' + (sel ? LAY_C.win : "#3b3a37") + '" stroke-opacity="' + (sel ? 1 : 0.55) + '" stroke-width="' + (sel ? 2 : 1) + '"' + (clear ? ' stroke-dasharray="5 3"' : ""));
+var wpx = Lx(sl.slot.r - sl.slot.l);
+var t = String(sl.q.title || "");
+var maxc = Math.max(3, Math.floor(wpx / 6.2) - 3);
+if (t.length > maxc) t = t.slice(0, Math.max(1, maxc - 1)) + "…";
+paper += '<text x="' + r1(X(sl.slot.l) + 8) + '" y="' + r1(Y(sl.slot.t) + 16) + '" font-size="10" font-family="ui-monospace,Menlo,monospace" fill="#1c1b19">' + esc(t) + (sl.i === G.star ? " ★" : "") + "</text>";
+for (var ln = 0; ln < 3; ln++) paper += '<line x1="' + r1(X(sl.slot.l) + 8) + '" x2="' + r1(X(sl.slot.l) + Math.max(10, wpx * (0.72 - ln * 0.16))) + '" y1="' + r1(Y(sl.slot.t) + 28 + ln * 9) + '" y2="' + r1(Y(sl.slot.t) + 28 + ln * 9) + '" stroke="#1c1b19" stroke-opacity=".16" stroke-width="2" stroke-linecap="round"/>';
+hits += '<g data-act="page" data-id="' + sl.q.id + '" style="cursor:pointer">' + rect(sl.slot, 'fill="transparent"') + "</g>";
+var pinned = sheetPin(k) === sl.q.id;
+if (G.N === 2) {
+var px = X(sl.slot.r) - 16, py = Y(sl.slot.t) + 16;
+pins += '<g data-act="lay-flag" data-f="pin" data-i="' + n + '" data-id="' + sl.q.id + '" style="cursor:pointer"><title>' + (pinned ? "Unpin" : "Pin this page: the window never slides past it") + '</title><circle cx="' + r1(px) + '" cy="' + r1(py) + '" r="' + (pinned ? 8 : 6.5) + '" fill="' + (pinned ? "#2f5bd3" : "#fff") + '" fill-opacity="' + (pinned ? 1 : 0.55) + '" stroke="#2f5bd3" stroke-width="' + (pinned ? 1.5 : 1) + '" stroke-opacity="' + (pinned ? 1 : 0.55) + '"/>' + (pinned ? '<circle cx="' + r1(px - 2) + '" cy="' + r1(py - 2) + '" r="2" fill="#fff" fill-opacity=".7"/><path d="M' + r1(px) + " " + r1(py + 8) + "l0 8" + '" stroke="#2f5bd3" stroke-width="1.4"/>' : "") + "</g>";
+}
+});
+paper += "</g>";
+names += '<g data-act="sheet-sel" data-id="' + esc(k.id) + '" style="cursor:pointer"><text x="' + X(G.rect.l) + '" y="' + r1(Y(G.rect.t) - 6) + '" font-size="10" font-family="ui-monospace,Menlo,monospace" font-weight="600" fill="' + (sel ? LAY_C.win : "#2a2926") + '">' + esc((k.name || "Sheet").toUpperCase()) + (sheetPin(k) ? " · PINNED" : "") + " · " + (K.length - n) + "</text></g>";
+if (sel) {
+var hnd = function (side, cx, cy) {
+var vert = side === "l" || side === "r";
+return '<g data-lh="sheet" data-s="' + side + '" data-n="' + n + '" style="cursor:' + (vert ? "ew-resize" : "ns-resize") + '"><rect x="' + r1(cx - (vert ? 12 : 22)) + '" y="' + r1(cy - (vert ? 22 : 12)) + '" width="' + (vert ? 24 : 44) + '" height="' + (vert ? 44 : 24) + '" fill="transparent"/><rect x="' + r1(cx - (vert ? 3 : 10)) + '" y="' + r1(cy - (vert ? 10 : 3)) + '" width="' + (vert ? 6 : 20) + '" height="' + (vert ? 20 : 6) + '" rx="3" fill="' + LAY_C.win + '" stroke="#fff" stroke-width="1.3"/></g>';
+};
+var rm = (G.rect.l + G.rect.r) / 2, rc = (G.rect.t + G.rect.b) / 2;
+handles += hnd("l", X(G.rect.l), Y(rc)) + hnd("r", X(G.rect.r), Y(rc)) + hnd("t", X(rm), Y(G.rect.t)) + hnd("b", X(rm), Y(G.rect.b));
+}
+}
+o += '<g opacity=".4">' + paper + '</g><g clip-path="url(#bd-desk-win)">' + paper + "</g>";
+/* THE GLASS: THE WINDOW, AND A MENU BAR STUCK TO IT */
+o += rect({ l: 0, t: 0, r: v.w, b: v.h }, 'rx="4" fill="rgba(255,255,255,.07)" stroke="' + LAY_C.win + '" stroke-width="2"');
+o += '<g><rect x="' + r1(X(v.w) - 176) + '" y="' + r1(Y(v.h) - 22) + '" width="170" height="16" rx="3" fill="#fff" fill-opacity=".85"/><text x="' + r1(X(v.w) - 91) + '" y="' + r1(Y(v.h) - 10.5) + '" text-anchor="middle" font-size="9.5" font-family="ui-monospace,Menlo,monospace" fill="' + LAY_C.win + '" font-weight="600">GLASS · ' + (phone ? "PHONE " : "") + v.w + "×" + v.h + "</text></g>";
+var barOn = g.menu && (g.menu === "both" || (phone ? g.menu === "phone" : g.menu === "desktop"));
+var gh = phone ? 52 : 44;
+if (barOn) {
+var gy = g.at === "top" ? 0 : v.h - gh;
+o += rect({ l: 0, t: gy, r: v.w, b: gy + gh }, 'fill="rgba(255,255,255,.72)" stroke="#2f5bd3" stroke-width="1.2" stroke-dasharray="4 3"');
+o += '<text x="' + r1(X(0) + 10) + '" y="' + r1(Y(gy) + Lx(gh) / 2 + 3.5) + '" font-size="10" font-family="ui-monospace,Menlo,monospace" fill="#1c1b19">' + esc(s.name || "Site") + " · menu · stuck to the glass</text>";
+}
+o += names + hits + pins + handles + "</svg>";
+var h = '<div class="bd-ed-desk-in"><div class="bd-ed-desk-box">' + o + "</div>";
+h += '<div class="bd-ed-desk-legend"><span><i class="is-glass"></i>Glass · the window</span><span><i class="is-paper"></i>Paper · a sheet, one piece</span><span><i class="is-pin"></i>Pin · tap a corner dot</span></div>';
+h += '<div class="bd-ed-desk-ctl"><div class="bd-ed-desk-c"><span class="bd-ed-label">Glass · menu bar</span>' + seg("site.glass.menu", g.menu || "", [["", "Off"], ["phone", "Phone"], ["desktop", "Desktop"], ["both", "Both"]]) + (g.menu ? seg("site.glass.at", g.at === "top" ? "top" : "bottom", [["top", "Top"], ["bottom", "Bottom"]]) : "") + "</div>";
+h += '<div class="bd-ed-hint">Tap a sheet to edit its page. Tap its name to edit the sheet. Drag an orange handle on the selected sheet to resize the whole sheet; every page on it shares those edges. Tap the dot on a page to pin it. Resizing snaps to 5%.</div></div></div>';
+return h;
 }
 /* THE SPREAD — THE WHOLE SHEET LAID FLAT IN THE PREVIEW PANE, THE WINDOW DRAWN ON IT */
 function spreadDoc(n, phone) {
@@ -8149,6 +8236,23 @@ empty.innerHTML = S.booting ? '<div class="bd-ed-hint">Opening ' + esc(REPO.doma
 return;
 }
 empty.hidden = true;
+var deskEl = $("bd-desk");
+if (!deskEl) {
+deskEl = document.createElement("div");
+deskEl.id = "bd-desk";
+deskEl.className = "bd-ed-desk";
+$("bd-stage").appendChild(deskEl);
+}
+if (S.desk && layersOn() && !S.preview && !S.inspect) {
+sheet.hidden = true;
+$("bd-fit").hidden = true;
+$("bd-ruler").innerHTML = '<span>Desk · ' + (S.mode === "phone" ? "phone" : "desktop") + " · every sheet where it lies</span>";
+ensurePhoneAll();
+deskEl.hidden = false;
+deskEl.innerHTML = deskHTML(S.mode === "phone");
+return;
+}
+deskEl.hidden = true;
 sheet.hidden = false;
 $("bd-fit").hidden = false;
 var s = S.project.site;
@@ -9815,7 +9919,8 @@ navigator.clipboard.writeText(txt).then(done, fail);
 fail();
 }
 },
-"preview": function () { if (S.live) endEdit(); S.inspect = false; S.preview = !S.preview; S.sel = null; render(); },
+"desk": function () { if (S.live) endEdit(); if (!layersOn()) { setStatus("The desk shows paper sheets: turn them on in Master → Site"); return; } S.desk = !S.desk; S.inspect = false; if (S.desk) S.preview = false; S.sel = null; render(); },
+"preview": function () { if (S.live) endEdit(); S.desk = false; S.inspect = false; S.preview = !S.preview; S.sel = null; render(); },
 "inspect": function () {
 if (S.live) endEdit();
 S.inspect = !S.inspect;
