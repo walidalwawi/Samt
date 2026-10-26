@@ -686,7 +686,8 @@
    "ml": "0%",
    "plM": "30",
    "mb": "4%",
-   "pb": "5%"
+   "pb": "5%",
+   "maxW": ""
   },
   "stayV1": true,
   "postLayout": {
