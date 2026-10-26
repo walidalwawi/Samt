@@ -1304,6 +1304,12 @@ background: var(--e-tint);
 border: 1px solid var(--e-line);
 border-radius: 14px;
 }
+.bd-lay .is-drop-card rect {
+fill: rgba(217, 87, 59, 0.18);
+stroke: #d9573b;
+stroke-width: 3;
+stroke-dasharray: 6 4;
+}
 .bd-lay-res {
 display: flex;
 gap: 10px;
