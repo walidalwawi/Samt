@@ -4943,7 +4943,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#2b6fd6";
+var BD_BUILD = "#8a3fd0";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -5937,6 +5937,7 @@ if (!k) return;
 k.pages = (k.pages || []).filter(function (id, i, a) { var q = p.pages[id]; return q && q.kind !== "pin" && a.indexOf(id) === i; });
 if (k.pin && (k.pages.indexOf(k.pin) < 0 || k.pages.length < 2 || k.rest === "peek")) k.pin = "";
 if (k.pin && k.rest !== "still") k.rest = "still";
+if (k.hover === "nudge" && k.rest !== "peek") k.hover = "";
 if (k.restPage && k.pages.indexOf(k.restPage) < 0) k.restPage = "";
 if (k.main && k.pages.indexOf(k.main) < 0) k.main = "";
 if (k.rest !== "peek" || k.pages.length < 2) return;
@@ -6725,13 +6726,12 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-title">Style</span><span class="
 + '<div class="bd-ed-hint">Pages inherit all of this; a page can set its own card colour, blur and decoration. None or a clear gradient end lets what is under the sheet show.</div></div>';
 h += '<div class="bd-ed-sec"><span class="bd-ed-title">Animation</span>' + field("On appear", seg(P + "arrive", k.arrive === "fade" || k.arrive === "cut" ? k.arrive : "slide", [["slide", "Slide"], ["fade", "Fade"], ["cut", "Cut"]]))
 + field("On leave", select(P + "lv", k.lv || "", LV))
-+ field("On hover", seg(P + "hover", k.hover || "", [["", "None"], ["nudge", "Nudge"], ["lift", "Lift"]]))
++ field("On hover", seg(P + "hover", k.hover || "", [["", "None"], ["lift", "Lift"]]))
 + row(numIn("Speed (ms)", P + "dur", k.dur, "blank"))
-+ '<div class="bd-ed-hint">On appear: how it comes in when nothing of it was showing. On leave: how a shown sheet gets out of the way (Site = the site’s “opens with”). On hover (desktop): a peeking strip nudges out, or the sheet lifts with a shadow. Pages can add their own lift.</div><button class="bd-ed-btn" data-act="sheet-play">' + I.eye + "Play it · open a page underneath, then come back</button></div>";
++ '<div class="bd-ed-hint">On appear: how it comes in when nothing of it was showing. On leave: how a shown sheet gets out of the way (Site = the site’s “opens with”). On hover (desktop): the sheet lifts with a shadow. Pages can add their own lift.</div><button class="bd-ed-btn" data-act="sheet-play">' + I.eye + "Play it · open a page underneath, then come back</button></div>";
 h += '<details class="bd-ed-sec bd-ed-fold"><summary class="bd-ed-title">Exact numbers' + (phone ? " · phone" : "") + "</summary>"
 + '<span class="bd-ed-label">Margin · moves the sheet’s edges in</span>' + sheetFour(P, b, "m", phone)
 + '<span class="bd-ed-label">Padding · space around its pages</span>' + sheetFour(P, b, "p", phone)
-+ (k.rest === "peek" ? field("Strip showing (px)" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), numIn("", P + (phone ? "peekM" : "peek"), phone ? k.peekM : k.peek)) : "")
 + (k.rest === "open" ? field("Slides away to" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), seg(P + (phone ? "edgeM" : "edge"), (phone ? k.edgeM : k.edge) || "left", SHEET_EDGES)) : "")
 + (k.rest === "open" ? field("Left showing when it slides away (px)" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), numIn("", P + (phone ? "sliverM" : "sliver"), phone ? k.sliverM : k.sliver)) : "")
 + field("At rest", '<span class="bd-ed-seg"><button class="' + (k.rest !== "hidden" ? "is-on" : "") + '" data-act="lay-hide" data-i="' + n + '" data-val="0">As drawn</button><button class="' + (k.rest === "hidden" ? "is-on" : "") + '" data-act="lay-hide" data-i="' + n + '" data-val="1">Hidden</button></span>')
