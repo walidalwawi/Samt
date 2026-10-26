@@ -1,4 +1,4 @@
-/* PUBLISHED mvplyzpj */
+/* PUBLISHED mvpm36z4 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2341,7 +2341,7 @@ box-sizing: border-box;
 padding-left: max(0px, min(calc(100vw - 80vw), calc(100vw - 48px)));
 }
 #bd-ly .bd-ly-k[data-k="menu"] .bd-ly-pane:nth-child(2) {
-transform: translate3d(calc(var(--k-sx, 0px) * -1 * calc(clamp(-1, calc(var(--i) - 1), 1) * clamp(-1, calc(var(--i) - 1), 1))), calc(var(--k-sy, 0px) * -1 * calc(clamp(-1, calc(var(--i) - 1), 1) * clamp(-1, calc(var(--i) - 1), 1))), 0);
+transform: translate3d(calc(var(--k-sx, 0px) * -1 * max(calc(clamp(-1, calc(var(--i) - 1), 1) * clamp(-1, calc(var(--i) - 1), 1)), var(--k-hold, 0))), calc(var(--k-sy, 0px) * -1 * max(calc(clamp(-1, calc(var(--i) - 1), 1) * clamp(-1, calc(var(--i) - 1), 1)), var(--k-hold, 0))), 0);
 }
 #bd-ly .bd-ly-k[data-k="menu"],
 #bd-ly .bd-ly-k[data-k="menu"] .bd-ly-pane {
@@ -2614,7 +2614,7 @@ padding-bottom: 5vh;
 margin-left: calc(256px + 0vw);
 padding-left: 5vw;
 width: auto;
-background: linear-gradient(180deg, rgba(78, 122, 39, 1), rgba(85, 16, 41, 1));
+background: rgba(78, 122, 39, 1);
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
 .bd-ly-art[data-id="ipk7ns57"] > .bd-panel {
@@ -2627,7 +2627,7 @@ padding-bottom: 5vh;
 margin-left: calc(256px + 0vw);
 padding-left: 5vw;
 width: auto;
-background: linear-gradient(180deg, rgba(78, 122, 39, 1), rgba(85, 16, 41, 1));
+background: rgba(78, 122, 39, 1);
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
 .bd-ly-art[data-id="k2b6e868"] > .bd-panel {
@@ -2640,7 +2640,7 @@ padding-bottom: 5vh;
 margin-left: calc(256px + 0vw);
 padding-left: 5vw;
 width: auto;
-background: linear-gradient(180deg, rgba(78, 122, 39, 1), rgba(85, 16, 41, 1));
+background: rgba(78, 122, 39, 1);
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
 .bd-ly-art[data-id="ap7jj2t4"] > .bd-panel {
@@ -2653,7 +2653,7 @@ padding-bottom: 5vh;
 margin-left: calc(256px + 0vw);
 padding-left: 5vw;
 width: auto;
-background: linear-gradient(180deg, rgba(78, 122, 39, 1), rgba(85, 16, 41, 1));
+background: rgba(78, 122, 39, 1);
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
 .bd-ly-art[data-id="1bp9xrs5"] > .bd-panel {
@@ -2666,7 +2666,7 @@ padding-bottom: 5vh;
 margin-left: calc(256px + 0vw);
 padding-left: 5vw;
 width: auto;
-background: linear-gradient(180deg, rgba(78, 122, 39, 1), rgba(85, 16, 41, 1));
+background: rgba(78, 122, 39, 1);
 box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
@@ -3312,7 +3312,7 @@ box-sizing: border-box;
 padding-left: max(0px, min(calc(100vw - 80vw), calc(100vw - 48px)));
 }
 #bd-ly .bd-ly-k[data-k="menu"] .bd-ly-pane:nth-child(2) {
-transform: translate3d(calc(var(--k-sx, 0px) * -1 * calc(clamp(-1, calc(var(--i) - 1), 1) * clamp(-1, calc(var(--i) - 1), 1))), calc(var(--k-sy, 0px) * -1 * calc(clamp(-1, calc(var(--i) - 1), 1) * clamp(-1, calc(var(--i) - 1), 1))), 0);
+transform: translate3d(calc(var(--k-sx, 0px) * -1 * max(calc(clamp(-1, calc(var(--i) - 1), 1) * clamp(-1, calc(var(--i) - 1), 1)), var(--k-hold, 0))), calc(var(--k-sy, 0px) * -1 * max(calc(clamp(-1, calc(var(--i) - 1), 1) * clamp(-1, calc(var(--i) - 1), 1)), var(--k-hold, 0))), 0);
 }
 #bd-ly .bd-ly-k[data-k="menu"],
 #bd-ly .bd-ly-k[data-k="menu"] .bd-ly-pane {

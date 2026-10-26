@@ -290,6 +290,34 @@ content.scrollTop = 0;
 }
 }
 var next = bdSheetPlan(model, f, cur);
+/* ONE SHEET NEVER SPLITS: A PAGE LEAVING A PINNED SHEET SCROLLS BACK TO ITS TOP WHILE IT SLIDES, AND THE PINNED PAGE KEEPS FOLLOWING IT, SO THE PAPER STAYS ONE PIECE */
+next.forEach(function (n, x) {
+var m = model[x];
+var c = cur[x];
+if (m.pin < 0 || c.i === m.pin || n.i === c.i) return;
+var kids = m.track.children;
+var pn = kids[c.i];
+var pp = kids[m.pin];
+if (!pn || !pp || pn.hasAttribute("data-own") || !(pn.scrollTop > 0 || pn.scrollLeft > 0)) return;
+var y0 = pn.scrollTop;
+var x0 = pn.scrollLeft;
+var t0 = null;
+var len = reduce ? 0 : dur;
+pp.style.setProperty("--k-hold", "1");
+cancelAnimationFrame(pn.bdHome);
+var step = function (t) {
+if (t0 == null) t0 = t;
+var k = len ? Math.min(1, (t - t0) / len) : 1;
+var e = 1 - Math.pow(1 - k, 3);
+pn.scrollTop = y0 * (1 - e);
+pn.scrollLeft = x0 * (1 - e);
+pp.style.setProperty("--k-sy", pn.scrollTop + "px");
+pp.style.setProperty("--k-sx", pn.scrollLeft + "px");
+if (k < 1) pn.bdHome = requestAnimationFrame(step);
+else pp.style.removeProperty("--k-hold");
+};
+pn.bdHome = requestAnimationFrame(step);
+});
 next.forEach(function (n, x) {
 var m = model[x];
 var c = cur[x];
