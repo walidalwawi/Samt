@@ -583,14 +583,14 @@
     "axis": "x",
     "covers": "some",
     "coverPages": [
-     "fji5ongj",
      "aj2hm4y8",
-     "b2lr3tkr"
+     "fji5ongj",
+     "ipk7ns57"
     ],
     "color": "",
     "alpha": 55,
     "blur": 9,
-    "shadow": "line",
+    "shadow": "none",
     "nudge": 0,
     "dur": "",
     "box": {
@@ -605,7 +605,7 @@
     "patAlpha": 14,
     "out": "peek",
     "lv": "",
-    "arrive": "fade",
+    "arrive": "slide",
     "main": "56ud3gky",
     "hover": "",
     "vc": 1,
@@ -674,7 +674,7 @@
   "indepV1": true,
   "postBox": {
    "mt": "10%",
-   "card": "",
+   "card": "linear-gradient(180deg, #ffffff, #551029)",
    "sheetBg": "none",
    "shadow": "soft",
    "fit": false,
@@ -4483,8 +4483,7 @@
     "mb": "0",
     "pb": "5%"
    },
-   "indep": true,
-   "scroll": "own"
+   "indep": true
   },
   "56ud3gky": {
    "id": "56ud3gky",
@@ -4536,7 +4535,7 @@
    },
    "box": {
     "mtM": "55%",
-    "fit": true,
+    "fit": false,
     "mrM": "80%",
     "maxW": "",
     "mr": "0",

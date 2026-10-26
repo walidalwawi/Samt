@@ -6,7 +6,8 @@ var pane = p ? p.i : k.main || 0;
 var cov = !k.covers || k.covers.indexOf(f.id) > -1 || k.panes.indexOf(f.id) > -1;
 if (f.k === n) return { st: "open", i: f.i };
 if (k.pin > -1) return { st: "open", i: k.main };
-if (k.rest === "still") return { st: cov ? "open" : "hidden", i: pane };
+/* A STILL SHEET BELOW THE PAGE THAT OPENS STAYS WHERE IT IS: THAT PAGE ALREADY LIES OVER IT */
+if (k.rest === "still") return { st: cov || (f.k > -1 && n > f.k) ? "open" : "hidden", i: pane };
 if (f.k > -1 && n > f.k && p) return { st: p.st, i: p.i };
 if (!cov) return { st: "hidden", i: pane };
 if (k.rest === "open") return { st: f.k < 0 || n < f.k ? "tuck" : "open", i: pane };
