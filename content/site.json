@@ -574,14 +574,14 @@
      "nsye72w3"
     ],
     "restPage": "56ud3gky",
-    "edge": "right",
+    "edge": "bottom",
     "edgeM": "top",
     "rest": "peek",
     "peek": 384,
     "peekM": 70,
     "sliver": 130,
     "sliverM": 14,
-    "axis": "x",
+    "axis": "y",
     "covers": "all",
     "coverPages": [],
     "color": "#ffffff",
@@ -591,10 +591,10 @@
     "nudge": 100,
     "dur": "",
     "box": {
-     "mr": "",
+     "mr": "25%",
      "mt": "",
-     "mb": "",
-     "ml": "",
+     "mb": "30%",
+     "ml": "20%",
      "pt": ""
     },
     "pattern": "lined",
@@ -603,10 +603,12 @@
     "patAlpha": 14,
     "out": "peek",
     "lv": "rise",
-    "arrive": "slide",
+    "arrive": "fade",
     "main": "56ud3gky",
-    "hover": "",
-    "layPg": false
+    "hover": "nudge",
+    "layPg": false,
+    "vc": 0,
+    "vr": 0
    },
    {
     "id": "glg17d2m",
