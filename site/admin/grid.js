@@ -6032,15 +6032,12 @@ var phone = S.mode === "phone";
 var G = sheetGeo(n, phone);
 var k = G.k;
 var v = G.v;
-var K = sheetList();
-var others = [];
-var B = { l: 0, t: 0, r: v.w, b: v.h };
-var U = function (r) { if (!r) return; B = { l: Math.min(B.l, r.l), t: Math.min(B.t, r.t), r: Math.max(B.r, r.r), b: Math.max(B.b, r.b) }; };
-U(G.rect);
-U(G.ghost);
-others.forEach(function (o) { U(o.rect); });
-var pad = v.w * 0.06;
-B = { l: B.l - pad, t: B.t - pad - v.h * 0.03, r: B.r + pad + (G.ax === "x" ? v.w * 0.18 : 0), b: B.b + pad + v.h * 0.03 + (G.ax === "y" ? v.h * 0.1 : 0) };
+/* THE CANVAS IS ALWAYS TWO WINDOWS WIDE AND TWO HIGH: FOUR HALVES. THE WINDOW SITS ON ONE OF THEM, THE SHEET LIES OVER TWO NEIGHBOURS (BOTH IN A COLUMN, OR BOTH IN A ROW) */
+var cc = G.N === 2 && G.ax === "x" ? G.star : (+k.vc === 1 ? 1 : 0);
+var rr = G.N === 2 && G.ax === "y" ? G.star : (+k.vr === 1 ? 1 : 0);
+var B = { l: -cc * v.w, t: -rr * v.h, r: (2 - cc) * v.w, b: (2 - rr) * v.h };
+var pad = v.w * 0.05;
+B = { l: B.l - pad, t: B.t - pad - v.h * 0.03, r: B.r + pad, b: B.b + pad + v.h * 0.03 };
 var DW = 380;
 var sc = DW / (B.r - B.l);
 var VH = Math.round((B.b - B.t) * sc);
@@ -6060,8 +6057,18 @@ var iy = Math.round(y / sy), hy = ((iy % 20) + 20) % 20 === 10, qy = iy % 5 === 
 o += '<line x1="0" y1="' + Y(y) + '" x2="' + DW + '" y2="' + Y(y) + '" stroke="' + (hy ? LAY_C.half : "currentColor") + '" stroke-opacity="' + (hy ? .22 : qy ? .09 : .035) + '" stroke-width="' + (hy ? 1 : .6) + '"/>';
 }
 var rect = function (r, attrs) { return '<rect x="' + X(r.l) + '" y="' + Y(r.t) + '" width="' + Lx(Math.max(0, r.r - r.l)) + '" height="' + Lx(Math.max(0, r.b - r.t)) + '" ' + attrs + "/>"; };
-/* WHERE IT GOES WHEN A PAGE UNDERNEATH OPENS */
-if (G.ghost) o += rect(G.ghost, 'fill="none" stroke="' + LAY_C.sheet + '" stroke-dasharray="2 3" stroke-opacity=".9"');
+/* THE FOUR HALVES */
+var cellsV = "", cellsHit = "";
+for (var ci = 0; ci < 2; ci++) for (var ri = 0; ri < 2; ri++) {
+var cr = { l: (ci - cc) * v.w, r: (ci - cc + 1) * v.w, t: (ri - rr) * v.h, b: (ri - rr + 1) * v.h };
+var isWin = ci === cc && ri === rr;
+cellsV += rect(cr, 'fill="rgba(255,255,255,' + (isWin ? 0 : .45) + ')" stroke="currentColor" stroke-opacity=".28" stroke-dasharray="6 4"');
+if (!isWin) {
+cellsV += '<text x="' + r1(X(cr.l) + Lx(cr.r - cr.l) / 2) + '" y="' + r1(Y(cr.t) + Lx(cr.b - cr.t) / 2 + 3) + '" text-anchor="middle" font-size="10" fill="currentColor" fill-opacity=".4">tap · window here</text>';
+cellsHit += '<g data-act="lay-cell" data-i="' + n + '" data-c="' + ci + '" data-r="' + ri + '" style="cursor:pointer">' + rect(cr, 'fill="transparent"') + "</g>";
+}
+}
+o += cellsV;
 /* THIS SHEET */
 o += rect(G.rect, 'rx="12" fill="' + LAY_C.sheetFill + '" stroke="' + LAY_C.sheet + '" stroke-opacity=".7" stroke-width="1.5"' + (G.hidden ? ' stroke-dasharray="6 4"' : ""));
 var card = function (b, q, cur, isStar, below) {
@@ -6080,6 +6087,7 @@ return c + '<text x="' + r1(bx + 10) + '" y="' + r1(by + bh - 9) + '" font-size=
 };
 /* ITS PAGES */
 var focusId = pg && G.pages.some(function (q) { return q.id === pg.id; }) ? pg.id : (G.pages[G.star] || {}).id;
+var rmBtns = "";
 var handles = "";
 var dimPass = "";
 var brightPass = "";
@@ -6094,41 +6102,17 @@ var cur = q.id === focusId;
 var isStar = s.i === G.star;
 var w = Lx(Math.max(0, b.r - b.l));
 var belowLbl = G.ax === "x";
-dimPass += '<g data-act="lay-page" data-id="' + q.id + '" style="cursor:pointer">' + card(b, q, cur, isStar, belowLbl) + "</g>";
+dimPass += "<g>" + card(b, q, cur, isStar, belowLbl) + "</g>";
 brightPass += card(b, q, cur, isStar, null);
 var cx = X(b.r) - 9, cy = Y(b.t) + 9;
-o += '<g data-act="lay-rm" data-i="' + n + '" data-id="' + q.id + '" style="cursor:pointer"><circle cx="' + cx + '" cy="' + cy + '" r="7" fill="#6b6862"/><path d="M' + (cx - 3) + " " + (cy - 3) + "l6 6m0 -6l-6 6" + '" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></g>';
+rmBtns += '<g data-act="lay-rm" data-i="' + n + '" data-id="' + q.id + '" style="cursor:pointer"><circle cx="' + cx + '" cy="' + cy + '" r="7" fill="#6b6862"/><path d="M' + (cx - 3) + " " + (cy - 3) + "l6 6m0 -6l-6 6" + '" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></g>';
 });
 o += '<clipPath id="bd-lay-win-' + n + '"><rect x="' + X(0) + '" y="' + Y(0) + '" width="' + Lx(v.w) + '" height="' + Lx(v.h) + '" rx="9"/></clipPath>';
 o += '<g opacity=".55">' + dimPass + '</g><g clip-path="url(#bd-lay-win-' + n + ')" pointer-events="none">' + brightPass + "</g>";
-/* THE + TAB PAST THE LAST PAGE, WHILE THERE IS ROOM FOR ONE */
-var endA = G.ax === "x" ? G.rect.r : G.rect.b;
-var tabX = G.ax === "x" ? X(endA) + 6 : X((G.rect.l + G.rect.r) / 2) - 34;
-var tabY = G.ax === "x" ? Y((G.rect.t + G.rect.b) / 2) - 11 : Y(endA) + 6;
-if (!sheetFull(k)) o += '<g data-act="lay-add" data-i="' + n + '" style="cursor:pointer"><rect x="' + tabX + '" y="' + tabY + '" width="68" height="22" rx="4" fill="rgba(0,0,0,.03)" stroke="currentColor" stroke-opacity=".45" stroke-dasharray="4 3"/><text x="' + (tabX + 34) + '" y="' + (tabY + 15) + '" text-anchor="middle" font-size="11" fill="currentColor" opacity=".7">+ page</text></g>';
+o += cellsHit + rmBtns;
 /* THE WINDOW */
 o += rect({ l: 0, t: 0, r: v.w, b: v.h }, 'rx="9" fill="' + LAY_C.winFill + '" stroke="' + LAY_C.win + '" stroke-width="2.5" pointer-events="none"');
 o += '<text x="' + (X(0) + 6) + '" y="' + (Y(0) - 5) + '" font-size="10" font-weight="600" fill="' + LAY_C.win + '">window</text>';
-/* ▼ WHERE THE WINDOW SITS AT REST (DRAG ONTO A PAGE), ▽ WHERE THE SHEET GOES WHEN A PAGE UNDERNEATH OPENS */
-var mk = function (cx, cy, dir, hollow, lh) {
-var p = dir === "down" ? "M" + (cx - 8) + " " + (cy - 10) + "h16l-8 10z" : "M" + (cx + 10) + " " + (cy - 8) + "v16l-10-8z";
-return '<g data-lh="' + lh + '" style="cursor:grab"><circle cx="' + cx + '" cy="' + cy + '" r="14" fill="transparent"/><path d="' + p + '" fill="' + (hollow ? "none" : LAY_C.win) + '" stroke="' + LAY_C.win + '" stroke-width="1.6"/></g>';
-};
-if (k.rest !== "peek" && !G.hidden) {
-var gc = G.ghost ? { x: (G.ghost.l + G.ghost.r) / 2, y: (G.ghost.t + G.ghost.b) / 2 } : { x: (G.rect.l + G.rect.r) / 2, y: (G.rect.t + G.rect.b) / 2 };
-o += '<g data-lh="away" style="cursor:grab"><circle cx="' + X(gc.x) + '" cy="' + Y(gc.y) + '" r="16" fill="transparent"/><path d="M' + (X(gc.x) - 8) + " " + (Y(gc.y) - 5) + 'h16l-8 10z" fill="none" stroke="' + LAY_C.sheet + '" stroke-width="1.6" stroke-dasharray="3 2"/>' + (G.ghost ? "" : '<circle cx="' + X(gc.x) + '" cy="' + Y(gc.y) + '" r="11" fill="none" stroke="' + LAY_C.sheet + '" stroke-opacity=".6" stroke-dasharray="2 2"/>') + "</g>";
-}
-/* THE SEAM BETWEEN THE TWO PAGES — DRAG IT INTO THE WINDOW TO PARK THE SHEET, SHOWING ONLY PART OF THE PAGE AT REST */
-if (G.N === 2 && !G.hidden && G.slots.length === 2) {
-var sb = G.slots[0].box;
-var bpos = G.ax === "x" ? sb.r : sb.b;
-var smx = G.ax === "x" ? X(bpos) : X(sb.l + (sb.r - sb.l) * 0.18), smy = G.ax === "x" ? Y(sb.t + (sb.b - sb.t) * 0.18) : Y(bpos);
-var sm = G.ax === "x"
-? '<line x1="' + X(bpos) + '" y1="' + Y(sb.t) + '" x2="' + X(bpos) + '" y2="' + Y(sb.b) + '" stroke="' + LAY_C.win + '" stroke-width="2" stroke-dasharray="5 3" pointer-events="none"/><rect x="' + (smx - 6) + '" y="' + (smy - 16) + '" width="12" height="32" rx="6" fill="' + LAY_C.win + '"/>'
-: '<line x1="' + X(sb.l) + '" y1="' + Y(bpos) + '" x2="' + X(sb.r) + '" y2="' + Y(bpos) + '" stroke="' + LAY_C.win + '" stroke-width="2" stroke-dasharray="5 3" pointer-events="none"/><rect x="' + (smx - 16) + '" y="' + (smy - 6) + '" width="32" height="12" rx="6" fill="' + LAY_C.win + '"/>';
-sm += '<circle cx="' + smx + '" cy="' + smy + '" r="18" fill="transparent"/>';
-handles += '<g data-lh="seam" style="cursor:' + (G.ax === "x" ? "ew-resize" : "ns-resize") + '">' + sm + "</g>";
-}
 /* THE SHEET'S EDGES */
 if (!G.hidden) {
 var r = G.rect;
@@ -6184,9 +6168,9 @@ var free = S.project.order.map(function (id) { return S.project.pages[id]; }).fi
 var G = sheetGeo(n, phone);
 var h = '<div class="bd-lay-box">' + layoutDrawing(n, curPage()) + "</div>" + layResult(n);
 h += '<div class="bd-lay-cap">' + layCaption(n, phone) + "</div>";
+if (!sheetFull(k)) h += '<button class="bd-ed-btn" data-act="lay-add" data-i="' + n + '">+ page</button>';
 {
-h += '<div class="bd-ed-hint"><i class="bd-lay-sw" style="background:' + LAY_C.sheet + '"></i>this sheet, one long sheet of paper — drag its edges · <i class="bd-lay-sw" style="background:' + LAY_C.win + '"></i>the window, always 100% · the pill on the line between the pages = the seam: drag it in to set how much of the page shows at rest · ▽ drag to set where the sheet goes when a page underneath opens · tap a page to edit it · × takes a page off · ' + (phone ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
-if (G.N === 2 && !sheetStrip(k)) h += field("Starts on", seg(P + "main", k.main || G.pages[0].id, G.pages.map(function (q) { return [q.id, esc(q.title)]; })));
+h += '<div class="bd-ed-hint">the canvas is two windows wide and two high · tap a half to put the <i class="bd-lay-sw" style="background:' + LAY_C.win + '"></i>window there · the <i class="bd-lay-sw" style="background:' + LAY_C.sheet + '"></i>sheet covers two halves — drag any of its edges to resize it · × takes a page off · ' + (phone ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
 }
 h += field("Pages spread", seg(P + "axis", k.axis === "x" ? "x" : "y", [["y", "Vertical"], ["x", "Horizontal"]]));
 if (S.layAdd === n) {
@@ -6526,6 +6510,7 @@ h += '<details class="bd-ed-sec bd-ed-fold"><summary class="bd-ed-title">Exact n
 + '<span class="bd-ed-label">Margin · moves the sheet’s edges in</span>' + sheetFour(P, b, "m", phone)
 + '<span class="bd-ed-label">Padding · space around its pages</span>' + sheetFour(P, b, "p", phone)
 + (k.rest === "peek" ? field("Strip showing (px)" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), numIn("", P + (phone ? "peekM" : "peek"), phone ? k.peekM : k.peek)) : "")
++ (k.rest === "open" ? field("Slides away to" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), seg(P + (phone ? "edgeM" : "edge"), (phone ? k.edgeM : k.edge) || "left", SHEET_EDGES)) : "")
 + (k.rest === "open" ? field("Left showing when it slides away (px)" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), numIn("", P + (phone ? "sliverM" : "sliver"), phone ? k.sliverM : k.sliver)) : "")
 + field("At rest", '<span class="bd-ed-seg"><button class="' + (k.rest !== "hidden" ? "is-on" : "") + '" data-act="lay-hide" data-i="' + n + '" data-val="0">As drawn</button><button class="' + (k.rest === "hidden" ? "is-on" : "") + '" data-act="lay-hide" data-i="' + n + '" data-val="1">Hidden</button></span>')
 + '<div class="bd-ed-hint">Margin: px, or % of the window. Padding: px. The drawing writes these; type here to fine-tune. Blank = none.' + (phone ? " Blank on phone = same as desktop." : "") + "</div></details>";
@@ -9315,6 +9300,7 @@ setTimeout(function () { go(mine); }, 3600);
 "lay-page": function () { S.pageId = b.getAttribute("data-id"); S.sel = null; render(); },
 "lay-rm": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; if (!k) return; snap(); var id = b.getAttribute("data-id"); k.pages = (k.pages || []).filter(function (x) { return x !== id; }); if (k.main === id) k.main = ""; if (k.restPage === id) k.restPage = ""; changed(); },
 "lay-main": function () { var i = +b.getAttribute("data-i"); var k = S.project.site.sheets[i]; if (!k) return; snap(); var j = (k.pages || []).indexOf(b.getAttribute("data-id")); if (j < 0) return; layWrite(i, false, { star: j }); changed(); },
+"lay-cell": function () { var i = +b.getAttribute("data-i"), c = +b.getAttribute("data-c"), r = +b.getAttribute("data-r"); var k = S.project.site.sheets[i]; if (!k) return; snap(); var ph = S.mode === "phone"; var G = sheetGeo(i, ph); var idx = G.N === 2 ? (G.ax === "y" ? r : c) : 0; k.vc = c; k.vr = r; if (G.N === 2 && idx !== G.star) layWrite(i, ph, { star: idx }); changed(); },
 "lay-strip": function () { var i = +b.getAttribute("data-i"); if (!S.project.site.sheets[i]) return; snap(); layWrite(i, false, { strip: b.getAttribute("data-val") === "1" }); changed(); },
 "lay-hide": function () { var i = +b.getAttribute("data-i"); var k = S.project.site.sheets[i]; if (!k) return; snap(); if (b.getAttribute("data-val") === "1") k.rest = "hidden"; else { k.rest = "still"; layWrite(i, false, {}); } changed(); },
 "spread-view": function () { S.spread = true; S.preview = false; render(); },
