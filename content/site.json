@@ -569,8 +569,8 @@
     "id": "menu",
     "name": "Menu",
     "pages": [
-     "nsye72w3",
-     "56ud3gky"
+     "56ud3gky",
+     "nsye72w3"
     ],
     "restPage": "",
     "edge": "bottom",
@@ -580,7 +580,7 @@
     "peekM": 70,
     "sliver": 130,
     "sliverM": 14,
-    "axis": "x",
+    "axis": "y",
     "covers": "all",
     "coverPages": [],
     "color": "#ffffff",
@@ -595,7 +595,10 @@
      "mb": "",
      "ml": "",
      "pt": "",
-     "mtM": "91.03%"
+     "mtM": "85%",
+     "mlM": "",
+     "mrM": "10%",
+     "mbM": ""
     },
     "pattern": "lined",
     "patColor": "#000000",
@@ -607,7 +610,7 @@
     "main": "56ud3gky",
     "hover": "nudge",
     "layPg": false,
-    "vc": 1,
+    "vc": 0,
     "vr": 0,
     "pin": "56ud3gky",
     "pinPad": ""
@@ -630,17 +633,21 @@
     "axis": "y",
     "covers": "all",
     "coverPages": [],
-    "color": "#EADFC8",
+    "color": "",
     "alpha": 0,
     "blur": 10,
-    "shadow": "line",
+    "shadow": "none",
     "nudge": 0,
     "dur": "",
     "box": {
      "mr": "15%",
      "mt": "15%",
      "mb": "15%",
-     "ml": ""
+     "ml": "",
+     "mtM": "",
+     "mbM": "15%",
+     "mlM": "",
+     "mrM": "10%"
     },
     "pattern": "",
     "patColor": "#000000",
