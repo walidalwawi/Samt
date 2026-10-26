@@ -48,7 +48,48 @@ var i = parseInt(m.track.style.getPropertyValue("--i"), 10) || 0;
 var pn = kids[i];
 if (i !== m.pin && pn && !pn.hasAttribute("data-own")) pn.scrollBy(e.deltaX, e.deltaY);
 }, { passive: true });
+/* SAFARI ONLY SCROLLS A PANE THAT TAKES POINTER EVENTS: THE OTHER PANES TAKE THEM, CLIPPED TO THEIR PAPER, SO CLICKS AROUND THE PAPER STILL REACH WHAT LIES BENEATH */
+m.hit = kids.filter(function (pn, ix) { return ix !== m.pin && getComputedStyle(pn).clipPath === "none"; });
+m.hit.forEach(function (pn) {
+pn.addEventListener("scroll", function () { hitClip(pn); }, { passive: true });
 });
+});
+function hitClip(pn) {
+var pp = pn.querySelector(".bd-ly-paper");
+if (!pp) return;
+var r = pn.getBoundingClientRect();
+var q = pp.getBoundingClientRect();
+var px = function (v) { return Math.max(0, Math.round(v)) + "px"; };
+pn.style.pointerEvents = "auto";
+pn.style.clipPath = "inset(" + px(q.top - r.top) + " " + px(r.right - q.right) + " " + px(r.bottom - q.bottom) + " " + px(q.left - r.left) + ")";
+}
+function hitAll() {
+model.forEach(function (m) { (m.hit || []).forEach(hitClip); });
+pinLen();
+}
+/* PAGES SIDE BY SIDE ON ONE SHEET END ON THE SAME LINE: EVERY PAPER IS AS LONG AS THE LONGEST PAGE AND GROWS WITH IT */
+function pinLen() {
+model.forEach(function (m) {
+if (!m.track.classList.contains("is-ax-x")) return;
+var kids = Array.prototype.slice.call(m.track.children);
+var stay = m.pin > -1 && getComputedStyle(m.el).getPropertyValue("--k-stay").trim() === "1";
+var pp = kids.filter(function (pn, ix) { return !(stay && ix === m.pin); }).map(function (pn) { return pn.querySelector(".bd-ly-paper"); }).filter(Boolean);
+if (stay && kids[m.pin] && kids[m.pin].querySelector(".bd-ly-paper")) kids[m.pin].querySelector(".bd-ly-paper").style.minHeight = "";
+if (pp.length < 2) return;
+pp.forEach(function (x) { x.style.minHeight = ""; });
+/* THE BOTTOM EDGES LINE UP EVEN WHEN THE PAPERS START AT DIFFERENT HEIGHTS */
+var top = pp.map(function (x) { var pn = x.parentNode; return x.getBoundingClientRect().top - pn.getBoundingClientRect().top + pn.scrollTop; });
+var end = Math.max.apply(null, pp.map(function (x, n) { return top[n] + x.getBoundingClientRect().height; }));
+pp.forEach(function (x, n) { x.style.minHeight = Math.ceil(end - top[n]) + "px"; });
+});
+}
+hitAll();
+if (window.ResizeObserver) {
+var ro = new ResizeObserver(function () { pinLen(); });
+model.forEach(function (m) { if (m.track.classList.contains("is-ax-x")) Array.prototype.forEach.call(m.track.querySelectorAll(".bd-ly-paper"), function (x) { ro.observe(x); }); });
+}
+window.addEventListener("resize", hitAll);
+window.addEventListener("load", hitAll);
 function onPage(m, st, i) {
 m.el.style.removeProperty("--k-up");
 var id = st === "peek" && m.strip ? m.strip : m.panes[i] || m.strip;
@@ -277,6 +318,7 @@ cur = next;
 F = f.id;
 setTimeout(bar, 30);
 setTimeout(bar, dur + 80);
+setTimeout(hitAll, dur + 80);
 root.classList.toggle("is-v-post", f.k < 0);
 root.setAttribute("data-focus", F);
 mark();

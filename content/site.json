@@ -581,14 +581,14 @@
     "sliver": 44,
     "sliverM": 14,
     "axis": "x",
-    "covers": "some",
+    "covers": "all",
     "coverPages": [
      "aj2hm4y8",
      "fji5ongj",
      "ipk7ns57"
     ],
-    "color": "",
-    "alpha": 55,
+    "color": "#feb43f",
+    "alpha": 100,
     "blur": 9,
     "shadow": "none",
     "nudge": 0,
@@ -634,8 +634,8 @@
     "coverPages": [
      "56ud3gky"
     ],
-    "color": "#E4E1DA",
-    "alpha": 55,
+    "color": "#e22400",
+    "alpha": 100,
     "blur": 9,
     "shadow": "line",
     "nudge": 0,
@@ -4483,7 +4483,8 @@
     "mb": "0",
     "pb": "5%"
    },
-   "indep": true
+   "indep": true,
+   "sheetBg": ""
   },
   "56ud3gky": {
    "id": "56ud3gky",
@@ -4547,7 +4548,8 @@
     "pr": "5%",
     "pt": "5%",
     "mbM": "110%",
-    "mlM": "60%"
+    "mlM": "60%",
+    "ink": ""
    },
    "ownLayout": false,
    "colset": {
