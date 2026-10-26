@@ -16,8 +16,8 @@
   "labelW": 100,
   "labelWM": 88,
   "colors": {
-   "page": "#c2c2c2",
-   "panel": "#d6d6d6",
+   "page": "#ffffff",
+   "panel": "#ffffff",
    "ink": "#16140F",
    "rule": "#16140F"
   },
@@ -42,9 +42,9 @@
   "zoom": false,
   "styles": {
    "body": {
-    "font": "sans",
-    "size": 15,
-    "lh": 22,
+    "font": "mono",
+    "size": 13,
+    "lh": 20,
     "sizeM": 15,
     "lhM": 22,
     "weight": 400,
@@ -54,8 +54,8 @@
     "color": "#000000"
    },
    "heading": {
-    "font": "sans",
-    "size": 17,
+    "font": "mono",
+    "size": 15,
     "lh": 22,
     "sizeM": 16,
     "lhM": 21,
@@ -66,9 +66,9 @@
     "color": ""
    },
    "small": {
-    "font": "sans",
-    "size": 14,
-    "lh": 19,
+    "font": "mono",
+    "size": 12,
+    "lh": 15,
     "sizeM": 13,
     "lhM": 18,
     "weight": "400",
@@ -78,9 +78,9 @@
     "color": ""
    },
    "caption": {
-    "font": "sans",
+    "font": "mono",
     "size": 12,
-    "lh": 17,
+    "lh": 15,
     "sizeM": 12,
     "lhM": 17,
     "weight": 400,
@@ -91,8 +91,8 @@
    },
    "mono": {
     "font": "mono",
-    "size": 11,
-    "lh": 17,
+    "size": 12,
+    "lh": 15,
     "sizeM": 11,
     "lhM": 16,
     "weight": 400,
@@ -443,13 +443,13 @@
     "align": "left"
    },
    "text": {
-    "size": "",
+    "size": 13,
     "sizeM": "",
-    "lh": "",
+    "lh": 20,
     "lhM": "",
-    "ink": "",
+    "ink": "#000000",
     "tracking": "",
-    "measure": ""
+    "measure": 600
    },
    "image": {
     "blend": "ink",
@@ -550,7 +550,7 @@
    "sliverM": 14,
    "indexEdge": false,
    "ease": "paper",
-   "dur": 520,
+   "dur": 500,
    "menuDur": 460,
    "tilt": 0,
    "lift": true,
@@ -585,15 +585,15 @@
     "coverPages": [
      "aj2hm4y8"
     ],
-    "color": "linear-gradient(180deg, #ffffff, #ffffff)",
-    "alpha": 90,
+    "color": "",
+    "alpha": 80,
     "blur": 10,
     "shadow": "none",
     "nudge": 100,
     "dur": "",
     "box": {
      "mr": "80%",
-     "mt": "",
+     "mt": "15%",
      "mb": "",
      "ml": "",
      "pt": "",
@@ -602,7 +602,7 @@
      "mrM": "10%",
      "mbM": ""
     },
-    "pattern": "dots",
+    "pattern": "",
     "patColor": "#000000",
     "patSize": 28,
     "patAlpha": 14,
@@ -635,6 +635,7 @@
     "axis": "y",
     "covers": "some",
     "coverPages": [
+     "56ud3gky",
      "aj2hm4y8"
     ],
     "color": "",
@@ -645,8 +646,8 @@
     "dur": 0,
     "box": {
      "mr": "15%",
-     "mt": "15%",
-     "mb": "15%",
+     "mt": "",
+     "mb": "",
      "ml": "",
      "mtM": "",
      "mbM": "15%",
@@ -658,7 +659,7 @@
     "patSize": 28,
     "patAlpha": 14,
     "out": "peek",
-    "lv": "slide",
+    "lv": "",
     "arrive": "slide",
     "main": "fji5ongj",
     "hover": "",
@@ -684,7 +685,13 @@
   "layOrderV1": true,
   "unparkV1": true,
   "pinV1": true,
-  "indepV1": true
+  "indepV1": true,
+  "postBox": {
+   "mt": "",
+   "card": "",
+   "sheetBg": "",
+   "shadow": "none"
+  }
  },
  "order": [
   "f0kgkfxt",
@@ -4768,12 +4775,9 @@
     "gapM": ""
    },
    "box": {
-    "shadow": "soft",
-    "card": "",
     "mtM": "",
     "fit": false,
     "mrM": "0%",
-    "radius": "",
     "maxW": "",
     "mr": "0",
     "mt": "",
@@ -4784,7 +4788,6 @@
     "pr": "5%",
     "pt": "5%"
    },
-   "sheetBg": "",
    "ownLayout": false,
    "colset": {
     "cols": 2,
@@ -4797,9 +4800,7 @@
     "gutter": 40,
     "gutterM": 24
    },
-   "hover": "",
-   "pattern": "",
-   "indep": true
+   "indep": false
   }
  }
 }
