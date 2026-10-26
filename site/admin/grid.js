@@ -667,6 +667,10 @@ if (!s.indepV1) {
 layIndepIn(p);
 s.indepV1 = true;
 }
+if (!s.stayV1) {
+layStayIn(p);
+s.stayV1 = true;
+}
 sheetFix(p);
 sheetPinOrder(p);
 s.motion = Object.assign({ gDur: 450, gEase: "ease", tease: 8, open: 24 }, s.motion || {});
@@ -3214,7 +3218,13 @@ var wc = BOX_VIEW ? (x ? BOX_VIEW.w : BOX_VIEW.h) + "px" : x ? "100vw" : "100vh"
 var M = boxLen(boxVal(k.box || {}, "m" + key, phone), key) || "0px";
 return { id: id, pi: pi, N: P.length, x: x, key: key, edge: edge, len: "max(0px, min(calc(" + wc + " - " + M + "), calc(" + wc + " - 48px)))" };
 }
+/* THE PINNED PAGE EITHER SLIDES TO THE WINDOW'S EDGE WHEN THE OTHER PAGE OPENS (DEFAULT) OR STAYS EXACTLY WHERE IT IS (A BAND THAT NEVER MOVES; THE OTHER PAGE SLIDES IN BESIDE IT) — PHONE CAN DIFFER */
+function sheetPinStay(k, phone) {
+if (!sheetPin(k)) return false;
+return (phone && k.pinModeM ? k.pinModeM : k.pinMode) === "stay";
+}
 function sheetPinPx(k, phone) {
+if (sheetPinStay(k, phone)) return null;
 var g = sheetPinGeo(k, phone);
 if (!g) return null;
 var raw = String(boxVal(k.box || {}, "m" + g.key, phone) == null ? "" : boxVal(k.box || {}, "m" + g.key, phone)).trim();
@@ -3233,6 +3243,29 @@ var sel = '#bd-ly .bd-ly-k[data-k="' + k.id + '"]';
 var ax = g.x ? "x" : "y";
 var dd = "clamp(-1, calc(var(--i) - " + g.pi + "), 1)";
 var f = g.pi === 0 ? "clamp(0, calc(var(--i) - 0), 1)" : "calc(" + dd + " * " + dd + ")";
+if (sheetPinStay(k, phone)) {
+/* STAYS PUT: THE PINNED PANE CANCELS THE SLIDE AND LIES ABOVE; THE OTHER PANE KEEPS CLEAR OF THE BAND */
+out.push(sel + " .bd-ly-track.is-ax-" + ax + " {\ntransform: " + (g.x ? "translate3d(calc(var(--i) * -100% / var(--n)), 0, 0)" : "translate3d(0, calc(var(--i) * -100% / var(--n)), 0)") + ";\n}");
+out.push(sel + " .bd-ly-pane {\ntranslate: none;\ntransform: none;\npadding: 0;\nclip-path: none;\nz-index: auto;\n}");
+out.push(sel + " .bd-ly-pane:nth-child(" + (g.pi + 1) + ") {\ntranslate: " + (g.x ? "calc((var(--i) - " + g.pi + ") * 100%) 0" : "0 calc((var(--i) - " + g.pi + ") * 100%)") + ";\nz-index: 2;\ntransition: translate " + KD + " var(--ly-ease);\n}");
+var pq = sheetPage(g.id);
+var qb = (pq && pq.box) || {};
+[["t", "bottom"], ["b", "top"], ["l", "right"], ["r", "left"]].forEach(function (sd) {
+var raw = boxVal(qb, "m" + sd[0], phone);
+var len = boxLen(raw, sd[0]);
+if (len == null) return;
+var vertical = sd[0] === "t" || sd[0] === "b";
+var view = vertical ? (phone ? 780 : 800) : (phone ? 390 : 1280);
+var n = parseFloat(raw) || 0;
+var pct = /%\s*$/.test(String(raw)) ? n : n / view * 100;
+if (pct < 50) return;
+var wcs = BOX_VIEW ? (vertical ? BOX_VIEW.h : BOX_VIEW.w) + "px" : vertical ? "100vh" : "100vw";
+out.push(sel + " .bd-ly-pane:not(:nth-child(" + (g.pi + 1) + ")) {\nbox-sizing: border-box;\npadding-" + sd[1] + ": max(0px, calc(" + wcs + " - " + len + "));\n}");
+});
+out.push(sel + ",\n" + sel + " .bd-ly-pane {\npointer-events: none;\n}\n" + sel + " .bd-ly-paper {\npointer-events: auto;\n}");
+return;
+}
+if (phone) out.push(sel + " .bd-ly-pane {\ntranslate: none;\nz-index: auto;\npadding: 0;\nclip-path: none;\n}");
 var tf = "translate3d(calc(var(--k-sx, 0px) * -1 * " + f + "), calc(var(--k-sy, 0px) * -1 * " + f + "), 0)";
 /* THE SHEET SCROLLS AS ONE: THE OTHER PAGE SCROLLS AND THE PINNED PAGE MOVES WITH IT (RUNTIME --k-sx / --k-sy); ONLY THE SLIDE KEEPS THE PINNED PAGE IN THE WINDOW */
 if (g.pi === 0) {
@@ -3245,7 +3278,7 @@ out.push(sel + " .bd-ly-track.is-ax-" + ax + " {\ntransform: translate3d(" + (g.
 out.push(sel + " .bd-ly-pane:nth-child(-n+" + g.pi + ") {\nbox-sizing: border-box;\npadding-" + (g.x ? "left" : "top") + ": " + g.len + ";\n}");
 out.push(sel + " .bd-ly-pane:nth-child(" + (g.pi + 1) + ") {\ntransform: " + tf + ";\n}");
 }
-if (!phone) out.push(sel + ",\n" + sel + " .bd-ly-pane {\npointer-events: none;\n}\n" + sel + " .bd-ly-paper {\npointer-events: auto;\n}");
+out.push(sel + ",\n" + sel + " .bd-ly-pane {\npointer-events: none;\n}\n" + sel + " .bd-ly-paper {\npointer-events: auto;\n}");
 });
 return out.join("\n");
 }
@@ -3442,6 +3475,13 @@ var N = Math.max(1, P.length);
 return k.axis === "x" ? { t: true, b: true, l: i === 0, r: i === N - 1 } : { l: true, r: true, t: i === 0, b: i === N - 1 };
 }
 function sheetPaperMargins(k, q, phone) {
+if (q && q.indep && sheetPin(k)) {
+/* AN INDEPENDENT PAGE ON A PINNED SHEET OWNS ITS PAPER: ITS OWN MARGINS, NOT THE SHEET'S */
+var ob = q.box || {};
+var oo = {};
+["t", "r", "b", "l"].forEach(function (x) { oo[x] = boxLen(boxVal(ob, "m" + x, phone), x) || "0px"; });
+return oo;
+}
 var sd = sheetPaperSides(k, q);
 var b = k.box || {};
 var o = {};
@@ -3616,7 +3656,7 @@ if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPap
 if (!phone && q.sheetBg) out.push(sel + " {\nbackground: " + bgVal(q.sheetBg) + ";\n}");
 var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", st && st.id === q.id ? null : padIns, true);
 if (bx) out.push(bx);
-if (!(st && st.id === q.id)) {
+if (!(st && st.id === q.id) && !(q.indep && sheetPin(k))) {
 var ix = insetCSS(q, phone, sel + " > .bd-panel");
 if (ix) out.push(ix);
 if (!phone && q.hover === "lift") out.push("@media (hover: hover) and (min-width: 761px) {\n" + sel + " > .bd-panel:hover {\nbox-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);\n}\n}");
@@ -4941,7 +4981,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#12a39a";
+var BD_BUILD = "#c9a227";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6029,6 +6069,28 @@ k.main = id;
 k.restPage = "";
 });
 }
+/* ONCE: A PINNED SHEET WHOSE PHONE MARGINS CUT IT INTO A BAND (A BIG CROSS MARGIN) MOVES THE BAND TO THE PINNED PAGE ITSELF AND STAYS PUT ON PHONE, SO THE OTHER PAGE IS NO LONGER SQUEEZED INTO THE BAND */
+function layStayIn(p) {
+((p.site || {}).sheets || []).forEach(function (k) {
+if (!k || !k.pin || !k.box || k.pinModeM) return;
+var q = p.pages[k.pin];
+if (!q) return;
+var ax = k.axis === "x" ? "x" : "y";
+var cross = ax === "x" ? ["mtM", "mbM"] : ["mlM", "mrM"];
+var along = ax === "x" ? ["mlM", "mrM"] : ["mtM", "mbM"];
+var cut = cross.filter(function (key) { var v = String(k.box[key] == null ? "" : k.box[key]); return /%\s*$/.test(v) && parseFloat(v) >= 50; });
+if (!cut.length) return;
+q.indep = true;
+q.box = Object.assign({}, q.box || {});
+cross.concat(along).forEach(function (key) {
+var v = k.box[key];
+if (v == null || v === "") return;
+q.box[key] = v;
+k.box[key] = "";
+});
+k.pinModeM = "stay";
+});
+}
 /* ONCE: A STRIP THAT PEEKS FROM THE LEFT/TOP LIES AT THE END OF ITS SHEET, FROM THE RIGHT/BOTTOM AT THE START, SO THE SPREAD READS THE RIGHT WAY ROUND */
 function layMigrateOrderIn(p) {
 ((p.site || {}).sheets || []).forEach(function (k) {
@@ -6696,8 +6758,10 @@ var free = all.filter(function (q) { return used.indexOf(q.id) < 0 && !q.parent;
 var LV = [["", "Site"]].concat(LAYER_TRANS);
 var h = '<div class="bd-ed-sec"><span class="bd-ed-title">Layout</span>' + field("Name", input(P + "name", k.name || "")) + sheetLayoutHTML(n)
 + (pages.length > 1 ? field("Pinned page", select(P + "pin", sheetPin(k), [["", "None"]].concat(pages.map(function (q) { return [q.id, q.title]; }))))
-+ (sheetPin(k) ? field("Pages underneath keep clear of it", seg(P + "pinPad", k.pinPad === "off" ? "off" : "", [["", "Yes"], ["off", "No"]])) : "")
-+ '<div class="bd-ed-hint">A pinned page never leaves the window: the sheet slides to its other page only as far as the pinned page stays against the edge. The sheet lies above everything and is not Home.</div>' : "") + "</div>";
++ (sheetPin(k) ? field("When the other page opens", seg(P + "pinMode", k.pinMode === "stay" ? "stay" : "", [["", "Pinned slides to the edge"], ["stay", "Pinned stays put"]])) : "")
++ (sheetPin(k) && phone ? field("Phone <b class=\"bd-ed-ph\">phone</b>", seg(P + "pinModeM", k.pinModeM || "", [["", "Same as desktop"], ["slide", "Slides"], ["stay", "Stays put"]])) : "")
++ (sheetPin(k) && !sheetPinStay(k, phone) ? field("Pages underneath keep clear of it", seg(P + "pinPad", k.pinPad === "off" ? "off" : "", [["", "Yes"], ["off", "No"]])) : "")
++ '<div class="bd-ed-hint">A pinned page never leaves the window. Slides to the edge: the sheet slides to its other page only as far as the pinned page stays against the edge. Stays put: the pinned page is a band that never moves and the other page opens beside it; give the pinned page its own margins (an independent page owns its paper) to shape the band, and the other page keeps clear of it. The sheet lies above everything and is not Home.</div>' : "") + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-title">Style</span><span class="bd-ed-label">Background colour</span>' + fillIn("Colour", P + "color", k.color, "#E4E1DA")
 + '<span class="bd-ed-label">Background effect</span>' + row(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur below", P + "blur", k.blur))
 + '<span class="bd-ed-label">Background decoration</span>' + field("Pattern", select(P + "pattern", k.pattern || "", SHEET_PATTERNS))

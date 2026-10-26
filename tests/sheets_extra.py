@@ -330,6 +330,16 @@ async def run():
         await pg.click('#bd-top [data-act=revert]'); await pg.click('#bd-top [data-act=discard-yes]'); await pg.wait_for_timeout(3000)
         ok('revert: Discard brings back the published site', await ev("S.project.site.name") != 'REVERT-PROBE' and not await ev("hasDraft()"))
         ok('revert: the button goes grey again', await pg.locator('#bd-top [data-act=revert][disabled]').count() == 1)
+        # --- pinned page that STAYS PUT (phone band): pane cancels the slide, other pane keeps clear, own paper margins, migration
+        await ev("(function(){ var k = sheetList().filter(function(k){return k.pin})[0]; if (!k) return; k.pinMode = 'stay'; changed(); })()")
+        ok('stay: CSS cancels the slide with a translate on the pinned pane and lifts it above', await ev("(function(){ var c = exportCSS(); return /nth-child\\(\\d\\) \\{\\s*translate: calc\\(\\(var\\(--i\\) - \\d\\) \\* 100%\\)/.test(c) && /z-index: 2/.test(c); })()"))
+        ok('stay: pages underneath are not padded by a pinned page that stays', await ev("(function(){ var k = sheetList().filter(function(k){return k.pin})[0]; return sheetPinPx(k, false) === null; })()"))
+        await ev("(function(){ var k = sheetList().filter(function(k){return k.pin})[0]; k.pinMode = ''; k.pinModeM = 'stay'; var q = S.project.pages[k.pin]; q.indep = true; q.box = Object.assign({}, q.box, { mtM: '85%' }); changed(); })()")
+        ok('stay: phone-only stay leaves desktop sliding', await ev("(function(){ var k = sheetList().filter(function(k){return k.pin})[0]; return !sheetPinStay(k, false) && sheetPinStay(k, true); })()"))
+        ok('stay: an independent pinned page owns its paper margins (phone)', await ev("(function(){ var k = sheetList().filter(function(k){return k.pin})[0]; var m = sheetPaperMargins(k, S.project.pages[k.pin], true); return /85/.test(m.t); })()"))
+        ok('stay: the other page keeps clear of the band (padding in the phone CSS)', await ev("(function(){ return /padding-bottom: max\\(0px, calc\\(/.test(exportCSS()); })()"))
+        ok('stay: migration turns a big phone cross margin into a band on the pinned page', await ev("(function(){ var p = { pages: { a: {id:'a', box:{}}, b: {id:'b', box:{}} }, site: { sheets: [ { id: 's', axis: 'x', pages: ['a','b'], pin: 'b', box: { mtM: '85%', mrM: '10%' } } ] } }; layStayIn(p); var k = p.site.sheets[0]; return k.pinModeM === 'stay' && p.pages.b.box.mtM === '85%' && p.pages.b.box.mrM === '10%' && k.box.mtM === '' && p.pages.b.indep === true; })()"))
+        await ev("(function(){ var k = sheetList().filter(function(k){return k.pin})[0]; k.pinModeM = ''; k.pinMode = ''; changed(); })()")
         ok('no page errors', not errs)
         await b.close()
     bad = [n for n, c in R if not c]
