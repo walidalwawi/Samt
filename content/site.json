@@ -4729,98 +4729,16 @@
      "m": null,
      "props": {
       "menu": "main",
-      "marker": ">",
+      "marker": "–––",
       "align": "left",
       "style": "mono",
-      "gap": 4,
+      "gap": 40,
       "gapM": 14,
       "pad": 40,
       "padM": 16,
       "mark": "ص مت"
-     }
-    },
-    {
-     "id": "svs2cjd6",
-     "type": "link",
-     "d": {
-      "x": 0,
-      "y": 9,
-      "w": 4,
-      "h": 4
      },
-     "m": null,
-     "props": {
-      "text": "Link",
-      "href": "/",
-      "newTab": false,
-      "style": "underline",
-      "size": "",
-      "sizeM": "",
-      "lh": "",
-      "lhM": "",
-      "ink": ""
-     }
-    },
-    {
-     "id": "d9uvnu2z",
-     "type": "rule",
-     "d": {
-      "x": 0,
-      "y": 59,
-      "w": 12,
-      "h": 2
-     },
-     "m": null,
-     "props": {
-      "ink": "",
-      "weight": ""
-     }
-    },
-    {
-     "id": "1polypwx",
-     "type": "product",
-     "d": {
-      "x": 0,
-      "y": 64,
-      "w": 6,
-      "h": 30
-     },
-     "m": null,
-     "props": {
-      "assetId": "",
-      "file": "",
-      "alt": "",
-      "title": "Product name",
-      "price": "",
-      "note": "",
-      "href": "",
-      "style": "",
-      "align": "",
-      "size": "",
-      "lh": "",
-      "sizeM": "",
-      "lhM": ""
-     }
-    },
-    {
-     "id": "t19hsluh",
-     "type": "embed",
-     "d": {
-      "x": 0,
-      "y": 16,
-      "w": 12,
-      "h": 40
-     },
-     "m": null,
-     "props": {
-      "url": "",
-      "title": "Video",
-      "radius": ""
-     },
-     "own": {
-      "x": 6,
-      "w": 5
-     }
+     "own": {}
     }
    ],
    "kind": "page",
@@ -4836,7 +4754,7 @@
     "gapM": ""
    },
    "box": {
-    "shadow": "none",
+    "shadow": "soft",
     "card": "",
     "mtM": "",
     "fit": false,
