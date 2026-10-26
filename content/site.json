@@ -646,8 +646,10 @@
     "out": "peek",
     "lv": "slide",
     "arrive": "slide",
-    "main": "fji5ongj",
-    "hover": "nudge"
+    "main": "b2lr3tkr",
+    "hover": "nudge",
+    "vc": 0,
+    "vr": 1
    }
   ],
   "editor": {
