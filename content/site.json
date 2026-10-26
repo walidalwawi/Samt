@@ -16,8 +16,8 @@
   "labelW": 100,
   "labelWM": 88,
   "colors": {
-   "page": "#263e0f",
-   "panel": "#0042a9",
+   "page": "#ffffff",
+   "panel": "#ffffff",
    "ink": "#16140F",
    "rule": "#16140F"
   },
@@ -583,15 +583,15 @@
     "axis": "x",
     "covers": "all",
     "coverPages": [],
-    "color": "#e22400",
-    "alpha": 70,
-    "blur": 0,
+    "color": "#E4E1DA",
+    "alpha": 55,
+    "blur": 9,
     "shadow": "line",
     "nudge": 0,
     "dur": "",
     "box": {
      "ml": "",
-     "mr": "75%",
+     "mr": "80%",
      "mt": "",
      "mb": ""
     },
@@ -606,7 +606,9 @@
     "hover": "",
     "vc": 1,
     "vr": 0,
-    "pin": "56ud3gky"
+    "pin": "56ud3gky",
+    "pinMode": "",
+    "pinPad": ""
    },
    {
     "id": "glg17d2m",
@@ -4461,13 +4463,7 @@
     "gutter": 40,
     "gutterM": 24
    },
-   "box": {
-    "fit": true,
-    "card": ""
-   },
-   "indep": true,
-   "scroll": "own",
-   "sheetBg": ""
+   "box": {}
   },
   "56ud3gky": {
    "id": "56ud3gky",
