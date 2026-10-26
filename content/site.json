@@ -597,10 +597,10 @@
      "mb": "",
      "ml": "",
      "pt": "",
-     "mtM": "85%",
-     "mlM": "",
-     "mrM": "10%",
-     "mbM": ""
+     "mtM": "55%",
+     "mlM": "60%",
+     "mrM": "80%",
+     "mbM": "110%"
     },
     "pattern": "",
     "patColor": "#000000",
@@ -612,7 +612,7 @@
     "main": "56ud3gky",
     "hover": "lift",
     "layPg": false,
-    "vc": 1,
+    "vc": 0,
     "vr": 0,
     "pin": "56ud3gky",
     "pinPad": ""
@@ -4724,7 +4724,7 @@
    "indep": true,
    "sheetBg": "",
    "pattern": "none",
-   "scroll": "own",
+   "scroll": "sheet",
    "hover": ""
   },
   "56ud3gky": {
