@@ -384,6 +384,7 @@ async def run():
         ok('plan: a still sheet below stays put (and on its page) when a page on a sheet above opens, whatever it lies over', await ev("(function(){ var K = [{ rest: 'still', main: 1, pin: 1, covers: null, panes: ['a', 'm'] }, { rest: 'still', main: 0, pin: -1, covers: ['m'], panes: ['j', 'l'] }]; var r = bdSheetPlan(K, { id: 'a', k: 0, i: 0 }, [{ st: 'open', i: 1 }, { st: 'open', i: 1 }]); var u = bdSheetPlan(K, { id: 'x', k: -1, i: 0 }, null); return r[1].st === 'open' && r[1].i === 1 && u[1].st === 'hidden'; })()"))
         ok('scroll: Safari fix, the open pane of a pinned sheet takes pointer events clipped to its paper', 'function hitClip(pn)' in await ev("exportJS()") and 'pn.style.pointerEvents = "auto"' in await ev("exportJS()"))
         ok('sheet: pages side by side end on the same line (every paper as long as the longest)', 'function pinLen()' in await ev("exportJS()") and 'THE BOTTOM EDGES LINE UP' in await ev("exportJS()"))
+        ok('sheet: never splits, a page leaving a pinned sheet scrolls home while the pinned page follows (--k-hold)', 'ONE SHEET NEVER SPLITS' in await ev("exportJS()") and 'var(--k-hold, 0)' in await ev("exportCSS()"))
         ok('posts: a post panel links to the post master', await pg.locator('#bd-right [data-act=post-master]').count() == 1)
         ok('no page errors', not errs)
         await b.close()

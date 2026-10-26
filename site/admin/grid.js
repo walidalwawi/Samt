@@ -3289,7 +3289,8 @@ return;
 }
 if (phone) out.push(sel + " .bd-ly-pane {\ntranslate: none;\nz-index: auto;\npadding: 0;\nclip-path: none;\n}");
 if (phone) out.push(sel + " {\n--k-stay: 0;\n}");
-var tf = "translate3d(calc(var(--k-sx, 0px) * -1 * " + f + "), calc(var(--k-sy, 0px) * -1 * " + f + "), 0)";
+var ff = "max(" + f + ", var(--k-hold, 0))";
+var tf = "translate3d(calc(var(--k-sx, 0px) * -1 * " + ff + "), calc(var(--k-sy, 0px) * -1 * " + ff + "), 0)";
 /* THE SHEET SCROLLS AS ONE: THE OTHER PAGE SCROLLS AND THE PINNED PAGE MOVES WITH IT (RUNTIME --k-sx / --k-sy); ONLY THE SLIDE KEEPS THE PINNED PAGE IN THE WINDOW */
 if (g.pi === 0) {
 out.push(sel + " .bd-ly-pane:nth-child(1) {\ntranslate: " + (g.x ? "calc(" + f + " * " + g.len + ") 0" : "0 calc(" + f + " * " + g.len + ")") + ";\ntransform: " + tf + ";\ntransition: translate " + KD + " var(--ly-ease);\n}");
@@ -4048,6 +4049,34 @@ content.scrollTop = 0;
 }
 }
 var next = bdSheetPlan(model, f, cur);
+/* ONE SHEET NEVER SPLITS: A PAGE LEAVING A PINNED SHEET SCROLLS BACK TO ITS TOP WHILE IT SLIDES, AND THE PINNED PAGE KEEPS FOLLOWING IT, SO THE PAPER STAYS ONE PIECE */
+next.forEach(function (n, x) {
+var m = model[x];
+var c = cur[x];
+if (m.pin < 0 || c.i === m.pin || n.i === c.i) return;
+var kids = m.track.children;
+var pn = kids[c.i];
+var pp = kids[m.pin];
+if (!pn || !pp || pn.hasAttribute("data-own") || !(pn.scrollTop > 0 || pn.scrollLeft > 0)) return;
+var y0 = pn.scrollTop;
+var x0 = pn.scrollLeft;
+var t0 = null;
+var len = reduce ? 0 : dur;
+pp.style.setProperty("--k-hold", "1");
+cancelAnimationFrame(pn.bdHome);
+var step = function (t) {
+if (t0 == null) t0 = t;
+var k = len ? Math.min(1, (t - t0) / len) : 1;
+var e = 1 - Math.pow(1 - k, 3);
+pn.scrollTop = y0 * (1 - e);
+pn.scrollLeft = x0 * (1 - e);
+pp.style.setProperty("--k-sy", pn.scrollTop + "px");
+pp.style.setProperty("--k-sx", pn.scrollLeft + "px");
+if (k < 1) pn.bdHome = requestAnimationFrame(step);
+else pp.style.removeProperty("--k-hold");
+};
+pn.bdHome = requestAnimationFrame(step);
+});
 next.forEach(function (n, x) {
 var m = model[x];
 var c = cur[x];
@@ -5047,7 +5076,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#0891b2";
+var BD_BUILD = "#9d174d";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
