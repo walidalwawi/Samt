@@ -569,8 +569,8 @@
     "id": "menu",
     "name": "Menu",
     "pages": [
-     "56ud3gky",
-     "nsye72w3"
+     "nsye72w3",
+     "56ud3gky"
     ],
     "restPage": "",
     "edge": "bottom",
@@ -580,7 +580,7 @@
     "peekM": 70,
     "sliver": 130,
     "sliverM": 14,
-    "axis": "y",
+    "axis": "x",
     "covers": "all",
     "coverPages": [],
     "color": "#ffffff",
@@ -610,7 +610,7 @@
     "main": "56ud3gky",
     "hover": "nudge",
     "layPg": false,
-    "vc": 0,
+    "vc": 1,
     "vr": 0,
     "pin": "56ud3gky",
     "pinPad": ""
@@ -679,7 +679,8 @@
   "followV1": true,
   "layOrderV1": true,
   "unparkV1": true,
-  "pinV1": true
+  "pinV1": true,
+  "indepV1": true
  },
  "order": [
   "f0kgkfxt",
@@ -4697,20 +4698,19 @@
     "pr": "0",
     "plM": "24",
     "prM": "24",
-    "mr": "0",
-    "shadow": "none",
+    "mr": "20%",
     "fit": false,
-    "card": "",
     "mrM": "0",
     "ml": "0",
     "pt": "0",
     "mt": "0",
     "mb": "0",
-    "pb": "0"
+    "pb": "0",
+    "card": "linear-gradient(180deg, #ffffff, #ffffff)",
+    "shadow": "soft"
    },
-   "sheetBg": "",
-   "hover": "",
-   "pattern": "none"
+   "indep": true,
+   "sheetBg": "#ffffff"
   },
   "56ud3gky": {
    "id": "56ud3gky",
@@ -4791,7 +4791,8 @@
     "gutterM": 24
    },
    "hover": "",
-   "pattern": ""
+   "pattern": "",
+   "indep": true
   }
  }
 }

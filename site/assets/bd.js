@@ -31,6 +31,23 @@ var c = k.getAttribute("data-covers");
 var st = k.querySelector(".bd-ly-strip > .bd-panel");
 return { el: k, rest: k.getAttribute("data-rest") || "open", main: parseInt(k.getAttribute("data-main"), 10) || 0, pin: isNaN(parseInt(k.getAttribute("data-pin"), 10)) ? -1 : parseInt(k.getAttribute("data-pin"), 10), covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
 });
+model.forEach(function (m) {
+if (m.pin < 0) return;
+var kids = Array.prototype.slice.call(m.track.children);
+var pinPane = kids[m.pin];
+kids.forEach(function (pn, ix) {
+if (ix === m.pin || pn.hasAttribute("data-own")) return;
+pn.addEventListener("scroll", function () {
+pinPane.style.setProperty("--k-sy", pn.scrollTop + "px");
+pinPane.style.setProperty("--k-sx", pn.scrollLeft + "px");
+}, { passive: true });
+});
+pinPane.addEventListener("wheel", function (e) {
+var i = parseInt(m.track.style.getPropertyValue("--i"), 10) || 0;
+var pn = kids[i];
+if (i !== m.pin && pn && !pn.hasAttribute("data-own")) pn.scrollBy(e.deltaX, e.deltaY);
+}, { passive: true });
+});
 function onPage(m, st, i) {
 m.el.style.removeProperty("--k-up");
 var id = st === "peek" && m.strip ? m.strip : m.panes[i] || m.strip;
