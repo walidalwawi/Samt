@@ -3266,6 +3266,7 @@ var dd = "clamp(-1, calc(var(--i) - " + g.pi + "), 1)";
 var f = g.pi === 0 ? "clamp(0, calc(var(--i) - 0), 1)" : "calc(" + dd + " * " + dd + ")";
 if (sheetPinStay(k, phone)) {
 /* STAYS PUT: THE PINNED PANE CANCELS THE SLIDE AND LIES ABOVE; THE OTHER PANE KEEPS CLEAR OF THE BAND */
+out.push(sel + " {\n--k-stay: 1;\n}");
 out.push(sel + " .bd-ly-track.is-ax-" + ax + " {\ntransform: " + (g.x ? "translate3d(calc(var(--i) * -100% / var(--n)), 0, 0)" : "translate3d(0, calc(var(--i) * -100% / var(--n)), 0)") + ";\n}");
 out.push(sel + " .bd-ly-pane {\ntranslate: none;\ntransform: none;\npadding: 0;\nclip-path: none;\nz-index: auto;\n}");
 out.push(sel + " .bd-ly-pane:nth-child(" + (g.pi + 1) + ") {\ntranslate: " + (g.x ? "calc((var(--i) - " + g.pi + ") * 100%) 0" : "0 calc((var(--i) - " + g.pi + ") * 100%)") + ";\nz-index: 2;\ntransition: translate " + KD + " var(--ly-ease);\n}");
@@ -3287,6 +3288,7 @@ out.push(sel + ",\n" + sel + " .bd-ly-pane {\npointer-events: none;\n}\n" + sel 
 return;
 }
 if (phone) out.push(sel + " .bd-ly-pane {\ntranslate: none;\nz-index: auto;\npadding: 0;\nclip-path: none;\n}");
+if (phone) out.push(sel + " {\n--k-stay: 0;\n}");
 var tf = "translate3d(calc(var(--k-sx, 0px) * -1 * " + f + "), calc(var(--k-sy, 0px) * -1 * " + f + "), 0)";
 /* THE SHEET SCROLLS AS ONE: THE OTHER PAGE SCROLLS AND THE PINNED PAGE MOVES WITH IT (RUNTIME --k-sx / --k-sy); ONLY THE SLIDE KEEPS THE PINNED PAGE IN THE WINDOW */
 if (g.pi === 0) {
@@ -3828,7 +3830,7 @@ function pinLen() {
 model.forEach(function (m) {
 if (!m.track.classList.contains("is-ax-x")) return;
 var kids = Array.prototype.slice.call(m.track.children);
-var stay = m.pin > -1 && kids[m.pin] && getComputedStyle(kids[m.pin]).transform === "none";
+var stay = m.pin > -1 && getComputedStyle(m.el).getPropertyValue("--k-stay").trim() === "1";
 var pp = kids.filter(function (pn, ix) { return !(stay && ix === m.pin); }).map(function (pn) { return pn.querySelector(".bd-ly-paper"); }).filter(Boolean);
 if (stay && kids[m.pin] && kids[m.pin].querySelector(".bd-ly-paper")) kids[m.pin].querySelector(".bd-ly-paper").style.minHeight = "";
 if (pp.length < 2) return;
@@ -5045,7 +5047,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#db2777";
+var BD_BUILD = "#0891b2";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
