@@ -1,4 +1,4 @@
-/* PUBLISHED mvpdrb4e */
+/* PUBLISHED mvpdtrcv */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -1446,28 +1446,6 @@ grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
 column-gap: 40px;
 }
 
-/* HEADER + FOOTER */
-.bd-panel > .bd-pin.bd-p-f0kgkfxt {
-margin-top: 200px;
-}
-
-/* PAGE: HEADER */
-
-.bd-e-83zud23g .bd-mlist {
-font-size: 15px;
-line-height: 22px;
-}
-.bd-e-83zud23g .bd-mbrand {
-font-size: 20px;
-line-height: 22px;
-}
-.bd-e-83zud23g {
---mgap: 25px;
---igap: 0px;
---ggap: 20px;
---hgap: 4px;
-}
-
 /* PAGE: HOW TO DESEED A WATERMELON FOR SAFE CONSUMPTION */
 .bd-flow > .bd-e-el3path8 {
 --x: 0;
@@ -2161,23 +2139,6 @@ max-width: 600px;
 --tind: 6px;
 }
 
-/* PAGE: SUPPLY */
-
-.bd-e-2xkm99iq .bd-product-t {
-font-size: 11px;
-line-height: 18px;
-}
-.bd-e-2xkm99iq {
-text-align: center;
-}
-.bd-e-pw5i8g5x .bd-product-t {
-font-size: 11px;
-line-height: 18px;
-}
-.bd-e-pw5i8g5x {
-text-align: center;
-}
-
 /* LAYERS */
 :root {
 --ly-dur: 500ms;
@@ -2697,15 +2658,6 @@ width: auto;
 background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1));
 box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
 }
-.bd-ly-art[data-id="zty6iib1"] > .bd-panel {
-margin-top: 4vh;
-margin-right: 6vw;
-margin-bottom: 4vh;
-margin-left: calc(256px + 6vw);
-padding-left: var(--bd-wl);
-width: auto;
-background: rgba(242, 182, 48, 1);
-}
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
 margin: 15vh 0px 0 0px;
 min-height: calc(100% - 15vh - 0px);
@@ -3063,25 +3015,6 @@ column-gap: 24px;
 grid-template-columns: minmax(0, 1fr);
 column-gap: 24px;
 }
-/* HEADER + FOOTER */
-.bd-panel > .bd-pin.bd-p-f0kgkfxt {
-margin-top: 64px;
-}
-/* PAGE: HEADER */
-
-.bd-e-83zud23g .bd-mlist {
-font-size: 15px;
-line-height: 22px;
-}
-.bd-e-83zud23g .bd-mbrand {
-font-size: 20px;
-line-height: 22px;
-}
-.bd-e-83zud23g {
---mgap: 25px;
---igap: 0px;
---ggap: 20px;
-}
 /* PAGE: HOW TO DESEED A WATERMELON FOR SAFE CONSUMPTION */
 .bd-flow > .bd-e-el3path8 {
 --x: 0;
@@ -3343,16 +3276,6 @@ line-height: 20px;
 .bd-e-owa05vjv {
 font-size: 13px;
 line-height: 20px;
-}
-/* PAGE: SUPPLY */
-
-.bd-e-2xkm99iq .bd-product-t {
-font-size: 11px;
-line-height: 18px;
-}
-.bd-e-pw5i8g5x .bd-product-t {
-font-size: 11px;
-line-height: 18px;
 }
 /* LAYERS */
 .bd-ly-art > .bd-panel {
@@ -3640,14 +3563,6 @@ padding-left: var(--bd-wl);
 width: auto;
 }
 .bd-ly-art[data-id="1bp9xrs5"] > .bd-panel {
-margin-top: 4vh;
-margin-right: 6vw;
-margin-bottom: 4vh;
-margin-left: calc(78px + 6vw);
-padding-left: var(--bd-wl);
-width: auto;
-}
-.bd-ly-art[data-id="zty6iib1"] > .bd-panel {
 margin-top: 4vh;
 margin-right: 6vw;
 margin-bottom: 4vh;

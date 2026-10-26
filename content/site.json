@@ -694,7 +694,6 @@
   }
  },
  "order": [
-  "f0kgkfxt",
   "56ud3gky",
   "aj2hm4y8",
   "fji5ongj",
@@ -703,91 +702,9 @@
   "ap7jj2t4",
   "1bp9xrs5",
   "b2lr3tkr",
-  "nsye72w3",
-  "zty6iib1"
+  "nsye72w3"
  ],
  "pages": {
-  "f0kgkfxt": {
-   "id": "f0kgkfxt",
-   "title": "Header",
-   "h1": "",
-   "num": "",
-   "slug": "header",
-   "section": "",
-   "desc": "",
-   "header": false,
-   "layout": "master",
-   "css": "",
-   "els": [
-    {
-     "id": "83zud23g",
-     "type": "menubtn",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 3
-     },
-     "m": null,
-     "props": {
-      "mode": "list",
-      "corner": "",
-      "brand": "custom",
-      "brandText": "ص مت",
-      "brandPos": "above",
-      "brandStyle": "",
-      "brandSize": "",
-      "brandLh": "",
-      "brandGap": "",
-      "brandGapM": "",
-      "align": "start",
-      "dir": "vertical",
-      "group": "flat",
-      "style": "",
-      "size": "",
-      "sizeM": "",
-      "lh": "",
-      "lhM": "",
-      "textCase": "",
-      "tracking": "",
-      "itemGap": "",
-      "itemGapM": "",
-      "groupGap": "",
-      "groupGapM": "",
-      "headGap": "",
-      "current": "",
-      "hover": "",
-      "brandSizeM": "",
-      "brandLhM": "",
-      "menu": ""
-     }
-    }
-   ],
-   "kind": "pin",
-   "pin": {
-    "place": "bottom",
-    "fixed": false,
-    "show": "all",
-    "pages": [],
-    "h": "",
-    "hM": "",
-    "gap": 200,
-    "gapM": 64
-   },
-   "stack": [],
-   "colset": {
-    "cols": 1,
-    "align": "center",
-    "spans": [
-     12
-    ],
-    "colsM": 1,
-    "gutter": 30,
-    "gutterM": 20
-   },
-   "box": {}
-  },
   "fji5ongj": {
    "id": "fji5ongj",
    "title": "Journal",
@@ -4419,92 +4336,6 @@
     "ml": "0"
    },
    "sheetBg": ""
-  },
-  "zty6iib1": {
-   "id": "zty6iib1",
-   "title": "Supply",
-   "h1": "",
-   "num": "",
-   "slug": "supply",
-   "section": "",
-   "desc": "Samt supply store.",
-   "layout": "master",
-   "css": "",
-   "els": [
-    {
-     "id": "2xkm99iq",
-     "type": "product",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 30
-     },
-     "m": null,
-     "props": {
-      "assetId": "",
-      "file": "",
-      "alt": "The Silent Ones Embroidery on white t-shirt",
-      "title": "The Silent Ones Embroidery on white t-shirt",
-      "price": "£20.00",
-      "note": "",
-      "href": "",
-      "style": "",
-      "align": "",
-      "size": "",
-      "lh": "",
-      "sizeM": "",
-      "lhM": ""
-     }
-    },
-    {
-     "id": "pw5i8g5x",
-     "type": "product",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 30
-     },
-     "m": null,
-     "props": {
-      "assetId": "",
-      "file": "",
-      "alt": "Yoni Clay white incense holder",
-      "title": "Yoni Clay white incense holder",
-      "price": "£55.00",
-      "note": "Sold out",
-      "href": "",
-      "style": "",
-      "align": "",
-      "size": "",
-      "lh": "",
-      "sizeM": "",
-      "lhM": ""
-     }
-    }
-   ],
-   "kind": "page",
-   "stack": [],
-   "pin": {
-    "place": "top",
-    "fixed": false,
-    "show": "all",
-    "pages": [],
-    "h": "",
-    "hM": "",
-    "gap": "",
-    "gapM": ""
-   },
-   "box": {
-    "card": "#F2B630",
-    "mt": "4%",
-    "mb": "4%",
-    "ml": "6%",
-    "mr": "6%"
-   }
   },
   "nsye72w3": {
    "id": "nsye72w3",
