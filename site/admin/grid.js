@@ -691,6 +691,8 @@ s.oneV1 = true;
 }
 sheetFix(p);
 sheetPinOrder(p);
+if (s.glass) s.glass.menu = "";
+killBlocks(p);
 s.motion = Object.assign({ gDur: 450, gEase: "ease", tease: 8, open: 24 }, s.motion || {});
 if (s.mt === undefined) {
 var ot = s.top != null ? s.top : 48;
@@ -3571,6 +3573,7 @@ return Math.round(Math.sqrt(b * b + f * f) * 10) / 10;
 function sheetLine(k, phone) {
 var sh = k.shadow || "none";
 if (sh === "none") return "none";
+if (sh === "soft") return "0 0 28px rgba(0, 0, 0, 0.16)";
 var e = (phone ? k.edgeM : k.edge) || "left";
 if (sh === "hard") return { left: "8px 8px 0", right: "-8px 8px 0", top: "8px 8px 0", bottom: "8px -8px 0" }[e] + " rgba(0, 0, 0, 0.1)";
 var side = k.rest === "peek" ? { left: "right", right: "left", top: "bottom", bottom: "top" }[e] : e;
@@ -5029,7 +5032,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#7c3aed";
+var BD_BUILD = "#0891b2";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -5190,9 +5193,9 @@ if (!opts.skipCode) renderCode();
 }
 /* TOOLS — EVERY BUTTON, TAB AND SECTION OF THE BACK OFFICE CAN BE HIDDEN, BROUGHT BACK, REORDERED AND MOVED; YOUR OWN TOOLS COME IN AS CODE */
 var TOOL_ZONES = { top: ["Top bar", "btn"], rail: ["Rail", "btn"], left: ["Left panel", "panel"], right: ["Right panel", "panel"] };
-var RAIL_TYPES = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["notes", "Notes"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"], ["quote", "Quote"], ["toggle", "Fold-out list"], ["product", "Product"], ["sep1"], ["menubtn", "Menu"], ["sheetmenu", "Sheet menu"], ["ptitle", "Page title"], ["pager", "Page arrows"], ["sep2"], ["posts", "Blog posts"], ["postinfo", "Post info"], ["sep3"]];
+var RAIL_TYPES = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"], ["quote", "Quote"], ["toggle", "Fold-out list"], ["sep1"], ["menubtn", "Menu"], ["sheetmenu", "Sheet menu"], ["pager", "Page arrows"], ["sep2"], ["posts", "Blog posts"], ["postinfo", "Post info"], ["sep3"]];
 var TOOL_DEFAULT = {
-top: ["toggle-left", "brand", "projects", "mode", "undo", "redo", "desk", "code-btn", "preview", "revert", "publish", "status", "toggle-right"],
+top: ["toggle-left", "brand", "projects", "mode", "undo", "redo", "code-btn", "preview", "revert", "publish", "status", "toggle-right"],
 rail: RAIL_TYPES.map(function (t) { return t.length > 1 ? "add:" + t[0] : t[0]; }).concat(["inspect"]),
 left: ["pages", "styles", "motion", "site", "code"],
 right: []
@@ -5262,7 +5265,6 @@ return '<button class="bd-ed-tool' + (phone ? "" : " is-on") + '" data-act="mode
 } },
 "undo": { label: "Undo", icon: I.undo, act: "undo", iconOnly: true, disabled: function () { return !S.undo.length; } },
 "redo": { label: "Redo", icon: I.redo, act: "redo", iconOnly: true, disabled: function () { return !S.redo.length; } },
-"desk": { label: "Desk", icon: I.panel, act: "desk", on: function () { return !!S.desk && layersOn(); } },
 "code-btn": { label: "Code", icon: I.code, act: "code", on: function () { return S.codeOpen; } },
 "preview": { label: "Preview", icon: I.eye, act: "preview", on: function () { return S.preview && !S.inspect; } },
 "revert": { label: "Revert", only: ["top"], html: function () {
@@ -5801,7 +5803,7 @@ var s = S.project.site;
 var M = s.motion;
 var Lz = s.layers;
 var h = "";
-if (Lz.on) {
+if (false) {
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span><div class="bd-ed-hint">How every sheet moves, unless a sheet sets its own. Preview to watch.</div><div class="bd-ed-actions">' + [["paper", "Paper"], ["drag", "Heavy drag"], ["stop", "Stop-motion"], ["quiet", "Quiet"], ["still", "Still"]].map(function (x) {
 return '<button class="bd-ed-btn" data-act="ly-preset" data-val="' + x[0] + '">' + x[1] + "</button>";
 }).join("") + "</div>"
@@ -5815,7 +5817,6 @@ return '<button class="bd-ed-btn" data-act="ly-preset" data-val="' + x[0] + '">'
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Gestures</span><div class="bd-ed-hint">Every card and book: hover teases the move, a tap plays it fully, then it opens.</div>'
 + row(numIn("Speed (ms)", "site.motion.gDur", M.gDur, "int"), field("Feel", select("site.motion.gEase", M.gEase, [["ease", "Ease"], ["cubic-bezier(.2,.8,.2,1)", "Paper"], ["cubic-bezier(.7,0,.25,1)", "Heavy drag"], ["ease-in-out", "Even"], ["steps(5, end)", "Stop-motion"], ["linear", "Straight"]])))
 + row(numIn("Book hover tease (°)", "site.motion.tease", M.tease), numIn("Book tap opens (°)", "site.motion.open", M.open)) + "</div>";
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Journal cards · every Blog posts block</span>' + styleFields("posts", "site", null, { only: bsMotionKeys("posts"), flat: true }) + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Library books · every Library block</span>' + styleFields("library", "site", null, { only: ["book"].concat(bsMotionKeys("library")), flat: true }) + '<div class="bd-ed-hint">A block can still do its own thing: select it, Look → Motion.</div></div>';
 return h;
 }
@@ -6017,6 +6018,14 @@ var i = pages.map(function (q) { return q.id; }).indexOf(id);
 return i < 0 ? 0 : i;
 }
 /* KEEP EVERY SHEET TIDY: NO MISSING PAGES, AND A STRIP LIES WHERE THE EXPORT PUTS IT (LEFT/TOP EDGE = LAST, RIGHT/BOTTOM EDGE = FIRST) */
+/* GONE FOR GOOD: NOTES, PRODUCT AND PAGE TITLE BLOCKS (WALID'S REVIEW) */
+function killBlocks(p) {
+var gone = { notes: 1, product: 1, ptitle: 1 };
+Object.keys(p.pages || {}).forEach(function (id) {
+var q = p.pages[id];
+if (q && Array.isArray(q.els)) q.els = q.els.filter(function (e) { return !(e && gone[e.type]); });
+});
+}
 function sheetFix(p) {
 var site = p && p.site;
 if (!site || !site.sheets) return;
@@ -6037,6 +6046,7 @@ k.pages = (k.pages || []).filter(function (id, i, a) { var q = p.pages[id]; retu
 if (k.pin && (k.pages.indexOf(k.pin) < 0 || k.pages.length < 2 || k.rest === "peek")) k.pin = "";
 if (k.pin && k.rest !== "still") k.rest = "still";
 if (k.hover === "nudge" && k.rest !== "peek") k.hover = "";
+if (k.shadow === "line" || k.shadow === "hard") k.shadow = "soft";
 /* ONE SHEET, ONE PIECE: PAGES ON IT NEVER OWN GEOMETRY. NO OWN SCROLL, NO OWN MARGINS, NO STAYS-PUT BAND */
 delete k.pinMode;
 delete k.pinModeM;
@@ -6767,92 +6777,6 @@ layWrite(s.n, phone, { away: s.res.away });
 }
 changed();
 }
-/* THE DESK: THE WHOLE SITE AS PAPER ON A DESK. THE WINDOW IS THE GLASS, EVERY SHEET LIES WHERE IT REALLY LIES, A PIN SITS ON THE PINNED PAGE. DRAG A SHEET'S EDGES TO RESIZE THE WHOLE SHEET (THE SAME HANDLES AS THE SHEET DRAWING: layApply WRITES THE MODEL) */
-function deskPaper(k) {
-var c = k && typeof k.color === "string" && /^#[0-9a-f]{3,8}$/i.test(k.color) ? k.color : "#ece9e2";
-return c;
-}
-function deskHTML(phone) {
-var K = sheetList();
-var v = gridView(phone);
-var s = S.project.site;
-var g = s.glass || {};
-var cur = curPage();
-var selK = S.sheetSel ? K.map(function (k) { return k.id; }).indexOf(S.sheetSel) : (cur ? sheetOf(cur.id).k : -1);
-var geos = K.map(function (k, n) { return sheetGeo(n, phone); });
-var B = { l: 0, t: 0, r: v.w, b: v.h };
-geos.forEach(function (G) { B = { l: Math.min(B.l, G.rect.l), t: Math.min(B.t, G.rect.t), r: Math.max(B.r, G.rect.r), b: Math.max(B.b, G.rect.b) }; });
-var pad = v.w * 0.07;
-B = { l: B.l - pad, t: B.t - pad - v.h * 0.05, r: B.r + pad, b: B.b + pad };
-var DW = 760;
-var sc = DW / (B.r - B.l);
-var VH = Math.round((B.b - B.t) * sc);
-var r1 = function (x) { return Math.round(x * 10) / 10; };
-var X = function (x) { return r1((x - B.l) * sc); };
-var Y = function (y) { return r1((y - B.t) * sc); };
-var Lx = function (x) { return r1(x * sc); };
-var rect = function (r, attrs) { return '<rect x="' + X(r.l) + '" y="' + Y(r.t) + '" width="' + Lx(Math.max(0, r.r - r.l)) + '" height="' + Lx(Math.max(0, r.b - r.t)) + '" ' + attrs + "/>"; };
-var o = '<svg class="bd-lay bd-desk-svg" viewBox="0 0 ' + DW + " " + VH + '" width="100%" role="img" aria-label="The desk: the window and every sheet on it" data-n="0" data-bx="' + B.l + '" data-by="' + B.t + '" data-sc="' + sc + '" data-w="' + v.w + '" data-h="' + v.h + '" data-axis="y" data-dw="' + DW + '">';
-o += '<defs><clipPath id="bd-desk-win">' + rect({ l: 0, t: 0, r: v.w, b: v.h }, 'rx="4"') + "</clipPath></defs>";
-o += '<rect x="0" y="0" width="' + DW + '" height="' + VH + '" fill="#c9c9c3"/>';
-var sx = v.w / 20, sy = v.h / 20;
-for (var x = Math.floor(B.l / sx) * sx; x <= B.r; x += sx) o += '<line x1="' + X(x) + '" y1="0" x2="' + X(x) + '" y2="' + VH + '" stroke="#000" stroke-opacity=".05" stroke-width=".6"/>';
-for (var y = Math.floor(B.t / sy) * sy; y <= B.b; y += sy) o += '<line x1="0" y1="' + Y(y) + '" x2="' + DW + '" y2="' + Y(y) + '" stroke="#000" stroke-opacity=".05" stroke-width=".6"/>';
-/* THE PAPER, BOTTOM OF THE STACK FIRST: A SHADOW LINE, THE SHEET, ITS PAGES. DIMMED OUTSIDE THE WINDOW, BRIGHT INSIDE IT */
-var paper = "", hits = "", pins = "", handles = "", names = "";
-for (var n = K.length - 1; n >= 0; n--) {
-var G = geos[n], k = G.k;
-var sel = n === selK;
-var fill = deskPaper(k);
-var al = Math.max(0.55, Math.min(1, (parseFloat(k.alpha == null ? 55 : k.alpha) || 0) / 100 + 0.35));
-var clear = (parseFloat(k.alpha) || 0) < 20 || k.color === "none";
-var sh = k.shadow === "hard" ? 6 : k.shadow === "line" ? 2 : 3;
-paper += '<g class="bd-desk-sheet' + (sel ? " is-sel" : "") + '">';
-paper += rect({ l: G.rect.l + sh / sc, t: G.rect.t + sh / sc, r: G.rect.r + sh / sc, b: G.rect.b + sh / sc }, 'fill="#000" fill-opacity=".14"');
-G.slots.forEach(function (sl) {
-paper += rect(sl.slot, 'fill="' + fill + '" fill-opacity="' + (clear ? 0.5 : al) + '" stroke="' + (sel ? LAY_C.win : "#3b3a37") + '" stroke-opacity="' + (sel ? 1 : 0.55) + '" stroke-width="' + (sel ? 2 : 1) + '"' + (clear ? ' stroke-dasharray="5 3"' : ""));
-var wpx = Lx(sl.slot.r - sl.slot.l);
-var t = String(sl.q.title || "");
-var maxc = Math.max(3, Math.floor(wpx / 6.2) - 3);
-if (t.length > maxc) t = t.slice(0, Math.max(1, maxc - 1)) + "…";
-paper += '<text x="' + r1(X(sl.slot.l) + 8) + '" y="' + r1(Y(sl.slot.t) + 16) + '" font-size="10" font-family="ui-monospace,Menlo,monospace" fill="#1c1b19">' + esc(t) + (sl.i === G.star ? " ★" : "") + "</text>";
-for (var ln = 0; ln < 3; ln++) paper += '<line x1="' + r1(X(sl.slot.l) + 8) + '" x2="' + r1(X(sl.slot.l) + Math.max(10, wpx * (0.72 - ln * 0.16))) + '" y1="' + r1(Y(sl.slot.t) + 28 + ln * 9) + '" y2="' + r1(Y(sl.slot.t) + 28 + ln * 9) + '" stroke="#1c1b19" stroke-opacity=".16" stroke-width="2" stroke-linecap="round"/>';
-hits += '<g data-act="page" data-id="' + sl.q.id + '" style="cursor:pointer">' + rect(sl.slot, 'fill="transparent"') + "</g>";
-var pinned = sheetPin(k) === sl.q.id;
-if (G.N === 2) {
-var px = X(sl.slot.r) - 16, py = Y(sl.slot.t) + 16;
-pins += '<g data-act="lay-flag" data-f="pin" data-i="' + n + '" data-id="' + sl.q.id + '" style="cursor:pointer"><title>' + (pinned ? "Unpin" : "Pin this page: the window never slides past it") + '</title><circle cx="' + r1(px) + '" cy="' + r1(py) + '" r="' + (pinned ? 8 : 6.5) + '" fill="' + (pinned ? "#2f5bd3" : "#fff") + '" fill-opacity="' + (pinned ? 1 : 0.55) + '" stroke="#2f5bd3" stroke-width="' + (pinned ? 1.5 : 1) + '" stroke-opacity="' + (pinned ? 1 : 0.55) + '"/>' + (pinned ? '<circle cx="' + r1(px - 2) + '" cy="' + r1(py - 2) + '" r="2" fill="#fff" fill-opacity=".7"/><path d="M' + r1(px) + " " + r1(py + 8) + "l0 8" + '" stroke="#2f5bd3" stroke-width="1.4"/>' : "") + "</g>";
-}
-});
-paper += "</g>";
-names += '<g data-act="sheet-sel" data-id="' + esc(k.id) + '" style="cursor:pointer"><text x="' + X(G.rect.l) + '" y="' + r1(Y(G.rect.t) - 6) + '" font-size="10" font-family="ui-monospace,Menlo,monospace" font-weight="600" fill="' + (sel ? LAY_C.win : "#2a2926") + '">' + esc((k.name || "Sheet").toUpperCase()) + (sheetPin(k) ? " · PINNED" : "") + " · " + (K.length - n) + "</text></g>";
-if (sel) {
-var hnd = function (side, cx, cy) {
-var vert = side === "l" || side === "r";
-return '<g data-lh="sheet" data-s="' + side + '" data-n="' + n + '" style="cursor:' + (vert ? "ew-resize" : "ns-resize") + '"><rect x="' + r1(cx - (vert ? 12 : 22)) + '" y="' + r1(cy - (vert ? 22 : 12)) + '" width="' + (vert ? 24 : 44) + '" height="' + (vert ? 44 : 24) + '" fill="transparent"/><rect x="' + r1(cx - (vert ? 3 : 10)) + '" y="' + r1(cy - (vert ? 10 : 3)) + '" width="' + (vert ? 6 : 20) + '" height="' + (vert ? 20 : 6) + '" rx="3" fill="' + LAY_C.win + '" stroke="#fff" stroke-width="1.3"/></g>';
-};
-var rm = (G.rect.l + G.rect.r) / 2, rc = (G.rect.t + G.rect.b) / 2;
-handles += hnd("l", X(G.rect.l), Y(rc)) + hnd("r", X(G.rect.r), Y(rc)) + hnd("t", X(rm), Y(G.rect.t)) + hnd("b", X(rm), Y(G.rect.b));
-}
-}
-o += '<g opacity=".4">' + paper + '</g><g clip-path="url(#bd-desk-win)">' + paper + "</g>";
-/* THE GLASS: THE WINDOW, AND A MENU BAR STUCK TO IT */
-o += rect({ l: 0, t: 0, r: v.w, b: v.h }, 'rx="4" fill="rgba(255,255,255,.07)" stroke="' + LAY_C.win + '" stroke-width="2"');
-o += '<g><rect x="' + r1(X(v.w) - 176) + '" y="' + r1(Y(v.h) - 22) + '" width="170" height="16" rx="3" fill="#fff" fill-opacity=".85"/><text x="' + r1(X(v.w) - 91) + '" y="' + r1(Y(v.h) - 10.5) + '" text-anchor="middle" font-size="9.5" font-family="ui-monospace,Menlo,monospace" fill="' + LAY_C.win + '" font-weight="600">GLASS · ' + (phone ? "PHONE " : "") + v.w + "×" + v.h + "</text></g>";
-var barOn = g.menu && (g.menu === "both" || (phone ? g.menu === "phone" : g.menu === "desktop"));
-var gh = phone ? 52 : 44;
-if (barOn) {
-var gy = g.at === "top" ? 0 : v.h - gh;
-o += rect({ l: 0, t: gy, r: v.w, b: gy + gh }, 'fill="rgba(255,255,255,.72)" stroke="#2f5bd3" stroke-width="1.2" stroke-dasharray="4 3"');
-o += '<text x="' + r1(X(0) + 10) + '" y="' + r1(Y(gy) + Lx(gh) / 2 + 3.5) + '" font-size="10" font-family="ui-monospace,Menlo,monospace" fill="#1c1b19">' + esc(s.name || "Site") + " · menu · stuck to the glass</text>";
-}
-o += names + hits + pins + handles + "</svg>";
-var h = '<div class="bd-ed-desk-in"><div class="bd-ed-desk-box">' + o + "</div>";
-h += '<div class="bd-ed-desk-legend"><span><i class="is-glass"></i>Glass · the window</span><span><i class="is-paper"></i>Paper · a sheet, one piece</span><span><i class="is-pin"></i>Pin · tap a corner dot</span></div>';
-h += '<div class="bd-ed-desk-ctl"><div class="bd-ed-desk-c"><span class="bd-ed-label">Glass · menu bar</span>' + seg("site.glass.menu", g.menu || "", [["", "Off"], ["phone", "Phone"], ["desktop", "Desktop"], ["both", "Both"]]) + (g.menu ? seg("site.glass.at", g.at === "top" ? "top" : "bottom", [["top", "Top"], ["bottom", "Bottom"]]) : "") + "</div>";
-h += '<div class="bd-ed-hint">Tap a sheet to edit its page. Tap its name to edit the sheet. Drag an orange handle on the selected sheet to resize the whole sheet; every page on it shares those edges. Tap the dot on a page to pin it. Resizing snaps to 5%.</div></div></div>';
-return h;
-}
 /* THE SPREAD — THE WHOLE SHEET LAID FLAT IN THE PREVIEW PANE, THE WINDOW DRAWN ON IT */
 function spreadDoc(n, phone) {
 var G = sheetGeo(n, phone);
@@ -6932,27 +6856,9 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-title">Style</span><span class="
 + '<span class="bd-ed-label">Background effect</span>' + row(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur below", P + "blur", k.blur))
 + '<span class="bd-ed-label">Background decoration</span>' + field("Pattern", select(P + "pattern", k.pattern || "", SHEET_PATTERNS))
 + (k.pattern ? row(field("Lines", '<input type="color" class="bd-ed-input" data-bind="' + P + 'patColor" value="' + esc(k.patColor || "#000000") + '">'), numIn("Spacing px", P + "patSize", k.patSize), numIn("Strength %", P + "patAlpha", k.patAlpha)) : "")
-+ field("Edge", seg(P + "shadow", k.shadow || "none", [["none", "None"], ["line", "Hairline"], ["hard", "Hard shadow"]]))
++ field("Edge", seg(P + "shadow", k.shadow || "none", [["none", "None"], ["soft", "Soft shadow"]]))
 + '<div class="bd-ed-hint">Pages inherit all of this; a page can set its own card colour, blur and decoration. None or a clear gradient end lets what is under the sheet show.</div></div>';
-h += '<div class="bd-ed-sec"><span class="bd-ed-title">Animation</span>' + field("On appear", seg(P + "arrive", k.arrive === "fade" || k.arrive === "cut" ? k.arrive : "slide", [["slide", "Slide"], ["fade", "Fade"], ["cut", "Cut"]]))
-+ field("On leave", select(P + "lv", k.lv || "", LV))
-+ field("On hover", seg(P + "hover", k.hover || "", [["", "None"], ["lift", "Lift"]]))
-+ row(numIn("Speed (ms)", P + "dur", k.dur, "blank"))
-+ '<div class="bd-ed-hint">On appear: how it comes in when nothing of it was showing. On leave: how a shown sheet gets out of the way (Site = the site’s “opens with”). On hover (desktop): the sheet lifts with a shadow. Pages can add their own lift.</div><button class="bd-ed-btn" data-act="sheet-play">' + I.eye + "Play it · open a page underneath, then come back</button></div>";
-h += '<details class="bd-ed-sec bd-ed-fold"><summary class="bd-ed-title">Exact numbers' + (phone ? " · phone" : "") + "</summary>"
-+ '<span class="bd-ed-label">Margin · moves the sheet’s edges in</span>' + sheetFour(P, b, "m", phone)
-+ '<span class="bd-ed-label">Padding · space around its pages</span>' + sheetFour(P, b, "p", phone)
-+ '<div class="bd-ed-hint">Margin: px, or % of the window. Padding: px. The drawing writes these; type here to fine-tune. Blank = none.' + (phone ? " Blank on phone = same as desktop." : "") + "</div></details>";
-h += '<div class="bd-ed-sec"><span class="bd-ed-title">When a page underneath opens</span>' + (k.rest === "open" ? field("Slides away to" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), seg(P + (phone ? "edgeM" : "edge"), (phone ? k.edgeM : k.edge) || "left", SHEET_EDGES)) : "")
-+ (k.rest === "open" ? field("Left showing when it slides away (px)" + (phone ? ' <b class="bd-ed-ph">phone</b>' : ""), numIn("", P + (phone ? "sliverM" : "sliver"), phone ? k.sliverM : k.sliver)) : "")
-+ field("At rest", '<span class="bd-ed-seg"><button class="' + (k.rest !== "hidden" ? "is-on" : "") + '" data-act="lay-hide" data-i="' + n + '" data-val="0">As drawn</button><button class="' + (k.rest === "hidden" ? "is-on" : "") + '" data-act="lay-hide" data-i="' + n + '" data-val="1">Hidden</button></span>')
-+ field("Lies over", seg(P + "covers", k.covers === "some" ? "some" : "all", [["all", "Every page"], ["some", "Chosen pages"]]))
-+ (k.covers === "some" ? all.filter(function (q) { return (k.pages || []).indexOf(q.id) < 0; }).map(function (q) {
-return '<label class="bd-ed-check"><input type="checkbox" data-act="sheet-cover" data-i="' + n + '" data-id="' + q.id + '"' + ((k.coverPages || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc(q.title) + "</label>";
-}).join("") + '<div class="bd-ed-hint">On any other page underneath, this sheet slides away completely. Pages on sheets higher in the stack never move it: they just lie over it.</div>' : "")
-+ "</div>";
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Stack · ' + (n + 1) + " of " + sheetList().length + ", top to bottom</span>"
-+ '<div class="bd-ed-hint">Drag the sheet\u2019s grip in Layers to change the stack.</div><div class="bd-ed-actions"><button class="bd-ed-btn is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve · pages stay</button></div></div>";
+h += '<div class="bd-ed-sec"><div class="bd-ed-hint">Drag the sheet\u2019s grip in Layers to change the stack.</div><div class="bd-ed-actions"><button class="bd-ed-btn is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve · pages stay</button></div></div>";
 return h;
 }
 /* PUT A PAGE ON A SHEET ("" = underneath, "new" = a fresh sheet) */
@@ -6977,7 +6883,7 @@ changed();
 function layersPanel() {
 var s = S.project.site;
 var Lz = s.layers;
-var h = '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span>' + sw("Show the site as layers", "site.layers.on", Lz.on) + '<div class="bd-ed-hint">Pages lie on translucent sheets stacked over the rest of the site. Make a sheet in Pages (+ Sheet) or put a page on one from its own panel.</div>';
+var h = '<div class="bd-ed-sec"><span class="bd-ed-label">Paper sheets</span>' + (Lz.on ? "" : sw("Show the site as layers", "site.layers.on", Lz.on) + '<div class="bd-ed-hint">Pages lie on translucent sheets stacked over the rest of the site.</div>');
 if (!Lz.on) return h + "</div>";
 h += '<div class="bd-ed-hint">' + (sheetList().length ? sheetList().length + " sheet" + (sheetList().length > 1 ? "s" : "") + ". " : "No sheets yet. ") + "Tap a sheet’s title in Pages to edit it, move it up or down the stack, or change how it moves. Pages and posts not on a sheet lie underneath, one at a time.</div></div>";
 return h;
@@ -6998,7 +6904,7 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-label">Page frame</span>'
 + '<div class="bd-ed-hint">Columns are set in the bar above the canvas.</div></div>';
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title at the top", "site.header", s.header) + '<div class="bd-ed-hint">Writes each page’s heading above its content. A page can switch it off in its own panel (Show the title). Or leave this off and place a Page title block where you want it.</div>' + (s.header ? sw("Number above the title", "site.showNum", s.showNum) : "") + (layersOn() ? "" : sw("Floating menu button", "site.menu", s.menu) + sw("Page arrows at the end", "site.pager", s.pager)) + sw("Click images to zoom", "site.zoom", s.zoom) + '<div class="bd-ed-hint">Tap an image to see it full screen. One image can opt out in its own panel.</div>'
 + (!layersOn() && (s.menu || hasMenuButton()) ? '<button class="bd-ed-btn" data-act="menu-style">' + I.sliders + "Style the menu</button>" : "") + '<div class="bd-ed-hint">' + (layersOn() ? "With paper sheets the menu is a page on a sheet; what must stay still lives on the glass below." : "Or add Menu, Page title and Page arrows blocks to the header and footer.") + "</div></div>";
-if (layersOn()) h += glassPanel();
+
 var secs = s.sections.map(function (x, i) {
 return '<div class="bd-ed-list-row">' + input("site.sections." + i + ".key", x.key, "", ' aria-label="Section key"') + input("site.sections." + i + ".label", x.label, "", ' aria-label="Section label"') + '<button class="bd-ed-x" data-act="del-section" data-i="' + i + '" aria-label="Remove section">' + I.x + "</button></div>";
 }).join("") + '<button class="bd-ed-btn" data-act="add-section">' + I.plus + "Section</button>";
@@ -7475,7 +7381,6 @@ if (!layersOn()) h += '<div class="bd-ed-sec">' + adv("pg-stack", "Continue with
 }
 var free = '<div class="bd-ed-seg"><button data-act="layout" data-val="master" class="' + (isMaster(pg) ? "is-on" : "") + '">Columns</button><button data-act="layout" data-val="free" class="' + (isMaster(pg) ? "" : "is-on") + '">Free grid</button></div><div class="bd-ed-hint">' + (isMaster(pg) ? "Blocks stack in columns. Free grid lets you place them anywhere, row by row." : "Blocks sit anywhere on the grid. Columns stacks them again in order.") + "</div>"
 + (S.mode === "phone" && !isMaster(pg) ? '<button class="bd-ed-btn" data-act="restack">' + I.restack + "Restack phone from desktop</button>" : "");
-h += '<div class="bd-ed-sec">' + adv("pg-adv", "Advanced layout", free, !isMaster(pg)) + "</div>";
 if (isMaster(pg)) h += '<div class="bd-ed-sec">' + adv("pg-cols", "Columns & grid", rulerCols(pg, S.mode === "phone"), false) + "</div>";
 h += '<div class="bd-ed-sec"><div class="bd-ed-hint">Add blocks from the rail. Tap a block to edit and style it; tap text again to type. Drag to reorder or move between columns. ' + I.target.replace("<svg", '<svg style="width:12px;height:12px;vertical-align:-2px"') + " in the rail styles anything on the page.</div></div>";
 R.innerHTML = h;
@@ -7549,7 +7454,7 @@ h += '<div class="bd-ed-hint" style="font-family:var(--e-mono);font-size:10.5px;
 h += '<div class="bd-ed-hint">Pages, bd.css and bd.js are written by Publish, so they aren’t listed. PDFs and other files go to /files/.</div>';
 return h;
 }
-var CODE_VIEWS = [["out:css", "Full CSS"], ["site", "Your CSS"], ["page", "Page CSS"], ["el", "This block"], ["out:page", "Page HTML"], ["out:js", "JS"], ["head", "Head"], ["files", "Files"]];
+var CODE_VIEWS = [["out:css", "Full CSS"], ["el", "This block"], ["out:page", "Page HTML"], ["out:js", "JS"], ["head", "Head"], ["files", "Files"]];
 /* EVERY RULE IN THE PUBLISHED CSS THAT STYLES ONE BLOCK */
 function elRules(e) {
 var keys = ["bd-e-" + e.id, BD_TYPE_CLASS[e.type] || "bd-none"];
@@ -8184,7 +8089,7 @@ var fit = $("bd-fit");
 if (!S.project || sheet.hidden) return;
 var w = parseFloat(sheet.style.width) || 782;
 var avail = $("bd-stage").clientWidth - 80;
-var spreadOn = layersOn() && S.sheetSel && S.spread !== false && !S.preview;
+var spreadOn = false;
 var fitK = avail / w;
 if (spreadOn && sheet.offsetHeight) fitK = Math.min(fitK, ($("bd-stage").clientHeight - 80) / sheet.offsetHeight);
 var k = Math.min(1, Math.max(spreadOn ? 0.12 : 0.35, fitK));
@@ -8243,15 +8148,6 @@ deskEl.id = "bd-desk";
 deskEl.className = "bd-ed-desk";
 $("bd-stage").appendChild(deskEl);
 }
-if (S.desk && layersOn() && !S.preview && !S.inspect) {
-sheet.hidden = true;
-$("bd-fit").hidden = true;
-$("bd-ruler").innerHTML = '<span>Desk · ' + (S.mode === "phone" ? "phone" : "desktop") + " · every sheet where it lies</span>";
-ensurePhoneAll();
-deskEl.hidden = false;
-deskEl.innerHTML = deskHTML(S.mode === "phone");
-return;
-}
 deskEl.hidden = true;
 sheet.hidden = false;
 $("bd-fit").hidden = false;
@@ -8266,12 +8162,12 @@ sheet.style.width = sheetW + "px";
 var ruler = $("bd-ruler");
 ruler.className = "bd-ed-ruler" + (phone ? " is-phone" : "");
 ruler.style.maxWidth = sheetW + "px";
-ruler.innerHTML = (layersOn() && S.sheetSel && S.preview && !S.inspect ? '<span class="bd-ed-seg bd-ed-view"><button data-act="spread-view">Spread</button><button class="is-on" data-act="window-view">Window</button></span>' : "") + "<span>" + (S.inspect ? "Inspect · tap anything to style it · " + (phone ? "phone" : "desktop") : S.preview ? (layersOn() ? "Preview · the sheets move" : "Preview · menu and arrows work") : (phone ? "Phone" : "Desktop") + " · " + sheetW + 'px · <span id="bd-zoom">100%</span>' + (layersOn() && page.kind !== "pin" ? " · layers: Preview to see them move" : "")) + "</span>" + "<span>" + (master ? "Follows master" : "Free grid") + "</span>";
+ruler.innerHTML = "" + "<span>" + (S.inspect ? "Inspect · tap anything to style it · " + (phone ? "phone" : "desktop") : S.preview ? (layersOn() ? "Preview · the sheets move" : "Preview · menu and arrows work") : (phone ? "Phone" : "Desktop") + " · " + sheetW + 'px · <span id="bd-zoom">100%</span>' + (layersOn() && page.kind !== "pin" ? " · layers: Preview to see them move" : "")) + "</span>" + "<span>" + (master ? "Follows master" : "Free grid") + "</span>";
 if (!shadow) {
 shadow = sheet.attachShadow({ mode: "open" });
 bindCanvas();
 }
-if (layersOn() && S.sheetSel && S.spread !== false && !S.preview && !S.inspect && !S.live) {
+if (false) {
 var sn = sheetList().map(function (k) { return k.id; }).indexOf(S.sheetSel);
 if (sn > -1) {
 ensurePhoneAll();
@@ -9919,8 +9815,7 @@ navigator.clipboard.writeText(txt).then(done, fail);
 fail();
 }
 },
-"desk": function () { if (S.live) endEdit(); if (!layersOn()) { setStatus("The desk shows paper sheets: turn them on in Master → Site"); return; } S.desk = !S.desk; S.inspect = false; if (S.desk) S.preview = false; S.sel = null; render(); },
-"preview": function () { if (S.live) endEdit(); S.desk = false; S.inspect = false; S.preview = !S.preview; S.sel = null; render(); },
+"preview": function () { if (S.live) endEdit(); S.inspect = false; S.preview = !S.preview; S.sel = null; render(); },
 "inspect": function () {
 if (S.live) endEdit();
 S.inspect = !S.inspect;
