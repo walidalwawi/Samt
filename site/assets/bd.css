@@ -1,4 +1,4 @@
-/* PUBLISHED mvp7atd4 */
+/* PUBLISHED mvp7cdaj */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2275,6 +2275,11 @@ margin-left: 0px;
 min-height: calc(100% - 0px - 0px);
 width: auto;
 box-sizing: border-box;
+}
+@media (hover: hover) and (min-width: 761px) {
+.bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel:hover {
+box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+}
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
 margin: 0px 75vw 0 0px;

@@ -4710,7 +4710,10 @@
     "shadow": "soft"
    },
    "indep": true,
-   "sheetBg": "#ffffff"
+   "sheetBg": "#ffffff",
+   "hover": "lift",
+   "scroll": "own",
+   "pattern": "lined"
   },
   "56ud3gky": {
    "id": "56ud3gky",
