@@ -1,4 +1,4 @@
-/* PUBLISHED mvpm3v3u */
+/* PUBLISHED mvpm4w8r */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -1438,7 +1438,7 @@ grid-template-columns: minmax(0, 12fr);
 column-gap: 40px;
 }
 .bd-cols.bd-cl-posts {
-grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
 column-gap: 40px;
 }
 .bd-cols.bd-cl-nsye72w3 {
