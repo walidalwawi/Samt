@@ -580,7 +580,7 @@
     "peekM": 70,
     "sliver": 130,
     "sliverM": 14,
-    "axis": "y",
+    "axis": "x",
     "covers": "all",
     "coverPages": [],
     "color": "#ffffff",
@@ -591,9 +591,9 @@
     "dur": "",
     "box": {
      "mr": "",
-     "mt": "30%",
+     "mt": "",
      "mb": "",
-     "ml": "",
+     "ml": "80%",
      "pt": "",
      "mtM": "91.03%"
     },
@@ -608,7 +608,9 @@
     "hover": "nudge",
     "layPg": false,
     "vc": 0,
-    "vr": 0
+    "vr": 0,
+    "pin": "56ud3gky",
+    "pinPad": ""
    },
    {
     "id": "glg17d2m",
@@ -647,10 +649,12 @@
     "out": "peek",
     "lv": "slide",
     "arrive": "slide",
-    "main": "fji5ongj",
+    "main": "b2lr3tkr",
     "hover": "nudge",
     "vc": 0,
-    "vr": 0
+    "vr": 1,
+    "pin": "",
+    "pinPad": "off"
    }
   ],
   "editor": {
@@ -667,7 +671,8 @@
   },
   "followV1": true,
   "layOrderV1": true,
-  "unparkV1": true
+  "unparkV1": true,
+  "pinV1": true
  },
  "order": [
   "f0kgkfxt",
