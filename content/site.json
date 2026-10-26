@@ -4538,22 +4538,15 @@
     "plM": "24",
     "prM": "24",
     "mr": "0%",
-    "fit": false,
+    "fit": true,
     "mrM": "0",
     "ml": "0%",
     "pt": "5%",
     "mt": "0%",
     "mb": "0",
-    "pb": "5%",
-    "card": "",
-    "radius": "",
-    "shadow": "soft"
+    "pb": "5%"
    },
-   "indep": true,
-   "sheetBg": "",
-   "pattern": "none",
-   "scroll": "sheet",
-   "hover": ""
+   "indep": false
   },
   "56ud3gky": {
    "id": "56ud3gky",
