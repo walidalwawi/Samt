@@ -657,10 +657,8 @@ if (!s.layOrderV1) {
 layMigrateOrderIn(p);
 s.layOrderV1 = true;
 }
-if (!s.unparkV1) {
 layUnparkIn(p);
 s.unparkV1 = true;
-}
 if (!s.pinV1) {
 layPinMenuIn(p);
 s.pinV1 = true;
@@ -4943,7 +4941,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#8a3fd0";
+var BD_BUILD = "#12a39a";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6004,7 +6002,7 @@ return s;
 function sheetFull(k) {
 return (k.pages || []).filter(function (id) { var q = sheetPage(id); return q && !q.parent; }).length >= 2;
 }
-/* ONCE: A PARKED STRIP BECOMES PLAIN PAPER — ITS ★ PAGE KEEPS THE SAME VISIBLE SLICE AS A MARGIN AT THE OUTER END OF THE SHEET, THE JOIN BETWEEN THE PAGES LIES ON THE WINDOW'S EDGE */
+/* ON EVERY LOAD: A PARKED STRIP BECOMES PLAIN PAPER — ITS ★ PAGE KEEPS THE SAME VISIBLE SLICE AS A MARGIN AT THE OUTER END OF THE SHEET, THE JOIN BETWEEN THE PAGES LIES ON THE WINDOW'S EDGE */
 function layUnparkIn(p) {
 ((p.site || {}).sheets || []).forEach(function (k) {
 if (!k || k.rest !== "peek") return;
@@ -6103,7 +6101,7 @@ away = { edge: edge, vis: vis, hide: out === "hide" };
 }
 return { k: k, n: n, v: v, ax: ax, L: L, C: C, N: N, pages: pages, star: star, ins: ins, m: m, mStart: mStart, mEnd: mEnd, cutSide: cutSide, rect: rect, slots: slots, ghost: ghost, away: away, phone: phone, hidden: k.rest === "hidden" };
 }
-/* WRITE THE OLD FIELDS FROM THE DRAWN GEOMETRY. g may carry: mStart, mEnd, mCS, mCE (px), star (index), away ({edge, vis} | "stay"), strip (true | false = the ★ page is a strip or a page) */
+/* WRITE THE OLD FIELDS FROM THE DRAWN GEOMETRY. g may carry: mStart, mEnd, mCS, mCE (px), star (index), away ({edge, vis} | "stay") */
 function layWrite(n, phone, g) {
 var G = sheetGeo(n, phone);
 var k = G.k;
@@ -6120,18 +6118,9 @@ var L = G.L;
 var pct = function (px, side) { var len = side === "l" || side === "r" ? v.w : v.h; return px < 0.5 ? "" : Math.round(px / len * 10000) / 100 + "%"; };
 var M = phone ? "M" : "";
 k.box = k.box || {};
-var cut = N > 1 && ((star === N - 1 && mEnd > 0.5) ? "start" : (star === 0 && mStart > 0.5) ? "end" : "");
-var vis = cut === "start" ? L - mEnd : cut === "end" ? L - mStart : L;
-var strip = false;
 var sp = G.pages[star];
 if (phone) {
-/* THE PHONE ONLY HAS ITS OWN NUMBERS; WHAT THE SHEET IS (STRIP OR PAGE) IS DECIDED ON THE DESKTOP */
-if (false) {
-k.edgeM = cut === "start" ? (ax === "x" ? "left" : "top") : (ax === "x" ? "right" : "bottom");
-k.peekM = Math.max(0, Math.round(vis));
-k.box["m" + (cut === "start" ? aE : aS) + M] = "";
-k.box["m" + (cut === "start" ? aS : aE) + M] = pct(cut === "start" ? mStart : mEnd, cut === "start" ? aS : aE);
-} else {
+/* THE PHONE ONLY HAS ITS OWN NUMBERS */
 k.box["m" + aS + M] = pct(mStart, aS);
 k.box["m" + aE + M] = pct(mEnd, aE);
 if (k.rest === "open" && g.away && g.away !== "stay") {
@@ -6139,15 +6128,6 @@ k.edgeM = g.away.edge;
 var eInsM = { left: G.ins.left, right: G.ins.right, top: G.ins.top, bottom: G.ins.bottom }[g.away.edge] || 0;
 k.sliverM = g.away.vis <= 0.5 ? "" : Math.max(0, Math.round(g.away.vis - eInsM));
 }
-}
-} else if (strip) {
-k.rest = "peek";
-k.restPage = sp ? sp.id : "";
-k.main = sp ? sp.id : "";
-k.edge = cut === "start" ? (ax === "x" ? "left" : "top") : (ax === "x" ? "right" : "bottom");
-k.peek = Math.max(0, Math.round(vis));
-k.box["m" + (cut === "start" ? aE : aS)] = "";
-k.box["m" + (cut === "start" ? aS : aE)] = pct(cut === "start" ? mStart : mEnd, cut === "start" ? aS : aE);
 } else {
 if (k.rest === "peek") { k.rest = "still"; k.restPage = ""; }
 if (k.rest !== "hidden" && g.away !== undefined) {
@@ -9527,7 +9507,6 @@ setTimeout(function () { go(mine); }, 3600);
 "lay-rm": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; if (!k) return; snap(); var id = b.getAttribute("data-id"); k.pages = (k.pages || []).filter(function (x) { return x !== id; }); if (k.main === id) k.main = ""; if (k.restPage === id) k.restPage = ""; changed(); },
 "lay-main": function () { var i = +b.getAttribute("data-i"); var k = S.project.site.sheets[i]; if (!k) return; snap(); var j = (k.pages || []).indexOf(b.getAttribute("data-id")); if (j < 0) return; layWrite(i, false, { star: j }); changed(); },
 "lay-cell": function () { var i = +b.getAttribute("data-i"), c = +b.getAttribute("data-c"), r = +b.getAttribute("data-r"); var k = S.project.site.sheets[i]; if (!k) return; snap(); var ph = S.mode === "phone"; var G = sheetGeo(i, ph); var idx = G.N === 2 ? (G.ax === "y" ? r : c) : 0; k.vc = c; k.vr = r; if (G.N === 2 && idx !== G.star) layWrite(i, ph, { star: idx }); changed(); },
-"lay-strip": function () { var i = +b.getAttribute("data-i"); if (!S.project.site.sheets[i]) return; snap(); layWrite(i, false, { strip: b.getAttribute("data-val") === "1" }); changed(); },
 "lay-hide": function () { var i = +b.getAttribute("data-i"); var k = S.project.site.sheets[i]; if (!k) return; snap(); if (b.getAttribute("data-val") === "1") k.rest = "hidden"; else { k.rest = "still"; layWrite(i, false, {}); } changed(); },
 "spread-view": function () { S.spread = true; S.preview = false; render(); },
 "window-view": function () { S.spread = false; S.preview = true; render(); },
