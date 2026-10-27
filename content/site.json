@@ -583,9 +583,9 @@
     "axis": "x",
     "covers": "all",
     "coverPages": [],
-    "color": "",
-    "alpha": 10,
-    "blur": 10,
+    "color": "none",
+    "alpha": 0,
+    "blur": 0,
     "shadow": "none",
     "nudge": 0,
     "dur": "",
@@ -4483,18 +4483,21 @@
     "gutterM": 24
    },
    "box": {
-    "card": "",
+    "card": "linear-gradient(180deg, #ffffff, #ffffff)",
     "cardA": 100,
     "blur": 0,
-    "shadow": "none",
+    "shadow": "soft",
     "fit": false,
     "ink": "",
     "maxW": "",
-    "mr": "5%"
+    "mr": "10%",
+    "mt": "10%",
+    "ml": "5%",
+    "mb": "10%"
    },
    "hover": "",
-   "mode": "sheet",
-   "pattern": ""
+   "mode": "card",
+   "pattern": "none"
   },
   "56ud3gky": {
    "id": "56ud3gky",
@@ -4546,7 +4549,7 @@
    "box": {
     "ink": "",
     "card": "none",
-    "cardA": 100,
+    "cardA": 0,
     "blur": 0,
     "maxW": "100%"
    },
@@ -4562,7 +4565,7 @@
     "gutter": 40,
     "gutterM": 24
    },
-   "mode": "sheet"
+   "mode": "card"
   }
  }
 }
