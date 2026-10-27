@@ -367,6 +367,15 @@ async def run():
         ok('sheet: pages side by side end on the same line (every paper as long as the longest)', 'function pinLen()' in await ev("exportJS()") and 'THE BOTTOM EDGES LINE UP' in await ev("exportJS()"))
         ok('sheet: never splits, a page leaving a pinned sheet scrolls home while the pinned page follows (--k-hold)', 'ONE SHEET NEVER SPLITS' in await ev("exportJS()") and 'var(--k-hold, 0)' in await ev("exportCSS()"))
         ok('posts: a post panel links to the post master', await pg.locator('#bd-right [data-act=post-master]').count() == 1)
+        # --- the phone has its own layout; a card page's decoration lies on the card
+        await ev("(function(){ var n = sheetList().findIndex(function(k){return !k.pin && k.pages.length === 2}); window.__n = n; var k = sheetList()[n]; k.axis = 'y'; delete k.axisM; delete k.mainM; S.mode = 'phone'; layWrite(n, true, { star: 1 }); k.axisM = 'x'; changed(); })()")
+        ok('phone: its own spread direction (axisM) leaves the desktop one alone', await ev("(function(){ var k = sheetList()[window.__n]; return sheetGeo(window.__n, true).ax === 'x' && sheetGeo(window.__n, false).ax === 'y' && k.axis === 'y'; })()"))
+        ok('phone: the window page (mainM) is its own', await ev("(function(){ var k = sheetList()[window.__n]; return !!k.mainM && sheetGeo(window.__n, true).star === 1 && sheetGeo(window.__n, false).star === layStar(k, false) && k.main !== k.mainM; })()"))
+        ok('phone: the track runs along the phone axis inside the one mobile block', await ev("(function(){ var c = exportCSS(); var i = c.indexOf('@media (max-width: 760px)'); return i > -1 && c.indexOf('.bd-ly-track.is-axm-x {\\nflex-direction: row;', i) > -1; })()"))
+        ok('phone: the markup carries both axes and both window pages', await ev("(function(){ var h = exportPage(S.project.pages[sheetList()[window.__n].pages[0]]); return /is-ax-y is-axm-x/.test(h) && /data-main-m=/.test(h); })()"))
+        await ev("S.mode = 'desktop'; render()")
+        await ev("(function(){ var k = sheetList()[window.__n]; var q = S.project.pages[k.pages[0]]; q.mode = 'card'; q.pattern = 'lined'; q.box = q.box || {}; q.box.card = '#ffffff'; changed(); })()")
+        ok("card: a page's decoration lies on the card, the paper behind keeps the sheet's own", await ev(r"""(function(){ var k = sheetList()[window.__n]; var q = S.project.pages[k.pages[0]]; var c = exportCSS(); var a = '.bd-ly-pane[data-page="' + q.id + '"] > .bd-ly-paper'; return c.indexOf(a + ' > .bd-panel {\nbackground: repeating-linear-gradient') > -1 && c.indexOf(a + ' {\nbackground: repeating-linear-gradient') < 0; })()"""))
         ok('no page errors', not errs)
         await b.close()
     bad = [n for n, c in R if not c]
