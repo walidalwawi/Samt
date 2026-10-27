@@ -1,4 +1,4 @@
-/* PUBLISHED mvqvdowy */
+/* PUBLISHED mvqwvrpe */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -3291,11 +3291,12 @@ left: 0px;
 --k-nudge: 0px;
 box-shadow: none;
 }
-#bd-ly .bd-ly-k[data-k="menu"] .bd-ly-pane {
+#bd-ly .bd-ly-k[data-k="menu"] .bd-ly-pane[data-page] {
 translate: none;
 z-index: auto;
 padding: 0;
 clip-path: none;
+transform: none;
 }
 #bd-ly .bd-ly-k[data-k="menu"] .bd-ly-track.is-axm-y {
 transform: translate3d(0, calc(var(--i) * -100% / var(--n) + clamp(-1, calc(var(--i) - 1), 1) * max(0px, min(calc(100vh - 85vh), calc(100vh - 48px)))), 0);
