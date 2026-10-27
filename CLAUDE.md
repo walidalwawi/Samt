@@ -146,3 +146,4 @@ Ask before assuming.
 - 28 Oct: Index link crumb shows only the open blog's name (blog page or its posts), nothing elsewhere. BD_BUILD = #f59e0b.
 - 28 Oct: Index link crumb is a link to the blog page (.bd-ix-c). BD_BUILD = #8b5cf6.
 - 28 Oct: Post info block styling: align (left|centre|right|spread), space above/below (padT/padB, phone M), line below, capitals, letter space, text colour, separator (sep), back link gap/size/colour/strength (backGap/backSize/backInk/backDim); back link already switchable. tests/postinfo.py (7 checks). BD_BUILD = #06b6d4.
+- 28 Oct: page title of a blog = post count + name, of a post = its place in the blog + name; choose both | name | number (site.blogHead, site.postHead; per blog page.titleMode and page.postTitleMode; headMode/headNumber/headInner). Needs Site → Page title at the top on. tests/headmode.py. BD_BUILD = #ec4899.

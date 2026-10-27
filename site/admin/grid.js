@@ -3262,10 +3262,32 @@ return p.pin.show === "all" || (p.pin.pages || []).indexOf(page.id) > -1;
 function pinHTML(p, ctx) {
 return '<div class="bd-pin bd-p-' + p.id + " is-" + p.pin.place + (p.pin.fixed ? " is-fixed" : "") + '"' + (ctx === "edit" ? ' data-pin="' + p.id + '"' : "") + ">\n" + contentHTML(p, ctx === "edit" ? "view" : ctx) + "\n</div>";
 }
+/* A BLOG'S TITLE = HOW MANY POSTS + ITS NAME; A POST'S TITLE = ITS NUMBER + ITS NAME (BOTH, NAME ONLY OR NUMBER ONLY) */
+var HEAD_MODES = [["both", "Number and name"], ["name", "Name only"], ["num", "Number only"]];
+function headMode(page) {
+var s = S.project.site;
+if (page.blog) return page.titleMode || s.blogHead || "both";
+var b = page.parent ? S.project.pages[page.parent] : null;
+if (b) return b.postTitleMode || s.postHead || "both";
+return "";
+}
+function headNumber(page) {
+if (page.blog) return String(postsOf(page.id).length);
+return String(postsOf(page.parent).map(function (q) { return q.id; }).indexOf(page.id) + 1);
+}
+function headInner(page) {
+var s = S.project.site;
+var m = headMode(page);
+var name = esc(page.h1 || page.title);
+if (!m) return (page.num && s.showNum ? '<span class="bd-num">' + esc(page.num) + "</span>\n" : "") + "<h1>" + name + "</h1>\n";
+var num = headNumber(page);
+if (m === "num") return "<h1>" + esc(num) + "</h1>\n";
+return (m === "both" ? '<span class="bd-num">' + esc(num) + "</span>\n" : "") + "<h1>" + name + "</h1>\n";
+}
 function headHTML(page) {
 var s = S.project.site;
 if (!s.header || page.header === false || page.kind === "pin") return "";
-return '<header class="bd-head">\n' + (page.num && s.showNum ? '<span class="bd-num">' + esc(page.num) + "</span>\n" : "") + "<h1>" + esc(page.h1 || page.title) + "</h1>\n</header>\n";
+return '<header class="bd-head">\n' + headInner(page) + "</header>\n";
 }
 /* LAYERS */
 function layersOn() {
@@ -4628,7 +4650,7 @@ function pageHTMLOld(page, ctx) {
 var s = S.project.site;
 var head = "";
 if (s.header && page.header !== false) {
-head = '<header class="bd-head">\n' + (page.num && s.showNum ? '<span class="bd-num">' + esc(page.num) + "</span>\n" : "") + "<h1>" + esc(page.h1 || page.title) + "</h1>\n</header>\n";
+head = '<header class="bd-head">\n' + headInner(page) + "</header>\n";
 }
 var flow = isMaster(page);
 var els = (flow ? page.els : sortedEls(page, "d")).map(function (e) { return elHTML(e, ctx); }).filter(Boolean).join("\n\n");
@@ -5397,7 +5419,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#06b6d4";
+var BD_BUILD = "#ec4899";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -7324,7 +7346,7 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-label">Page frame</span>'
 + row(dpIn("Top", "site.mt", "site.mtM", s.mt, s.mtM, "int"), dpIn("Right", "site.mr", "site.mrM", s.mr, s.mrM, "int"), dpIn("Bottom", "site.mb", "site.mbM", s.mb, s.mbM, "int"), dpIn("Left", "site.ml", "site.mlM", s.ml, s.mlM, "int"))
 + row(dpIn("Paragraph indent", "site.indent", "site.indentM", s.indent, s.indentM, "int"))
 + '<div class="bd-ed-hint">Columns are set in the bar above the canvas.</div></div>';
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title at the top", "site.header", s.header) + '<div class="bd-ed-hint">Writes each page’s heading above its content. A page can switch it off in its own panel (Show the title). Or leave this off and place a Page title block where you want it.</div>' + (s.header ? sw("Number above the title", "site.showNum", s.showNum) : "") + (layersOn() ? "" : sw("Floating menu button", "site.menu", s.menu) + sw("Page arrows at the end", "site.pager", s.pager)) + sw("Click images to zoom", "site.zoom", s.zoom) + '<div class="bd-ed-hint">Tap an image to see it full screen. One image can opt out in its own panel.</div>'
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title at the top", "site.header", s.header) + '<div class="bd-ed-hint">Writes each page’s heading above its content. A page can switch it off in its own panel (Show the title). Or leave this off and place a Page title block where you want it.</div>' + (s.header ? sw("Number above the title", "site.showNum", s.showNum) + field("Blog title shows", select("site.blogHead", s.blogHead || "both", HEAD_MODES)) + field("Post titles show", select("site.postHead", s.postHead || "both", HEAD_MODES)) + '<div class="bd-ed-hint">A blog’s number is how many posts it has; a post’s number is its place in its blog. A blog can set its own in its Details.</div>' : "") + (layersOn() ? "" : sw("Floating menu button", "site.menu", s.menu) + sw("Page arrows at the end", "site.pager", s.pager)) + sw("Click images to zoom", "site.zoom", s.zoom) + '<div class="bd-ed-hint">Tap an image to see it full screen. One image can opt out in its own panel.</div>'
 + (!layersOn() && (s.menu || hasMenuButton()) ? '<button class="bd-ed-btn" data-act="menu-style">' + I.sliders + "Style the menu</button>" : "") + '<div class="bd-ed-hint">' + (layersOn() ? "With paper sheets the menu is a page on a sheet; what must stay still lives on the glass below." : "Or add Menu, Page title and Page arrows blocks to the header and footer.") + "</div></div>";
 
 var secs = s.sections.map(function (x, i) {
@@ -7842,6 +7864,7 @@ var det = (s.menus.length === 1 ? '<div class="bd-ed-two" style="grid-template-c
 + coverField(pg)
 + sw("Featured ★", "page.featured", !!pg.featured) : "")
 + (pg.blog ? sw("Arrows at the end of this blog’s posts", "page.postArrows", pg.postArrows !== false) + '<div class="bd-ed-hint">' + (postArrowsCfg().on ? "Master · Blog has post arrows on. Switch off to hide them on every post of this blog." : "Post arrows are off in Master · Blog, so this does nothing yet.") + "</div>" : "")
++ (pg.blog ? field("This blog’s title shows", select("page.titleMode", pg.titleMode || "", [["", "Site"]].concat(HEAD_MODES))) + field("Its posts’ titles show", select("page.postTitleMode", pg.postTitleMode || "", [["", "Site"]].concat(HEAD_MODES))) : "")
 + (pg.blog ? sw("Post info on this blog’s posts", "page.postInfo", pg.postInfo !== false) + '<div class="bd-ed-hint">Switch off to hide the Post info block (back link, words, minutes) on every post of this blog.</div>' : "")
 + (pg.kind !== "pin" ? sw("Show the title", "page.header", pg.header !== false) + '<div class="bd-ed-hint">' + (s.header ? "The page heading at the top. Switch off to hide it on this page only." : "Page title at the top is off in Site, so this does nothing yet.") + "</div>" : "")
 + field("Description", '<textarea class="bd-ed-input" data-bind="page.desc" rows="3" style="font-family:var(--e-sans);font-size:12.5px">' + esc(pg.desc) + "</textarea>")
