@@ -569,8 +569,8 @@
     "id": "menu",
     "name": "Cover",
     "pages": [
-     "nsye72w3",
-     "56ud3gky"
+     "56ud3gky",
+     "nsye72w3"
     ],
     "restPage": "",
     "edge": "left",
@@ -594,10 +594,10 @@
      "mr": "75%",
      "mt": "",
      "mb": "",
-     "mtM": "85%",
-     "mbM": "55%",
+     "mtM": "80%",
+     "mbM": "40%",
      "mlM": "",
-     "mrM": "5%"
+     "mrM": "15%"
     },
     "pattern": "ruled",
     "patColor": "#000000",
@@ -606,12 +606,16 @@
     "out": "peek",
     "lv": "",
     "arrive": "slide",
-    "main": "nsye72w3",
+    "main": "56ud3gky",
     "hover": "",
-    "vc": 0,
+    "vc": 1,
     "vr": 0,
     "pin": "56ud3gky",
-    "radius": 0
+    "radius": 0,
+    "vcM": 1,
+    "vrM": 0,
+    "mainM": "56ud3gky",
+    "axisM": "y"
    },
    {
     "id": "glg17d2m",
@@ -643,7 +647,7 @@
      "mt": "",
      "mb": "",
      "ml": "",
-     "mr": "15%"
+     "mr": ""
     },
     "pattern": "",
     "patColor": "#000000",
@@ -809,6 +813,10 @@
       "imgTone": "",
       "imgBlend": "ink",
       "imgBackdrop": ""
+     },
+     "own": {
+      "x": 0,
+      "w": 12
      }
     }
    ],
@@ -4484,11 +4492,24 @@
     "gutterM": 24
    },
    "box": {
-    "card": "linear-gradient(180deg, #ffffff, #ffffff)",
-    "mt": "20%",
-    "mb": "0"
+    "card": "none",
+    "mt": "10%",
+    "mb": "15%",
+    "mbM": "0",
+    "mtM": "0",
+    "mr": "5%",
+    "radius": 10,
+    "ml": "5%",
+    "maxWM": "",
+    "ptM": "",
+    "prM": "",
+    "pbM": "",
+    "plM": "",
+    "mlM": "0",
+    "mrM": "0"
    },
-   "mode": "card"
+   "mode": "sheet",
+   "pattern": "ruled"
   },
   "56ud3gky": {
    "id": "56ud3gky",
