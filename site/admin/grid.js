@@ -56,6 +56,7 @@ ptitle: '<path d="M3.5 7h13M3.5 11h8"/><path d="M3.5 15h5" opacity=".5"/>',
 menubtn: '<path d="M4 6h12M4 10h12M4 14h12"/>',
 sheetmenu: '<path d="M4 3.5v13"/><path d="M8 6h8M8 10h6M8 14h8"/>',
 pager: '<path d="M7.5 6.5 4 10l3.5 3.5M4 10h5M12.5 6.5 16 10l-3.5 3.5M16 10h-5"/>',
+indexlink: '<path d="M3.5 6h6M3.5 10h6M3.5 14h6"/><path d="M12.5 10h4.5M15 7.5l2.5 2.5-2.5 2.5"/>',
 posts: '<rect x="2.5" y="3" width="6.5" height="9"/><rect x="11" y="3" width="6.5" height="9"/><path d="M2.5 15h6.5M11 15h6.5M2.5 17.5h4M11 17.5h4"/>',
 postinfo: '<path d="M7 6 3.5 10 7 14"/><path d="M10 10h7"/>',
 quote: '<path d="M4.5 13.5c0-3 1-5 3.5-6.5M11.5 13.5c0-3 1-5 3.5-6.5"/><path d="M4 16h12" opacity=".5"/>',
@@ -499,6 +500,7 @@ rule: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 ptitle: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 menubtn: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 sheetmenu: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
+indexlink: { x: 0, w: 12, xm: 0, wm: 6, space: "", spaceM: "" },
 pager: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 posts: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
 postinfo: { x: 0, w: 12, xm: 0, wm: 4, space: "", spaceM: "" },
@@ -609,6 +611,7 @@ if (!s.styles && s.fs) s.styles = stylesFrom(s.fs, s.lh, s.ms || s.fs, s.ml || s
 if (s.showNum === undefined) s.showNum = false;
 s.layers = Object.assign(clone(LAYER_DEFAULTS), s.layers || {});
 if (!s.postGo || typeof s.postGo !== "object") s.postGo = { side: "", sideM: "" };
+if (!s.postArrows || typeof s.postArrows !== "object") s.postArrows = {};
 if (s.layers.on && !s.sheets) migrateSheets(p);
 s.sheets = (s.sheets || []).map(function (k) {
 var o = Object.assign(clone(SHEET_DEFAULTS), k);
@@ -772,8 +775,8 @@ s.master.libFix = 1;
 if (!s.master.types.gallery) s.master.types.gallery = Object.assign({ space: "", spaceM: "" }, s.master.types.image);
 return p;
 }
-var BD_TYPE_CLASS = { text: "bd-text", notes: "bd-notes", image: "bd-figure", gallery: "bd-gallery", library: "bd-library", link: "bd-link", list: "bd-list", embed: "bd-embed", html: "bd-html", rule: "bd-rule", ptitle: "bd-ptitle", menubtn: "bd-menubtn", sheetmenu: "bd-sheetmenu", pager: "bd-pagerbar", posts: "bd-posts", postinfo: "bd-postinfo", quote: "bd-quote", toggle: "bd-toggle", product: "bd-product" };
-var BD_TYPE_NAME = { text: "Text", notes: "Notes", image: "Image", gallery: "Gallery", library: "Library", link: "Link", list: "List", embed: "Video", html: "HTML", rule: "Rule", ptitle: "Page title", menubtn: "Menu", sheetmenu: "Sheet menu", pager: "Page arrows", posts: "Blog posts", postinfo: "Post info", quote: "Quote", toggle: "Fold-out list", product: "Product" };
+var BD_TYPE_CLASS = { text: "bd-text", notes: "bd-notes", image: "bd-figure", gallery: "bd-gallery", library: "bd-library", link: "bd-link", list: "bd-list", embed: "bd-embed", html: "bd-html", rule: "bd-rule", ptitle: "bd-ptitle", menubtn: "bd-menubtn", sheetmenu: "bd-sheetmenu", indexlink: "bd-ix", pager: "bd-pagerbar", posts: "bd-posts", postinfo: "bd-postinfo", quote: "bd-quote", toggle: "bd-toggle", product: "bd-product" };
+var BD_TYPE_NAME = { text: "Text", notes: "Notes", image: "Image", gallery: "Gallery", library: "Library", link: "Link", list: "List", embed: "Video", html: "HTML", rule: "Rule", ptitle: "Page title", menubtn: "Menu", sheetmenu: "Sheet menu", indexlink: "Index link", pager: "Page arrows", posts: "Blog posts", postinfo: "Post info", quote: "Quote", toggle: "Fold-out list", product: "Product" };
 function effPlace(e, phone) {
 var s = S.project.site;
 var t = s.master.types[e.type] || { x: 0, w: 12, xm: 0, wm: 4 };
@@ -803,6 +806,7 @@ rule: { w: 12, h: 2, props: {} },
 ptitle: { w: 12, h: 3, props: { style: "body", align: "left", num: false } },
 menubtn: { w: 12, h: 3, props: { menu: "", mode: "button", corner: "", brand: "none", brandText: "", brandPos: "before", brandStyle: "body", brandSize: "", brandLh: "", brandGap: 16, brandGapM: "", align: "start", dir: "vertical", group: "flat", style: "body", size: "", sizeM: "", lh: "", lhM: "", textCase: "none", tracking: "", itemGap: 0, itemGapM: "", groupGap: 20, groupGapM: "", headGap: 4, current: "underline", hover: "underline" } },
 sheetmenu: { w: 12, h: 6, props: { menu: "", marker: ">", align: "right", style: "heading", gap: 4, gapM: 14, pad: 40, padM: 16, mark: "" } },
+indexlink: { w: 12, h: 3, props: { label: "Index;", crumbs: true, sep: " / ", gap: 12, dim: 60, line: true, style: "body" } },
 pager: { w: 12, h: 3, props: { num: "num", line: false, loop: false, scope: "site", look: "arrows", nextLabel: "Next, ", prevLabel: "", align: "left", style: "body" } },
 posts: { w: 12, h: 30, props: { blog: "", layout: "grid", cols: 3, colsM: 1, gap: 40, gapM: 24, rowGap: 40, rowGapM: 24, sort: "order", limit: "", featured: "none", fLayout: "stack", fTitleStyle: "heading", showImage: true, showTitle: true, showDate: false, showMeta: true, showExcerpt: false, imagePos: "top", ratio: "auto", imgGap: 12, cardBg: "", cardPad: 0, cardPadM: "", minH: "", titleStyle: "body", titleSize: "", titleLh: "", metaStyle: "small", metaSize: "", metaLh: "", metaGap: 8, hover: "dim" } },
 postinfo: { w: 12, h: 3, props: { back: true, backLabel: "<", date: false, words: true, time: true, style: "small", size: "", lh: "" } },
@@ -1868,6 +1872,22 @@ display: block;
 width: 22px;
 height: 22px;
 }
+.bd-ix {
+display: flex;
+align-items: baseline;
+gap: var(--ix-gap);
+}
+.bd-ix-a {
+color: inherit;
+text-decoration: underline;
+text-underline-offset: 3px;
+}
+.bd-ix.is-plain .bd-ix-a {
+text-decoration: none;
+}
+.bd-ix-crumb {
+opacity: var(--ix-dim);
+}
 .bd-pagerbar-next {
 grid-column: 3;
 }
@@ -1905,7 +1925,8 @@ out.push(".bd-flow > ." + BD_TYPE_CLASS[k] + " {\n--x: " + x + ";\n--w: " + w + 
 var sp = phone ? t.spaceM : t.space;
 if (sp !== "" && sp != null && !isNaN(parseFloat(sp))) out.push(".bd-flow > .bd-el + ." + BD_TYPE_CLASS[k] + " {\nmargin-top: " + parseFloat(sp) + "px;\n}");
 });
-return out.join("\n");
+if (!phone) out.push(postArrowsCSS());
+return out.filter(Boolean).join("\n");
 }
 function flowRules(page, phone) {
 if (!isMaster(page)) return "";
@@ -2996,6 +3017,7 @@ return '<div class="' + base + " bd-ptitle bd-ts-" + (E(e, "style") || "body") +
 }
 if (e.type === "posts") return postsHTML(e, ctx);
 if (e.type === "sheetmenu") return sheetMenuHTML(e, base);
+if (e.type === "indexlink") return indexLinkHTML(e, base);
 if (e.type === "postinfo") {
 var ip = forPage();
 var bits = [];
@@ -3129,17 +3151,64 @@ var pb = b[key] || b.d;
 return pa.y - pb.y || pa.x - pb.x;
 });
 }
+/* POST ARROWS: ONE SWITCH IN MASTER · BLOG, ONE OVERRIDE ON EACH BLOG PAGE. A POST THAT HAS ITS OWN PAGE ARROWS BLOCK KEEPS THAT ONE */
+var POST_ARROWS_DEF = { on: false, look: "arrows", num: "count", align: "left", style: "body", prevLabel: "", nextLabel: "Next, ", loop: false, line: false, space: 60, gap: 18, size: 22, ink: "" };
+function postArrowsCfg() {
+return Object.assign({}, POST_ARROWS_DEF, S.project.site.postArrows || {});
+}
+function postArrowsOn(page) {
+if (!page || !page.parent || page.kind === "pin") return false;
+if (!postArrowsCfg().on) return false;
+var bl = S.project.pages[page.parent];
+if (bl && bl.postArrows === false) return false;
+return !(page.els || []).some(function (e) { return e.type === "pager"; });
+}
+function postArrowsHTML(page, ctx) {
+if (!postArrowsOn(page)) return "";
+var c = postArrowsCfg();
+var e = { id: "parrows", type: "pager", own: {}, props: { scope: "blog", look: c.look, num: c.num, align: c.align, style: c.style, prevLabel: c.prevLabel, nextLabel: c.nextLabel, loop: c.loop, line: c.line } };
+var h = elHTML(e, ctx);
+return h ? '<div class="bd-post-arrows">\n' + h + "\n</div>" : "";
+}
+function postArrowsCSS() {
+var c = postArrowsCfg();
+if (!c.on) return "";
+var jc = { left: "flex-start", center: "center", right: "flex-end", spread: "space-between" }[c.align] || "flex-start";
+var o = [".bd-post-arrows {\nmargin-top: " + (parseFloat(c.space) || 0) + "px;\n" + (c.ink ? "color: " + c.ink + ";\n" : "") + "}"];
+o.push(".bd-post-arrows .bd-pagerbar {\ndisplay: flex;\nalign-items: center;\njustify-content: " + jc + ";\ngap: " + (parseFloat(c.gap) || 0) + "px;\n}");
+o.push(".bd-post-arrows .bd-pagerbar a {\ndisplay: block;\nwidth: auto;\n}");
+o.push(".bd-post-arrows .bd-pagerbar.is-text a + a {\nmargin-left: 0;\n}");
+o.push(".bd-post-arrows .bd-pagerbar svg {\nwidth: " + (parseFloat(c.size) || 22) + "px;\nheight: " + (parseFloat(c.size) || 22) + "px;\n}");
+return o.join("\n");
+}
+function postArrowsPanel() {
+var c = postArrowsCfg();
+var P = "site.postArrows.";
+var h = '<div class="bd-ed-sec"><span class="bd-ed-title">Post arrows</span>'
++ sw("Arrows at the end of every post", P + "on", c.on)
++ '<div class="bd-ed-hint">Previous and next post, under every post of every blog. A blog page can switch them off for its own posts. A post that has its own Page arrows block keeps that one.</div>';
+if (c.on) {
+h += row(field("Look", seg(P + "look", c.look, [["arrows", "Arrows"], ["text", "Words"]])), field("Align", seg(P + "align", c.align, [["left", "Left"], ["center", "Centre"], ["right", "Right"], ["spread", "Spread"]])));
+if (c.look === "text") h += row(field("Before next title", input(P + "nextLabel", c.nextLabel, "", ' placeholder="Next, "')), field("Before previous title", input(P + "prevLabel", c.prevLabel, "", ' placeholder="empty = hide"')));
+h += row(numIn("Space above px", P + "space", c.space), numIn("Gap px", P + "gap", c.gap));
+if (c.look !== "text") h += numIn("Arrow size px", P + "size", c.size);
+h += field("Text style", select(P + "style", c.style, styleOpts())) + colorIn("Colour", P + "ink", c.ink, "#111111", "Ink") + sw("Line above", P + "line", !!c.line) + sw("Loop from last to first", P + "loop", !!c.loop);
+}
+return h + "</div>";
+}
 function contentHTML(page, ctx) {
 var flow = isMaster(page);
 var html = function (list) { return list.map(function (e) { return elHTML(e, ctx); }).filter(Boolean).join("\n\n"); };
-if (!flow) return '<div class="bd-grid">\n' + html(sortedEls(page, "d")) + "\n</div>";
+var arr = postArrowsHTML(page, ctx);
+if (arr) arr = "\n" + arr;
+if (!flow) return '<div class="bd-grid">\n' + html(sortedEls(page, "d")) + "\n</div>" + arr;
 var n = nCols(page);
-if (n < 2) return '<div class="bd-flow">\n' + html(page.els) + "\n</div>";
+if (n < 2) return '<div class="bd-flow">\n' + html(page.els) + "\n</div>" + arr;
 var out = '<div class="bd-cols is-c' + n + (page.kind === "pin" || page.ownLayout ? " bd-cl-" + page.id : postCols(page) ? " bd-cl-posts" : "") + '">';
 for (var c = 1; c <= n; c++) {
 out += '\n<div class="bd-col bd-flow" data-col="' + c + '">\n' + html(page.els.filter(function (e) { return colOf(e, page) === c; })) + "\n</div>";
 }
-return out + "\n</div>";
+return out + "\n</div>" + arr;
 }
 function pinsFor(page, place, fixed) {
 return S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (p) {
@@ -3453,6 +3522,30 @@ if (linked) return false;
 var f = S.project.pages[focus];
 if (f && f.parent && (ids || []).indexOf(f.parent) > -1) return f.parent === id;
 return sheetOf(focus).k < 0 && id === (S.layerBack || sheetHome());
+}
+/* THE INDEX LINK: A STYLED LINK (TEXT OR SYMBOL) THAT ALWAYS OPENS THE MENU PAGE, WITH THE BREADCRUMBS OF THE PAGE WE ARE IN BESIDE IT. THE RUNTIME KEEPS THE CRUMBS IN STEP WITH THE OPEN PAGE */
+function menuPageOf() {
+return S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin" && (q.els || []).some(function (e) { return e.type === "sheetmenu"; }); })[0] || null;
+}
+function crumbsOf(q) {
+var c = [];
+var x = q;
+var n = 0;
+while (x && n++ < 4) { c.unshift(x.title); x = x.parent ? S.project.pages[x.parent] : null; }
+return c;
+}
+function indexLinkHTML(e, base) {
+var p = e.props;
+var mp = menuPageOf();
+var map = {};
+S.project.order.forEach(function (id) { var q = S.project.pages[id]; if (q && q.kind !== "pin") map[q.id] = crumbsOf(q); });
+var focus = S.layerFocus || (S.renderPage ? S.renderPage.id : "");
+var sep = p.sep == null ? " / " : p.sep;
+var now = map[focus] ? map[focus].join(sep) : "";
+var dim = (parseFloat(p.dim) || 0) / 100;
+var vars = "--ix-gap: " + (parseFloat(p.gap) || 0) + "px; --ix-dim: " + dim + ";";
+return '<div class="' + base + " bd-ix bd-ts-" + esc(E(e, "style") || "body") + (p.line === false ? " is-plain" : "") + '" style="' + vars + '">\n<a class="bd-ix-a" href="/' + esc(mp ? mp.slug : "menu") + '"' + (mp ? ' data-id="' + mp.id + '"' : "") + ">" + esc(p.label || "") + "</a>"
++ (p.crumbs === false ? "" : '\n<span class="bd-ix-crumb" data-sep="' + esc(sep) + '" data-crumbs="' + esc(JSON.stringify(map)) + '" aria-live="polite">' + esc(now) + "</span>") + "\n</div>";
 }
 /* THE SHEET MENU BLOCK — THE SITE MENU WRITTEN ON A SHEET'S EDGE, WITH A MARK */
 function sheetMenuHTML(e, base) {
@@ -4154,6 +4247,11 @@ break;
 }
 root.querySelectorAll(".bd-ly-a[data-id]").forEach(function (a) {
 a.classList.toggle("is-current", a.getAttribute("data-id") === on);
+});
+document.querySelectorAll(".bd-ix-crumb").forEach(function (c) {
+if (!c.bdMap) { try { c.bdMap = JSON.parse(c.getAttribute("data-crumbs")); } catch (x) { c.bdMap = {}; } }
+var cr = c.bdMap[F];
+c.textContent = cr ? cr.join(c.getAttribute("data-sep")) : "";
 });
 }
 function go(id, pop) {
@@ -5215,7 +5313,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#c8502d";
+var BD_BUILD = "#0ea5e9";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -5376,7 +5474,7 @@ if (!opts.skipCode) renderCode();
 }
 /* TOOLS — EVERY BUTTON, TAB AND SECTION OF THE BACK OFFICE CAN BE HIDDEN, BROUGHT BACK, REORDERED AND MOVED; YOUR OWN TOOLS COME IN AS CODE */
 var TOOL_ZONES = { top: ["Top bar", "btn"], rail: ["Rail", "btn"], left: ["Left panel", "panel"], right: ["Right panel", "panel"] };
-var RAIL_TYPES = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"], ["quote", "Quote"], ["toggle", "Fold-out list"], ["sep1"], ["menubtn", "Menu"], ["sheetmenu", "Sheet menu"], ["pager", "Page arrows"], ["sep2"], ["posts", "Blog posts"], ["postinfo", "Post info"], ["sep3"]];
+var RAIL_TYPES = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"], ["quote", "Quote"], ["toggle", "Fold-out list"], ["sep1"], ["menubtn", "Menu"], ["sheetmenu", "Sheet menu"], ["indexlink", "Index link"], ["pager", "Page arrows"], ["sep2"], ["posts", "Blog posts"], ["postinfo", "Post info"], ["sep3"]];
 var TOOL_DEFAULT = {
 top: ["toggle-left", "brand", "projects", "mode", "undo", "redo", "code-btn", "preview", "revert", "publish", "status", "toggle-right"],
 rail: RAIL_TYPES.map(function (t) { return t.length > 1 ? "add:" + t[0] : t[0]; }).concat(["inspect"]),
@@ -5464,7 +5562,7 @@ if (t.length === 1) {
 d[t[0]] = { label: "— divider", sep: true };
 return;
 }
-d["add:" + t[0]] = { label: "Add " + t[1].toLowerCase(), tip: t[1], icon: I[t[0]], act: "add", type: t[0], iconOnly: true, when: function () { return t[0] === "menubtn" ? !layersOn() : t[0] === "sheetmenu" ? layersOn() : true; } };
+d["add:" + t[0]] = { label: "Add " + t[1].toLowerCase(), tip: t[1], icon: I[t[0]], act: "add", type: t[0], iconOnly: true, when: function () { return t[0] === "menubtn" ? !layersOn() : (t[0] === "sheetmenu" || t[0] === "indexlink") ? layersOn() : true; } };
 });
 Object.keys(TOOLS_X).forEach(function (id) {
 var x = TOOLS_X[id];
@@ -7199,6 +7297,7 @@ var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title
 + (S.confirm === "posts" ? '<div class="bd-ed-confirm">Drop the own columns, colours and space of ' + (all.length - nf) + ' post' + (all.length - nf === 1 ? "" : "s") + '? Their words and blocks stay; what most posts share moves into the master first. <button class="bd-ed-btn bd-ed-inherit" data-act="posts-follow-yes">Make all follow</button><button class="bd-ed-btn" data-act="inherit-no">Keep</button></div>'
 : '<button class="bd-ed-btn bd-ed-inherit"' + (nf === all.length ? " disabled" : "") + ' data-act="posts-follow-ask">' + (nf === all.length ? "All " + all.length + " posts follow the master" : "Make all " + all.length + " posts follow (" + (all.length - nf) + " have their own)") + "</button>")
 + "</div>";
+h += postArrowsPanel();
 h += postGoHTML();
 h += '<div class="bd-ed-sec"><span class="bd-ed-title">Columns' + (S.mode === "phone" ? " · phone" : "") + '</span>' + rulerCols({ kind: "page", parent: "posts" }, S.mode === "phone", true) + '<div class="bd-ed-hint">Blocks keep the column they are in. With one column every block stacks.</div></div>';
 var pb = pageBoxPanel({ id: "", box: s.postBox || {}, sheetBg: (s.postBox || {}).sheetBg || "" }).replace(/page\.box\./g, "site.postBox.").replace(/page\.sheetBg/g, "site.postBox.sheetBg").replace("Space & card", "Space, card &amp; colour");
@@ -7326,6 +7425,14 @@ if (e.type === "html") h += field("HTML", '<textarea class="bd-ed-input" data-bi
 if (e.type === "rule") h += '<div class="bd-ed-hint">A thin line in the rule colour.</div>';
 if (e.type === "ptitle") {
 h += sw("Page number above", "el.num", !!p.num) + lookSection(e) + '<div class="bd-ed-hint">Shows the title of whichever page is open. Put it in the header to use it on every page.</div>';
+}
+if (e.type === "indexlink") {
+h += field("Link text or symbol", input("el.label", p.label || "", "", ' placeholder="Index;"'))
++ '<div class="bd-ed-actions">' + ["Index;", "≡", "☰", "+", "○", "→", "↘", "◦"].map(function (c) { return '<button class="bd-ed-btn" style="min-width:32px;justify-content:center" data-act="set" data-path="el.label" data-val="' + esc(c) + '">' + esc(c) + "</button>"; }).join("") + "</div>"
++ sw("Underline the link", "el.line", p.line !== false) + sw("Breadcrumbs beside it", "el.crumbs", p.crumbs !== false)
++ (p.crumbs !== false ? row(field("Between crumbs", input("el.sep", p.sep == null ? " / " : p.sep, "", ' placeholder=" / "')), numIn("Gap px", "el.gap", p.gap == null ? 12 : p.gap)) + numIn("Crumb strength %", "el.dim", p.dim == null ? 60 : p.dim) : "")
++ field("Text style", select("el.style", p.style || "body", styleOpts()))
++ '<div class="bd-ed-hint">Always opens the menu page (the one holding the Sheet menu block). The crumbs follow the page that is open: a blog, then its post.</div>';
 }
 if (e.type === "sheetmenu") {
 var smw = sheetOf(curPage().id);
@@ -7640,6 +7747,7 @@ var det = (s.menus.length === 1 ? '<div class="bd-ed-two" style="grid-template-c
 + field("Excerpt for the card", '<textarea class="bd-ed-input" data-bind="page.excerpt" rows="3">' + esc(pg.excerpt || "") + "</textarea>")
 + coverField(pg)
 + sw("Featured ★", "page.featured", !!pg.featured) : "")
++ (pg.blog ? sw("Arrows at the end of this blog’s posts", "page.postArrows", pg.postArrows !== false) + '<div class="bd-ed-hint">' + (postArrowsCfg().on ? "Master · Blog has post arrows on. Switch off to hide them on every post of this blog." : "Post arrows are off in Master · Blog, so this does nothing yet.") + "</div>" : "")
 + field("Description", '<textarea class="bd-ed-input" data-bind="page.desc" rows="3" style="font-family:var(--e-sans);font-size:12.5px">' + esc(pg.desc) + "</textarea>")
 + field("Group", select("page.section", pg.section, [["", "No group"]].concat(s.sections.map(function (x) { return [x.key, x.label]; }))));
 if (onSheet) h += '<div class="bd-ed-sec bd-ed-skin" style="background:' + SK.bar + ';cursor:pointer" data-act="sheet-sel" data-id="' + esc(pgw.sheet.id) + '" title="Open the sheet\'s settings"><span class="bd-ed-title">' + esc(pgw.sheet.name || "Sheet") + "</span></div>";
@@ -8003,7 +8111,7 @@ var IFIELDS = [
 { g: "Box", k: "op", l: "Opacity", p: ["opacity"], c: "opacity" },
 { g: "Box", k: "disp", l: "Show", p: ["display"], c: "display", opts: ["", "block", "inline", "flex", "grid", "none"] }
 ];
-var BD_TYPE_CLASSES = ["bd-text", "bd-notes", "bd-figure", "bd-gallery", "bd-library", "bd-link", "bd-list", "bd-embed", "bd-html", "bd-rule", "bd-ptitle", "bd-menubtn", "bd-pagerbar", "bd-posts", "bd-postinfo", "bd-quote", "bd-toggle", "bd-product"];
+var BD_TYPE_CLASSES = ["bd-text", "bd-notes", "bd-figure", "bd-gallery", "bd-library", "bd-link", "bd-list", "bd-embed", "bd-html", "bd-rule", "bd-ptitle", "bd-menubtn", "bd-ix", "bd-pagerbar", "bd-posts", "bd-postinfo", "bd-quote", "bd-toggle", "bd-product"];
 var INSPECT_CSS = `
 /* INSPECT */
 .is-inspect * {
