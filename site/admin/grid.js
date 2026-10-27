@@ -3672,8 +3672,9 @@ if (!st && pageMode(q) === "card") {
 var cpm = sheetPaperMargins(k, q, phone);
 out.push('.bd-ly-pane[data-page="' + q.id + '"] {\noverflow: hidden;\n}');
 out.push('.bd-ly-pane[data-page="' + q.id + '"]::after {\ndisplay: none;\n}');
-out.push(sel + " {\nheight: calc(100% - " + cpm.t + " - " + cpm.b + ");\ndisplay: flex;\nflex-direction: column;\n}");
-out.push(sel + " > .bd-panel {\nflex: 1 1 auto;\nmin-height: 0;\noverflow-y: auto;\n}");
+out.push(sel + " {\nheight: calc(100% - " + cpm.t + " - " + cpm.b + ");\noverflow-y: auto;\nbackground-attachment: scroll;\nscrollbar-width: none;\n}");
+out.push(sel + "::-webkit-scrollbar {\ndisplay: none;\n}");
+out.push(sel + " > .bd-panel {\nflex: none;\nheight: auto;\n}");
 }
 if (!(st && st.id === q.id)) {
 if (!phone && q.hover === "lift") out.push("@media (hover: hover) and (min-width: 761px) {\n" + sel + " > .bd-panel:hover {\nbox-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);\n}\n}");
@@ -5108,7 +5109,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#0ea5e9";
+var BD_BUILD = "#f59e0b";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -7486,8 +7487,9 @@ lay += '<span class="bd-ed-label">Where it lies · ' + esc(pgw.sheet.name || "Sh
 } else if (pgw && pgw.k < 0 && !pg.parent) lay += '<div class="bd-ed-hint">This page lies underneath the sheets. Drag it by its grip in Layers onto a card or an empty part of a sheet’s drawing to lay it on that sheet.</div>';
 if (!onSheet) lay += '<span class="bd-ed-label">Margin · outside the page</span>' + four("m");
 lay += two(field("Max width" + (ph ? " · phone" : ""), input("page.box.maxW" + (ph ? "M" : ""), (ph ? bx.maxWM : bx.maxW) || "", "", ' placeholder="720 or 60%"')), field("Padding" + (ph ? " · phone" : ""), '<input class="bd-ed-input bd-ed-n" data-bind="padall.page" data-type="blank" value="' + esc(bx["pt" + (ph ? "M" : "")] == null ? "" : bx["pt" + (ph ? "M" : "")]) + '" placeholder="all sides">'));
+if (isMaster(pg)) lay += '<span class="bd-ed-label">Columns & grid</span>' + rulerCols(pg, S.mode === "phone", false, true);
 h += skin("Layout", SK.lay, lay);
-if (isMaster(pg)) h += skinFold("Columns & grid", SK.lay, rulerCols(pg, S.mode === "phone"), !!S.open["pg-cols"]);
+
 var sty = (cardOn ? fillIn("Card colour", "page.box.card", bx.card || "", "#ffffff", "None") + (onSheet ? "" : fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site")) : "")
 + (cardOn ? two(numIn("Card see-through %", "page.box.cardA", bx.cardA == null ? "" : bx.cardA, "blank"), numIn("Blur", "page.box.blur", bx.blur == null ? "" : bx.blur, "blank")) : "")
 + (cardOn && onSheet ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "Inherit"], ["none", "None"]]) : "")
@@ -8228,12 +8230,12 @@ if (window.ResizeObserver) {
 new ResizeObserver(function () { fitSheet(); }).observe(document.getElementById("bd-sheet"));
 new ResizeObserver(function () { fitSheet(); }).observe(document.getElementById("bd-stage"));
 }
-function rulerCols(page, phone, master) {
+function rulerCols(page, phone, master, bare) {
 var who = master ? "post" : layWho(page);
 var L = master ? layFor("post") : lay(page);
 var pin = page.kind === "pin";
 var h = '<span class="bd-ed-rcols">';
-if (!pin && !master) h += '<span class="bd-ed-seg">' + (page.parent ? [["post", "All posts"], ["page", "This post"]] : [["site", "Site"], ["page", "This page"]]).map(function (o) { return '<button data-act="page-own" data-val="' + o[0] + '" class="' + ((o[0] === "page") === !!page.ownLayout ? "is-on" : "") + '">' + o[1] + "</button>"; }).join("") + "</span>";
+if (!pin && !master && !bare) h += '<span class="bd-ed-seg">' + (page.parent ? [["post", "All posts"], ["page", "This post"]] : [["site", "Site"], ["page", "This page"]]).map(function (o) { return '<button data-act="page-own" data-val="' + o[0] + '" class="' + ((o[0] === "page") === !!page.ownLayout ? "is-on" : "") + '">' + o[1] + "</button>"; }).join("") + "</span>";
 else if (pin) h += "<b>" + (page.pin.place === "bottom" ? "Footer" : "Header") + "</b>";
 if (phone) {
 h += L.cols < 2 ? "<span>1 column on phone</span>" : '<span>Phone</span><span class="bd-ed-seg">' + [1, 2].map(function (n) { return '<button data-act="lay-colsM" data-who="' + who + '" data-val="' + n + '" class="' + (L.colsM === n ? "is-on" : "") + '">' + n + "</button>"; }).join("") + "</span>"
