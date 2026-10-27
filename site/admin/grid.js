@@ -3237,19 +3237,25 @@ if (!k || k.rest !== "peek") return null;
 var q = sheetPage(k.restPage) || sheetPage((k.pages || [])[0]);
 return q && (k.pages || []).indexOf(q.id) > -1 ? q : null;
 }
-function sheetPanes(k) {
+function sheetPanes(k, phone) {
 var st = sheetStrip(k);
-return (k.pages || []).map(sheetPage).filter(function (q) { return q && (!st || q.id !== st.id); });
+var a = (k.pages || []).map(sheetPage).filter(function (q) { return q && (!st || q.id !== st.id); });
+return phone && sheetRev(k) ? a.slice().reverse() : a;
+}
+/* THE PHONE CAN SWAP ITS TWO PAGES (revM) AND PIN A DIFFERENT PAGE (pinM); BLANK = SAME AS DESKTOP */
+function sheetRev(k) {
+return !!(k && k.revM && sheetPanes(k).length === 2);
 }
 /* A PINNED PAGE NEVER LEAVES THE WINDOW: THE SHEET SLIDES BETWEEN ITS PAGES, BUT ONLY AS FAR AS THE PINNED PAGE STAYS AGAINST THE WINDOW'S EDGE */
-function sheetPin(k) {
+function sheetPin(k, phone) {
 var P = sheetPanes(k).map(function (q) { return q.id; });
-return k && k.pin && P.length > 1 && P.indexOf(k.pin) > -1 ? k.pin : "";
+var id = k && phone && k.pinM ? (k.pinM === "none" ? "" : k.pinM) : k && k.pin;
+return id && P.length > 1 && P.indexOf(id) > -1 ? id : "";
 }
 function sheetPinGeo(k, phone) {
-var id = sheetPin(k);
+var id = sheetPin(k, phone);
 if (!id) return null;
-var P = sheetPanes(k).map(function (q) { return q.id; });
+var P = sheetPanes(k, phone).map(function (q) { return q.id; });
 var pi = P.indexOf(id);
 var x = sheetAx(k, phone) === "x";
 var first = pi === 0;
@@ -3257,7 +3263,7 @@ var key = x ? (first ? "l" : "r") : (first ? "t" : "b");
 var edge = x ? (first ? "right" : "left") : (first ? "bottom" : "top");
 var wc = BOX_VIEW ? (x ? BOX_VIEW.w : BOX_VIEW.h) + "px" : x ? "100vw" : "100vh";
 var M = boxLen(boxVal(k.box || {}, "m" + key, phone), key) || "0px";
-return { id: id, pi: pi, N: P.length, x: x, key: key, edge: edge, len: "max(0px, min(calc(" + wc + " - " + M + "), calc(" + wc + " - 48px)))" };
+return { id: id, pi: pi, N: P.length, P: P, x: x, key: key, edge: edge, len: "max(0px, min(calc(" + wc + " - " + M + "), calc(" + wc + " - 48px)))" };
 }
 /* THE PINNED PAGE EITHER SLIDES TO THE WINDOW'S EDGE WHEN THE OTHER PAGE OPENS (DEFAULT) OR STAYS EXACTLY WHERE IT IS (A BAND THAT NEVER MOVES; THE OTHER PAGE SLIDES IN BESIDE IT) — PHONE CAN DIFFER */
 function sheetPinStay(k, phone) {
@@ -3283,6 +3289,7 @@ var g = sheetPinGeo(k, phone);
 if (!g) return;
 var sel = '#bd-ly .bd-ly-k[data-k="' + k.id + '"]';
 var ax = g.x ? "x" : "y";
+var pg = function (i) { return ' .bd-ly-pane[data-page="' + g.P[i] + '"]'; };
 var dd = "clamp(-1, calc(var(--i) - " + g.pi + "), 1)";
 var f = g.pi === 0 ? "clamp(0, calc(var(--i) - 0), 1)" : "calc(" + dd + " * " + dd + ")";
 if (phone) out.push(sel + " .bd-ly-pane {\ntranslate: none;\nz-index: auto;\npadding: 0;\nclip-path: none;\n}");
@@ -3290,16 +3297,16 @@ var ff = "max(" + f + ", var(--k-hold, 0))";
 var tf = "translate3d(calc(var(--k-sx, 0px) * -1 * " + ff + "), calc(var(--k-sy, 0px) * -1 * " + ff + "), 0)";
 /* THE SHEET SCROLLS AS ONE: THE OTHER PAGE SCROLLS AND THE PINNED PAGE MOVES WITH IT (RUNTIME --k-sx / --k-sy); ONLY THE SLIDE KEEPS THE PINNED PAGE IN THE WINDOW */
 if (g.pi === 0) {
-out.push(sel + " .bd-ly-pane:nth-child(1) {\ntranslate: " + (g.x ? "calc(" + f + " * " + g.len + ") 0" : "0 calc(" + f + " * " + g.len + ")") + ";\ntransform: " + tf + ";\ntransition: translate " + KD + " var(--ly-ease);\n}");
-out.push(sel + " .bd-ly-pane:nth-child(n+2) {\nbox-sizing: border-box;\npadding-" + (g.x ? "left" : "top") + ": " + g.len + ";\n}");
-out.push(sel + " .bd-ly-pane[data-own]:nth-child(n+2) {\nclip-path: inset(" + (g.x ? "0 0 0 " + g.len : g.len + " 0 0 0") + ");\n}");
+out.push(sel + pg(0) + " {\ntranslate: " + (g.x ? "calc(" + f + " * " + g.len + ") 0" : "0 calc(" + f + " * " + g.len + ")") + ";\ntransform: " + tf + ";\ntransition: translate " + KD + " var(--ly-ease);\n}");
+out.push(sel + pg(1) + " {\nbox-sizing: border-box;\npadding-" + (g.x ? "left" : "top") + ": " + g.len + ";\n}");
+out.push(sel + pg(1) + "[data-own] {\nclip-path: inset(" + (g.x ? "0 0 0 " + g.len : g.len + " 0 0 0") + ");\n}");
 } else {
 var sh = "calc(var(--i) * -100% / var(--n) + clamp(-1, calc(var(--i) - " + g.pi + "), 1) * " + g.len + ")";
 out.push(sel + " .bd-ly-track.is-ax" + (phone ? "m" : "") + "-" + ax + " {\ntransform: translate3d(" + (g.x ? sh + ", 0, 0" : "0, " + sh + ", 0") + ");\n}");
-out.push(sel + " .bd-ly-pane:nth-child(-n+" + g.pi + ") {\nbox-sizing: border-box;\npadding-" + (g.x ? "left" : "top") + ": " + g.len + ";\n}");
-out.push(sel + " .bd-ly-pane:nth-child(" + (g.pi + 1) + ") {\ntransform: " + tf + ";\n}");
+for (var pj = 0; pj < g.pi; pj++) out.push(sel + pg(pj) + " {\nbox-sizing: border-box;\npadding-" + (g.x ? "left" : "top") + ": " + g.len + ";\n}");
+out.push(sel + pg(g.pi) + " {\ntransform: " + tf + ";\n}");
 }
-out.push(sel + " .bd-ly-pane:nth-child(" + (g.pi + 1) + ") {\noverflow: visible;\n}");
+out.push(sel + pg(g.pi) + " {\noverflow: visible;\n}");
 out.push(sel + ",\n" + sel + " .bd-ly-pane {\npointer-events: none;\n}\n" + sel + " .bd-ly-paper {\npointer-events: auto;\n}");
 });
 return out.join("\n");
@@ -3477,7 +3484,7 @@ var pl = plan[n];
 var panes = sheetPanes(k);
 var strip = sheetStrip(k);
 var onPage = pl.st === "peek" && strip ? strip : panes[pl.i] || strip;
-return '<section class="bd-ly-sheet bd-ly-k' + (strip ? "" : " is-paper") + ' is-e-' + esc(k.edge || "left") + " is-em-" + esc(k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + (onPage ? " is-on-" + onPage.id : "") + (k.lv ? " is-lv-" + esc(k.lv) : "") + (k.hover === "lift" ? " is-hv-lift" : "") + (k.arrive === "fade" || k.arrive === "cut" ? " is-ap-" + k.arrive : "") + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-main="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(k.main)) + '" data-main-m="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(sheetMain(k, true))) + '" data-pin="' + panes.map(function (q) { return q.id; }).indexOf(sheetPin(k)) + '" data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
+return '<section class="bd-ly-sheet bd-ly-k' + (strip ? "" : " is-paper") + ' is-e-' + esc(k.edge || "left") + " is-em-" + esc(k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + (onPage ? " is-on-" + onPage.id : "") + (k.lv ? " is-lv-" + esc(k.lv) : "") + (k.hover === "lift" ? " is-hv-lift" : "") + (k.arrive === "fade" || k.arrive === "cut" ? " is-ap-" + k.arrive : "") + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-main="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(k.main)) + '" data-main-m="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(sheetMain(k, true))) + '" data-pin="' + panes.map(function (q) { return q.id; }).indexOf(sheetPin(k)) + '" data-pin-m="' + panes.map(function (q) { return q.id; }).indexOf(sheetPin(k, true)) + '"' + (sheetRev(k) ? ' data-rev-m="1"' : "") + ' data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
 + (!strip && sheetBlur(k) > 0 ? '<div class="bd-ly-blur" aria-hidden="true"></div>\n' : "") + '<div class="bd-ly-body">\n<div class="bd-ly-track is-ax-' + sheetAx(k) + " is-axm-" + sheetAx(k, true) + '" style="--n: ' + Math.max(1, panes.length) + "; --i: " + pl.i + ';">\n'
 + panes.map(function (q, j) {
 return '<div class="bd-ly-pane' + (j === pl.i ? " is-on" : "") + '"' + "" + ' data-page="' + q.id + '" data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n<div class="bd-ly-paper">\n' + layerBody(q, ctx) + "\n</div>\n</div>";
@@ -3499,7 +3506,7 @@ return k.rest === "peek" ? sheetInsets(n, phone) : NO_INS;
 /* A SHEET'S OWN MARGIN (OUTSIDE ITS EDGES, PX OR %) AND PADDING (INSIDE, PX) */
 /* A SHEET WITHOUT A STRIP IS ONE PIECE OF PAPER: ITS MARGINS BELONG TO THE PAPER (THE FIRST PAGE'S START, THE LAST PAGE'S END, THE SIDES OF EVERY PAGE) AND SCROLL WITH IT, NOT TO A FIXED FRAME */
 function sheetPaperSides(k, q, phone) {
-var P = sheetPanes(k).map(function (x) { return x.id; });
+var P = sheetPanes(k, phone).map(function (x) { return x.id; });
 var i = Math.max(0, P.indexOf(q && q.id));
 var N = Math.max(1, P.length);
 return sheetAx(k, phone) === "x" ? { t: true, b: true, l: i === 0, r: i === N - 1 } : { l: true, r: true, t: i === 0, b: i === N - 1 };
@@ -3673,14 +3680,15 @@ sheetList().forEach(function (k, n) {
 var padIns = sheetPadIns(k, n, phone);
 if (!phone && !sheetStrip(k) && sheetBlur(k) > 0) out.push('.bd-ly-k[data-k="' + k.id + '"] > .bd-ly-blur {\nposition: absolute;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\npointer-events: none;\n-webkit-backdrop-filter: blur(' + sheetBlur(k) + 'px);\nbackdrop-filter: blur(' + sheetBlur(k) + 'px);\n}');
 var panesK = sheetPanes(k);
-(k.pages || []).map(sheetPage).filter(Boolean).forEach(function (q, qi, qa) {
+(phone && sheetRev(k) ? sheetPanes(k, true) : (k.pages || []).map(sheetPage).filter(Boolean)).forEach(function (q, qi, qa) {
 var st = sheetStrip(k);
 var sel = st && st.id === q.id ? '.bd-ly-k[data-k="' + k.id + '"] > .bd-ly-strip' : '.bd-ly-pane[data-page="' + q.id + '"] > .bd-ly-paper';
 if (!st) {
 var pm = sheetPaperMargins(k, q, phone);
 /* ON A PINNED SHEET THE SIDE MARGINS BELONG TO THE PANE (SO ITS HIT AREA IS THE PAPER, NO CLIP-PATH, AND THE BLUR STILL SEES WHAT LIES UNDER IT) */
-var hitPane = !!k.pin && String(k.pin) !== String(q.id);
-out.push(sel + " {\nmargin: " + pm.t + " " + (hitPane ? "0" : pm.r) + " 0 " + (hitPane ? "0" : pm.l) + ";\nmin-height: calc(100% - " + pm.t + " - " + pm.b + ");\nbox-shadow: " + sheetLine(k, phone) + ";\n" + sheetRadius(k, qi, qa.length, hitPane === false && !!k.pin, phone) + "}");
+var kpin = sheetPin(k, phone);
+var hitPane = !!kpin && kpin !== String(q.id);
+out.push(sel + " {\nmargin: " + pm.t + " " + (hitPane ? "0" : pm.r) + " 0 " + (hitPane ? "0" : pm.l) + ";\nmin-height: calc(100% - " + pm.t + " - " + pm.b + ");\nbox-shadow: " + sheetLine(k, phone) + ";\n" + sheetRadius(k, qi, qa.length, hitPane === false && !!kpin, phone) + "}");
 out.push('.bd-ly-pane[data-page="' + q.id + '"] {\n--pm-b: ' + pm.b + ';\n' + (hitPane ? "margin-left: " + pm.l + ";\nmargin-right: " + pm.r + ";\n" + (sheetAx(k, phone) === "x" ? "flex-basis: calc(100% / var(--n) - " + pm.l + " - " + pm.r + ");\n" : "") : "") + "}");
 }
 if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPaper(k, k.alpha == null ? 55 : k.alpha) : sheetPaper(cardPaperK(k, q), k.alpha == null ? 55 : k.alpha, panesK.indexOf(q), panesK.length)) + ";\n}");
@@ -3730,6 +3738,15 @@ sel(".bd-ly-mark") + " {\nposition: absolute;\nright: var(--sm-pad);\nbottom: va
 ].join("\n");
 }
 /* THE PHONE'S OWN SPREAD: THE TRACK RUNS ALONG THE PHONE AXIS (is-axm-*), WHATEVER THE DESKTOP DOES */
+/* THE PHONE'S OWN PAGE ORDER: A SWAPPED SHEET LAYS ITS TWO PAGES THE OTHER WAY ROUND ON A PHONE (STRAIGHT FLEX ORDER, NOTHING MOVES) */
+function sheetOrderCSS() {
+var out = [];
+sheetList().forEach(function (k) {
+if (!sheetRev(k)) return;
+sheetPanes(k, true).forEach(function (q, i) { out.push('#bd-ly .bd-ly-k[data-k="' + k.id + '"] .bd-ly-pane[data-page="' + q.id + '"] {\norder: ' + i + ';\n}'); });
+});
+return out.join("\n");
+}
 function sheetAxisCSS() {
 return [
 ".bd-ly-track.is-axm-y {\nflex-direction: column;\nwidth: 100%;\nheight: calc(var(--n) * 100%);\ntransform: translate3d(0, calc(var(--i) * -100% / var(--n)), 0);\n}",
@@ -3741,6 +3758,7 @@ var Ls = S.project.site.layers;
 if (phone) return [
 contentInsetCSS(true),
 sheetAxisCSS(),
+sheetOrderCSS(),
 sheetBoxCSS(true),
 sheetPinCSS(true),
 sheetStateCSS("is-em-", sheetEdges(true)),
@@ -3812,7 +3830,12 @@ var before = home;
 var model = els.map(function (k) {
 var c = k.getAttribute("data-covers");
 var st = k.querySelector(".bd-ly-strip > .bd-panel");
-return { el: k, rest: k.getAttribute("data-rest") || "open", main: parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-main-m") ? "data-main-m" : "data-main"), 10) || 0, pin: isNaN(parseInt(k.getAttribute("data-pin"), 10)) ? -1 : parseInt(k.getAttribute("data-pin"), 10), covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
+return { el: k, rest: k.getAttribute("data-rest") || "open", main: parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-main-m") ? "data-main-m" : "data-main"), 10) || 0, pin: isNaN(parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-pin-m") ? "data-pin-m" : "data-pin"), 10)) ? -1 : parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-pin-m") ? "data-pin-m" : "data-pin"), 10), rev: k.hasAttribute("data-rev-m"), covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
+});
+/* THE PHONE'S OWN PAGE ORDER: --i COUNTS PAGES AS THEY LIE (CSS order), THE PLAN COUNTS THEM IN THE MARKUP */
+var vis = function (m, i) { return m.rev && window.matchMedia("(max-width: 760px)").matches ? m.panes.length - 1 - i : i; };
+model.forEach(function (m) {
+if (m.rev) m.track.style.setProperty("--i", vis(m, parseInt(m.track.style.getPropertyValue("--i"), 10) || 0));
 });
 model.forEach(function (m) {
 if (m.pin < 0) return;
@@ -3826,7 +3849,7 @@ pinPane.style.setProperty("--k-sx", pn.scrollLeft + "px");
 }, { passive: true });
 });
 pinPane.addEventListener("wheel", function (e) {
-var i = parseInt(m.track.style.getPropertyValue("--i"), 10) || 0;
+var i = vis(m, parseInt(m.track.style.getPropertyValue("--i"), 10) || 0);
 var pn = kids[i];
 if (i !== m.pin && pn && !pn.hasAttribute("data-own")) pn.scrollBy(e.deltaX, e.deltaY);
 }, { passive: true });
@@ -3925,7 +3948,7 @@ var id = st === "peek" && m.strip ? m.strip : m.panes[i] || m.strip;
 m.el.className = m.el.className.replace(/\bis-on-\S+/g, "").replace(/\s+/g, " ").trim() + (id ? " is-on-" + id : "");
 }
 var cur = model.map(function (m) {
-return { st: (m.el.className.match(/\bis-st-([a-z]+)/) || [])[1] || "open", i: parseInt(m.track.style.getPropertyValue("--i"), 10) || 0 };
+return { st: (m.el.className.match(/\bis-st-([a-z]+)/) || [])[1] || "open", i: vis(m, parseInt(m.track.style.getPropertyValue("--i"), 10) || 0) };
 });
 function art(id) {
 return content.querySelector('.bd-ly-art[data-id="' + id + '"]');
@@ -4146,7 +4169,7 @@ var c = cur[x];
 if (n.i !== c.i) {
 /* A SHEET THAT ISN'T LYING OPEN CHANGES PAGE INSTANTLY, OUT OF SIGHT, THEN ONLY SLIDES BACK */
 if (c.st !== "open") m.track.classList.add("is-snap");
-m.track.style.setProperty("--i", n.i);
+m.track.style.setProperty("--i", vis(m, n.i));
 if (c.st !== "open") {
 void m.track.offsetWidth;
 m.track.classList.remove("is-snap");
@@ -5139,7 +5162,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#8b5cf6";
+var BD_BUILD = "#14b8a6";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6152,6 +6175,8 @@ if (!k) return;
 k.pages = (k.pages || []).filter(function (id, i, a) { var q = p.pages[id]; return q && q.kind !== "pin" && a.indexOf(id) === i; });
 if (k.pin && (k.pages.indexOf(k.pin) < 0 || k.pages.length < 2 || k.rest === "peek")) k.pin = "";
 if (k.pin && k.rest !== "still") k.rest = "still";
+if (k.pinM && k.pinM !== "none" && (k.pages || []).indexOf(k.pinM) < 0) delete k.pinM;
+if (k.revM && sheetPanes(k).length !== 2) delete k.revM;
 if (k.hover === "nudge" && k.rest !== "peek") k.hover = "";
 if (k.shadow === "line" || k.shadow === "hard") k.shadow = "soft";
 /* ONE SHEET, ONE PIECE: PAGES ON IT NEVER OWN GEOMETRY. NO OWN SCROLL, NO OWN MARGINS, NO STAYS-PUT BAND */
@@ -6305,7 +6330,7 @@ var ax = sheetAx(k, phone);
 if (phone && sheetStrip(k)) ax = k.edgeM === "left" || k.edgeM === "right" ? "x" : "y";
 var L = ax === "x" ? v.w : v.h;
 var C = ax === "x" ? v.h : v.w;
-var pages = (k.pages || []).map(sheetPage).filter(Boolean);
+var pages = phone && sheetRev(k) ? sheetPanes(k, true) : (k.pages || []).map(sheetPage).filter(Boolean);
 var N = Math.max(1, pages.length);
 var star = layStar(k, phone);
 var ins = sheetBoxIns(k, n, phone);
@@ -6489,7 +6514,7 @@ var inWin = scx === cc && scy === rr;
 if (G.N === 2) swapHits += '<g data-swap="' + s.i + '" data-i="' + n + '" data-bx="' + X(b.l) + '" data-by="' + Y(b.t) + '" data-bw="' + Lx(Math.max(0, b.r - b.l)) + '" data-bh="' + Lx(Math.max(0, b.b - b.t)) + '"' + (inWin ? "" : ' data-act="lay-cell" data-c="' + scx + '" data-r="' + scy + '"') + ' style="cursor:grab">' + rect(b, 'fill="transparent"') + "</g>";
 {
 /* FLAGS ON THE CARD: PIN · INDEPENDENT · OWN SCROLL — DRAWN IN THE CARD'S HALF SO THEY ALWAYS FIT */
-var pinned = sheetPin(k) === q.id;
+var pinned = sheetPin(k, phone) === q.id;
 var fl = [["pin", "PIN", pinned, true]];
 var fx = X(s.slot.l) + 5;
 var fy = G.ax === "x" ? Y(s.slot.b) - 22 : Y(s.slot.t) + 5;
@@ -6604,6 +6629,12 @@ var slot = G.slots.filter(function (s) { return s.i === +swapAt; })[0];
 var tid = slot && slot.q ? slot.q.id : "";
 if (!tid || tid === id) return;
 snap();
+if (src === k && S.mode === "phone") {
+k.revM = !k.revM;
+if (!k.revM) delete k.revM;
+changed();
+return;
+}
 if (src === k) {
 var A = k.pages.slice();
 var a = A.indexOf(id);
@@ -6751,6 +6782,12 @@ if (P.length !== 2) return;
 var toward = w.i === 0 ? w.along > 0.3 : w.along < -0.3;
 if (!toward) return;
 snap();
+if (S.mode === "phone") {
+k.revM = !k.revM;
+if (!k.revM) delete k.revM;
+changed();
+return;
+}
 var A = (k.pages || []).slice();
 var tops = A.map(function (id, ix) { return { id: id, ix: ix }; }).filter(function (o) { var q = S.project.pages[o.id]; return q && !q.parent; });
 if (tops.length !== 2) return;
@@ -6990,7 +7027,7 @@ if (!k) return "";
 var P = "site.sheets." + n + ".";
 var pages = (k.pages || []).map(sheetPage).filter(Boolean);
 var pins = pages.map(function (q, j) {
-var on = sheetPin(k) === q.id;
+var on = sheetPin(k, S.mode === "phone") === q.id;
 return pages.length > 1 ? '<button class="bd-ed-pinpill' + (on ? " is-on" : "") + '" data-act="lay-flag" data-f="pin" data-i="' + n + '" data-id="' + q.id + '" aria-pressed="' + on + '">PIN ' + (j + 1) + "</button>" : "";
 }).join("");
 var h = skin("Details", SK.det, field("Name", input(P + "name", k.name || "")));
@@ -10163,7 +10200,13 @@ var k = S.project.site.sheets[+b.getAttribute("data-i")];
 var q = S.project.pages[id];
 if (!k || !q) return;
 snap();
-if (f === "pin") k.pin = sheetPin(k) === id ? "" : id;
+if (f === "pin") {
+if (S.mode === "phone") {
+var nv = sheetPin(k, true) === id ? "none" : id;
+if (nv === (sheetPin(k) || "none")) delete k.pinM;
+else k.pinM = nv;
+} else k.pin = sheetPin(k) === id ? "" : id;
+}
 changed();
 },
 "layout": function () {
