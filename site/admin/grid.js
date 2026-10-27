@@ -3541,11 +3541,8 @@ function menuPageOf() {
 return S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.kind !== "pin" && (q.els || []).some(function (e) { return e.type === "sheetmenu"; }); })[0] || null;
 }
 function crumbsOf(q) {
-var c = [];
-var x = q;
-var n = 0;
-while (x && n++ < 4) { c.unshift(x.title); x = x.parent ? S.project.pages[x.parent] : null; }
-return c;
+var b = q && q.parent ? S.project.pages[q.parent] : q;
+return b && b.blog ? [b.title] : [];
 }
 function indexLinkHTML(e, base) {
 var p = e.props;
@@ -5353,7 +5350,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#f43f5e";
+var BD_BUILD = "#f59e0b";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -7472,7 +7469,7 @@ h += field("Link text or symbol", input("el.label", p.label || "", "", ' placeho
 + sw("Underline the link", "el.line", p.line !== false) + sw("Breadcrumbs beside it", "el.crumbs", p.crumbs !== false)
 + (p.crumbs !== false ? row(field("Between crumbs", input("el.sep", p.sep == null ? " / " : p.sep, "", ' placeholder=" / "')), numIn("Gap px", "el.gap", p.gap == null ? 12 : p.gap)) + numIn("Crumb strength %", "el.dim", p.dim == null ? 60 : p.dim) : "")
 + field("Text style", select("el.style", p.style || "body", styleOpts()))
-+ '<div class="bd-ed-hint">Always opens the menu page (the one holding the Sheet menu block). The crumbs follow the page that is open: a blog, then its post.</div>';
++ '<div class="bd-ed-hint">Always opens the menu page (the one holding the Sheet menu block). The crumb shows only the name of the blog that is open (a blog page or one of its posts); on every other page there is none.</div>';
 }
 if (e.type === "sheetmenu") {
 var smw = sheetOf(curPage().id);

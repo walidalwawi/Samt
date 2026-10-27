@@ -142,3 +142,5 @@ Ask before assuming.
 - A pinned strip rides with its sheet: on a vertical Cover [Menu, Index] the Index sits at the top when the menu is closed and at the bottom of the window when it is open. That is the pin model, not a bug; staying still would need the glass (law 6). BD_BUILD = #a855f7.
 - 27 Oct 24:30: the same measuring now covers horizontal pinned strips. Static insets assume a 1280px window (25% = 320px), so on a wider window (iPad 1376px → strip 344px) pages under/below the strip started inside it and were clipped. Runtime pinLen() writes --bd-pin-left / --bd-pin-right (real strip widths) and pageBoxCSS / contentInsetCSS add max(0, real − drawn) via pinGrow(side, phone) on left/right. BD_BUILD = #14b8a6.
 - 28 Oct: page panel Details has "Show the title" (page.header) again, and a blog has "Post info on this blog’s posts" (page.postInfo = false hides the Post info block on its posts in the export, still shown in the editor). BD_BUILD = #f43f5e.
+
+- 28 Oct: Index link crumb shows only the open blog's name (blog page or its posts), nothing elsewhere. BD_BUILD = #f59e0b.
