@@ -5038,7 +5038,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#f59e0b";
+var BD_BUILD = "#10b981";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -7417,7 +7417,7 @@ var lay = "";
 if (onSheet) {
 lay += '<span class="bd-ed-label">This page is</span>' + seg("page.mode", pageMode(pg), [["sheet", "Sheet"], ["card", "Card"]])
 + '<div class="bd-ed-hint">' + (cardOn ? "Card: lies on the sheet like a card. It can never go outside the sheet and has its own colour, effect and decoration." : "Sheet: no background of its own. Just content on the sheet’s paper, with the sheet’s style and effect.") + '</div><button class="bd-ed-btn" data-act="sheet-sel" data-id="' + esc(pgw.sheet.id) + '">' + I.sliders + "Sheet settings</button>";
-if (cardOn) lay += '<span class="bd-ed-label">Where it lies · ' + esc(pgw.sheet.name || "Sheet") + '</span><div class="bd-lay-box">' + layoutDrawing(pgw.k, pg) + '</div><div class="bd-ed-hint">Handles move this card inside the sheet. Snaps to 5%.</div>';
+lay += '<span class="bd-ed-label">Where it lies · ' + esc(pgw.sheet.name || "Sheet") + '</span><div class="bd-lay-box">' + layoutDrawing(pgw.k, cardOn ? pg : undefined) + '</div><div class="bd-ed-hint">' + (cardOn ? "Handles move this card inside the sheet. Snaps to 5%." : "Handles move the sheet. Snaps to 5%.") + "</div>";
 } else if (pgw && pgw.k < 0 && !pg.parent) lay += '<div class="bd-ed-hint">This page lies underneath the sheets. Drag it by its grip in Layers onto a card or an empty part of a sheet’s drawing to lay it on that sheet.</div>';
 if (!onSheet) lay += '<span class="bd-ed-label">Margin · outside the page</span>' + four("m");
 lay += '<span class="bd-ed-label">Padding · inside the page' + (ph ? " · phone" : "") + "</span>" + four("p")
