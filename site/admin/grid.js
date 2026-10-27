@@ -5162,7 +5162,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#14b8a6";
+var BD_BUILD = "#f97316";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -5910,9 +5910,10 @@ return h;
 }
 function stylesPanel() {
 var s = S.project.site;
-var h = '<div class="bd-ed-sec"><div class="bd-ed-hint">The type every block uses. Pick a block’s style in its panel; for one-off changes use Style in the block panel.' + (S.mode === "phone" ? " Showing phone sizes." : "") + "</div>"
+var h = '<div class="bd-ed-sec">' + (S.mode === "phone" ? '<div class="bd-ed-hint">Showing phone sizes.</div>' : "")
 + row(field("Main face", select("site.sans", s.sans, BD_FONTS_SANS)), field("Mono face", select("site.mono", s.mono, BD_FONTS_MONO))) + "</div>";
 BD_STYLES.forEach(function (k, i) {
+if (k[0] === "mono") return;
 var st = s.styles[k[0]];
 var p = "site.styles." + k[0];
 h += '<div class="bd-ed-sec">' + adv("style-" + k[0], k[1] + ' <span class="bd-ed-sum">' + (S.mode === "phone" ? st.sizeM + "/" + st.lhM : st.size + "/" + st.lh) + " · " + (st.font === "mono" ? "mono" : "main") + "</span>",
@@ -5922,9 +5923,9 @@ row(dpIn("Size", p + ".size", p + ".sizeM", st.size, st.sizeM), dpIn("Line", p +
 + sw("Italic", p + ".italic", st.italic)
 + colorIn("Colour", p + ".color", st.color, s.colors.ink), i === 0) + "</div>";
 });
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Blocks</span><div class="bd-ed-hint">The look every block of a kind starts with. A block can still change any of these in its own panel.</div></div>';
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Blocks</span></div>';
 Object.keys(BLOCK_STYLE).forEach(function (t) {
-h += '<div class="bd-ed-sec">' + adv("bs-" + t, BD_TYPE_NAME[t], styleFields(t, "site", null, { skip: bsMotionKeys(t) }) + (bsMotionKeys(t).length ? '<div class="bd-ed-hint">Card looks and gestures are in the Motion tab.</div>' : "")) + "</div>";
+h += '<div class="bd-ed-sec">' + adv("bs-" + t, BD_TYPE_NAME[t], styleFields(t, "site", null, { skip: bsMotionKeys(t), hide: { quote: ["Text"], posts: ["Text"], library: ["Covers", "Book"] }[t] || [] }) + (bsMotionKeys(t).length && t !== "library" ? '<div class="bd-ed-hint">Card looks and gestures are in the Motion tab.</div>' : "")) + "</div>";
 });
 return h;
 }
@@ -5944,10 +5945,10 @@ return '<button class="bd-ed-btn" data-act="ly-preset" data-val="' + x[0] + '">'
 + sw("Hard shadow while moving", "site.layers.lift", Lz.lift)
 + field("The post underneath", seg("site.layers.reveal", Lz.reveal, [["focus", "Comes into focus"], ["rise", "Rises"], ["none", "As is"]])) + "</div>";
 }
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Gestures</span><div class="bd-ed-hint">Every card and book: hover teases the move, a tap plays it fully, then it opens.</div>'
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Animation</span>'
 + row(numIn("Speed (ms)", "site.motion.gDur", M.gDur, "int"), field("Feel", select("site.motion.gEase", M.gEase, [["ease", "Ease"], ["cubic-bezier(.2,.8,.2,1)", "Paper"], ["cubic-bezier(.7,0,.25,1)", "Heavy drag"], ["ease-in-out", "Even"], ["steps(5, end)", "Stop-motion"], ["linear", "Straight"]])))
 + row(numIn("Book hover tease (°)", "site.motion.tease", M.tease), numIn("Book tap opens (°)", "site.motion.open", M.open)) + "</div>";
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Library books · every Library block</span>' + styleFields("library", "site", null, { only: ["book"].concat(bsMotionKeys("library")), flat: true }) + '<div class="bd-ed-hint">A block can still do its own thing: select it, Look → Motion.</div></div>';
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Library</span>' + styleFields("library", "site", null, { only: ["book"].concat(bsMotionKeys("library").filter(function (x) { return x !== "hover"; })), flat: true }) + "</div>";
 return h;
 }
 function pagesPanel() {
@@ -6972,7 +6973,10 @@ return "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<
 }
 /* THE RED "INHERIT ALL" BAR AT THE TOP OF EVERY PAGE AND SHEET PANEL: ASKS FIRST, THEN DROPS EVERY OVERRIDE SO IT FOLLOWS THE MASTER AGAIN */
 /* WALID'S PANELS: ONE SKIN FOR SHEET AND PAGE. DETAILS · LAYOUT · STYLE · EFFECT · EXTRAS · INHERIT + DELETE */
-var SK = { pane: "#dfe3df", det: "#e6ebe6", lay: "#ffffff", sty: "#faf9f6", eff: "#faf9f6", end: "#f3e6df" };
+/* WALID'S PANEL DESIGNER COLOURS: ONE COLOUR PER PANEL, THE PANE BEHIND IS #e7e4dc */
+var PC = { sheet: "#f1eee6", page: "#e6ebe6", under: "#ffffff", blog: "#ffffff", post: "#faf9f6", bm: "#26241f", mstyles: "#26241f", mmotion: "#26241f", msite: "#faf9f6" };
+function skinColour(c) { SK.det = SK.lay = SK.sty = SK.eff = SK.end = c; }
+var SK = { pane: "#e7e4dc", det: "#e6ebe6", lay: "#ffffff", sty: "#faf9f6", eff: "#faf9f6", end: "#f3e6df" };
 function skin(title, color, inner) {
 return '<div class="bd-ed-sec bd-ed-skin" style="background:' + color + '"><span class="bd-ed-title">' + title + "</span>" + inner + "</div>";
 }
@@ -7025,6 +7029,7 @@ function sheetEditHTML(n) {
 var k = sheetList()[n];
 if (!k) return "";
 var P = "site.sheets." + n + ".";
+skinColour(PC.sheet);
 var pages = (k.pages || []).map(sheetPage).filter(Boolean);
 var pins = pages.map(function (q, j) {
 var on = sheetPin(k, S.mode === "phone") === q.id;
@@ -7105,14 +7110,14 @@ function postMasterHTML() {
 var s = S.project.site;
 var all = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.parent && q.kind !== "pin"; });
 var nf = all.filter(postFollows).length;
-var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">All posts · master</span><button class="bd-ed-btn" style="height:26px" data-act="post-master-done">Done</button></div><div class="bd-ed-hint">Every blog post follows these. A post can still set its own in its panel; its red Inherit all button brings it back here.</div>'
+var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">All posts · master</span></div>'
 + '<div class="bd-ed-pfollow">' + all.map(function (q) { var f = postFollows(q); return '<button class="bd-ed-pf' + (f ? " is-f" : "") + '" data-act="page" data-id="' + q.id + '" title="' + esc(q.title) + (f ? " · follows the master" : " · has its own settings") + '"><i></i><span>' + esc(q.title) + "</span><b>" + (f ? "master" : "own") + "</b></button>"; }).join("") + "</div>"
 + (S.confirm === "posts" ? '<div class="bd-ed-confirm">Drop the own columns, colours and space of ' + (all.length - nf) + ' post' + (all.length - nf === 1 ? "" : "s") + '? Their words and blocks stay; what most posts share moves into the master first. <button class="bd-ed-btn bd-ed-inherit" data-act="posts-follow-yes">Make all follow</button><button class="bd-ed-btn" data-act="inherit-no">Keep</button></div>'
 : '<button class="bd-ed-btn bd-ed-inherit"' + (nf === all.length ? " disabled" : "") + ' data-act="posts-follow-ask">' + (nf === all.length ? "All " + all.length + " posts follow the master" : "Make all " + all.length + " posts follow (" + (all.length - nf) + " have their own)") + "</button>")
 + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-title">Columns' + (S.mode === "phone" ? " · phone" : "") + '</span>' + rulerCols({ kind: "page", parent: "posts" }, S.mode === "phone", true) + '<div class="bd-ed-hint">Blocks keep the column they are in. With one column every block stacks.</div></div>';
 var pb = pageBoxPanel({ id: "", box: s.postBox || {}, sheetBg: (s.postBox || {}).sheetBg || "" }).replace(/page\.box\./g, "site.postBox.").replace(/page\.sheetBg/g, "site.postBox.sheetBg").replace("Space & card", "Space, card &amp; colour");
-return h + pb;
+return '<div class="bd-ed-skinwrap bd-ed-pc-bm" style="background:' + SK.pane + '">' + h + pb + "</div>";
 }
 /* THE GLASS: A MENU BAR STUCK TO THE WINDOW. IT NEVER MOVES WHILE PAPER SLIDES UNDER IT, SO NO SHEET EVER NEEDS A BAND */
 function glassPanel() {
@@ -7162,11 +7167,12 @@ return '<div class="bd-ed-layers"><button class="bd-ed-master' + (S.masterSel ? 
 function masterPanelHTML() {
 var T = [["styles", "Styles"], ["motion", "Motion"], ["site", "Site"]];
 if (T.map(function (t) { return t[0]; }).indexOf(S.masterTab) < 0) S.masterTab = "styles";
-var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Master</span><button class="bd-ed-btn" style="height:26px" data-act="master-done">Done</button></div><div class="bd-ed-hint">The settings of the whole site. A sheet or a page can override any of them.</div><div class="bd-ed-tabs" role="tablist">';
+var live = S.masterTab === "site";
+var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Master</span>' + (live ? '<button class="bd-ed-btn" style="height:26px" data-act="master-done">Done</button>' : "") + "</div>" + (live ? '<div class="bd-ed-hint">The settings of the whole site. A sheet or a page can override any of them.</div>' : "") + '<div class="bd-ed-tabs" role="tablist">';
 T.forEach(function (t) {
 h += '<button data-act="master-tab" data-val="' + t[0] + '" class="' + (S.masterTab === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
 });
-return h + "</div></div>" + panelHTML(S.masterTab);
+return '<div class="bd-ed-skinwrap bd-ed-pc-' + S.masterTab + '" style="background:' + SK.pane + '">' + h + "</div></div>" + panelHTML(S.masterTab) + "</div>";
 }
 function renderLeft() {
 var L = $("bd-left");
@@ -7337,7 +7343,7 @@ var h = "";
 groups.forEach(function (g) {
 var gc = cells.filter(function (c) { return g[1].indexOf(c.k) > -1; });
 if (!gc.length) return;
-if (g[0]) h += '<span class="bd-ed-label bd-ed-group">' + esc(g[0]) + "</span>";
+if (g[0] && (opt.hide || []).indexOf(g[0]) < 0) h += '<span class="bd-ed-label bd-ed-group">' + esc(g[0]) + "</span>";
 for (var i = 0; i < gc.length; i += 2) h += row(gc[i].html, gc[i + 1] ? gc[i + 1].html : "");
 if (g[0] === "Card image" && val("imgBlend") === "ink" && val("cardBg")) h += '<div class="bd-ed-hint">The card colour (' + esc(val("cardBg")) + ') still sits behind the lines. Clear Card colour above to put the lines straight on the sheet.</div>';
 if (g[0] === "Card image" && val("imgBlend") === "ink" && (val("look") || "plain") === "trace") h += '<div class="bd-ed-hint">The tracing paper (Motion → Card look) lies over the lines and frosts them.</div>';
@@ -7530,6 +7536,7 @@ var s = S.project.site;
 var pgw = layersOn() ? sheetOf(pg.id) : null;
 var onSheet = !!(pgw && pgw.k > -1 && !pg.parent);
 var cardOn = !onSheet || pageMode(pg) === "card";
+skinColour(pg.parent ? PC.post : !onSheet ? PC.under : pg.blog ? PC.blog : PC.page);
 var ph = S.mode === "phone";
 var bx = pg.box || {};
 var four = function (pre) {
@@ -7540,8 +7547,8 @@ return '<label class="bd-ed-field"><span class="bd-ed-label">' + sd[1] + '</span
 };
 var menuBox = function (m) { return '<label class="bd-ed-check"><input type="checkbox" data-act="page-menu" data-id="' + m.id + '"' + (m.items.some(function (it) { return it.type === "page" && it.page === pg.id; }) ? " checked" : "") + ">" + (s.menus.length > 1 ? esc(m.name) : "Show in menu") + "</label>"; };
 var det = (s.menus.length === 1 ? '<div class="bd-ed-two" style="grid-template-columns:minmax(0,1fr) auto">' + input("page.title", pg.title, "", ' aria-label="Title" placeholder="Title"') + menuBox(s.menus[0]) + "</div>" : field("Title", input("page.title", pg.title)) + '<span class="bd-ed-label">Show in menus</span>' + s.menus.map(menuBox).join(""))
-+ (pg.slug === "" ? '<div class="bd-ed-hint">' + I.home.replace("<svg", '<svg style="width:12px;height:12px;vertical-align:-2px"') + " Home page</div>" : "")
-+ (pg.blog ? '<div class="bd-ed-hint">This page is a blog. Its posts are listed under it in Pages.</div><button class="bd-ed-btn" data-act="post-add" data-id="' + pg.id + '">' + I.plus + "Post</button>" : "")
++ (false && pg.slug === "" ? '<div class="bd-ed-hint">' + I.home.replace("<svg", '<svg style="width:12px;height:12px;vertical-align:-2px"') + " Home page</div>" : "")
++ (pg.blog ? '<div class="bd-ed-hint">This page is a blog. Its posts are listed under it in Pages.</div>' + (false ? '<button class="bd-ed-btn" data-act="post-add" data-id="' + pg.id + '">' + I.plus + "Post</button>" : "") : "")
 + (pg.parent ? '<span class="bd-ed-label">Post</span>' + row(field("Blog", select("page.parent", pg.parent, blogs().map(function (b) { return [b.id, b.title]; }))), field("Date", '<input type="date" class="bd-ed-input" data-bind="page.date" value="' + esc(pg.date || "") + '">'))
 + field("Excerpt for the card", '<textarea class="bd-ed-input" data-bind="page.excerpt" rows="3">' + esc(pg.excerpt || "") + "</textarea>")
 + coverField(pg)
