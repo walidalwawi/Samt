@@ -310,6 +310,11 @@ break;
 root.querySelectorAll(".bd-ly-a[data-id]").forEach(function (a) {
 a.classList.toggle("is-current", a.getAttribute("data-id") === on);
 });
+document.querySelectorAll(".bd-ix-crumb").forEach(function (c) {
+if (!c.bdMap) { try { c.bdMap = JSON.parse(c.getAttribute("data-crumbs")); } catch (x) { c.bdMap = {}; } }
+var cr = c.bdMap[F];
+c.textContent = cr ? cr.join(c.getAttribute("data-sep")) : "";
+});
 }
 function go(id, pop) {
 var f = where(id);

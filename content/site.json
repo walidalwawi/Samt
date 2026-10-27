@@ -245,6 +245,14 @@
      "space": 0,
      "spaceM": ""
     },
+    "indexlink": {
+     "x": 0,
+     "w": 12,
+     "xm": 0,
+     "wm": 6,
+     "space": "",
+     "spaceM": ""
+    },
     "pager": {
      "x": 0,
      "w": 12,
@@ -729,7 +737,8 @@
   "postGo": {
    "side": "left",
    "sideM": ""
-  }
+  },
+  "postArrows": {}
  },
  "order": [
   "56ud3gky",

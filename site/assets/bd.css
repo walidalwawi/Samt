@@ -1,4 +1,4 @@
-/* PUBLISHED mvqyz8ql */
+/* PUBLISHED mvr2t09d */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -924,6 +924,22 @@ display: block;
 width: 22px;
 height: 22px;
 }
+.bd-ix {
+display: flex;
+align-items: baseline;
+gap: var(--ix-gap);
+}
+.bd-ix-a {
+color: inherit;
+text-decoration: underline;
+text-underline-offset: 3px;
+}
+.bd-ix.is-plain .bd-ix-a {
+text-decoration: none;
+}
+.bd-ix-crumb {
+opacity: var(--ix-dim);
+}
 .bd-pagerbar-next {
 grid-column: 3;
 }
@@ -1403,6 +1419,10 @@ background: var(--bd-ink);
 }
 .bd-flow > .bd-el + .bd-sheetmenu {
 margin-top: 0px;
+}
+.bd-flow > .bd-ix {
+--x: 0;
+--w: 12;
 }
 .bd-flow > .bd-pagerbar {
 --x: 0;
@@ -2898,6 +2918,10 @@ line-height: 16px;
 --w: 6;
 }
 .bd-flow > .bd-sheetmenu {
+--x: 0;
+--w: 6;
+}
+.bd-flow > .bd-ix {
 --x: 0;
 --w: 6;
 }
