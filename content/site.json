@@ -586,7 +586,7 @@
     "color": "#ffffff",
     "alpha": 0,
     "blur": 10,
-    "shadow": "none",
+    "shadow": "soft",
     "nudge": 0,
     "dur": "",
     "box": {
@@ -594,10 +594,10 @@
      "mr": "75%",
      "mt": "",
      "mb": "",
-     "mtM": "",
+     "mtM": "0",
      "mbM": "85%",
-     "mlM": "",
-     "mrM": "5%"
+     "mlM": "0",
+     "mrM": "0"
     },
     "pattern": "",
     "patColor": "#000000",
@@ -613,8 +613,8 @@
     "pin": "56ud3gky",
     "radius": 0,
     "vcM": 0,
-    "vrM": 1,
-    "mainM": "56ud3gky",
+    "vrM": 0,
+    "mainM": "nsye72w3",
     "axisM": "y"
    },
    {
@@ -647,7 +647,11 @@
      "mt": "",
      "mb": "",
      "ml": "",
-     "mr": "15%"
+     "mr": "15%",
+     "mtM": "0",
+     "mbM": "0",
+     "mlM": "0",
+     "mrM": "15%"
     },
     "pattern": "",
     "patColor": "#000000",
@@ -660,7 +664,10 @@
     "hover": "",
     "vc": 0,
     "vr": 0,
-    "pin": ""
+    "pin": "",
+    "vcM": 0,
+    "vrM": 0,
+    "mainM": "fji5ongj"
    }
   ],
   "editor": {
@@ -4506,7 +4513,7 @@
     "mt": "0",
     "mb": "0",
     "mbM": "0",
-    "mtM": "0",
+    "mtM": "5%",
     "mr": "5%",
     "radius": 0,
     "ml": "0",
@@ -4572,7 +4579,9 @@
    "box": {
     "ml": "0",
     "shadow": "none",
-    "mrM": "0"
+    "mrM": "0",
+    "mtM": "0",
+    "mbM": "0"
    },
    "ownLayout": false,
    "colset": {
