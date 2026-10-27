@@ -3343,7 +3343,7 @@ var key = x ? (first ? "l" : "r") : (first ? "t" : "b");
 var edge = x ? (first ? "right" : "left") : (first ? "bottom" : "top");
 var wc = BOX_VIEW ? (x ? BOX_VIEW.w : BOX_VIEW.h) + "px" : x ? "100vw" : "100vh";
 var M = boxLen(boxVal(k.box || {}, "m" + key, phone), key) || "0px";
-return { id: id, pi: pi, N: P.length, P: P, x: x, key: key, edge: edge, len: "max(0px, min(calc(" + wc + " - " + M + "), calc(" + wc + " - 48px)))" };
+return { id: id, pi: pi, N: P.length, P: P, x: x, key: key, edge: edge, len: "max(0px, min(max(calc(" + wc + " - " + M + "), var(--k-pl, 0px)), calc(" + wc + " - 48px)))" };
 }
 /* THE PINNED PAGE EITHER SLIDES TO THE WINDOW'S EDGE WHEN THE OTHER PAGE OPENS (DEFAULT) OR STAYS EXACTLY WHERE IT IS (A BAND THAT NEVER MOVES; THE OTHER PAGE SLIDES IN BESIDE IT) — PHONE CAN DIFFER */
 function sheetPinStay(k, phone) {
@@ -3856,7 +3856,15 @@ var ins = sheetInsets(1e9, phone);
 var d = ["padding-top: calc(" + ins.top + "px + var(--bd-wt));", "padding-left: calc(" + ins.left + "px + var(--bd-wl));"];
 if (ins.right) d.push("padding-right: " + ins.right + "px;");
 if (ins.bottom) d.push("padding-bottom: " + ins.bottom + "px;");
-return ".bd-ly-art > .bd-panel {\n" + d.join("\n") + "\n}";
+var o = ".bd-ly-art > .bd-panel {\n" + d.join("\n") + "\n}";
+/* A PINNED STRIP TALLER THAN ITS DRAWN MARGIN PUSHES THE PAGES UNDERNEATH DOWN BY THE DIFFERENCE (RUNTIME --bd-pin-top / --bd-pin-bottom) */
+var yp = false;
+sheetList().forEach(function (k) {
+var g = sheetPinGeo(k, phone);
+if (g && !g.x) yp = true;
+});
+if (yp) o += "\n.bd-ly-art::before {\ncontent: \"\";\ndisplay: block;\nheight: max(0px, calc(var(--bd-pin-top, 0px) - " + ins.top + "px));\n}\n.bd-ly-art::after {\ncontent: \"\";\ndisplay: block;\nheight: max(0px, calc(var(--bd-pin-bottom, 0px) - " + ins.bottom + "px));\n}";
+return o;
 }
 /* THE SHEET MENU ON A STRIP (PUBLISHED), ON THE STRIP PAGE ITSELF AND ON THE CANVAS CHROME */
 function sheetMenuCSS(phone) {
@@ -4010,6 +4018,24 @@ pinLen();
 }
 /* PAGES SIDE BY SIDE ON ONE SHEET END ON THE SAME LINE: EVERY PAPER IS AS LONG AS THE LONGEST PAGE AND GROWS WITH IT */
 function pinLen() {
+/* A PINNED STRIP IS AS TALL AS ITS PAGE REALLY IS: THE SHEET, THE OPEN PAGE AND THE PAGES UNDERNEATH ALL USE THAT, NOT THE DRAWN MARGIN ALONE */
+var gt = 0;
+var gb = 0;
+model.forEach(function (m) {
+if (m.pin < 0) return;
+var kid = m.track.children[m.pin];
+var pp = kid && kid.querySelector(".bd-ly-paper");
+if (!pp || getComputedStyle(m.track).flexDirection !== "column") {
+m.el.style.removeProperty("--k-pl");
+return;
+}
+var h = Math.ceil(pp.getBoundingClientRect().height);
+m.el.style.setProperty("--k-pl", h + "px");
+if (m.pin === 0) gb += h;
+else gt += h;
+});
+root.style.setProperty("--bd-pin-top", gt + "px");
+root.style.setProperty("--bd-pin-bottom", gb + "px");
 model.forEach(function (m) {
 if (getComputedStyle(m.track).flexDirection !== "row") return;
 var kids = Array.prototype.slice.call(m.track.children);
@@ -5313,7 +5339,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#0ea5e9";
+var BD_BUILD = "#a855f7";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
