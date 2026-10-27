@@ -57,11 +57,7 @@ pn.addEventListener("scroll", function () { hitClip(pn); }, { passive: true });
 function hitClip(pn) {
 var pp = pn.querySelector(".bd-ly-paper");
 if (!pp) return;
-var r = pn.getBoundingClientRect();
-var q = pp.getBoundingClientRect();
-var px = function (v) { return Math.max(0, Math.round(v)) + "px"; };
 pn.style.pointerEvents = "auto";
-pn.style.clipPath = "inset(" + px(q.top - r.top) + " " + px(r.right - q.right) + " " + px(r.bottom - q.bottom) + " " + px(q.left - r.left) + ")";
 }
 function hitAll() {
 model.forEach(function (m) { (m.hit || []).forEach(hitClip); });

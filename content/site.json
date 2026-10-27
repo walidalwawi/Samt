@@ -567,7 +567,7 @@
   "sheets": [
    {
     "id": "menu",
-    "name": "Menu",
+    "name": "Cover",
     "pages": [
      "nsye72w3",
      "56ud3gky"
@@ -583,15 +583,15 @@
     "axis": "x",
     "covers": "all",
     "coverPages": [],
-    "color": "#4d22b2",
-    "alpha": 70,
+    "color": "",
+    "alpha": 10,
     "blur": 10,
-    "shadow": "soft",
+    "shadow": "none",
     "nudge": 0,
     "dur": "",
     "box": {
      "ml": "",
-     "mr": "80%",
+     "mr": "85%",
      "mt": "",
      "mb": "",
      "mtM": "85%",
@@ -599,7 +599,7 @@
      "mlM": "",
      "mrM": "5%"
     },
-    "pattern": "grid",
+    "pattern": "",
     "patColor": "#000000",
     "patSize": 28,
     "patAlpha": 14,
@@ -610,7 +610,8 @@
     "hover": "",
     "vc": 1,
     "vr": 0,
-    "pin": "56ud3gky"
+    "pin": "56ud3gky",
+    "radius": 0
    },
    {
     "id": "glg17d2m",
@@ -635,7 +636,7 @@
     "color": "none",
     "alpha": 30,
     "blur": 10,
-    "shadow": "soft",
+    "shadow": "none",
     "nudge": 0,
     "dur": "",
     "box": {
@@ -644,7 +645,7 @@
      "ml": "",
      "mr": ""
     },
-    "pattern": "grid",
+    "pattern": "",
     "patColor": "#000000",
     "patSize": 28,
     "patAlpha": 14,
@@ -834,7 +835,11 @@
     "gutterM": 20
    },
    "blog": true,
-   "box": {}
+   "box": {
+    "mr": "0",
+    "mb": "0"
+   },
+   "mode": "sheet"
   },
   "aj2hm4y8": {
    "id": "aj2hm4y8",
@@ -4478,15 +4483,18 @@
     "gutterM": 24
    },
    "box": {
-    "card": "none",
+    "card": "",
     "cardA": 100,
     "blur": 0,
     "shadow": "none",
     "fit": false,
     "ink": "",
-    "maxW": "70%"
+    "maxW": "",
+    "mr": "5%"
    },
-   "hover": ""
+   "hover": "",
+   "mode": "sheet",
+   "pattern": ""
   },
   "56ud3gky": {
    "id": "56ud3gky",
@@ -4540,7 +4548,7 @@
     "card": "none",
     "cardA": 100,
     "blur": 0,
-    "maxW": "10%"
+    "maxW": "100%"
    },
    "ownLayout": false,
    "colset": {
@@ -4553,7 +4561,8 @@
     "colsM": 1,
     "gutter": 40,
     "gutterM": 24
-   }
+   },
+   "mode": "sheet"
   }
  }
 }
