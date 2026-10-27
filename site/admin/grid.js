@@ -3019,7 +3019,10 @@ if (e.type === "posts") return postsHTML(e, ctx);
 if (e.type === "sheetmenu") return sheetMenuHTML(e, base);
 if (e.type === "indexlink") return indexLinkHTML(e, base);
 if (e.type === "postinfo") {
+/* A BLOG CAN SWITCH POST INFO OFF FOR ALL ITS POSTS (page.postInfo = false on the blog); THE BLOCKS STAY IN THE EDITOR */
 var ip = forPage();
+var pib = ip && ip.parent && S.project.pages[ip.parent];
+if (ctx !== "edit" && pib && pib.postInfo === false) return "";
 var bits = [];
 if (p.date && ip && ip.date) bits.push(esc(fmtDate(ip.date)));
 var wc = ip ? postWords(ip) : 0;
@@ -5350,7 +5353,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#14b8a6";
+var BD_BUILD = "#f43f5e";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -7785,6 +7788,8 @@ var det = (s.menus.length === 1 ? '<div class="bd-ed-two" style="grid-template-c
 + coverField(pg)
 + sw("Featured ★", "page.featured", !!pg.featured) : "")
 + (pg.blog ? sw("Arrows at the end of this blog’s posts", "page.postArrows", pg.postArrows !== false) + '<div class="bd-ed-hint">' + (postArrowsCfg().on ? "Master · Blog has post arrows on. Switch off to hide them on every post of this blog." : "Post arrows are off in Master · Blog, so this does nothing yet.") + "</div>" : "")
++ (pg.blog ? sw("Post info on this blog’s posts", "page.postInfo", pg.postInfo !== false) + '<div class="bd-ed-hint">Switch off to hide the Post info block (back link, words, minutes) on every post of this blog.</div>' : "")
++ (pg.kind !== "pin" ? sw("Show the title", "page.header", pg.header !== false) + '<div class="bd-ed-hint">' + (s.header ? "The page heading at the top. Switch off to hide it on this page only." : "Page title at the top is off in Site, so this does nothing yet.") + "</div>" : "")
 + field("Description", '<textarea class="bd-ed-input" data-bind="page.desc" rows="3" style="font-family:var(--e-sans);font-size:12.5px">' + esc(pg.desc) + "</textarea>")
 + field("Group", select("page.section", pg.section, [["", "No group"]].concat(s.sections.map(function (x) { return [x.key, x.label]; }))));
 if (onSheet) h += '<div class="bd-ed-sec bd-ed-skin" style="background:' + SK.bar + ';cursor:pointer" data-act="sheet-sel" data-id="' + esc(pgw.sheet.id) + '" title="Open the sheet\'s settings"><span class="bd-ed-title">' + esc(pgw.sheet.name || "Sheet") + "</span></div>";
