@@ -30,7 +30,12 @@ var before = home;
 var model = els.map(function (k) {
 var c = k.getAttribute("data-covers");
 var st = k.querySelector(".bd-ly-strip > .bd-panel");
-return { el: k, rest: k.getAttribute("data-rest") || "open", main: parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-main-m") ? "data-main-m" : "data-main"), 10) || 0, pin: isNaN(parseInt(k.getAttribute("data-pin"), 10)) ? -1 : parseInt(k.getAttribute("data-pin"), 10), covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
+return { el: k, rest: k.getAttribute("data-rest") || "open", main: parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-main-m") ? "data-main-m" : "data-main"), 10) || 0, pin: isNaN(parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-pin-m") ? "data-pin-m" : "data-pin"), 10)) ? -1 : parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-pin-m") ? "data-pin-m" : "data-pin"), 10), rev: k.hasAttribute("data-rev-m"), covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
+});
+/* THE PHONE'S OWN PAGE ORDER: --i COUNTS PAGES AS THEY LIE (CSS order), THE PLAN COUNTS THEM IN THE MARKUP */
+var vis = function (m, i) { return m.rev && window.matchMedia("(max-width: 760px)").matches ? m.panes.length - 1 - i : i; };
+model.forEach(function (m) {
+if (m.rev) m.track.style.setProperty("--i", vis(m, parseInt(m.track.style.getPropertyValue("--i"), 10) || 0));
 });
 model.forEach(function (m) {
 if (m.pin < 0) return;
@@ -44,7 +49,7 @@ pinPane.style.setProperty("--k-sx", pn.scrollLeft + "px");
 }, { passive: true });
 });
 pinPane.addEventListener("wheel", function (e) {
-var i = parseInt(m.track.style.getPropertyValue("--i"), 10) || 0;
+var i = vis(m, parseInt(m.track.style.getPropertyValue("--i"), 10) || 0);
 var pn = kids[i];
 if (i !== m.pin && pn && !pn.hasAttribute("data-own")) pn.scrollBy(e.deltaX, e.deltaY);
 }, { passive: true });
@@ -143,7 +148,7 @@ var id = st === "peek" && m.strip ? m.strip : m.panes[i] || m.strip;
 m.el.className = m.el.className.replace(/\bis-on-\S+/g, "").replace(/\s+/g, " ").trim() + (id ? " is-on-" + id : "");
 }
 var cur = model.map(function (m) {
-return { st: (m.el.className.match(/\bis-st-([a-z]+)/) || [])[1] || "open", i: parseInt(m.track.style.getPropertyValue("--i"), 10) || 0 };
+return { st: (m.el.className.match(/\bis-st-([a-z]+)/) || [])[1] || "open", i: vis(m, parseInt(m.track.style.getPropertyValue("--i"), 10) || 0) };
 });
 function art(id) {
 return content.querySelector('.bd-ly-art[data-id="' + id + '"]');
@@ -364,7 +369,7 @@ var c = cur[x];
 if (n.i !== c.i) {
 /* A SHEET THAT ISN'T LYING OPEN CHANGES PAGE INSTANTLY, OUT OF SIGHT, THEN ONLY SLIDES BACK */
 if (c.st !== "open") m.track.classList.add("is-snap");
-m.track.style.setProperty("--i", n.i);
+m.track.style.setProperty("--i", vis(m, n.i));
 if (c.st !== "open") {
 void m.track.offsetWidth;
 m.track.classList.remove("is-snap");
@@ -463,9 +468,9 @@ bdLayers(document, !!window.BD_PREVIEW);
 });
 
 /* DATA */
-var BD_DATA = {"site":"Samt","menu":false,"groups":[{"label":"","items":[{"title":"Journal","slug":""},
-{"title":"Library","slug":"library"},
-{"title":"About","slug":"about"}]}],"pager":false,"nav":{"icon":"text","label":"ص مت","openLabel":"×","corner":"right","headings":false,"accordion":true,"current":"arrow","title":"hide"},"sections":[],"pages":[{"section":"","slug":"menu","num":"","title":"Menu"},
+var BD_DATA = {"site":"Samt","menu":false,"groups":[{"label":"","items":[{"title":"Library","slug":"library"},
+{"title":"About","slug":"about"},
+{"title":"Journal","slug":""}]}],"pager":false,"nav":{"icon":"text","label":"ص مت","openLabel":"×","corner":"right","headings":false,"accordion":true,"current":"arrow","title":"hide"},"sections":[],"pages":[{"section":"","slug":"menu","num":"","title":"Menu"},
 {"section":"","slug":"how-to-deseed-a-watermelon","num":"","title":"How To Deseed A Watermelon For Safe Consumption"},
 {"section":"","slug":"","num":"","title":"Journal"},
 {"section":"","slug":"handala-and-the-freeze-point","num":"","title":"Handala And The Freeze Point"},

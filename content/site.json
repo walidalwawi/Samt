@@ -501,12 +501,6 @@
     "name": "Main menu",
     "items": [
      {
-      "id": "gaxxsh8k",
-      "type": "page",
-      "page": "fji5ongj",
-      "label": ""
-     },
-     {
       "id": "fvg140br",
       "type": "page",
       "page": "b2lr3tkr",
@@ -516,6 +510,12 @@
       "id": "7jgh5pes",
       "type": "page",
       "page": "nsye72w3",
+      "label": ""
+     },
+     {
+      "id": "ll24z7al",
+      "type": "page",
+      "page": "fji5ongj",
       "label": ""
      }
     ]
@@ -606,11 +606,11 @@
     "out": "peek",
     "lv": "",
     "arrive": "slide",
-    "main": "56ud3gky",
+    "main": "nsye72w3",
     "hover": "",
     "vc": 1,
     "vr": 0,
-    "pin": "56ud3gky",
+    "pin": "nsye72w3",
     "radius": 0,
     "vcM": 1,
     "vrM": 0,
