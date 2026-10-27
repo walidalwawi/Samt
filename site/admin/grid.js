@@ -5162,7 +5162,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#f97316";
+var BD_BUILD = "#ec4899";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -7555,6 +7555,7 @@ var det = (s.menus.length === 1 ? '<div class="bd-ed-two" style="grid-template-c
 + sw("Featured ★", "page.featured", !!pg.featured) : "")
 + field("Description", '<textarea class="bd-ed-input" data-bind="page.desc" rows="3" style="font-family:var(--e-sans);font-size:12.5px">' + esc(pg.desc) + "</textarea>")
 + field("Group", select("page.section", pg.section, [["", "No group"]].concat(s.sections.map(function (x) { return [x.key, x.label]; }))));
+if (onSheet) h += '<div class="bd-ed-sec bd-ed-skin" style="background:#d8d4c8;cursor:pointer" data-act="sheet-sel" data-id="' + esc(pgw.sheet.id) + '" title="Open the sheet\'s settings"><span class="bd-ed-title">' + esc(pgw.sheet.name || "Sheet") + "</span></div>";
 h += (pg.parent ? skin("Post", SK.det, '<div class="bd-ed-hint">' + (postFollows(pg) ? "This post follows All posts · master." : "This post has its own settings. Inherit all brings it back to All posts · master.") + '</div><button class="bd-ed-btn" data-act="post-master">' + I.sliders + "Edit All posts · master</button>") : "") + skin("Details", SK.det, det);
 var lay = "";
 if (onSheet) {
