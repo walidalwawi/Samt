@@ -5203,7 +5203,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#0ea5e9";
+var BD_BUILD = "#84cc16";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -7016,14 +7016,14 @@ return "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<
 /* WALID'S PANELS: ONE SKIN FOR SHEET AND PAGE. DETAILS · LAYOUT · STYLE · EFFECT · EXTRAS · INHERIT + DELETE */
 /* WALID'S PANEL DESIGNER COLOURS: ONE COLOUR PER PANEL, THE PANE BEHIND IS #e7e4dc */
 var PC = {
-sheet: { pane: "#d8d4c8", det: "#d8d4c8", lay: "#f1eee6", sty: "#f1eee6", end: "#f1eee6" },
-page: { pane: "#d8d4c8", det: "#e6ebe6", lay: "#e6ebe6", sty: "#e6ebe6", end: "#e6ebe6" },
-under: { pane: "#e6ebe6", det: "#e6ebe6", lay: "#dfe3df", sty: "#dfe3df", end: "#dfe3df" },
-blog: { pane: "#d9cfe0", det: "#ebe3ee", lay: "#ebe3ee", sty: "#ebe3ee", end: "#ebe3ee" },
-post: { pane: "#ebe3ee", det: "#ebe3ee", lay: "#ebe3ee", sty: "#ebe3ee", end: "#ebe3ee" },
-master: { pane: "#4a473f", det: "#26241f", lay: "#26241f", sty: "#26241f", end: "#26241f" }
+sheet: { pane: "#dbd6cc", det: "#dbd6cc", lay: "#f2f1ed", sty: "#f2f1ed", end: "#e7e4de", edge: "#c6bca9" },
+page: { pane: "#dbd6cc", det: "#cfd8d0", lay: "#eef1ee", sty: "#eef1ee", end: "#e1e5e1", edge: "#afc0b0", bar: "#e7e4de" },
+under: { pane: "#cfd8d0", det: "#cfd8d0", lay: "#eef1ee", sty: "#eef1ee", end: "#e1e5e1", edge: "#afc0b0" },
+blog: { pane: "#d6ced9", det: "#d6ced9", lay: "#f1eef2", sty: "#f1eef2", end: "#e4e0e6", edge: "#bdadc2" },
+post: { pane: "#e4e0e6", det: "#e4e0e6", lay: "#f1eef2", sty: "#f1eef2", end: "#d6ced9", edge: "#bdadc2" },
+master: { pane: "#4a4640", det: "#24221e", lay: "#24221e", sty: "#24221e", end: "#24221e", edge: "#615e56" }
 };
-function skinColour(k) { var c = PC[k] || PC.page; SK.pane = c.pane; SK.det = c.det; SK.lay = c.lay; SK.sty = c.sty; SK.eff = c.sty; SK.end = c.end; }
+function skinColour(k) { var c = PC[k] || PC.page; SK.edge = c.edge; SK.bar = c.bar || c.det; SK.pane = c.pane; SK.det = c.det; SK.lay = c.lay; SK.sty = c.sty; SK.eff = c.sty; SK.end = c.end; }
 var SK = { pane: "#e7e4dc", det: "#e6ebe6", lay: "#ffffff", sty: "#faf9f6", eff: "#faf9f6", end: "#f3e6df" };
 function skin(title, color, inner) {
 return '<div class="bd-ed-sec bd-ed-skin" style="background:' + color + '"><span class="bd-ed-title">' + title + "</span>" + inner + "</div>";
@@ -7032,7 +7032,7 @@ function skinFold(title, color, inner, open) {
 return '<details class="bd-ed-sec bd-ed-skin bd-ed-skinfold" style="background:' + color + '"' + (open ? " open" : "") + '><summary class="bd-ed-title">' + title + "</summary>" + inner + "</details>";
 }
 function skinWrap(inner) {
-return '<div class="bd-ed-skinwrap" style="background:' + SK.pane + '">' + inner + "</div>";
+return '<div class="bd-ed-skinwrap" style="background:' + SK.pane + ";--sk-edge:" + SK.edge + '">' + inner + "</div>";
 }
 function two(a, b) {
 return '<div class="bd-ed-two">' + a + b + "</div>";
@@ -7630,7 +7630,7 @@ var det = (s.menus.length === 1 ? '<div class="bd-ed-two" style="grid-template-c
 + sw("Featured ★", "page.featured", !!pg.featured) : "")
 + field("Description", '<textarea class="bd-ed-input" data-bind="page.desc" rows="3" style="font-family:var(--e-sans);font-size:12.5px">' + esc(pg.desc) + "</textarea>")
 + field("Group", select("page.section", pg.section, [["", "No group"]].concat(s.sections.map(function (x) { return [x.key, x.label]; }))));
-if (onSheet) h += '<div class="bd-ed-sec bd-ed-skin" style="background:#d8d4c8;cursor:pointer" data-act="sheet-sel" data-id="' + esc(pgw.sheet.id) + '" title="Open the sheet\'s settings"><span class="bd-ed-title">' + esc(pgw.sheet.name || "Sheet") + "</span></div>";
+if (onSheet) h += '<div class="bd-ed-sec bd-ed-skin" style="background:' + SK.bar + ';cursor:pointer" data-act="sheet-sel" data-id="' + esc(pgw.sheet.id) + '" title="Open the sheet\'s settings"><span class="bd-ed-title">' + esc(pgw.sheet.name || "Sheet") + "</span></div>";
 h += (pg.parent ? skin("Post", SK.det, '<div class="bd-ed-hint">' + (postFollows(pg) ? "This post follows All posts · master." : "This post has its own settings. Inherit all brings it back to All posts · master.") + '</div><button class="bd-ed-btn" data-act="post-master">' + I.sliders + "Edit All posts · master</button>") : "") + skin("Details", SK.det, det);
 var lay = "";
 if (onSheet) {

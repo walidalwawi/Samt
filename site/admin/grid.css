@@ -1533,7 +1533,7 @@ color-scheme: dark;
 .bd-ed-pc-motion > .bd-ed-sec,
 .bd-ed-pc-site > .bd-ed-sec,
 .bd-ed-pc-bm > .bd-ed-sec {
-background: #26241f;
+background: #24221e;
 color: var(--e-ink);
 border: 1px solid var(--e-line);
 border-radius: 12px;
@@ -1543,7 +1543,7 @@ border-radius: 12px;
 .bd-ed-pc-site > .bd-ed-sec:first-child,
 .bd-ed-pc-bm > .bd-ed-sec:first-child,
 .bd-ed-pc-bm > .bd-ed-sec:nth-child(2) {
-background: #4a473f;
+background: #4a4640;
 }
 /* BLOG ANIMATION TOOL */
 .bd-ed-padwrap {
@@ -1591,7 +1591,7 @@ padding: 10px;
 min-height: 100%;
 }
 .bd-ed-skin {
-border: 1px solid var(--e-line);
+border: 1px solid var(--sk-edge, var(--e-line));
 border-radius: 12px;
 }
 .bd-ed-skin:last-child {
