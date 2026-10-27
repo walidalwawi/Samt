@@ -59,6 +59,7 @@ Killed in the editor UI: the Desk, Spread view, the Glass bar controls (site.gla
 - Section cards are SOLID PASTEL by family (PC in grid.js, text near-black): yellow sheet (#f2cf6b), lime page and no-sheet page (#c9db8a), coral blog and post (#dd6657), stone Master (#d9d9d6); Controls = black card (#141416). The page panel's sheet-name bar is yellow. Pane colour is transparent over --e-surface. Layers groups follow the same colours (.is-sheet yellow, .is-sheet.is-blog coral, No group lime; is-blog class added in the pages list). The old dark Master panels (bd-ed-pc-*) are now stone cards via `:is(.bd-ed-pc-…) > .bd-ed-sec:not(:first-child)`.
 - Inside a card the tokens are re-pointed (.bd-ed-skin sets --e-ink/--e-raise etc.; a card with inline #141416 gets light tokens), so existing rules keep working. All of it lives in the LOOK · PILL blocks at the end of grid.css.
 - BD_BUILD = #f97316. Tests: postgo 20, sheets_extra 145 pass.
+- 27 Oct 20:20 FIX (phone, pinned sheet that spreads the other way): sheetPinCSS's phone reset (translate/z-index/padding/clip-path/transform) now names `.bd-ly-pane[data-page]` so it outranks the desktop pin rules (which name the page), and it also runs when only the desktop has a pin. Before, the desktop `padding-left` (25% of the window) survived on a phone whose Cover sheet spreads vertically, which squeezed About into the right 70% with Journal showing at its left. BD_BUILD = #06b6d4. site/_t (test output) is no longer tracked (.gitignore).
 
 
 ## Looks: master + override for every block type

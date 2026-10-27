@@ -3296,13 +3296,14 @@ var out = [];
 var KD = "var(--ly-pdur, var(--k-dur, var(--ly-dur)))";
 sheetList().forEach(function (k) {
 var g = sheetPinGeo(k, phone);
-if (!g) return;
 var sel = '#bd-ly .bd-ly-k[data-k="' + k.id + '"]';
+/* THE PHONE STARTS FROM A CLEAN PANE: THE DESKTOP PIN RULES NAME THE PAGE ([data-page]), SO THE RESET MUST OUTRANK THEM, OR THE DESKTOP PADDING-LEFT SURVIVES ON A PHONE THAT SPREADS THE OTHER WAY */
+if (phone && (g || sheetPinGeo(k, false))) out.push(sel + " .bd-ly-pane[data-page] {\ntranslate: none;\nz-index: auto;\npadding: 0;\nclip-path: none;\ntransform: none;\n}");
+if (!g) return;
 var ax = g.x ? "x" : "y";
 var pg = function (i) { return ' .bd-ly-pane[data-page="' + g.P[i] + '"]'; };
 var dd = "clamp(-1, calc(var(--i) - " + g.pi + "), 1)";
 var f = g.pi === 0 ? "clamp(0, calc(var(--i) - 0), 1)" : "calc(" + dd + " * " + dd + ")";
-if (phone) out.push(sel + " .bd-ly-pane {\ntranslate: none;\nz-index: auto;\npadding: 0;\nclip-path: none;\n}");
 var ff = "max(" + f + ", var(--k-hold, 0))";
 var tf = "translate3d(calc(var(--k-sx, 0px) * -1 * " + ff + "), calc(var(--k-sy, 0px) * -1 * " + ff + "), 0)";
 /* THE SHEET SCROLLS AS ONE: THE OTHER PAGE SCROLLS AND THE PINNED PAGE MOVES WITH IT (RUNTIME --k-sx / --k-sy); ONLY THE SLIDE KEEPS THE PINNED PAGE IN THE WINDOW */
@@ -5203,7 +5204,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#f97316";
+var BD_BUILD = "#06b6d4";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
