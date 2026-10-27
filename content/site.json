@@ -4498,7 +4498,7 @@
     "mbM": "0",
     "mtM": "0",
     "mr": "5%",
-    "radius": 10,
+    "radius": 0,
     "ml": "0",
     "maxWM": "",
     "ptM": "",
@@ -4509,7 +4509,7 @@
     "mrM": "0",
     "shadow": "none"
    },
-   "mode": "sheet",
+   "mode": "card",
    "pattern": ""
   },
   "56ud3gky": {
