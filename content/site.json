@@ -675,7 +675,8 @@
     "pin": "",
     "vcM": 0,
     "vrM": 1,
-    "mainM": "b2lr3tkr"
+    "mainM": "b2lr3tkr",
+    "axisM": "x"
    }
   ],
   "editor": {
