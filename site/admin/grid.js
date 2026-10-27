@@ -89,7 +89,7 @@ library: [["blend", "Cover blend mode", "sel", "normal", BS_BLEND], ["backdrop",
 toggle: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["marker", "Marker", "sel", "plus", [["plus", "+ / —"], ["arrow", "→ / ↓"], ["none", "None"]]], ["itemGap", "Between items", "px", 0], ["indent", "Indent items", "px", 0]],
 product: [["style", "Text style", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align", "sel", "left", BS_ALIGN]],
 pager: [["style", "Text style (words)", "style", "body"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["align", "Align (words)", "sel", "left", BS_ALIGN]],
-postinfo: [["style", "Text style", "style", "small"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""]],
+postinfo: [["style", "Text style", "style", "small"], ["size", "Size", "dp", ""], ["lh", "Line", "dp", ""], ["upper", "Capitals", "bool", "0"], ["tracking", "Letter space (em)", "px", ""], ["ink", "Text colour", "color", ""], ["align", "Align", "sel", "left", [["left", "Left"], ["center", "Centre"], ["right", "Right"], ["spread", "Spread · back left, facts right"]]], ["padT", "Space above", "dp", ""], ["padB", "Space below", "dp", ""], ["line", "Line below", "bool", "0"], ["backGap", "Back link gap", "px", ""], ["backSize", "Back link size", "px", ""], ["backInk", "Back link colour", "color", ""], ["backDim", "Back link strength %", "px", ""]],
 menubtn: [["style", "Link style", "style", "body"], ["size", "Link size", "dp", ""], ["lh", "Link line", "dp", ""], ["textCase", "Case", "sel", "none", BS_CASE], ["tracking", "Spacing (em)", "px", ""], ["itemGap", "Between links", "dp", 0], ["groupGap", "Between groups", "dp", 20], ["headGap", "Under heading", "px", 4], ["current", "Current page", "sel", "underline", [["underline", "Line"], ["dim", "Dim"], ["strike", "Strike"], ["arrow", "→"], ["none", "None"]]], ["hover", "Hover", "sel", "underline", [["underline", "Line"], ["dim", "Dim"], ["none", "None"]]], ["brandStyle", "Name style", "style", "body"], ["brandSize", "Name size", "dp", ""], ["brandLh", "Name line", "dp", ""], ["brandGap", "Name gap", "dp", 16]],
 ptitle: [["style", "Text style", "style", "body"], ["align", "Align", "sel", "left", BS_ALIGN]]
 };
@@ -123,6 +123,7 @@ var BS_GROUPS = {
 posts: [["Text", ["titleStyle", "titleSize", "titleLh", "metaStyle", "metaSize", "metaLh", "metaGap", "fTitleStyle"]], ["Card", ["cardBg", "cardPad", "minH", "imgGap", "imagePos", "ratio"]], ["Card image", ["imgBlend", "imgBackdrop", "imgTone", "imgBlur"]], ["Tracing paper", ["paperBg", "paperInk", "paperAlpha", "paperFrost", "paperPad", "paperInset", "paperLine", "paperTilt", "textPos"]], ["Zine", ["zine", "staple", "pageBg"]], ["Motion", ["look", "hover", "slideDir", "slideHover", "slideTap"]]],
 library: [["Covers", ["blend", "backdrop"]], ["Book", ["book", "spine", "spineW", "shadow", "radius"]], ["Motion", ["hover"]]],
 quote: [["Text", ["style", "size", "lh", "align", "ink"]], ["Box", ["pad", "padX", "bg", "shadow", "line"]]],
+postinfo: [["Text", ["style", "size", "lh", "upper", "tracking", "ink"]], ["Place", ["align", "padT", "padB", "line"]], ["Back link", ["backGap", "backSize", "backInk", "backDim"]]],
 menubtn: [["Links", ["style", "size", "lh", "textCase", "tracking", "itemGap", "groupGap", "headGap", "current", "hover"]], ["Name", ["brandStyle", "brandSize", "brandLh", "brandGap"]]]
 };
 function bsMotionKeys(type) {
@@ -809,7 +810,7 @@ sheetmenu: { w: 12, h: 6, props: { menu: "", marker: ">", align: "right", style:
 indexlink: { w: 12, h: 3, props: { label: "Index;", crumbs: true, sep: " / ", gap: 12, dim: 60, line: true, style: "body" } },
 pager: { w: 12, h: 3, props: { num: "num", line: false, loop: false, scope: "site", look: "arrows", nextLabel: "Next, ", prevLabel: "", align: "left", style: "body" } },
 posts: { w: 12, h: 30, props: { blog: "", layout: "grid", cols: 3, colsM: 1, gap: 40, gapM: 24, rowGap: 40, rowGapM: 24, sort: "order", limit: "", featured: "none", fLayout: "stack", fTitleStyle: "heading", showImage: true, showTitle: true, showDate: false, showMeta: true, showExcerpt: false, imagePos: "top", ratio: "auto", imgGap: 12, cardBg: "", cardPad: 0, cardPadM: "", minH: "", titleStyle: "body", titleSize: "", titleLh: "", metaStyle: "small", metaSize: "", metaLh: "", metaGap: 8, hover: "dim" } },
-postinfo: { w: 12, h: 3, props: { back: true, backLabel: "<", date: false, words: true, time: true, style: "small", size: "", lh: "", align: "left", padT: "", padTM: "", padB: "", padBM: "", gap: "", sep: "", line: false, upper: false, tracking: "", ink: "", backGap: "", backSize: "", backInk: "", backDim: "" } },
+postinfo: { w: 12, h: 3, props: { back: true, backLabel: "<", date: false, words: true, time: true, sep: "", style: "small", size: "", lh: "" } },
 quote: { w: 12, h: 10, props: { html: "<p>A line worth pulling out.</p>", style: "body", align: "center", pad: 40, padX: 46, padM: 28, padXM: 22, bg: "", shadow: true, line: false } },
 toggle: { w: 12, h: 6, props: { title: "More", items: ["First", "Second"], open: false, marker: "plus", style: "body", itemGap: 0, indent: 0 } },
 product: { w: 6, h: 30, props: { assetId: "", file: "", alt: "", title: "Product name", price: "", note: "", href: "", style: "body", align: "left", size: "", lh: "" } }
@@ -3069,7 +3070,7 @@ if (p.time) bits.push(Math.max(1, Math.ceil(wc / 200)) + " min");
 var bl = ip && ip.parent ? S.project.pages[ip.parent] : null;
 var back = p.back ? '<a class="bd-postinfo-back" href="/' + esc(bl ? bl.slug || "" : "") + '">' + esc(p.backLabel || "<") + "</a>" : "";
 var psep = p.sep != null && p.sep !== "" ? esc(p.sep) : p.words && p.time && !p.date ? " ~ " : " · ";
-return '<div class="' + base + " bd-postinfo bd-ts-" + (E(e, "style") || "small") + " is-al-" + (p.align || "left") + (p.line ? " has-line" : "") + '">' + back + "<span>" + bits.join(psep) + "</span></div>";
+return '<div class="' + base + " bd-postinfo bd-ts-" + (E(e, "style") || "small") + " is-al-" + (E(e, "align") || "left") + (ON(e, "line") ? " has-line" : "") + '">' + back + "<span>" + bits.join(psep) + "</span></div>";
 }
 if (e.type === "quote") {
 return '<blockquote class="' + base + " bd-quote bd-ts-" + (E(e, "style") || "body") + '">\n' + String(p.html || "") + "\n</blockquote>";
@@ -5419,7 +5420,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#ec4899";
+var BD_BUILD = "#84cc16";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -7575,19 +7576,10 @@ h += sw("Line above", "el.line", !!p.line) + sw("Loop from last to first", "el.l
 + '<div class="bd-ed-hint">' + (p.scope === "blog" ? "Goes to the previous and next post of the blog this post belongs to." : "Goes to the previous and next page in the order of the Pages list (blog posts are skipped).") + "</div>";
 }
 if (e.type === "postinfo") {
-h += field("Alignment", seg("el.align", p.align || "left", [["left", "Left"], ["center", "Centre"], ["right", "Right"], ["spread", "Spread"]]))
-+ sw("Back link to the blog", "el.back", p.back !== false)
-+ (p.back !== false ? field("Back link text", input("el.backLabel", p.backLabel, "", ' placeholder="<"'))
-+ row(numIn("Back gap px", "el.backGap", p.backGap == null ? "" : p.backGap, "blank"), numIn("Back size px", "el.backSize", p.backSize == null ? "" : p.backSize, "blank"))
-+ row(numIn("Back strength %", "el.backDim", p.backDim == null ? "" : p.backDim, "blank"), "")
-+ colorIn("Back colour", "el.backInk", p.backInk || "", S.project.site.colors.ink, "Text") : "")
+h += sw("Back link to the blog", "el.back", p.back !== false) + (p.back !== false ? field("Back link text", input("el.backLabel", p.backLabel, "", ' placeholder="<"')) : "")
 + sw("Date", "el.date", !!p.date) + sw("Word count", "el.words", p.words !== false) + sw("Reading time", "el.time", p.time !== false)
 + field("Between the facts", input("el.sep", p.sep || "", "", ' placeholder=" ~ "'))
-+ row(dpIn("Space above px", "el.padT", "el.padTM", p.padT, p.padTM), dpIn("Space below px", "el.padB", "el.padBM", p.padB, p.padBM))
-+ sw("Line below", "el.line", !!p.line) + sw("Capitals", "el.upper", !!p.upper)
-+ row(numIn("Letter space em", "el.tracking", p.tracking == null ? "" : p.tracking, "blank"), "")
-+ colorIn("Text colour", "el.ink", p.ink || "", S.project.site.colors.ink, "Site")
-+ lookSection(e) + '<div class="bd-ed-hint">Counts the words in this post’s text and quotes. Reading time is one minute per 200 words. Switch the back link off to show only the facts.</div>';
++ lookSection(e) + '<div class="bd-ed-hint">Counts the words in this post’s text and quotes. Reading time is one minute per 200 words. Switch the back link off to show only the facts. Alignment, spacing, line and back-link styling are in Look below, and for every post at once in Master → Styles → Blocks → Post info.</div>';
 }
 if (e.type === "quote") {
 h += '<div class="bd-ed-actions"><button class="bd-ed-btn" data-act="ins-html">' + I.html + "Edit text</button></div>"
