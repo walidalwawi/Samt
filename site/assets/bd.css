@@ -1,4 +1,4 @@
-/* PUBLISHED mvqrnl5o */
+/* PUBLISHED mvqronde */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -1442,7 +1442,7 @@ grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
 column-gap: 50px;
 }
 .bd-cols.bd-cl-nsye72w3 {
-grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
 column-gap: 40px;
 }
 
@@ -2648,7 +2648,7 @@ background: repeating-linear-gradient(180deg, transparent 0, transparent 27px, r
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
 margin-top: 0px;
 padding-top: var(--bd-wt);
-margin-right: 10vw;
+margin-right: 5vw;
 padding-right: var(--bd-wr);
 margin-bottom: 0px;
 padding-bottom: var(--bd-wb);
