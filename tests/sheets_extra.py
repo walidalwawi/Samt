@@ -106,7 +106,8 @@ async def run():
         # page click returns to page settings
         await ev("goPage(sheetList()[1].pages[0])"); await pg.wait_for_timeout(300)
         t = await ev("document.getElementById('bd-right').innerText")
-        ok('page click -> page settings with Sheet settings button', 'Style' in t and 'Sheet settings' not in t and 'Inherit' in t)
+        tl = t.lower()
+        ok('page click -> page settings with Sheet settings button', 'style' in tl and 'sheet settings' not in tl and 'inherit' in tl)
         await ev("S.sheetSel = sheetList()[1].id; render()")
         # model edits
         K = "S.project.site.sheets.find(function(k){return k.id==='index'})"
