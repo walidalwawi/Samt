@@ -1281,33 +1281,6 @@
       "w": 1550,
       "h": 1134
      }
-    },
-    {
-     "id": "m8huukvm",
-     "type": "pager",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 3
-     },
-     "m": null,
-     "props": {
-      "num": "num",
-      "line": false,
-      "loop": false,
-      "scope": "blog",
-      "look": "text",
-      "nextLabel": "Next, ",
-      "prevLabel": "",
-      "align": "left",
-      "style": "",
-      "size": 15,
-      "lh": 20,
-      "sizeM": "",
-      "lhM": ""
-     }
     }
    ],
    "kind": "page",
@@ -1755,33 +1728,6 @@
       "indent": false,
       "align": "left"
      }
-    },
-    {
-     "id": "37cykksj",
-     "type": "pager",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 3
-     },
-     "m": null,
-     "props": {
-      "num": "num",
-      "line": false,
-      "loop": false,
-      "scope": "blog",
-      "look": "text",
-      "nextLabel": "Next, ",
-      "prevLabel": "",
-      "align": "",
-      "style": "",
-      "size": "",
-      "lh": "",
-      "sizeM": "",
-      "lhM": ""
-     }
     }
    ],
    "kind": "page",
@@ -2182,33 +2128,6 @@
       "indent": false,
       "align": "left"
      }
-    },
-    {
-     "id": "jvxwreue",
-     "type": "pager",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 3
-     },
-     "m": null,
-     "props": {
-      "num": "num",
-      "line": false,
-      "loop": false,
-      "scope": "blog",
-      "look": "text",
-      "nextLabel": "Next, ",
-      "prevLabel": "",
-      "align": "",
-      "style": "",
-      "size": "",
-      "lh": "",
-      "sizeM": "",
-      "lhM": ""
-     }
     }
    ],
    "kind": "page",
@@ -2459,33 +2378,6 @@
       "style": "small",
       "indent": false,
       "align": "left"
-     }
-    },
-    {
-     "id": "4dop256w",
-     "type": "pager",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 3
-     },
-     "m": null,
-     "props": {
-      "num": "num",
-      "line": false,
-      "loop": false,
-      "scope": "blog",
-      "look": "text",
-      "nextLabel": "Next, ",
-      "prevLabel": "",
-      "align": "",
-      "style": "",
-      "size": "",
-      "lh": "",
-      "sizeM": "",
-      "lhM": ""
      }
     }
    ],
@@ -2836,33 +2728,6 @@
       "align": "left"
      },
      "col": 2
-    },
-    {
-     "id": "hox6tjmi",
-     "type": "pager",
-     "col": 2,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 3
-     },
-     "m": null,
-     "props": {
-      "num": "num",
-      "line": false,
-      "loop": false,
-      "scope": "blog",
-      "look": "text",
-      "nextLabel": "Next, ",
-      "prevLabel": "",
-      "align": "",
-      "style": "",
-      "size": "",
-      "lh": "",
-      "sizeM": "",
-      "lhM": ""
-     }
     }
    ],
    "kind": "page",
