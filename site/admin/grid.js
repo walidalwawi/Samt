@@ -5038,7 +5038,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#e11d48";
+var BD_BUILD = "#0ea5e9";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6839,6 +6839,9 @@ var SK = { pane: "#dfe3df", det: "#e6ebe6", lay: "#ffffff", sty: "#faf9f6", eff:
 function skin(title, color, inner) {
 return '<div class="bd-ed-sec bd-ed-skin" style="background:' + color + '"><span class="bd-ed-title">' + title + "</span>" + inner + "</div>";
 }
+function skinFold(title, color, inner, open) {
+return '<details class="bd-ed-sec bd-ed-skin bd-ed-skinfold" style="background:' + color + '"' + (open ? " open" : "") + '><summary class="bd-ed-title">' + title + "</summary>" + inner + "</details>";
+}
 function skinWrap(inner) {
 return '<div class="bd-ed-skinwrap" style="background:' + SK.pane + '">' + inner + "</div>";
 }
@@ -7423,10 +7426,10 @@ h += skin("Layout", SK.lay, lay);
 var sty = (cardOn ? fillIn("Card colour", "page.box.card", bx.card || "", "#ffffff", "None") + (onSheet ? "" : fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site")) : "")
 + (ph ? "" : colorIn("Text colour", "page.box.ink", bx.ink || "", s.colors.ink, "Site"))
 + (cardOn ? numIn("Corners", "page.box.radius", bx.radius == null ? "" : bx.radius, "blank") + (onSheet ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "Inherit"], ["none", "None"]]) : "") : "");
-h += skin("Style", SK.sty, sty);
+h += (onSheet ? skinFold : skin)("Style", SK.sty, sty, cardOn);
 var eff = (cardOn ? two(numIn("Card see-through %", "page.box.cardA", bx.cardA == null ? "" : bx.cardA, "blank"), numIn("Blur", "page.box.blur", bx.blur == null ? "" : bx.blur, "blank")) + field("Shadow", seg("page.box.shadow", bx.shadow === "soft" ? "soft" : "none", [["none", "None"], ["soft", "Soft"]])) : "")
 + (onSheet ? field("On hover", seg("page.hover", pg.hover || "", [["", "Inherit"], ["lift", "Lift"]])) : "");
-if (eff) h += skin("Effect", SK.eff, eff);
+if (eff) h += (onSheet ? skinFold : skin)("Effect", SK.eff, eff, cardOn);
 h += skin("Everything else", SK.eff, (s.header ? sw("Show the title at the top", "page.header", pg.header !== false) : "") + sw("Click images to zoom · whole site", "site.zoom", s.zoom) + (cardOn ? sw("Card only as tall as what’s on it", "page.box.fit", !!bx.fit) : ""));
 h += skin("Move & duplicate", SK.eff, '<div class="bd-ed-actions"><button class="bd-ed-btn" data-act="page-up" aria-label="Move up">' + I.up + '</button><button class="bd-ed-btn" data-act="page-down" aria-label="Move down">' + I.dn + '</button><button class="bd-ed-btn" data-act="page-dup">' + I.copy + "Duplicate</button></div>");
 var stack = "";

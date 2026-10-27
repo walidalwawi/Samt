@@ -1568,6 +1568,20 @@ border-left: 1px solid var(--e-line);
 background: var(--e-ink);
 color: var(--e-bg);
 }
+.bd-ed-skinfold > summary {
+cursor: pointer;
+list-style: none;
+}
+.bd-ed-skinfold > summary::-webkit-details-marker {
+display: none;
+}
+.bd-ed-skinfold > summary::after {
+content: "▸";
+float: right;
+}
+.bd-ed-skinfold[open] > summary::after {
+content: "▾";
+}
 .bd-ed-thumbs {
 display: grid;
 grid-template-columns: repeat(5, minmax(0, 1fr));
