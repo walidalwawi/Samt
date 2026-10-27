@@ -2360,10 +2360,12 @@ function pageBoxCSS(q, phone, sel, ins, noMargin) {
 q = effPage(q);
 var b = q.box || {};
 var cardOn = true;
+var onSh = !!noMargin;
 if (noMargin) {
-if (pageMode(q) === "card") noMargin = false;
-else cardOn = false;
+cardOn = pageMode(q) === "card";
+noMargin = false;
 }
+var anyM = false;
 var passed = !!ins;
 ins = ins || { top: 0, right: 0, bottom: 0, left: 0 };
 var def = { t: "var(--bd-wt)", r: "var(--bd-wr)", b: "var(--bd-wb)", l: "var(--bd-wl)" };
@@ -2374,17 +2376,18 @@ var M = noMargin ? null : boxLen(boxVal(b, "m" + sd[0], phone), sd[0]);
 var P = boxLen(boxVal(b, "p" + sd[0], phone), sd[0]);
 var I = ins[sd[1]] || 0;
 if (M != null) {
+anyM = true;
 d.push("margin-" + sd[1] + ": " + (I ? "calc(" + I + "px + " + M + ")" : M) + ";");
 if (sd[0] === "l" || sd[0] === "r") sideM = true;
 if (P == null && I) d.push("padding-" + sd[1] + ": " + def[sd[0]] + ";");
 }
 if (P != null) d.push("padding-" + sd[1] + ": " + (I && M == null ? "calc(" + I + "px + " + P + ")" : P) + ";");
-else if (noMargin && passed) d.push("padding-" + sd[1] + ": " + (I ? "calc(" + I + "px + " + def[sd[0]] + ")" : def[sd[0]]) + ";");
+else if (onSh && passed) d.push("padding-" + sd[1] + ": " + (I ? "calc(" + I + "px + " + def[sd[0]] + ")" : def[sd[0]]) + ";");
 });
 var w = boxLen(boxVal(b, "maxW", phone), "l");
 if (sideM) d.push("width: auto;");
 if (w) d.push("max-width: " + w + ";");
-if (w && noMargin) d.push("margin: 0;");
+if (w && onSh && !anyM) d.push("margin: 0;");
 if (!phone) {
 if (b.ink) d.push("color: " + b.ink + ";", "--bd-ink: " + b.ink + ";");
 if (cardOn && b.card) {
@@ -3284,6 +3287,7 @@ out.push(sel + " .bd-ly-track.is-ax-" + ax + " {\ntransform: translate3d(" + (g.
 out.push(sel + " .bd-ly-pane:nth-child(-n+" + g.pi + ") {\nbox-sizing: border-box;\npadding-" + (g.x ? "left" : "top") + ": " + g.len + ";\n}");
 out.push(sel + " .bd-ly-pane:nth-child(" + (g.pi + 1) + ") {\ntransform: " + tf + ";\n}");
 }
+out.push(sel + " .bd-ly-pane:nth-child(" + (g.pi + 1) + ") {\noverflow: visible;\n}");
 out.push(sel + ",\n" + sel + " .bd-ly-pane {\npointer-events: none;\n}\n" + sel + " .bd-ly-paper {\npointer-events: auto;\n}");
 });
 return out.join("\n");
@@ -3576,6 +3580,15 @@ var b = parseFloat(k.blur) || 0;
 var f = Ls.reveal === "focus" ? parseFloat(Ls.focusBlur) || 0 : 0;
 return Math.round(Math.sqrt(b * b + f * f) * 10) / 10;
 }
+/* A SHEET IS ONE PIECE: ONLY ITS OUTER CORNERS ROUND, NEVER THE JOIN BETWEEN ITS PAGES */
+function sheetRadius(k, i, N) {
+var r = parseFloat(k.radius);
+if (!(r > 0)) return "";
+var x = k.axis === "x";
+var first = i === 0, last = i === N - 1;
+var c = x ? [first, last, last, first] : [first, first, last, last];
+return "border-radius: " + c.map(function (on) { return on ? r + "px" : "0"; }).join(" ") + ";\n";
+}
 function sheetLine(k, phone) {
 var sh = k.shadow || "none";
 if (sh === "none") return "none";
@@ -3640,13 +3653,15 @@ if (bx) out.push(bx);
 sheetList().forEach(function (k, n) {
 var padIns = sheetPadIns(k, n, phone);
 var panesK = sheetPanes(k);
-(k.pages || []).map(sheetPage).filter(Boolean).forEach(function (q) {
+(k.pages || []).map(sheetPage).filter(Boolean).forEach(function (q, qi, qa) {
 var st = sheetStrip(k);
 var sel = st && st.id === q.id ? '.bd-ly-k[data-k="' + k.id + '"] > .bd-ly-strip' : '.bd-ly-pane[data-page="' + q.id + '"] > .bd-ly-paper';
 if (!st) {
 var pm = sheetPaperMargins(k, q, phone);
-out.push(sel + " {\nmargin: " + pm.t + " " + pm.r + " 0 " + pm.l + ";\nmin-height: calc(100% - " + pm.t + " - " + pm.b + ");\nbox-shadow: " + sheetLine(k, phone) + ";\n" + (phone ? "" : "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);\nbackdrop-filter: blur(" + sheetBlur(k) + "px);\n") + (parseFloat(k.radius) > 0 ? "border-radius: " + parseFloat(k.radius) + "px;\n" : "") + "}");
-out.push('.bd-ly-pane[data-page="' + q.id + '"] {\n--pm-b: ' + pm.b + ';\n}');
+/* ON A PINNED SHEET THE SIDE MARGINS BELONG TO THE PANE (SO ITS HIT AREA IS THE PAPER, NO CLIP-PATH, AND THE BLUR STILL SEES WHAT LIES UNDER IT) */
+var hitPane = !!k.pin && String(k.pin) !== String(q.id);
+out.push(sel + " {\nmargin: " + pm.t + " " + (hitPane ? "0" : pm.r) + " 0 " + (hitPane ? "0" : pm.l) + ";\nmin-height: calc(100% - " + pm.t + " - " + pm.b + ");\nbox-shadow: " + sheetLine(k, phone) + ";\n" + (phone ? "" : "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);\nbackdrop-filter: blur(" + sheetBlur(k) + "px);\n") + sheetRadius(k, qi, qa.length) + "}");
+out.push('.bd-ly-pane[data-page="' + q.id + '"] {\n--pm-b: ' + pm.b + ';\n' + (hitPane ? "margin-left: " + pm.l + ";\nmargin-right: " + pm.r + ";\n" + (k.axis === "x" ? "flex-basis: calc(100% / var(--n) - " + pm.l + " - " + pm.r + ");\n" : "") : "") + "}");
 }
 if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPaper(k, k.alpha == null ? 55 : k.alpha) : sheetPaper(pagePaperK(k, q), k.alpha == null ? 55 : k.alpha, panesK.indexOf(q), panesK.length)) + ";\n}");
 if (!phone && q.sheetBg) out.push(sel + " {\nbackground: " + bgVal(q.sheetBg) + ";\n}");
@@ -3787,11 +3802,7 @@ pn.addEventListener("scroll", function () { hitClip(pn); }, { passive: true });
 function hitClip(pn) {
 var pp = pn.querySelector(".bd-ly-paper");
 if (!pp) return;
-var r = pn.getBoundingClientRect();
-var q = pp.getBoundingClientRect();
-var px = function (v) { return Math.max(0, Math.round(v)) + "px"; };
 pn.style.pointerEvents = "auto";
-pn.style.clipPath = "inset(" + px(q.top - r.top) + " " + px(r.right - q.right) + " " + px(r.bottom - q.bottom) + " " + px(q.left - r.left) + ")";
 }
 function hitAll() {
 model.forEach(function (m) { (m.hit || []).forEach(hitClip); });
@@ -5038,7 +5049,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#8b5cf6";
+var BD_BUILD = "#14b8a6";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6065,7 +6076,6 @@ delete q.sheetBg;
 delete q.indep;
 delete q.trans;
 delete q.transDur;
-if (q.box && pageMode(q) !== "card") ["mt", "mr", "mb", "ml", "mtM", "mrM", "mbM", "mlM"].forEach(function (x) { delete q.box[x]; });
 });
 if (k.restPage && k.pages.indexOf(k.restPage) < 0) k.restPage = "";
 if (k.main && k.pages.indexOf(k.main) < 0) k.main = "";
@@ -6429,9 +6439,6 @@ var G = sheetGeo(n, phone);
 var h = skipAxis ? "" : field("Pages spread", seg(P + "axis", k.axis === "x" ? "x" : "y", [["y", "Vertical"], ["x", "Horizontal"]]));
 h += '<div class="bd-lay-box">' + layoutDrawing(n, curPage()) + "</div>";
 if (!sheetFull(k)) h += '<button class="bd-ed-btn" data-act="lay-add" data-i="' + n + '">+ page</button>';
-{
-h += '<div class="bd-ed-hint">two windows wide, two high · tap a half to put the <i class="bd-lay-sw" style="background:' + LAY_C.win + '"></i>window there · the <i class="bd-lay-sw" style="background:' + LAY_C.sheet + '"></i>sheet covers two halves, the join between its pages always lies on the window’s edge · drag a page across the join to swap them · drag its outer edges to resize — the end of the sheet only shows when you scroll to it · drag a page from Layers onto a card to replace it · PIN keeps a page in the window · pages on a sheet always scroll and end together · × takes a page off · ' + (phone ? "Phone view." : "Desktop view.") + " Snaps to 5%.</div>";
-}
 if (S.layAdd === n) {
 h += '<div class="bd-ed-sec" style="margin:0"><span class="bd-ed-label">Put on this sheet</span>' + free.map(function (q) { return '<button class="bd-ed-btn" style="margin:2px 4px 2px 0" data-act="sheet-page-add" data-i="' + n + '" data-id="' + q.id + '">' + esc(q.title) + "</button>"; }).join("") + '<button class="bd-ed-btn" style="margin:2px 0" data-act="lay-new" data-i="' + n + '">' + I.plus + "New page</button>" + (free.length ? "" : '<div class="bd-ed-hint">Every page is already on a sheet.</div>') + "</div>";
 }
@@ -7415,11 +7422,12 @@ h += (pg.parent ? skin("Post", SK.det, '<div class="bd-ed-hint">' + (postFollows
 var lay = "";
 if (onSheet) {
 lay += '<span class="bd-ed-label">This page is</span>' + seg("page.mode", pageMode(pg), [["sheet", "Sheet"], ["card", "Card"]])
-+ '<div class="bd-ed-hint">' + (cardOn ? "Card: lies on the sheet like a card. It can never go outside the sheet and has its own colour, effect and decoration." : "Sheet: no background of its own. Just content on the sheet’s paper, with the sheet’s style and effect.") + '</div><button class="bd-ed-btn" data-act="sheet-sel" data-id="' + esc(pgw.sheet.id) + '">' + I.sliders + "Sheet settings</button>";
-lay += '<span class="bd-ed-label">Where it lies · ' + esc(pgw.sheet.name || "Sheet") + '</span><div class="bd-lay-box">' + layoutDrawing(pgw.k, cardOn ? pg : undefined) + '</div><div class="bd-ed-hint">' + (cardOn ? "Handles move this card inside the sheet. Snaps to 5%." : "Handles move the sheet. Snaps to 5%.") + "</div>";
+;
+lay += '<span class="bd-ed-label">Where it lies · ' + esc(pgw.sheet.name || "Sheet") + '</span><div class="bd-lay-box">' + layoutDrawing(pgw.k, pg, "page") + "</div>";
 } else if (pgw && pgw.k < 0 && !pg.parent) lay += '<div class="bd-ed-hint">This page lies underneath the sheets. Drag it by its grip in Layers onto a card or an empty part of a sheet’s drawing to lay it on that sheet.</div>';
 if (!onSheet) lay += '<span class="bd-ed-label">Margin · outside the page</span>' + four("m");
 lay += two(field("Max width" + (ph ? " · phone" : ""), input("page.box.maxW" + (ph ? "M" : ""), (ph ? bx.maxWM : bx.maxW) || "", "", ' placeholder="720 or 60%"')), field("Padding" + (ph ? " · phone" : ""), '<input class="bd-ed-input bd-ed-n" data-bind="padall.page" data-type="blank" value="' + esc(bx["pt" + (ph ? "M" : "")] == null ? "" : bx["pt" + (ph ? "M" : "")]) + '" placeholder="all sides">'));
+if (isMaster(pg)) lay += adv("pg-cols", "Columns & grid", rulerCols(pg, S.mode === "phone"), false);
 h += skin("Layout", SK.lay, lay);
 var sty = (cardOn ? fillIn("Card colour", "page.box.card", bx.card || "", "#ffffff", "None") + (onSheet ? "" : fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site")) : "")
 + (cardOn ? two(numIn("Card see-through %", "page.box.cardA", bx.cardA == null ? "" : bx.cardA, "blank"), numIn("Blur", "page.box.blur", bx.blur == null ? "" : bx.blur, "blank")) : "")
@@ -7433,7 +7441,6 @@ if (q.kind === "pin" || q.id === pg.id) return;
 stack += '<label class="bd-ed-check"><input type="checkbox" data-act="stack-page" data-id="' + q.id + '"' + ((pg.stack || []).indexOf(q.id) > -1 ? " checked" : "") + ">" + esc((q.num ? q.num + "  " : "") + q.title) + "</label>";
 });
 if (!layersOn()) h += '<div class="bd-ed-sec">' + adv("pg-stack", "Continue with other pages", '<div class="bd-ed-hint">Chosen pages scroll on below this one, like one long page.</div>' + stack) + "</div>";
-if (isMaster(pg)) h += '<div class="bd-ed-sec">' + adv("pg-cols", "Columns & grid", rulerCols(pg, S.mode === "phone"), false) + "</div>";
 h += inhDelBar("page", null, '<button class="bd-ed-btn is-danger" data-act="page-del">' + I.trash + "Delete page</button>");
 }
 var free = '<div class="bd-ed-seg"><button data-act="layout" data-val="master" class="' + (isMaster(pg) ? "is-on" : "") + '">Columns</button><button data-act="layout" data-val="free" class="' + (isMaster(pg) ? "" : "is-on") + '">Free grid</button></div><div class="bd-ed-hint">' + (isMaster(pg) ? "Blocks stack in columns. Free grid lets you place them anywhere, row by row." : "Blocks sit anywhere on the grid. Columns stacks them again in order.") + "</div>"
@@ -8135,7 +8142,7 @@ var hl = wide && S.hideLeft;
 var hr = wide && S.hideRight;
 app.classList.toggle("is-no-left", !!hl);
 app.classList.toggle("is-no-right", !!hr);
-app.style.setProperty("--e-rw", (S.sheetSel || S.masterSel) && wide ? "420px" : "340px");
+app.style.setProperty("--e-rw", "380px");
 document.querySelectorAll('[data-act="toggle-left"]').forEach(function (b) { b.classList.toggle("is-on", wide ? !hl : !!S.leftOpen); b.setAttribute("aria-label", hl ? "Show left panel" : "Hide left panel"); });
 document.querySelectorAll('[data-act="toggle-right"]').forEach(function (b) { b.classList.toggle("is-on", wide ? !hr : !!S.rightOpen); b.setAttribute("aria-label", hr ? "Show right panel" : "Hide right panel"); });
 requestAnimationFrame(fitSheet);
