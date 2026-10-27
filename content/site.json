@@ -583,7 +583,7 @@
     "axis": "x",
     "covers": "all",
     "coverPages": [],
-    "color": "",
+    "color": "#ffffff",
     "alpha": 0,
     "blur": 10,
     "shadow": "none",
@@ -594,12 +594,12 @@
      "mr": "75%",
      "mt": "",
      "mb": "",
-     "mtM": "80%",
-     "mbM": "40%",
+     "mtM": "",
+     "mbM": "85%",
      "mlM": "",
-     "mrM": "15%"
+     "mrM": "10%"
     },
-    "pattern": "ruled",
+    "pattern": "",
     "patColor": "#000000",
     "patSize": 28,
     "patAlpha": 14,
@@ -612,8 +612,8 @@
     "vr": 0,
     "pin": "56ud3gky",
     "radius": 0,
-    "vcM": 1,
-    "vrM": 0,
+    "vcM": 0,
+    "vrM": 1,
     "mainM": "56ud3gky",
     "axisM": "y"
    },
@@ -4561,7 +4561,8 @@
    },
    "box": {
     "ml": "0",
-    "shadow": "none"
+    "shadow": "none",
+    "mrM": "0"
    },
    "ownLayout": false,
    "colset": {
@@ -4575,7 +4576,7 @@
     "gutter": 40,
     "gutterM": 24
    },
-   "mode": "card"
+   "mode": "sheet"
   }
  }
 }
