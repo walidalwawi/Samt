@@ -3645,7 +3645,7 @@ var st = sheetStrip(k);
 var sel = st && st.id === q.id ? '.bd-ly-k[data-k="' + k.id + '"] > .bd-ly-strip' : '.bd-ly-pane[data-page="' + q.id + '"] > .bd-ly-paper';
 if (!st) {
 var pm = sheetPaperMargins(k, q, phone);
-out.push(sel + " {\nmargin: " + pm.t + " " + pm.r + " 0 " + pm.l + ";\nmin-height: calc(100% - " + pm.t + " - " + pm.b + ");\nbox-shadow: " + sheetLine(k, phone) + ";\n" + (phone ? "" : "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);\nbackdrop-filter: blur(" + sheetBlur(k) + "px);\n") + "}");
+out.push(sel + " {\nmargin: " + pm.t + " " + pm.r + " 0 " + pm.l + ";\nmin-height: calc(100% - " + pm.t + " - " + pm.b + ");\nbox-shadow: " + sheetLine(k, phone) + ";\n" + (phone ? "" : "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);\nbackdrop-filter: blur(" + sheetBlur(k) + "px);\n") + (parseFloat(k.radius) > 0 ? "border-radius: " + parseFloat(k.radius) + "px;\n" : "") + "}");
 out.push('.bd-ly-pane[data-page="' + q.id + '"] {\n--pm-b: ' + pm.b + ';\n}');
 }
 if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPaper(k, k.alpha == null ? 55 : k.alpha) : sheetPaper(pagePaperK(k, q), k.alpha == null ? 55 : k.alpha, panesK.indexOf(q), panesK.length)) + ";\n}");
@@ -4211,7 +4211,7 @@ var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
 var ins = sheetInsets(n, phone);
 var pos = e === "left" ? "top:" + ins.top + "px;bottom:" + ins.bottom + "px;left:" + ins.left + "px;width:" + peek + "px" : e === "right" ? "top:" + ins.top + "px;bottom:" + ins.bottom + "px;right:" + ins.right + "px;width:" + peek + "px" : e === "top" ? "left:" + ins.left + "px;right:" + ins.right + "px;top:" + ins.top + "px;height:" + peek + "px" : "left:" + ins.left + "px;right:" + ins.right + "px;bottom:" + ins.bottom + "px;height:" + peek + "px";
 var strip = sheetStrip(k);
-h += '<div class="bd-ly-edit" style="' + pos + ";background:" + sheetPaper(k, k.alpha == null ? 55 : k.alpha) + ";box-shadow:" + sheetLine(k, phone) + ";-webkit-backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + "px);backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + 'px)">' + (strip ? layerBody(strip, "view") : "") + "</div>";
+h += '<div class="bd-ly-edit" style="' + pos + ";background:" + sheetPaper(k, k.alpha == null ? 55 : k.alpha) + ";box-shadow:" + sheetLine(k, phone) + (parseFloat(k.radius) > 0 ? ";border-radius:" + parseFloat(k.radius) + "px" : "") + ";-webkit-backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + "px);backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + 'px)">' + (strip ? layerBody(strip, "view") : "") + "</div>";
 });
 S.layerFocus = keep;
 return h;
@@ -5038,7 +5038,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#0ea5e9";
+var BD_BUILD = "#f59e0b";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6896,7 +6896,7 @@ return pages.length > 1 ? '<button class="bd-ed-pinpill' + (on ? " is-on" : "") 
 var h = skin("Details", SK.det, '<div class="bd-ed-head"><span class="bd-ed-label" style="margin:0">Sheet</span><button class="bd-ed-btn" style="height:26px" data-act="sheet-done">Done</button></div>' + field("Name", input(P + "name", k.name || "")));
 h += skin("Layout", SK.lay, two(seg(P + "axis", k.axis === "x" ? "x" : "y", [["y", "Vertical"], ["x", "Horizontal"]]), '<div class="bd-ed-pins">' + pins + "</div>") + sheetLayoutHTML(n, true));
 h += skin("Style", SK.sty, '<span class="bd-ed-label">Background</span>' + fillIn("", P + "color", k.color, "#E4E1DA") + two(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur", P + "blur", k.blur)));
-h += skin("Effect", SK.eff, '<span class="bd-ed-label">Decoration</span>' + patThumbs(P + "pattern", k.pattern || "") + (k.pattern ? row(field("Lines", '<input type="color" class="bd-ed-input" data-bind="' + P + 'patColor" value="' + esc(k.patColor || "#000000") + '">'), numIn("Spacing px", P + "patSize", k.patSize), numIn("Strength %", P + "patAlpha", k.patAlpha)) : "") + field("Edge", seg(P + "shadow", k.shadow === "none" || !k.shadow ? "none" : "soft", [["none", "None"], ["soft", "Soft shadow"]])));
+h += skin("Effect", SK.eff, '<span class="bd-ed-label">Decoration</span>' + patThumbs(P + "pattern", k.pattern || "") + (k.pattern ? row(field("Lines", '<input type="color" class="bd-ed-input" data-bind="' + P + 'patColor" value="' + esc(k.patColor || "#000000") + '">'), numIn("Spacing px", P + "patSize", k.patSize), numIn("Strength %", P + "patAlpha", k.patAlpha)) : "") + two(numIn("Corners", P + "radius", k.radius == null ? "" : k.radius, "blank"), field("Edge", seg(P + "shadow", k.shadow === "none" || !k.shadow ? "none" : "soft", [["none", "None"], ["soft", "Soft shadow"]]))));
 h += inhDelBar("sheet", n, '<button class="bd-ed-btn is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve</button>");
 return h;
 }
@@ -7425,9 +7425,9 @@ lay += '<span class="bd-ed-label">Padding · inside the page' + (ph ? " · phone
 h += skin("Layout", SK.lay, lay);
 var sty = (cardOn ? fillIn("Card colour", "page.box.card", bx.card || "", "#ffffff", "None") + (onSheet ? "" : fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site")) : "")
 + (ph ? "" : colorIn("Text colour", "page.box.ink", bx.ink || "", s.colors.ink, "Site"))
-+ (cardOn ? numIn("Corners", "page.box.radius", bx.radius == null ? "" : bx.radius, "blank") + (onSheet ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "Inherit"], ["none", "None"]]) : "") : "");
++ (cardOn ? (onSheet ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "Inherit"], ["none", "None"]]) : "") : "");
 h += (onSheet ? skinFold : skin)("Style", SK.sty, sty, cardOn);
-var eff = (cardOn ? two(numIn("Card see-through %", "page.box.cardA", bx.cardA == null ? "" : bx.cardA, "blank"), numIn("Blur", "page.box.blur", bx.blur == null ? "" : bx.blur, "blank")) + field("Shadow", seg("page.box.shadow", bx.shadow === "soft" ? "soft" : "none", [["none", "None"], ["soft", "Soft"]])) : "")
+var eff = (cardOn ? two(numIn("Card see-through %", "page.box.cardA", bx.cardA == null ? "" : bx.cardA, "blank"), numIn("Blur", "page.box.blur", bx.blur == null ? "" : bx.blur, "blank")) + two(numIn("Corners", "page.box.radius", bx.radius == null ? "" : bx.radius, "blank"), field("Shadow", seg("page.box.shadow", bx.shadow === "soft" ? "soft" : "none", [["none", "None"], ["soft", "Soft"]]))) : "")
 + (onSheet ? field("On hover", seg("page.hover", pg.hover || "", [["", "Inherit"], ["lift", "Lift"]])) : "");
 if (eff) h += (onSheet ? skinFold : skin)("Effect", SK.eff, eff, cardOn);
 h += skin("Everything else", SK.eff, (s.header ? sw("Show the title at the top", "page.header", pg.header !== false) : "") + sw("Click images to zoom · whole site", "site.zoom", s.zoom) + (cardOn ? sw("Card only as tall as what’s on it", "page.box.fit", !!bx.fit) : ""));

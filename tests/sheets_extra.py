@@ -157,6 +157,10 @@ async def run():
         tt = (await ev("document.getElementById('bd-right').innerText")).lower()
         ok('sheet panel shows while previewing, with Style and Stack (Dissolve only, no Higher/Lower)', 'style' in tt and 'dissolve' in tt and 'higher' not in tt)
         id0 = await ev("sheetList()[0].id")
+        await ev("S.project.site.sheets.find(function(k){return k.id==='index'}).radius = '18'; changed()"); await pg.wait_for_timeout(200)
+        rcss = await ev("layerCSS(false)")
+        ok('sheet corners: radius written on the paper', 'border-radius: 18px;' in rcss)
+        await ev("delete S.project.site.sheets.find(function(k){return k.id==='index'}).radius; changed()")
         await ev("S.preview=false; (function(){ var K = S.project.site.sheets; K.splice(1, 0, K.splice(0, 1)[0]); changed(); })()"); await pg.wait_for_timeout(300)
         ok('the stack is the sheet order (reordered by dragging in Layers)', await ev(f"sheetList()[1].id === '{id0}'") and await pg.locator('#bd-left .bd-ed-grip.is-sheet').count() >= 2)
         # --- "stays showing" is measured past the peeking strips above, so it is visible; Play button; hide
