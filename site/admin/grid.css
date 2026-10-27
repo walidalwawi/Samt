@@ -1533,25 +1533,30 @@ gap: 8px;
 align-items: center;
 }
 .bd-ed-pins {
-display: flex;
-gap: 8px;
-justify-content: flex-end;
+display: inline-flex;
+justify-self: end;
+border: 1px solid var(--e-line);
+border-radius: 8px;
+overflow: hidden;
+background: var(--e-surface);
 }
 .bd-ed-pinpill {
-border: 1.5px solid #1f1e1c;
-border-radius: 999px;
-padding: 6px 12px;
-background: #ffffff;
-color: #1f1e1c;
+height: 32px;
+padding: 0 10px;
+border: 0;
+background: none;
+color: inherit;
 font-family: var(--e-mono);
 font-size: 11px;
 font-weight: 600;
-letter-spacing: 0.04em;
 cursor: pointer;
 }
+.bd-ed-pinpill + .bd-ed-pinpill {
+border-left: 1px solid var(--e-line);
+}
 .bd-ed-pinpill.is-on {
-background: #1f1e1c;
-color: #ffffff;
+background: var(--e-ink);
+color: var(--e-bg);
 }
 .bd-ed-thumbs {
 display: grid;
