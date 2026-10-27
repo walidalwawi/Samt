@@ -1,4 +1,4 @@
-/* PUBLISHED mvqrtejx */
+/* PUBLISHED mvqrzktr */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2686,7 +2686,7 @@ pointer-events: none;
 backdrop-filter: blur(11.2px);
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-ly-paper {
-margin: 0px 0px 0 0px;
+margin: 0px 15vw 0 0px;
 min-height: calc(100% - 0px - 0px);
 box-shadow: none;
 }
@@ -2706,7 +2706,7 @@ padding-left: calc(320px + var(--bd-wl));
 width: auto;
 }
 .bd-ly-pane[data-page="b2lr3tkr"] > .bd-ly-paper {
-margin: 0px 0px 0 0px;
+margin: 0px 15vw 0 0px;
 min-height: calc(100% - 0px - 0px);
 box-shadow: none;
 }
@@ -3554,7 +3554,7 @@ padding-left: var(--bd-wl);
 width: auto;
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-ly-paper {
-margin: 0px 0px 0 0px;
+margin: 0px 15vw 0 0px;
 min-height: calc(100% - 0px - 0px);
 box-shadow: none;
 }
@@ -3571,7 +3571,7 @@ padding-left: var(--bd-wl);
 width: auto;
 }
 .bd-ly-pane[data-page="b2lr3tkr"] > .bd-ly-paper {
-margin: 0px 0px 0 0px;
+margin: 0px 15vw 0 0px;
 min-height: calc(100% - 0px - 0px);
 box-shadow: none;
 }

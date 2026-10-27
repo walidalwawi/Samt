@@ -612,7 +612,7 @@
     "vr": 0,
     "pin": "56ud3gky",
     "radius": 0,
-    "vcM": 0,
+    "vcM": 1,
     "vrM": 1,
     "mainM": "56ud3gky",
     "axisM": "y"
@@ -647,7 +647,7 @@
      "mt": "",
      "mb": "",
      "ml": "",
-     "mr": ""
+     "mr": "15%"
     },
     "pattern": "",
     "patColor": "#000000",
