@@ -126,3 +126,4 @@ Styles → Blocks sets the default look per block type (BLOCK_STYLE); a block's 
 Ask before assuming.
 
 - 27 Oct 20:50 FIX (phone full width): layWrite's pct() wrote "" for a margin dragged to 0, and a blank phone key falls back to the desktop margin, so Cover/sheets could not be made full width on a phone. On a phone a 0 margin is now written as "0". BD_BUILD = #e11d48.
+- 27 Oct 21:10: a sheet's shadow lies only on the sheet's outer edges (sheetJoinClip: each paper's shadow is clipped on the side where it joins its neighbour). Pages underneath a pinned (or peeking) sheet with no margin/padding of their own now get the inset as padding (pageBoxCSS), so the pinned page never covers their content. BD_BUILD = #059669.

@@ -2384,6 +2384,7 @@ if (P == null && I) d.push("padding-" + sd[1] + ": " + def[sd[0]] + ";");
 }
 if (P != null) d.push("padding-" + sd[1] + ": " + (I && M == null ? "calc(" + I + "px + " + P + ")" : P) + ";");
 else if (onSh && passed) d.push("padding-" + sd[1] + ": " + (I ? "calc(" + I + "px + " + def[sd[0]] + ")" : def[sd[0]]) + ";");
+else if (!onSh && M == null && I) d.push("padding-" + sd[1] + ": calc(" + I + "px + " + def[sd[0]] + ");");
 });
 var w = boxLen(boxVal(b, "maxW", phone), "l");
 if (sideM) d.push("width: auto;");
@@ -3632,6 +3633,16 @@ var first = i === 0, last = i === N - 1;
 var c = x ? [first, last, last, first] : [first, first, last, last];
 return "border-radius: " + c.map(function (on) { return on ? r + "px" : "0"; }).join(" ") + ";\n";
 }
+/* THE SHEET'S SHADOW LIES ONLY ON THE SHEET'S OUTER EDGES: EACH PAPER'S SHADOW IS CUT OFF ON THE SIDE WHERE IT JOINS ITS NEIGHBOUR */
+function sheetJoinClip(k, qi, qn, phone) {
+if (qn < 2 || (k.shadow || "none") === "none") return "";
+var x = sheetAx(k, phone) === "x";
+var e = "-60px";
+var t = e, r = e, b = e, l = e;
+if (x) { if (qi === 0) r = "0"; else l = "0"; }
+else { if (qi === 0) b = "0"; else t = "0"; }
+return "clip-path: inset(" + t + " " + r + " " + b + " " + l + ");\n";
+}
 function sheetLine(k, phone) {
 var sh = k.shadow || "none";
 if (sh === "none") return "none";
@@ -3724,7 +3735,7 @@ var pm = sheetPaperMargins(k, q, phone);
 /* ON A PINNED SHEET THE SIDE MARGINS BELONG TO THE PANE (SO ITS HIT AREA IS THE PAPER, NO CLIP-PATH, AND THE BLUR STILL SEES WHAT LIES UNDER IT) */
 var kpin = sheetPin(k, phone);
 var hitPane = !!kpin && kpin !== String(q.id);
-out.push(sel + " {\nmargin: " + pm.t + " " + (hitPane ? "0" : pm.r) + " 0 " + (hitPane ? "0" : pm.l) + ";\nmin-height: calc(100% - " + pm.t + " - " + pm.b + ");\nbox-shadow: " + sheetLine(k, phone) + ";\n" + sheetRadius(k, qi, qa.length, hitPane === false && !!kpin, phone) + "}");
+out.push(sel + " {\nmargin: " + pm.t + " " + (hitPane ? "0" : pm.r) + " 0 " + (hitPane ? "0" : pm.l) + ";\nmin-height: calc(100% - " + pm.t + " - " + pm.b + ");\nbox-shadow: " + sheetLine(k, phone) + ";\n" + sheetJoinClip(k, qi, qa.length, phone) + sheetRadius(k, qi, qa.length, hitPane === false && !!kpin, phone) + "}");
 out.push('.bd-ly-pane[data-page="' + q.id + '"] {\n--pm-b: ' + pm.b + ';\n' + (hitPane ? "margin-left: " + pm.l + ";\nmargin-right: " + pm.r + ";\n" + (sheetAx(k, phone) === "x" ? "flex-basis: calc(100% / var(--n) - " + pm.l + " - " + pm.r + ");\n" : "") : "") + "}");
 }
 if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPaper(k, k.alpha == null ? 55 : k.alpha) : sheetPaper(cardPaperK(k, q), k.alpha == null ? 55 : k.alpha, panesK.indexOf(q), panesK.length)) + ";\n}");
@@ -5204,7 +5215,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#e11d48";
+var BD_BUILD = "#059669";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
