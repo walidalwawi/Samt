@@ -3581,9 +3581,9 @@ var f = Ls.reveal === "focus" ? parseFloat(Ls.focusBlur) || 0 : 0;
 return Math.round(Math.sqrt(b * b + f * f) * 10) / 10;
 }
 /* A SHEET IS ONE PIECE: ONLY ITS OUTER CORNERS ROUND, NEVER THE JOIN BETWEEN ITS PAGES */
-function sheetRadius(k, i, N) {
+function sheetRadius(k, i, N, pinned) {
 var r = parseFloat(k.radius);
-if (!(r > 0)) return "";
+if (!(r > 0) || pinned) return "";
 var x = k.axis === "x";
 var first = i === 0, last = i === N - 1;
 var c = x ? [first, last, last, first] : [first, first, last, last];
@@ -3660,7 +3660,7 @@ if (!st) {
 var pm = sheetPaperMargins(k, q, phone);
 /* ON A PINNED SHEET THE SIDE MARGINS BELONG TO THE PANE (SO ITS HIT AREA IS THE PAPER, NO CLIP-PATH, AND THE BLUR STILL SEES WHAT LIES UNDER IT) */
 var hitPane = !!k.pin && String(k.pin) !== String(q.id);
-out.push(sel + " {\nmargin: " + pm.t + " " + (hitPane ? "0" : pm.r) + " 0 " + (hitPane ? "0" : pm.l) + ";\nmin-height: calc(100% - " + pm.t + " - " + pm.b + ");\nbox-shadow: " + sheetLine(k, phone) + ";\n" + (phone ? "" : "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);\nbackdrop-filter: blur(" + sheetBlur(k) + "px);\n") + sheetRadius(k, qi, qa.length) + "}");
+out.push(sel + " {\nmargin: " + pm.t + " " + (hitPane ? "0" : pm.r) + " 0 " + (hitPane ? "0" : pm.l) + ";\nmin-height: calc(100% - " + pm.t + " - " + pm.b + ");\nbox-shadow: " + sheetLine(k, phone) + ";\n" + (phone ? "" : "-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);\nbackdrop-filter: blur(" + sheetBlur(k) + "px);\n") + sheetRadius(k, qi, qa.length, hitPane === false && !!k.pin) + "}");
 out.push('.bd-ly-pane[data-page="' + q.id + '"] {\n--pm-b: ' + pm.b + ';\n' + (hitPane ? "margin-left: " + pm.l + ";\nmargin-right: " + pm.r + ";\n" + (k.axis === "x" ? "flex-basis: calc(100% / var(--n) - " + pm.l + " - " + pm.r + ");\n" : "") : "") + "}");
 }
 if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPaper(k, k.alpha == null ? 55 : k.alpha) : sheetPaper(pagePaperK(k, q), k.alpha == null ? 55 : k.alpha, panesK.indexOf(q), panesK.length)) + ";\n}");
@@ -5049,7 +5049,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#14b8a6";
+var BD_BUILD = "#f59e0b";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
