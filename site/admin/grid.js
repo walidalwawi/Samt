@@ -3667,6 +3667,13 @@ if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPap
 if (!phone && q.sheetBg) out.push(sel + " {\nbackground: " + bgVal(q.sheetBg) + ";\n}");
 var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", st && st.id === q.id ? null : padIns, true);
 if (bx) out.push(bx);
+if (!st && pageMode(q) === "card") {
+var cpm = sheetPaperMargins(k, q, phone);
+out.push('.bd-ly-pane[data-page="' + q.id + '"] {\noverflow: hidden;\n}');
+out.push('.bd-ly-pane[data-page="' + q.id + '"]::after {\ndisplay: none;\n}');
+out.push(sel + " {\nheight: calc(100% - " + cpm.t + " - " + cpm.b + ");\ndisplay: flex;\nflex-direction: column;\n}");
+out.push(sel + " > .bd-panel {\nflex: 1 1 auto;\nmin-height: 0;\noverflow-y: auto;\n}");
+}
 if (!(st && st.id === q.id)) {
 if (!phone && q.hover === "lift") out.push("@media (hover: hover) and (min-width: 761px) {\n" + sel + " > .bd-panel:hover {\nbox-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);\n}\n}");
 }
@@ -5049,7 +5056,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#f59e0b";
+var BD_BUILD = "#ec4899";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6900,7 +6907,7 @@ var pins = pages.map(function (q, j) {
 var on = sheetPin(k) === q.id;
 return pages.length > 1 ? '<button class="bd-ed-pinpill' + (on ? " is-on" : "") + '" data-act="lay-flag" data-f="pin" data-i="' + n + '" data-id="' + q.id + '" aria-pressed="' + on + '">PIN ' + (j + 1) + "</button>" : "";
 }).join("");
-var h = skin("Details", SK.det, '<div class="bd-ed-head"><span class="bd-ed-label" style="margin:0">Sheet</span><button class="bd-ed-btn" style="height:26px" data-act="sheet-done">Done</button></div>' + field("Name", input(P + "name", k.name || "")));
+var h = skin("Details", SK.det, field("Name", input(P + "name", k.name || "")));
 h += skin("Layout", SK.lay, two(seg(P + "axis", k.axis === "x" ? "x" : "y", [["y", "Vertical"], ["x", "Horizontal"]]), '<div class="bd-ed-pins">' + pins + "</div>") + sheetLayoutHTML(n, true));
 h += skin("Style", SK.sty, '<span class="bd-ed-label">Background</span>' + fillIn("", P + "color", k.color, "#E4E1DA") + two(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur", P + "blur", k.blur)) + '<span class="bd-ed-label">Decoration</span>' + patThumbs(P + "pattern", k.pattern || "") + (k.pattern ? row(field("Lines", '<input type="color" class="bd-ed-input" data-bind="' + P + 'patColor" value="' + esc(k.patColor || "#000000") + '">'), numIn("Spacing px", P + "patSize", k.patSize), numIn("Strength %", P + "patAlpha", k.patAlpha)) : "") + two(numIn("Corners", P + "radius", k.radius == null ? "" : k.radius, "blank"), field("Edge", seg(P + "shadow", k.shadow === "none" || !k.shadow ? "none" : "soft", [["none", "None"], ["soft", "Soft shadow"]]))));
 h += inhDelBar("sheet", n, '<button class="bd-ed-btn is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve</button>");
@@ -7427,8 +7434,8 @@ lay += '<span class="bd-ed-label">Where it lies · ' + esc(pgw.sheet.name || "Sh
 } else if (pgw && pgw.k < 0 && !pg.parent) lay += '<div class="bd-ed-hint">This page lies underneath the sheets. Drag it by its grip in Layers onto a card or an empty part of a sheet’s drawing to lay it on that sheet.</div>';
 if (!onSheet) lay += '<span class="bd-ed-label">Margin · outside the page</span>' + four("m");
 lay += two(field("Max width" + (ph ? " · phone" : ""), input("page.box.maxW" + (ph ? "M" : ""), (ph ? bx.maxWM : bx.maxW) || "", "", ' placeholder="720 or 60%"')), field("Padding" + (ph ? " · phone" : ""), '<input class="bd-ed-input bd-ed-n" data-bind="padall.page" data-type="blank" value="' + esc(bx["pt" + (ph ? "M" : "")] == null ? "" : bx["pt" + (ph ? "M" : "")]) + '" placeholder="all sides">'));
-if (isMaster(pg)) lay += adv("pg-cols", "Columns & grid", rulerCols(pg, S.mode === "phone"), false);
 h += skin("Layout", SK.lay, lay);
+if (isMaster(pg)) h += skinFold("Columns & grid", SK.lay, rulerCols(pg, S.mode === "phone"), !!S.open["pg-cols"]);
 var sty = (cardOn ? fillIn("Card colour", "page.box.card", bx.card || "", "#ffffff", "None") + (onSheet ? "" : fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site")) : "")
 + (cardOn ? two(numIn("Card see-through %", "page.box.cardA", bx.cardA == null ? "" : bx.cardA, "blank"), numIn("Blur", "page.box.blur", bx.blur == null ? "" : bx.blur, "blank")) : "")
 + (cardOn && onSheet ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "Inherit"], ["none", "None"]]) : "")
