@@ -569,8 +569,8 @@
     "id": "menu",
     "name": "Cover",
     "pages": [
-     "56ud3gky",
-     "nsye72w3"
+     "nsye72w3",
+     "56ud3gky"
     ],
     "restPage": "",
     "edge": "left",
@@ -606,11 +606,11 @@
     "out": "peek",
     "lv": "",
     "arrive": "slide",
-    "main": "nsye72w3",
+    "main": "56ud3gky",
     "hover": "",
     "vc": 1,
     "vr": 0,
-    "pin": "nsye72w3",
+    "pin": "56ud3gky",
     "radius": 0,
     "vcM": 1,
     "vrM": 0,
@@ -4492,14 +4492,14 @@
     "gutterM": 24
    },
    "box": {
-    "card": "none",
-    "mt": "10%",
-    "mb": "15%",
+    "card": "",
+    "mt": "0",
+    "mb": "0",
     "mbM": "0",
     "mtM": "0",
-    "mr": "5%",
+    "mr": "10%",
     "radius": 10,
-    "ml": "5%",
+    "ml": "0",
     "maxWM": "",
     "ptM": "",
     "prM": "",
@@ -4509,7 +4509,7 @@
     "mrM": "0"
    },
    "mode": "sheet",
-   "pattern": "ruled"
+   "pattern": ""
   },
   "56ud3gky": {
    "id": "56ud3gky",
