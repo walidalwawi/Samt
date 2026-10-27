@@ -160,6 +160,7 @@ async def run():
         id0 = await ev("sheetList()[0].id")
         await ev("S.project.site.sheets.find(function(k){return k.id==='index'}).radius = '18'; changed()"); await pg.wait_for_timeout(200)
         rcss = await ev("layerCSS(false)")
+        ok('blur: one layer per sheet, none on the papers', '.bd-ly-blur {' in rcss and 'backdrop-filter: blur(' in rcss and not re.search(r'\\.bd-ly-paper \\{[^}]*backdrop-filter', rcss) and 'class="bd-ly-blur"' in await ev("layerBodyAll ? '' : ''") if False else ('.bd-ly-blur {' in rcss and not re.search(r'bd-ly-paper\"\] > \.bd-ly-paper \{[^}]*backdrop-filter', rcss)))
         ok('sheet corners: only the sheet\'s outer corners are rounded', 'border-radius: 18px' in rcss and ('border-radius: 18px 18px 0 0;' in rcss or 'border-radius: 18px 0 0 18px;' in rcss or 'border-radius: 18px;' in rcss) and '0 0 18px 18px' in rcss or 'border-radius: 0 18px 18px 0;' in rcss or 'border-radius: 18px;' in rcss)
         await ev("delete S.project.site.sheets.find(function(k){return k.id==='index'}).radius; changed()")
         await ev("S.preview=false; (function(){ var K = S.project.site.sheets; K.splice(1, 0, K.splice(0, 1)[0]); changed(); })()"); await pg.wait_for_timeout(300)
