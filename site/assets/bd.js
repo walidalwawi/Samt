@@ -79,6 +79,57 @@ var end = Math.max.apply(null, pp.map(function (x, n) { return top[n] + x.getBou
 pp.forEach(function (x, n) { x.style.minHeight = Math.ceil(end - top[n]) + "px"; });
 });
 }
+/* ONE BLUR LAYER PER SHEET: CLIPPED TO THE UNION OF ITS PAPERS, SO THE SHEET IS ONE CONTINUOUS BLUR WITH NO JOIN BETWEEN ITS PAGES */
+var blurs = model.map(function (m) {
+var el = m.el.querySelector(":scope > .bd-ly-blur");
+return el ? { k: m.el, el: el, papers: Array.prototype.slice.call(m.el.querySelectorAll(".bd-ly-pane > .bd-ly-paper")), d: "" } : null;
+}).filter(Boolean);
+function blurSync() {
+blurs.forEach(function (b) {
+var sr = b.k.getBoundingClientRect();
+var d = "";
+b.papers.forEach(function (pp) {
+var r = pp.getBoundingClientRect();
+var x = Math.round((r.left - sr.left) * 10) / 10;
+var y = Math.round((r.top - sr.top) * 10) / 10;
+var w = Math.round(r.width * 10) / 10;
+var h = Math.round(r.height * 10) / 10;
+var cs = getComputedStyle(pp);
+var v = [cs.borderTopLeftRadius, cs.borderTopRightRadius, cs.borderBottomRightRadius, cs.borderBottomLeftRadius].map(function (z) { return parseFloat(z) || 0; });
+var f = Math.min(1, w / ((v[0] + v[1]) || 1e9), w / ((v[3] + v[2]) || 1e9), h / ((v[0] + v[3]) || 1e9), h / ((v[1] + v[2]) || 1e9));
+v = v.map(function (z) { return z * f; });
+d += "M" + (x + v[0]) + " " + y + "H" + (x + w - v[1]) + "A" + v[1] + " " + v[1] + " 0 0 1 " + (x + w) + " " + (y + v[1]) + "V" + (y + h - v[2]) + "A" + v[2] + " " + v[2] + " 0 0 1 " + (x + w - v[2]) + " " + (y + h) + "H" + (x + v[3]) + "A" + v[3] + " " + v[3] + " 0 0 1 " + x + " " + (y + h - v[3]) + "V" + (y + v[0]) + "A" + v[0] + " " + v[0] + " 0 0 1 " + (x + v[0]) + " " + y + "Z";
+});
+if (d !== b.d) {
+b.d = d;
+b.el.style.clipPath = 'path("' + d + '")';
+b.el.style.webkitClipPath = 'path("' + d + '")';
+}
+});
+}
+var blurUntil = 0;
+var blurRaf = 0;
+function blurTick() {
+blurRaf = 0;
+blurSync();
+if (Date.now() < blurUntil) blurRaf = requestAnimationFrame(blurTick);
+}
+function blurKick(ms) {
+if (!blurs.length) return;
+blurUntil = Math.max(blurUntil, Date.now() + ms);
+if (!blurRaf) blurRaf = requestAnimationFrame(blurTick);
+}
+if (blurs.length) {
+root.addEventListener("scroll", function () { blurKick(160); }, true);
+["transitionrun", "transitionstart", "transitionend"].forEach(function (t) { root.addEventListener(t, function () { blurKick(dur + 300); }, true); });
+window.addEventListener("resize", function () { blurKick(300); });
+window.addEventListener("load", function () { blurKick(1500); });
+if (window.ResizeObserver) {
+var rb = new ResizeObserver(function () { blurKick(300); });
+blurs.forEach(function (b) { b.papers.forEach(function (x) { rb.observe(x); }); });
+}
+blurKick(1500);
+}
 hitAll();
 if (window.ResizeObserver) {
 var ro = new ResizeObserver(function () { pinLen(); });

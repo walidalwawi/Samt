@@ -583,15 +583,15 @@
     "axis": "x",
     "covers": "all",
     "coverPages": [],
-    "color": "none",
+    "color": "",
     "alpha": 0,
-    "blur": 0,
+    "blur": 10,
     "shadow": "none",
     "nudge": 0,
     "dur": "",
     "box": {
      "ml": "",
-     "mr": "85%",
+     "mr": "75%",
      "mt": "",
      "mb": "",
      "mtM": "85%",
@@ -599,16 +599,16 @@
      "mlM": "",
      "mrM": "5%"
     },
-    "pattern": "",
+    "pattern": "ruled",
     "patColor": "#000000",
     "patSize": 28,
     "patAlpha": 14,
     "out": "peek",
     "lv": "",
     "arrive": "slide",
-    "main": "56ud3gky",
+    "main": "nsye72w3",
     "hover": "",
-    "vc": 1,
+    "vc": 0,
     "vr": 0,
     "pin": "56ud3gky",
     "radius": 0
@@ -643,7 +643,7 @@
      "mt": "",
      "mb": "",
      "ml": "",
-     "mr": ""
+     "mr": "15%"
     },
     "pattern": "",
     "patColor": "#000000",
@@ -681,7 +681,7 @@
    "card": "none",
    "sheetBg": "none",
    "shadow": "soft",
-   "fit": true,
+   "fit": false,
    "cardA": "",
    "pt": "5%",
    "pr": "5%",
@@ -691,7 +691,8 @@
    "plM": "30",
    "mb": "4%",
    "pb": "5%",
-   "maxW": ""
+   "maxW": "",
+   "ink": ""
   },
   "stayV1": true,
   "postLayout": {
@@ -4484,20 +4485,10 @@
    },
    "box": {
     "card": "linear-gradient(180deg, #ffffff, #ffffff)",
-    "cardA": 100,
-    "blur": 0,
-    "shadow": "soft",
-    "fit": false,
-    "ink": "",
-    "maxW": "",
-    "mr": "10%",
-    "mt": "10%",
-    "ml": "5%",
-    "mb": "10%"
+    "mt": "20%",
+    "mb": "0"
    },
-   "hover": "",
-   "mode": "card",
-   "pattern": "none"
+   "mode": "card"
   },
   "56ud3gky": {
    "id": "56ud3gky",
@@ -4547,11 +4538,7 @@
     "gapM": ""
    },
    "box": {
-    "ink": "",
-    "card": "none",
-    "cardA": 0,
-    "blur": 0,
-    "maxW": "100%"
+    "ml": "0"
    },
    "ownLayout": false,
    "colset": {
@@ -4565,7 +4552,7 @@
     "gutter": 40,
     "gutterM": 24
    },
-   "mode": "card"
+   "mode": "sheet"
   }
  }
 }
