@@ -1,4 +1,4 @@
-/* PUBLISHED mvqfbt6e */
+/* PUBLISHED mvqgegq6 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2624,45 +2624,45 @@ min-height: 0;
 margin: 0px 0px 0 0px;
 min-height: calc(100% - 0px - 0px);
 box-shadow: 0 0 28px rgba(0, 0, 0, 0.16);
--webkit-backdrop-filter: blur(5px);
-backdrop-filter: blur(5px);
+-webkit-backdrop-filter: blur(11.2px);
+backdrop-filter: blur(11.2px);
 }
 .bd-ly-pane[data-page="nsye72w3"] {
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
-background: transparent;
+background: repeating-linear-gradient(180deg, transparent 0, transparent 27px, rgba(0, 0, 0, 0.14) 27px, rgba(0, 0, 0, 0.14) 28px) local, repeating-linear-gradient(90deg, transparent 0, transparent 27px, rgba(0, 0, 0, 0.14) 27px, rgba(0, 0, 0, 0.14) 28px) local, rgba(77, 34, 178, 0.7);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
 padding-top: var(--bd-wt);
 padding-right: var(--bd-wr);
 padding-bottom: var(--bd-wb);
 padding-left: var(--bd-wl);
-background: rgba(56, 87, 26, 0.9);
--webkit-backdrop-filter: blur(90px);
-backdrop-filter: blur(90px);
+max-width: 70vw;
+margin: 0;
+background: transparent;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
 margin: 0px 80vw 0 0px;
 min-height: calc(100% - 0px - 0px);
 box-shadow: 0 0 28px rgba(0, 0, 0, 0.16);
--webkit-backdrop-filter: blur(5px);
-backdrop-filter: blur(5px);
+-webkit-backdrop-filter: blur(11.2px);
+backdrop-filter: blur(11.2px);
 }
 .bd-ly-pane[data-page="56ud3gky"] {
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
-background: transparent;
+background: repeating-linear-gradient(180deg, transparent 0, transparent 27px, rgba(0, 0, 0, 0.14) 27px, rgba(0, 0, 0, 0.14) 28px) local, repeating-linear-gradient(90deg, transparent 0, transparent 27px, rgba(0, 0, 0, 0.14) 27px, rgba(0, 0, 0, 0.14) 28px) local, rgba(77, 34, 178, 0.7);
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper > .bd-panel {
 padding-top: var(--bd-wt);
 padding-right: var(--bd-wr);
 padding-bottom: var(--bd-wb);
 padding-left: var(--bd-wl);
-background: rgba(56, 87, 26, 0.9);
--webkit-backdrop-filter: blur(90px);
-backdrop-filter: blur(90px);
+max-width: 10vw;
+margin: 0;
+background: transparent;
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-ly-paper {
 margin: 0px 0px 0 0px;
@@ -3490,6 +3490,8 @@ padding-top: var(--bd-wt);
 padding-right: var(--bd-wr);
 padding-bottom: var(--bd-wb);
 padding-left: var(--bd-wl);
+max-width: 70vw;
+margin: 0;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
 margin: 85vh 5vw 0 0px;
@@ -3504,6 +3506,8 @@ padding-top: var(--bd-wt);
 padding-right: var(--bd-wr);
 padding-bottom: var(--bd-wb);
 padding-left: var(--bd-wl);
+max-width: 10vw;
+margin: 0;
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-ly-paper {
 margin: 0px 0px 0 0px;

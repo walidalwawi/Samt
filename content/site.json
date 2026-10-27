@@ -583,9 +583,9 @@
     "axis": "x",
     "covers": "all",
     "coverPages": [],
-    "color": "none",
-    "alpha": 100,
-    "blur": 0,
+    "color": "#4d22b2",
+    "alpha": 70,
+    "blur": 10,
     "shadow": "soft",
     "nudge": 0,
     "dur": "",
@@ -599,7 +599,7 @@
      "mlM": "",
      "mrM": "5%"
     },
-    "pattern": "",
+    "pattern": "grid",
     "patColor": "#000000",
     "patSize": 28,
     "patAlpha": 14,
@@ -4478,11 +4478,13 @@
     "gutterM": 24
    },
    "box": {
-    "card": "#38571a",
-    "cardA": 90,
-    "blur": 90,
+    "card": "none",
+    "cardA": 100,
+    "blur": 0,
     "shadow": "none",
-    "fit": false
+    "fit": false,
+    "ink": "",
+    "maxW": "70%"
    },
    "hover": ""
   },
@@ -4535,9 +4537,10 @@
    },
    "box": {
     "ink": "",
-    "card": "#38571a",
-    "cardA": 90,
-    "blur": 90
+    "card": "none",
+    "cardA": 100,
+    "blur": 0,
+    "maxW": "10%"
    },
    "ownLayout": false,
    "colset": {
