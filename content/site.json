@@ -703,8 +703,8 @@
    "cols": 2,
    "align": "spread",
    "spans": [
-    6,
-    6
+    5,
+    7
    ],
    "colsM": 1,
    "gutter": 50,
@@ -1775,8 +1775,12 @@
    "date": "",
    "excerpt": "",
    "featured": false,
-   "box": {},
-   "ownLayout": false
+   "box": {
+    "card": "",
+    "shadow": "none"
+   },
+   "ownLayout": false,
+   "sheetBg": ""
   },
   "k2b6e868": {
    "id": "k2b6e868",
