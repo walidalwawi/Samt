@@ -608,6 +608,7 @@ var s = p.site;
 if (!s.styles && s.fs) s.styles = stylesFrom(s.fs, s.lh, s.ms || s.fs, s.ml || s.lh, s.fsM || s.fs, s.lhM || s.lh, s.msM || s.ms || s.fs, s.mlM || s.ml || s.lh);
 if (s.showNum === undefined) s.showNum = false;
 s.layers = Object.assign(clone(LAYER_DEFAULTS), s.layers || {});
+if (!s.postGo || typeof s.postGo !== "object") s.postGo = { side: "", sideM: "" };
 if (s.layers.on && !s.sheets) migrateSheets(p);
 s.sheets = (s.sheets || []).map(function (k) {
 var o = Object.assign(clone(SHEET_DEFAULTS), k);
@@ -2314,7 +2315,7 @@ function layoutRules(page, phone) {
 var r = isMaster(page) ? flowRules(page, phone) : posRules(page, phone ? "m" : "d");
 var g = galleryRules(page, phone);
 var b = blockRules(page, phone);
-var x = layersOn() || page.kind === "pin" ? "" : pageBoxCSS(page, phone, ".bd-panel.bd-pg-" + page.id, null) + (!phone && effPage(page).sheetBg ? '\n.bd-site[data-bd-page="' + page.slug + '"] {\nbackground: ' + bgVal(effPage(page).sheetBg) + ";\n}" : "");
+var x = layersOn() || page.kind === "pin" ? "" : pageBoxCSS(page, phone, ".bd-panel.bd-pg-" + page.id, null) + (underPatternCSS(page, ".bd-panel.bd-pg-" + page.id, phone) ? "\n" + underPatternCSS(page, ".bd-panel.bd-pg-" + page.id, phone) : "") + (!phone && effPage(page).sheetBg ? '\n.bd-site[data-bd-page="' + page.slug + '"] {\nbackground: ' + bgVal(effPage(page).sheetBg) + ";\n}" : "");
 return r + (g ? "\n" + g : "") + (b ? "\n" + b : "") + (x.trim() ? "\n" + x.trim() : "");
 }
 /* PAGE BOX — SPACE AROUND AND INSIDE A PAGE, AND A CARD FOR IT TO SIT ON. NUMBERS ARE PX; % IS OF THE WINDOW (TOP/BOTTOM OF ITS HEIGHT, SIDES OF ITS WIDTH) */
@@ -3215,6 +3216,15 @@ var b = effPage(q).box || {};
 var ca = b.cardA === "" || b.cardA == null ? 100 : parseFloat(b.cardA);
 return sel + " {\nbackground: " + L.join(", ") + ", " + (b.card ? fillCSS(b.card, isNaN(ca) ? 100 : ca) : "transparent") + ";\n}";
 }
+/* A PAGE WITH NO SHEET HAS ITS OWN CARD: ITS DECORATION LIES ON THAT CARD (SAME LINES AS A SHEET'S PAPER) */
+function underPatternCSS(q, sel, phone) {
+if (phone || !q || q.parent || q.kind === "pin" || !q.pattern || q.pattern === "none") return "";
+var L = sheetPatternList({ pattern: q.pattern, patColor: SHEET_DEFAULTS.patColor, patSize: SHEET_DEFAULTS.patSize, patAlpha: SHEET_DEFAULTS.patAlpha }).map(function (t) { return t + " local"; });
+if (!L.length) return "";
+var b = effPage(q).box || {};
+var ca = b.cardA === "" || b.cardA == null ? 100 : parseFloat(b.cardA);
+return sel + " {\nbackground: " + L.join(", ") + ", " + (b.card ? fillCSS(b.card, isNaN(ca) ? 100 : ca) : "transparent") + ";\n}";
+}
 function sheetPaper(k, pct, j, N) {
 var f = fillCSS(k.color || "#E4E1DA", pct);
 var g = parseFill(k.color || "");
@@ -3378,7 +3388,8 @@ return f ? f.id : "";
 function sheetModel() {
 return sheetList().map(function (k) {
 var pids = sheetPanes(k).map(function (q) { return q.id; });
-return { rest: k.rest || "open", covers: k.covers === "some" ? (k.coverPages || []).slice() : null, panes: pids, main: Math.max(0, pids.indexOf(k.main)), pin: pids.indexOf(sheetPin(k)) };
+var pe = postEdges(k);
+return { rest: k.rest || "open", covers: k.covers === "some" ? (k.coverPages || []).slice() : null, panes: pids, main: Math.max(0, pids.indexOf(k.main)), pin: pids.indexOf(sheetPin(k)), pe: pe ? pe.d : "", blogs: pe ? sheetBlogs(k) : [] };
 });
 }
 function sheetFocus(page) {
@@ -3387,7 +3398,7 @@ if (!w || w.strip) {
 var h = sheetHome();
 return h ? sheetOf(h) : { id: "", k: -1, i: 0 };
 }
-return { id: w.id, k: w.k, i: Math.max(0, w.i) };
+return { id: w.id, k: w.k, i: Math.max(0, w.i), par: (page && page.parent) || "" };
 }
 /* THE PLAN (EXPORTED AS-IS, SHARED BY PUBLISH AND THE RUNTIME): WHERE EVERY SHEET GOES WHEN A PAGE OPENS
 - the page's own sheet opens on it; sheets above it go back to rest (an open-at-rest sheet tucks to its sliver)
@@ -3401,6 +3412,8 @@ var pane = p ? p.i : k.main || 0;
 var cov = !k.covers || k.covers.indexOf(f.id) > -1 || k.panes.indexOf(f.id) > -1;
 if (f.k === n) return { st: "open", i: f.i };
 if (k.pin > -1) return { st: "open", i: k.main };
+/* THE BLOG ANIMATION TOOL: A POST OF THIS SHEET'S BLOG OPENS UNDERNEATH, SO THE SHEET LEAVES TO THE CHOSEN SIDE */
+if (k.pe && f.k < 0 && f.par && (k.blogs || []).indexOf(f.par) > -1) return { st: "hidden", i: pane };
 /* A STILL SHEET BELOW THE PAGE THAT OPENS STAYS WHERE IT IS: THAT PAGE ALREADY LIES OVER IT */
 if (k.rest === "still") return { st: cov || (f.k > -1 && n > f.k) ? "open" : "hidden", i: pane };
 if (f.k > -1 && n > f.k && p) return { st: p.st, i: p.i };
@@ -3484,7 +3497,10 @@ var pl = plan[n];
 var panes = sheetPanes(k);
 var strip = sheetStrip(k);
 var onPage = pl.st === "peek" && strip ? strip : panes[pl.i] || strip;
-return '<section class="bd-ly-sheet bd-ly-k' + (strip ? "" : " is-paper") + ' is-e-' + esc(k.edge || "left") + " is-em-" + esc(k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + (onPage ? " is-on-" + onPage.id : "") + (k.lv ? " is-lv-" + esc(k.lv) : "") + (k.hover === "lift" ? " is-hv-lift" : "") + (k.arrive === "fade" || k.arrive === "cut" ? " is-ap-" + k.arrive : "") + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-main="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(k.main)) + '" data-main-m="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(sheetMain(k, true))) + '" data-pin="' + panes.map(function (q) { return q.id; }).indexOf(sheetPin(k)) + '" data-pin-m="' + panes.map(function (q) { return q.id; }).indexOf(sheetPin(k, true)) + '"' + (sheetRev(k) ? ' data-rev-m="1"' : "") + ' data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
+var pe = postEdges(k);
+var fq = S.project.pages[f.id];
+var usePe = !!(pe && pl.st !== "open" && fq && fq.parent && sheetBlogs(k).indexOf(fq.parent) > -1);
+return '<section class="bd-ly-sheet bd-ly-k' + (strip ? "" : " is-paper") + ' is-e-' + esc(usePe ? pe.d : k.edge || "left") + " is-em-" + esc(usePe ? pe.m : k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + (onPage ? " is-on-" + onPage.id : "") + (k.lv ? " is-lv-" + esc(k.lv) : "") + (k.hover === "lift" ? " is-hv-lift" : "") + (k.arrive === "fade" || k.arrive === "cut" ? " is-ap-" + k.arrive : "") + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-edge="' + esc(k.edge || "left") + '" data-edge-m="' + esc(k.edgeM || "top") + '"' + (pe ? ' data-blogs="' + esc(sheetBlogs(k).join(" ")) + '" data-pe="' + pe.d + '" data-pe-m="' + pe.m + '"' : "") + ' data-main="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(k.main)) + '" data-main-m="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(sheetMain(k, true))) + '" data-pin="' + panes.map(function (q) { return q.id; }).indexOf(sheetPin(k)) + '" data-pin-m="' + panes.map(function (q) { return q.id; }).indexOf(sheetPin(k, true)) + '"' + (sheetRev(k) ? ' data-rev-m="1"' : "") + ' data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
 + (!strip && sheetBlur(k) > 0 ? '<div class="bd-ly-blur" aria-hidden="true"></div>\n' : "") + '<div class="bd-ly-body">\n<div class="bd-ly-track is-ax-' + sheetAx(k) + " is-axm-" + sheetAx(k, true) + '" style="--n: ' + Math.max(1, panes.length) + "; --i: " + pl.i + ';">\n'
 + panes.map(function (q, j) {
 return '<div class="bd-ly-pane' + (j === pl.i ? " is-on" : "") + '"' + "" + ' data-page="' + q.id + '" data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n<div class="bd-ly-paper">\n' + layerBody(q, ctx) + "\n</div>\n</div>";
@@ -3658,11 +3674,28 @@ if ((M.t != null || M.b != null) && !b.fit) d.push("min-height: calc(100% - " + 
 if (M.l != null || M.r != null) d.push("width: auto;", "box-sizing: border-box;");
 return d.length ? sel + " {\n" + d.join("\n") + "\n}" : "";
 }
+/* THE BLOG ANIMATION TOOL: WHEN A POST OPENS, THE SHEET HOLDING ITS BLOG LEAVES TO THIS SIDE (site.postGo.side desktop, sideM phone; blank = the sheet's own edge; a blank phone follows the desktop choice) */
+var POST_SIDES = ["left", "right", "top", "bottom"];
+function sheetBlogs(k) {
+return sheetPanes(k).filter(function (q) { return q && q.blog; }).map(function (q) { return q.id; });
+}
+function postEdges(k) {
+var g = (S.project && S.project.site.postGo) || {};
+var d = POST_SIDES.indexOf(g.side) > -1 ? g.side : "";
+var m = POST_SIDES.indexOf(g.sideM) > -1 ? g.sideM : "";
+if ((!d && !m) || !sheetBlogs(k).length) return null;
+return { d: d || k.edge || "left", m: m || d || k.edgeM || "top" };
+}
 function sheetEdges(phone) {
 var u = [];
 sheetList().forEach(function (k) {
 var e = (phone ? k.edgeM : k.edge) || "left";
 if (u.indexOf(e) < 0) u.push(e);
+var pe = postEdges(k);
+if (pe) {
+var x = phone ? pe.m : pe.d;
+if (u.indexOf(x) < 0) u.push(x);
+}
 });
 return u;
 }
@@ -3675,6 +3708,8 @@ var sel = '.bd-ly-art[data-id="' + q.id + '"]';
 if (!phone && q.sheetBg) out.push(sel + " {\nmin-height: 100%;\nbackground: " + bgVal(q.sheetBg) + ";\n}");
 var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", ins);
 if (bx) out.push(bx);
+var upx = underPatternCSS(q, sel + " > .bd-panel", phone);
+if (upx) out.push(upx);
 });
 sheetList().forEach(function (k, n) {
 var padIns = sheetPadIns(k, n, phone);
@@ -3830,7 +3865,7 @@ var before = home;
 var model = els.map(function (k) {
 var c = k.getAttribute("data-covers");
 var st = k.querySelector(".bd-ly-strip > .bd-panel");
-return { el: k, rest: k.getAttribute("data-rest") || "open", main: parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-main-m") ? "data-main-m" : "data-main"), 10) || 0, pin: isNaN(parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-pin-m") ? "data-pin-m" : "data-pin"), 10)) ? -1 : parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-pin-m") ? "data-pin-m" : "data-pin"), 10), rev: k.hasAttribute("data-rev-m"), covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
+return { el: k, e0: k.getAttribute("data-edge") || "left", em0: k.getAttribute("data-edge-m") || "top", pe: k.getAttribute("data-pe") || "", peM: k.getAttribute("data-pe-m") || "", blogs: (k.getAttribute("data-blogs") || "").split(" ").filter(Boolean), rest: k.getAttribute("data-rest") || "open", main: parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-main-m") ? "data-main-m" : "data-main"), 10) || 0, pin: isNaN(parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-pin-m") ? "data-pin-m" : "data-pin"), 10)) ? -1 : parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-pin-m") ? "data-pin-m" : "data-pin"), 10), rev: k.hasAttribute("data-rev-m"), covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
 });
 /* THE PHONE'S OWN PAGE ORDER: --i COUNTS PAGES AS THEY LIE (CSS order), THE PLAN COUNTS THEM IN THE MARKUP */
 var vis = function (m, i) { return m.rev && window.matchMedia("(max-width: 760px)").matches ? m.panes.length - 1 - i : i; };
@@ -3961,7 +3996,7 @@ for (var n = 0; n < model.length; n++) {
 var j = model[n].panes.indexOf(id);
 if (j > -1) return { id: id, k: n, i: j };
 }
-return id && art(id) ? { id: id, k: -1, i: 0 } : null;
+return id && art(id) ? { id: id, k: -1, i: 0, par: art(id).getAttribute("data-parent") || "" } : null;
 }
 function kd(m) {
 return parseInt(getComputedStyle(m.el).getPropertyValue("--k-dur"), 10) || dur;
@@ -4177,6 +4212,10 @@ m.track.classList.remove("is-snap");
 m.track.querySelectorAll(".bd-ly-pane").forEach(function (p, j) { p.classList.toggle("is-on", j === n.i); });
 }
 if (n.st !== c.st) {
+/* WHEN A POST OPENS, THE BLOG'S SHEET LEAVES TO THE SIDE CHOSEN IN THE BLOG ANIMATION TOOL; OTHERWISE TO ITS OWN EDGE */
+var po = f.k < 0 && art(f.id) ? art(f.id).getAttribute("data-parent") || "" : "";
+var useP = !!(m.pe && n.st !== "open" && po && m.blogs.indexOf(po) > -1);
+m.el.className = m.el.className.replace(/\bis-e-[a-z]+\b/g, "").replace(/\bis-em-[a-z]+\b/g, "").replace(/\s+/g, " ").trim() + " is-e-" + (useP ? m.pe : m.e0) + " is-em-" + (useP ? m.peM : m.em0);
 /* A SHEET'S EDGES NEVER MOVE WHILE IT SLIDES: ITS BOX CHANGES INSTANTLY, THE SLIDE IS A STRAIGHT LINE */
 m.el.classList.add("is-snapbox");
 clearTimeout(m.el.bdSb);
@@ -4309,6 +4348,8 @@ out.push(".bd-site.is-layered {\nbackground: " + (page.sheetBg ? bgVal(page.shee
 var bsel = ".bd-site.is-layered .bd-panel.bd-pg-" + page.id;
 var bx2 = pageBoxCSS(page, phone, bsel, ins2);
 if (bx2) out.push(bx2);
+var upx2 = underPatternCSS(page, bsel, phone);
+if (upx2) out.push(upx2);
 if (phone) {
 var bb2 = page.box || {};
 var bxc2 = pageBoxCSS({ box: { card: bb2.card, radius: bb2.radius, shadow: bb2.shadow, fit: bb2.fit } }, false, bsel, null);
@@ -5162,7 +5203,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#ec4899";
+var BD_BUILD = "#0ea5e9";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6974,8 +7015,15 @@ return "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<
 /* THE RED "INHERIT ALL" BAR AT THE TOP OF EVERY PAGE AND SHEET PANEL: ASKS FIRST, THEN DROPS EVERY OVERRIDE SO IT FOLLOWS THE MASTER AGAIN */
 /* WALID'S PANELS: ONE SKIN FOR SHEET AND PAGE. DETAILS · LAYOUT · STYLE · EFFECT · EXTRAS · INHERIT + DELETE */
 /* WALID'S PANEL DESIGNER COLOURS: ONE COLOUR PER PANEL, THE PANE BEHIND IS #e7e4dc */
-var PC = { sheet: "#f1eee6", page: "#e6ebe6", under: "#ffffff", blog: "#ffffff", post: "#faf9f6", bm: "#26241f", mstyles: "#26241f", mmotion: "#26241f", msite: "#faf9f6" };
-function skinColour(c) { SK.det = SK.lay = SK.sty = SK.eff = SK.end = c; }
+var PC = {
+sheet: { pane: "#d8d4c8", det: "#d8d4c8", lay: "#f1eee6", sty: "#f1eee6", end: "#f1eee6" },
+page: { pane: "#d8d4c8", det: "#e6ebe6", lay: "#e6ebe6", sty: "#e6ebe6", end: "#e6ebe6" },
+under: { pane: "#e6ebe6", det: "#e6ebe6", lay: "#dfe3df", sty: "#dfe3df", end: "#dfe3df" },
+blog: { pane: "#d9cfe0", det: "#ebe3ee", lay: "#ebe3ee", sty: "#ebe3ee", end: "#ebe3ee" },
+post: { pane: "#ebe3ee", det: "#ebe3ee", lay: "#ebe3ee", sty: "#ebe3ee", end: "#ebe3ee" },
+master: { pane: "#4a473f", det: "#26241f", lay: "#26241f", sty: "#26241f", end: "#26241f" }
+};
+function skinColour(k) { var c = PC[k] || PC.page; SK.pane = c.pane; SK.det = c.det; SK.lay = c.lay; SK.sty = c.sty; SK.eff = c.sty; SK.end = c.end; }
 var SK = { pane: "#e7e4dc", det: "#e6ebe6", lay: "#ffffff", sty: "#faf9f6", eff: "#faf9f6", end: "#f3e6df" };
 function skin(title, color, inner) {
 return '<div class="bd-ed-sec bd-ed-skin" style="background:' + color + '"><span class="bd-ed-title">' + title + "</span>" + inner + "</div>";
@@ -7029,7 +7077,7 @@ function sheetEditHTML(n) {
 var k = sheetList()[n];
 if (!k) return "";
 var P = "site.sheets." + n + ".";
-skinColour(PC.sheet);
+skinColour("sheet");
 var pages = (k.pages || []).map(sheetPage).filter(Boolean);
 var pins = pages.map(function (q, j) {
 var on = sheetPin(k, S.mode === "phone") === q.id;
@@ -7070,7 +7118,7 @@ return h;
 }
 function sitePanel() {
 var s = S.project.site;
-var h = layersPanel() + '<div class="bd-ed-sec">' + field("Site name", input("site.name", s.name))
+var h = (layersOn() ? "" : layersPanel()) + '<div class="bd-ed-sec">' + field("Site name", input("site.name", s.name))
 + '<span class="bd-ed-label">Colour</span>' + row(
 field("Page", '<input type="color" class="bd-ed-input" data-bind="site.colors.page" value="' + esc(s.colors.page) + '">'),
 field("Panel", '<input type="color" class="bd-ed-input" data-bind="site.colors.panel" value="' + esc(s.colors.panel) + '">'),
@@ -7100,13 +7148,37 @@ h += '<div class="bd-ed-sec">' + adv("site-adv", "Advanced", '<span class="bd-ed
 + '<span class="bd-ed-label">Grid</span>' + row(dpIn("Units", "site.cols", "site.colsM", s.cols, s.colsM, "int"), dpIn("Gap", "site.gap", "site.gapM", s.gap, s.gapM, "int"), numIn("Free-grid row", "site.row", s.row, "int"))) + "</div>";
 return h;
 }
+/* THE BLOG ANIMATION TOOL: A PAD THAT DECIDES TO WHICH SIDE THE BLOG'S SHEET LEAVES WHEN A POST IS CLICKED */
+function postGoHTML() {
+var g = S.project.site.postGo || {};
+var ph = S.mode === "phone";
+var key = ph ? "sideM" : "side";
+var v = POST_SIDES.indexOf(g[key]) > -1 ? g[key] : "";
+var eff = v || (ph ? POST_SIDES.indexOf(g.side) > -1 ? g.side : "" : "");
+var b = function (val, lab, title, cls) {
+var on = v === val;
+return '<button class="bd-ed-padb ' + cls + (on ? " is-on" : "") + '" data-act="set" data-path="site.postGo.' + key + '" data-val="' + val + '" aria-pressed="' + on + '" title="' + title + '">' + lab + "</button>";
+};
+var dx = { left: -34, right: 34, top: 0, bottom: 0 }[eff] || 0;
+var dy = { top: -22, bottom: 22, left: 0, right: 0 }[eff] || 0;
+var svg = '<svg class="bd-ed-padsvg" viewBox="0 0 120 80" aria-hidden="true"><rect x="22" y="14" width="76" height="52" rx="3" fill="none" stroke="currentColor" stroke-opacity=".45" stroke-width="1"/>'
++ '<rect x="' + (22 + dx) + '" y="' + (14 + dy) + '" width="76" height="52" rx="3" fill="currentColor" fill-opacity="' + (eff ? ".16" : ".08") + '" stroke="currentColor" stroke-width="1.2"' + (eff ? "" : ' stroke-dasharray="3 3"') + "/>"
++ "</svg>";
+return '<div class="bd-ed-sec"><span class="bd-ed-title">Opening a post' + (ph ? " · phone" : "") + "</span>"
++ '<div class="bd-ed-hint">When a post is clicked, the blog’s sheet leaves to this side. ' + (ph ? "The phone has its own; blank follows the desktop." : "Blank keeps the sheet’s own edge.") + "</div>"
++ '<div class="bd-ed-padwrap"><div class="bd-ed-pad">'
++ "<i></i>" + b("top", "↑", "Leaves upwards", "is-t") + "<i></i>"
++ b("left", "←", "Leaves to the left", "is-l") + b("", ph ? "Same" : "Own", ph ? "Same as desktop" : "The sheet’s own edge", "is-c") + b("right", "→", "Leaves to the right", "is-r")
++ "<i></i>" + b("bottom", "↓", "Leaves downwards", "is-b") + "<i></i>"
++ "</div>" + svg + "</div></div>";
+}
 /* THE POST MASTER: COLUMNS, COLOURS, SPACE AND CARD FOR EVERY BLOG POST (site.postLayout + site.postBox) */
 function postFollows(q) {
 var b = q.box || {};
 var ownBox = Object.keys(b).some(function (k) { var v = b[k]; return !(v === "" || v == null || v === false || (k === "shadow" && v === "none")); });
 return !q.ownLayout && !ownBox && !q.sheetBg;
 }
-function postMasterHTML() {
+function postMasterHTML(bare) {
 var s = S.project.site;
 var all = S.project.order.map(function (id) { return S.project.pages[id]; }).filter(function (q) { return q && q.parent && q.kind !== "pin"; });
 var nf = all.filter(postFollows).length;
@@ -7115,8 +7187,11 @@ var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title
 + (S.confirm === "posts" ? '<div class="bd-ed-confirm">Drop the own columns, colours and space of ' + (all.length - nf) + ' post' + (all.length - nf === 1 ? "" : "s") + '? Their words and blocks stay; what most posts share moves into the master first. <button class="bd-ed-btn bd-ed-inherit" data-act="posts-follow-yes">Make all follow</button><button class="bd-ed-btn" data-act="inherit-no">Keep</button></div>'
 : '<button class="bd-ed-btn bd-ed-inherit"' + (nf === all.length ? " disabled" : "") + ' data-act="posts-follow-ask">' + (nf === all.length ? "All " + all.length + " posts follow the master" : "Make all " + all.length + " posts follow (" + (all.length - nf) + " have their own)") + "</button>")
 + "</div>";
+h += postGoHTML();
 h += '<div class="bd-ed-sec"><span class="bd-ed-title">Columns' + (S.mode === "phone" ? " · phone" : "") + '</span>' + rulerCols({ kind: "page", parent: "posts" }, S.mode === "phone", true) + '<div class="bd-ed-hint">Blocks keep the column they are in. With one column every block stacks.</div></div>';
 var pb = pageBoxPanel({ id: "", box: s.postBox || {}, sheetBg: (s.postBox || {}).sheetBg || "" }).replace(/page\.box\./g, "site.postBox.").replace(/page\.sheetBg/g, "site.postBox.sheetBg").replace("Space & card", "Space, card &amp; colour");
+if (bare) return h + pb;
+skinColour("master");
 return '<div class="bd-ed-skinwrap bd-ed-pc-bm" style="background:' + SK.pane + '">' + h + pb + "</div>";
 }
 /* THE GLASS: A MENU BAR STUCK TO THE WINDOW. IT NEVER MOVES WHILE PAPER SLIDES UNDER IT, SO NO SHEET EVER NEEDS A BAND */
@@ -7165,14 +7240,15 @@ function layersBarHTML() {
 return '<div class="bd-ed-layers"><button class="bd-ed-master' + (S.masterSel ? " is-on" : "") + '" data-act="master-sel"><b>Master</b><span>everything on the site</span></button></div>';
 }
 function masterPanelHTML() {
-var T = [["styles", "Styles"], ["motion", "Motion"], ["site", "Site"]];
-if (T.map(function (t) { return t[0]; }).indexOf(S.masterTab) < 0) S.masterTab = "styles";
-var live = S.masterTab === "site";
-var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Master</span>' + (live ? '<button class="bd-ed-btn" style="height:26px" data-act="master-done">Done</button>' : "") + "</div>" + (live ? '<div class="bd-ed-hint">The settings of the whole site. A sheet or a page can override any of them.</div>' : "") + '<div class="bd-ed-tabs" role="tablist">';
+var T = [["styles", "Styles"], ["motion", "Motion"], ["site", "Site"], ["blog", "Blog"]];
+if (S.postMaster) S.masterTab = "blog";
+else if (S.masterTab === "blog" || T.map(function (t) { return t[0]; }).indexOf(S.masterTab) < 0) S.masterTab = "styles";
+var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Master</span></div><div class="bd-ed-tabs" role="tablist">';
 T.forEach(function (t) {
 h += '<button data-act="master-tab" data-val="' + t[0] + '" class="' + (S.masterTab === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
 });
-return '<div class="bd-ed-skinwrap bd-ed-pc-' + S.masterTab + '" style="background:' + SK.pane + '">' + h + "</div></div>" + panelHTML(S.masterTab) + "</div>";
+skinColour("master");
+return '<div class="bd-ed-skinwrap bd-ed-pc-' + (S.masterTab === "blog" ? "bm" : S.masterTab) + '" style="background:' + SK.pane + '">' + h + "</div></div>" + (S.masterTab === "blog" ? postMasterHTML(true) : panelHTML(S.masterTab)) + "</div>";
 }
 function renderLeft() {
 var L = $("bd-left");
@@ -7488,7 +7564,7 @@ R.innerHTML = masterPanelHTML();
 return;
 }
 if (S.postMaster && !e) {
-R.innerHTML = postMasterHTML();
+R.innerHTML = masterPanelHTML();
 return;
 }
 var sk = S.sheetSel ? sheetList().map(function (k) { return k.id; }).indexOf(S.sheetSel) : -1;
@@ -7536,7 +7612,7 @@ var s = S.project.site;
 var pgw = layersOn() ? sheetOf(pg.id) : null;
 var onSheet = !!(pgw && pgw.k > -1 && !pg.parent);
 var cardOn = !onSheet || pageMode(pg) === "card";
-skinColour(pg.parent ? PC.post : !onSheet ? PC.under : pg.blog ? PC.blog : PC.page);
+skinColour(pg.parent ? "post" : !onSheet ? "under" : pg.blog ? "blog" : "page");
 var ph = S.mode === "phone";
 var bx = pg.box || {};
 var four = function (pre) {
@@ -7548,7 +7624,6 @@ return '<label class="bd-ed-field"><span class="bd-ed-label">' + sd[1] + '</span
 var menuBox = function (m) { return '<label class="bd-ed-check"><input type="checkbox" data-act="page-menu" data-id="' + m.id + '"' + (m.items.some(function (it) { return it.type === "page" && it.page === pg.id; }) ? " checked" : "") + ">" + (s.menus.length > 1 ? esc(m.name) : "Show in menu") + "</label>"; };
 var det = (s.menus.length === 1 ? '<div class="bd-ed-two" style="grid-template-columns:minmax(0,1fr) auto">' + input("page.title", pg.title, "", ' aria-label="Title" placeholder="Title"') + menuBox(s.menus[0]) + "</div>" : field("Title", input("page.title", pg.title)) + '<span class="bd-ed-label">Show in menus</span>' + s.menus.map(menuBox).join(""))
 + (false && pg.slug === "" ? '<div class="bd-ed-hint">' + I.home.replace("<svg", '<svg style="width:12px;height:12px;vertical-align:-2px"') + " Home page</div>" : "")
-+ (pg.blog ? '<div class="bd-ed-hint">This page is a blog. Its posts are listed under it in Pages.</div>' + (false ? '<button class="bd-ed-btn" data-act="post-add" data-id="' + pg.id + '">' + I.plus + "Post</button>" : "") : "")
 + (pg.parent ? '<span class="bd-ed-label">Post</span>' + row(field("Blog", select("page.parent", pg.parent, blogs().map(function (b) { return [b.id, b.title]; }))), field("Date", '<input type="date" class="bd-ed-input" data-bind="page.date" value="' + esc(pg.date || "") + '">'))
 + field("Excerpt for the card", '<textarea class="bd-ed-input" data-bind="page.excerpt" rows="3">' + esc(pg.excerpt || "") + "</textarea>")
 + coverField(pg)
@@ -7562,15 +7637,16 @@ if (onSheet) {
 lay += '<span class="bd-ed-label">This page is</span>' + seg("page.mode", pageMode(pg), [["sheet", "Sheet"], ["card", "Card"]])
 ;
 lay += '<span class="bd-ed-label">Where it lies · ' + esc(pgw.sheet.name || "Sheet") + '</span><div class="bd-lay-box">' + layoutDrawing(pgw.k, pg, "page") + "</div>";
-} else if (pgw && pgw.k < 0 && !pg.parent) lay += '<div class="bd-ed-hint">This page lies underneath the sheets. Drag it by its grip in Layers onto a card or an empty part of a sheet’s drawing to lay it on that sheet.</div>';
-if (!onSheet) lay += '<span class="bd-ed-label">Margin · outside the page</span>' + four("m");
+}
+if (pg.parent) lay += '<span class="bd-ed-label">Margin · outside the page</span>' + four("m");
 lay += two(field("Max width" + (ph ? " · phone" : ""), input("page.box.maxW" + (ph ? "M" : ""), (ph ? bx.maxWM : bx.maxW) || "", "", ' placeholder="720 or 60%"')), field("Padding" + (ph ? " · phone" : ""), '<input class="bd-ed-input bd-ed-n" data-bind="padall.page" data-type="blank" value="' + esc(bx["pt" + (ph ? "M" : "")] == null ? "" : bx["pt" + (ph ? "M" : "")]) + '" placeholder="all sides">'));
 if (isMaster(pg)) lay += '<span class="bd-ed-label">Columns & grid</span>' + rulerCols(pg, S.mode === "phone", false, true);
 h += skin("Layout", SK.lay, lay);
 
-var sty = (cardOn ? fillIn("Card colour", "page.box.card", bx.card || "", "#ffffff", "None") + (onSheet ? "" : fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site")) : "")
+var sty = (cardOn ? fillIn("Card colour", "page.box.card", bx.card || "", "#ffffff", "None") + (pg.parent ? fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site") : "") : "")
 + (cardOn ? two(numIn("Card see-through %", "page.box.cardA", bx.cardA == null ? "" : bx.cardA, "blank"), numIn("Blur", "page.box.blur", bx.blur == null ? "" : bx.blur, "blank")) : "")
 + (cardOn && onSheet ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "Inherit"], ["none", "None"]]) : "")
++ (cardOn && !onSheet && !pg.parent ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "None"]]) : "")
 + (cardOn ? two(numIn("Corners", "page.box.radius", bx.radius == null ? "" : bx.radius, "blank"), field("Shadow", seg("page.box.shadow", bx.shadow === "soft" ? "soft" : "none", [["none", "None"], ["soft", "Soft"]]))) : "");
 h += (onSheet ? skinFold : skin)("Style", SK.sty, sty, cardOn);
 var stack = "";
@@ -9990,7 +10066,17 @@ q.ownLayout = false;
 });
 changed();
 },
-"master-tab": function () { S.masterTab = val; render(); },
+"master-tab": function () {
+if (val === "blog") {
+A["post-master"]();
+return;
+}
+S.masterTab = val;
+S.postMaster = false;
+S.masterSel = true;
+S.confirm = null;
+render();
+},
 "sheet-done": function () { S.sheetSel = ""; render(); },
 "sheet-del": function () { snap(); S.sheetSel = ""; S.project.site.sheets.splice(+b.getAttribute("data-i"), 1); changed(); },
 "sheet-up": function () { var K = S.project.site.sheets; var i = +b.getAttribute("data-i"); if (i < 1) return; snap(); K.splice(i - 1, 0, K.splice(i, 1)[0]); changed(); },
