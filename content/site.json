@@ -586,14 +586,18 @@
     "color": "none",
     "alpha": 100,
     "blur": 0,
-    "shadow": "line",
+    "shadow": "soft",
     "nudge": 0,
     "dur": "",
     "box": {
      "ml": "",
      "mr": "80%",
      "mt": "",
-     "mb": ""
+     "mb": "",
+     "mtM": "85%",
+     "mbM": "55%",
+     "mlM": "",
+     "mrM": "5%"
     },
     "pattern": "",
     "patColor": "#000000",
@@ -631,10 +635,15 @@
     "color": "none",
     "alpha": 30,
     "blur": 10,
-    "shadow": "line",
+    "shadow": "soft",
     "nudge": 0,
     "dur": "",
-    "box": {},
+    "box": {
+     "mt": "",
+     "mb": "",
+     "ml": "",
+     "mr": ""
+    },
     "pattern": "grid",
     "patColor": "#000000",
     "patSize": 28,
@@ -4474,7 +4483,8 @@
     "blur": 90,
     "shadow": "none",
     "fit": false
-   }
+   },
+   "hover": ""
   },
   "56ud3gky": {
    "id": "56ud3gky",
