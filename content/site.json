@@ -668,10 +668,10 @@
     "out": "peek",
     "lv": "",
     "arrive": "slide",
-    "main": "fji5ongj",
+    "main": "b2lr3tkr",
     "hover": "",
     "vc": 0,
-    "vr": 0,
+    "vr": 1,
     "pin": "",
     "vcM": 0,
     "vrM": 1,
@@ -739,7 +739,14 @@
    "side": "left",
    "sideM": ""
   },
-  "postArrows": {}
+  "postArrows": {
+   "on": true,
+   "align": "left",
+   "look": "text",
+   "ink": "",
+   "line": false,
+   "loop": true
+  }
  },
  "order": [
   "56ud3gky",
@@ -870,7 +877,8 @@
     "mb": "0",
     "mrM": "0"
    },
-   "mode": "sheet"
+   "mode": "sheet",
+   "postArrows": true
   },
   "aj2hm4y8": {
    "id": "aj2hm4y8",

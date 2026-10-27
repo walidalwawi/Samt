@@ -72,24 +72,25 @@ pinLen();
 }
 /* PAGES SIDE BY SIDE ON ONE SHEET END ON THE SAME LINE: EVERY PAPER IS AS LONG AS THE LONGEST PAGE AND GROWS WITH IT */
 function pinLen() {
-/* A PINNED STRIP IS AS TALL AS ITS PAGE REALLY IS: THE SHEET, THE OPEN PAGE AND THE PAGES UNDERNEATH ALL USE THAT, NOT THE DRAWN MARGIN ALONE */
-var gt = 0;
-var gb = 0;
+/* A PINNED STRIP IS AS BIG AS ITS PAGE REALLY IS (HEIGHT ON A VERTICAL SHEET, WIDTH ON A HORIZONTAL ONE): THE SHEET, THE OPEN PAGE AND EVERYTHING UNDER IT USE THAT, NOT THE DRAWN MARGIN ALONE */
+var pg = { top: 0, bottom: 0, left: 0, right: 0 };
 model.forEach(function (m) {
 if (m.pin < 0) return;
 var kid = m.track.children[m.pin];
 var pp = kid && kid.querySelector(".bd-ly-paper");
-if (!pp || getComputedStyle(m.track).flexDirection !== "column") {
-m.el.style.removeProperty("--k-pl");
-return;
-}
-var h = Math.ceil(pp.getBoundingClientRect().height);
+if (!pp) return;
+var col = getComputedStyle(m.track).flexDirection === "column";
+var r = pp.getBoundingClientRect();
+if (col) {
+var h = Math.ceil(r.height);
 m.el.style.setProperty("--k-pl", h + "px");
-if (m.pin === 0) gb += h;
-else gt += h;
+pg[m.pin === 0 ? "bottom" : "top"] += h;
+} else {
+m.el.style.removeProperty("--k-pl");
+pg[m.pin === 0 ? "right" : "left"] += Math.ceil(r.width);
+}
 });
-root.style.setProperty("--bd-pin-top", gt + "px");
-root.style.setProperty("--bd-pin-bottom", gb + "px");
+["top", "bottom", "left", "right"].forEach(function (e) { root.style.setProperty("--bd-pin-" + e, pg[e] + "px"); });
 model.forEach(function (m) {
 if (getComputedStyle(m.track).flexDirection !== "row") return;
 var kids = Array.prototype.slice.call(m.track.children);
