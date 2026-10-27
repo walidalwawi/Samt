@@ -1,4 +1,4 @@
-/* PUBLISHED mvqyecf3 */
+/* PUBLISHED mvqyfa7d */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -26,7 +26,7 @@
 --bd-lh: 20px;
 --bd-ms: 12px;
 --bd-ml: 15px;
---bd-ls: 15px;
+--bd-ls: 17px;
 --bd-ll: 22px;
 --bd-space: 32px;
 --bd-head-x: 2;
@@ -1249,7 +1249,7 @@ font-weight: 400;
 font-style: normal;
 text-transform: none;
 letter-spacing: 0em;
-font-size: 15px;
+font-size: 17px;
 line-height: 22px;
 }
 .bd-text.is-small,
@@ -1261,8 +1261,8 @@ font-weight: 400;
 font-style: normal;
 text-transform: none;
 letter-spacing: 0em;
-font-size: 12px;
-line-height: 15px;
+font-size: 13px;
+line-height: 18px;
 }
 .bd-text.is-caption,
 .bd-ptitle.is-caption,
@@ -1276,8 +1276,8 @@ font-weight: 400;
 font-style: normal;
 text-transform: none;
 letter-spacing: 0em;
-font-size: 12px;
-line-height: 15px;
+font-size: 13px;
+line-height: 18px;
 }
 .bd-text.is-mono,
 .bd-ptitle.is-mono,

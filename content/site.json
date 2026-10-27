@@ -55,7 +55,7 @@
    },
    "heading": {
     "font": "mono",
-    "size": 15,
+    "size": 17,
     "lh": 22,
     "sizeM": 16,
     "lhM": 21,
@@ -67,8 +67,8 @@
    },
    "small": {
     "font": "mono",
-    "size": 12,
-    "lh": 15,
+    "size": 13,
+    "lh": 18,
     "sizeM": 13,
     "lhM": 18,
     "weight": "400",
@@ -79,8 +79,8 @@
    },
    "caption": {
     "font": "mono",
-    "size": 12,
-    "lh": 15,
+    "size": 13,
+    "lh": 18,
     "sizeM": 13,
     "lhM": 18,
     "weight": 400,
