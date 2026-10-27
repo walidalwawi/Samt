@@ -698,8 +698,8 @@
   "indepV1": true,
   "postBox": {
    "mt": "",
-   "card": "",
-   "sheetBg": "",
+   "card": "none",
+   "sheetBg": "none",
    "shadow": "none",
    "fit": false,
    "cardA": "",
