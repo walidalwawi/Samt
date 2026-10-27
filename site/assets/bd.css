@@ -1,4 +1,4 @@
-/* PUBLISHED mvqyxtrk */
+/* PUBLISHED mvqyy1k5 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2557,39 +2557,19 @@ visibility: hidden;
 visibility: visible;
 }
 .bd-ly-art[data-id="aj2hm4y8"] > .bd-panel {
-margin-top: 0vh;
-margin-right: 0vw;
-margin-bottom: 0vh;
 padding-left: calc(320px + var(--bd-wl));
-width: auto;
 }
 .bd-ly-art[data-id="ipk7ns57"] > .bd-panel {
-margin-top: 0vh;
-margin-right: 0vw;
-margin-bottom: 0vh;
 padding-left: calc(320px + var(--bd-wl));
-width: auto;
 }
 .bd-ly-art[data-id="k2b6e868"] > .bd-panel {
-margin-top: 0vh;
-margin-right: 0vw;
-margin-bottom: 0vh;
 padding-left: calc(320px + var(--bd-wl));
-width: auto;
 }
 .bd-ly-art[data-id="ap7jj2t4"] > .bd-panel {
-margin-top: 0vh;
-margin-right: 0vw;
-margin-bottom: 0vh;
 padding-left: calc(320px + var(--bd-wl));
-width: auto;
 }
 .bd-ly-art[data-id="1bp9xrs5"] > .bd-panel {
-margin-top: 0vh;
-margin-right: 0vw;
-margin-bottom: 0vh;
 padding-left: calc(320px + var(--bd-wl));
-width: auto;
 }
 .bd-ly-k[data-k="menu"] > .bd-ly-blur {
 position: absolute;
@@ -3586,44 +3566,24 @@ display: flex;
 align-items: center;
 }
 .bd-ly-art[data-id="aj2hm4y8"] > .bd-panel {
-margin-top: calc(117px + 0vh);
-padding-top: var(--bd-wt);
-margin-right: 0vw;
-margin-bottom: 0vh;
+padding-top: calc(117px + var(--bd-wt));
 padding-left: 30px;
-width: auto;
 }
 .bd-ly-art[data-id="ipk7ns57"] > .bd-panel {
-margin-top: calc(117px + 0vh);
-padding-top: var(--bd-wt);
-margin-right: 0vw;
-margin-bottom: 0vh;
+padding-top: calc(117px + var(--bd-wt));
 padding-left: 30px;
-width: auto;
 }
 .bd-ly-art[data-id="k2b6e868"] > .bd-panel {
-margin-top: calc(117px + 0vh);
-padding-top: var(--bd-wt);
-margin-right: 0vw;
-margin-bottom: 0vh;
+padding-top: calc(117px + var(--bd-wt));
 padding-left: 30px;
-width: auto;
 }
 .bd-ly-art[data-id="ap7jj2t4"] > .bd-panel {
-margin-top: calc(117px + 0vh);
-padding-top: var(--bd-wt);
-margin-right: 0vw;
-margin-bottom: 0vh;
+padding-top: calc(117px + var(--bd-wt));
 padding-left: 30px;
-width: auto;
 }
 .bd-ly-art[data-id="1bp9xrs5"] > .bd-panel {
-margin-top: calc(117px + 0vh);
-padding-top: var(--bd-wt);
-margin-right: 0vw;
-margin-bottom: 0vh;
+padding-top: calc(117px + var(--bd-wt));
 padding-left: 30px;
-width: auto;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
 margin: 0px 0 0 0;

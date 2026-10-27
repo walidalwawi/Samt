@@ -688,7 +688,7 @@
   "pinV1": true,
   "indepV1": true,
   "postBox": {
-   "mt": "0%",
+   "mt": "",
    "card": "",
    "sheetBg": "",
    "shadow": "none",
@@ -697,10 +697,10 @@
    "pt": "",
    "pr": "",
    "pl": "",
-   "mr": "0%",
+   "mr": "",
    "ml": "",
    "plM": "30",
-   "mb": "0%",
+   "mb": "",
    "pb": "",
    "maxW": "",
    "ink": ""
