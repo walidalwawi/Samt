@@ -72,6 +72,24 @@ pinLen();
 }
 /* PAGES SIDE BY SIDE ON ONE SHEET END ON THE SAME LINE: EVERY PAPER IS AS LONG AS THE LONGEST PAGE AND GROWS WITH IT */
 function pinLen() {
+/* A PINNED STRIP IS AS TALL AS ITS PAGE REALLY IS: THE SHEET, THE OPEN PAGE AND THE PAGES UNDERNEATH ALL USE THAT, NOT THE DRAWN MARGIN ALONE */
+var gt = 0;
+var gb = 0;
+model.forEach(function (m) {
+if (m.pin < 0) return;
+var kid = m.track.children[m.pin];
+var pp = kid && kid.querySelector(".bd-ly-paper");
+if (!pp || getComputedStyle(m.track).flexDirection !== "column") {
+m.el.style.removeProperty("--k-pl");
+return;
+}
+var h = Math.ceil(pp.getBoundingClientRect().height);
+m.el.style.setProperty("--k-pl", h + "px");
+if (m.pin === 0) gb += h;
+else gt += h;
+});
+root.style.setProperty("--bd-pin-top", gt + "px");
+root.style.setProperty("--bd-pin-bottom", gb + "px");
 model.forEach(function (m) {
 if (getComputedStyle(m.track).flexDirection !== "row") return;
 var kids = Array.prototype.slice.call(m.track.children);

@@ -1,4 +1,4 @@
-/* PUBLISHED mvr2xcjs */
+/* PUBLISHED mvr2zedh */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2357,11 +2357,11 @@ box-shadow: none;
 z-index: 2;
 }
 #bd-ly .bd-ly-k[data-k="menu"] .bd-ly-track.is-ax-x {
-transform: translate3d(calc(var(--i) * -100% / var(--n) + clamp(-1, calc(var(--i) - 1), 1) * max(0px, min(calc(100vw - 75vw), calc(100vw - 48px)))), 0, 0);
+transform: translate3d(calc(var(--i) * -100% / var(--n) + clamp(-1, calc(var(--i) - 1), 1) * max(0px, min(max(calc(100vw - 75vw), var(--k-pl, 0px)), calc(100vw - 48px)))), 0, 0);
 }
 #bd-ly .bd-ly-k[data-k="menu"] .bd-ly-pane[data-page="nsye72w3"] {
 box-sizing: border-box;
-padding-left: max(0px, min(calc(100vw - 75vw), calc(100vw - 48px)));
+padding-left: max(0px, min(max(calc(100vw - 75vw), var(--k-pl, 0px)), calc(100vw - 48px)));
 }
 #bd-ly .bd-ly-k[data-k="menu"] .bd-ly-pane[data-page="56ud3gky"] {
 transform: translate3d(calc(var(--k-sx, 0px) * -1 * max(calc(clamp(-1, calc(var(--i) - 1), 1) * clamp(-1, calc(var(--i) - 1), 1)), var(--k-hold, 0))), calc(var(--k-sy, 0px) * -1 * max(calc(clamp(-1, calc(var(--i) - 1), 1) * clamp(-1, calc(var(--i) - 1), 1)), var(--k-hold, 0))), 0);
@@ -3240,6 +3240,16 @@ line-height: 20px;
 padding-top: calc(117px + var(--bd-wt));
 padding-left: calc(0px + var(--bd-wl));
 }
+.bd-ly-art::before {
+content: "";
+display: block;
+height: max(0px, calc(var(--bd-pin-top, 0px) - 117px));
+}
+.bd-ly-art::after {
+content: "";
+display: block;
+height: max(0px, calc(var(--bd-pin-bottom, 0px) - 0px));
+}
 .bd-ly-track.is-axm-y {
 flex-direction: column;
 width: 100%;
@@ -3282,11 +3292,11 @@ clip-path: none;
 transform: none;
 }
 #bd-ly .bd-ly-k[data-k="menu"] .bd-ly-track.is-axm-y {
-transform: translate3d(0, calc(var(--i) * -100% / var(--n) + clamp(-1, calc(var(--i) - 1), 1) * max(0px, min(calc(100vh - 85vh), calc(100vh - 48px)))), 0);
+transform: translate3d(0, calc(var(--i) * -100% / var(--n) + clamp(-1, calc(var(--i) - 1), 1) * max(0px, min(max(calc(100vh - 85vh), var(--k-pl, 0px)), calc(100vh - 48px)))), 0);
 }
 #bd-ly .bd-ly-k[data-k="menu"] .bd-ly-pane[data-page="nsye72w3"] {
 box-sizing: border-box;
-padding-top: max(0px, min(calc(100vh - 85vh), calc(100vh - 48px)));
+padding-top: max(0px, min(max(calc(100vh - 85vh), var(--k-pl, 0px)), calc(100vh - 48px)));
 }
 #bd-ly .bd-ly-k[data-k="menu"] .bd-ly-pane[data-page="56ud3gky"] {
 transform: translate3d(calc(var(--k-sx, 0px) * -1 * max(calc(clamp(-1, calc(var(--i) - 1), 1) * clamp(-1, calc(var(--i) - 1), 1)), var(--k-hold, 0))), calc(var(--k-sy, 0px) * -1 * max(calc(clamp(-1, calc(var(--i) - 1), 1) * clamp(-1, calc(var(--i) - 1), 1)), var(--k-hold, 0))), 0);
