@@ -124,3 +124,5 @@ Styles → Blocks sets the default look per block type (BLOCK_STYLE); a block's 
 
 ## When unsure
 Ask before assuming.
+
+- 27 Oct 20:50 FIX (phone full width): layWrite's pct() wrote "" for a margin dragged to 0, and a blank phone key falls back to the desktop margin, so Cover/sheets could not be made full width on a phone. On a phone a 0 margin is now written as "0". BD_BUILD = #e11d48.

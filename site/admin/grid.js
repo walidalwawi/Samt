@@ -5204,7 +5204,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#06b6d4";
+var BD_BUILD = "#e11d48";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6438,7 +6438,7 @@ var star = g.star != null ? g.star : G.star;
 var N = G.N;
 var spw = G.pages[star];
 var L = G.L;
-var pct = function (px, side) { var len = side === "l" || side === "r" ? v.w : v.h; return px < 0.5 ? "" : Math.round(px / len * 10000) / 100 + "%"; };
+var pct = function (px, side) { var len = side === "l" || side === "r" ? v.w : v.h; return px < 0.5 ? (phone ? "0" : "") : Math.round(px / len * 10000) / 100 + "%"; };
 var M = phone ? "M" : "";
 k.box = k.box || {};
 var sp = G.pages[star];
