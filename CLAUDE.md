@@ -53,6 +53,14 @@ Killed in the editor UI: the Desk, Spread view, the Glass bar controls (site.gla
 - COLOUR SYSTEM (27 Oct 19:30, Panel Designer v27, PC/skinColour): families Paper (sheet), Sage (page), Lilac (blog, post), Master (dark), Warn; each has pane (L≈83), deep (L≈89), card (L≈94) and an edge. First section = identity strip on the pane colour; content sections = card; Controls = deep. A page on a sheet sits on the paper pane with sage cards and a sheet-name bar (paper deep); a page with no sheet sits on the sage pane; a post is lilac one step flatter (pane = deep). Master/Blog master: pane #4a4640, cards #24221e, first section (and All posts · master) on the pane. Borders use --sk-edge.
 
 
+## Update 27 Oct 20:00 — LOOK: PILL (whole editor repainted; layout untouched)
+- From Walid's task-app reference (Panel Designer 3). Tokens in `:root`: --e-bg ground, --e-surface panes, --e-raise fields/cards, --e-well canvas, --e-pill/--e-pill-ink/--e-pill-mute (black pills, rail, tab tracks), --e-tpill (top-bar pills; lighter in dark), --e-on/--e-on-ink (yellow = on / primary). Light and dark both defined.
+- Every control is a pill or a circle: buttons, segs, tabs, inputs, switches (black track, yellow knob), pins, rail (floating black pill, yellow active circle). Radii 32 panes / 28 cards / 99 pills.
+- Section cards are SOLID PASTEL by family (PC in grid.js, text near-black): yellow sheet (#f2cf6b), lime page and no-sheet page (#c9db8a), coral blog and post (#dd6657), stone Master (#d9d9d6); Controls = black card (#141416). The page panel's sheet-name bar is yellow. Pane colour is transparent over --e-surface. Layers groups follow the same colours (.is-sheet yellow, .is-sheet.is-blog coral, No group lime; is-blog class added in the pages list). The old dark Master panels (bd-ed-pc-*) are now stone cards via `:is(.bd-ed-pc-…) > .bd-ed-sec:not(:first-child)`.
+- Inside a card the tokens are re-pointed (.bd-ed-skin sets --e-ink/--e-raise etc.; a card with inline #141416 gets light tokens), so existing rules keep working. All of it lives in the LOOK · PILL blocks at the end of grid.css.
+- BD_BUILD = #f97316. Tests: postgo 20, sheets_extra 145 pass.
+
+
 ## Looks: master + override for every block type
 Styles → Blocks sets the default look per block type (BLOCK_STYLE); a block's own Look fields override it ("Site" = follow the master). Now covers text, image, gallery, notes, list, link, video, rule, quote, posts, library, toggle, product, pager, post info, menu, page title. Images, galleries, library covers and post card images have a blend mode (mix-blend-mode) plus a "blend against colour" backdrop (a blend shows nothing on white otherwise), tone/opacity/corners.
 - BS_WHEN hides fields that do nothing in the current state (tracing-paper fields only with Card look = Tracing paper, staples only with Zine, spine only with Book look, backdrop only with a blend, etc.).

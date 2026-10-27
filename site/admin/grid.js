@@ -5203,7 +5203,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#84cc16";
+var BD_BUILD = "#f97316";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6020,7 +6020,7 @@ var h = '<div class="bd-ed-sec"><div class="bd-ed-actions"><button class="bd-ed-
 groups.forEach(function (g) {
 if (!g.pages.length && !g.pins && !g.sheet) return;
 var gl = g.sheet ? "<b>" + esc(g.sheet.name || "Sheet") + '</b><span class="bd-ed-gtag">' + (sheetPin(g.sheet) ? "pinned" : g.sheet.rest === "open" ? "open" : g.sheet.rest === "still" ? "still" : g.sheet.rest === "peek" ? "peeks" : "hidden") + "</span>" + I.sliders : esc(g.label);
-h += '<div class="bd-ed-group' + (g.sheet ? " is-sheet" : "") + (g.pins ? " is-pins" : "") + '" data-gk="' + esc(g.key) + '"' + (g.sheet ? ' data-sheet="' + esc(g.sheet.id) + '"' : "") + '>' + (g.sheet ? '<div class="bd-ed-glabel"><span class="bd-ed-grip is-sheet" data-grip="sheet" data-id="' + esc(g.sheet.id) + '" title="Drag to change the stack order">' + I.grip + '</span><button class="bd-ed-group-label is-btn' + (S.sheetSel === g.sheet.id ? " is-on" : "") + '" data-act="sheet-sel" data-id="' + esc(g.sheet.id) + '">' + gl + "</button></div>" : '<div class="bd-ed-group-label">' + gl + "</div>");
+h += '<div class="bd-ed-group' + (g.sheet ? " is-sheet" : "") + (g.sheet && g.pages.some(function (q) { return q.blog; }) ? " is-blog" : "") + (g.pins ? " is-pins" : "") + '" data-gk="' + esc(g.key) + '"' + (g.sheet ? ' data-sheet="' + esc(g.sheet.id) + '"' : "") + '>' + (g.sheet ? '<div class="bd-ed-glabel"><span class="bd-ed-grip is-sheet" data-grip="sheet" data-id="' + esc(g.sheet.id) + '" title="Drag to change the stack order">' + I.grip + '</span><button class="bd-ed-group-label is-btn' + (S.sheetSel === g.sheet.id ? " is-on" : "") + '" data-act="sheet-sel" data-id="' + esc(g.sheet.id) + '">' + gl + "</button></div>" : '<div class="bd-ed-group-label">' + gl + "</div>");
 if (g.sheet && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">Empty · tap the name, then Dissolve to remove it.</div>';
 if (g.pins && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">None yet. A header or footer shows on every page, with its own columns.</div>';
 g.pages.forEach(function (p) {
@@ -7016,12 +7016,12 @@ return "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<
 /* WALID'S PANELS: ONE SKIN FOR SHEET AND PAGE. DETAILS · LAYOUT · STYLE · EFFECT · EXTRAS · INHERIT + DELETE */
 /* WALID'S PANEL DESIGNER COLOURS: ONE COLOUR PER PANEL, THE PANE BEHIND IS #e7e4dc */
 var PC = {
-sheet: { pane: "#dbd6cc", det: "#dbd6cc", lay: "#f2f1ed", sty: "#f2f1ed", end: "#e7e4de", edge: "#c6bca9" },
-page: { pane: "#dbd6cc", det: "#cfd8d0", lay: "#eef1ee", sty: "#eef1ee", end: "#e1e5e1", edge: "#afc0b0", bar: "#e7e4de" },
-under: { pane: "#cfd8d0", det: "#cfd8d0", lay: "#eef1ee", sty: "#eef1ee", end: "#e1e5e1", edge: "#afc0b0" },
-blog: { pane: "#d6ced9", det: "#d6ced9", lay: "#f1eef2", sty: "#f1eef2", end: "#e4e0e6", edge: "#bdadc2" },
-post: { pane: "#e4e0e6", det: "#e4e0e6", lay: "#f1eef2", sty: "#f1eef2", end: "#d6ced9", edge: "#bdadc2" },
-master: { pane: "#4a4640", det: "#24221e", lay: "#24221e", sty: "#24221e", end: "#24221e", edge: "#615e56" }
+sheet: { pane: "transparent", det: "#f2cf6b", lay: "#f2cf6b", sty: "#f2cf6b", end: "#141416", edge: "transparent" },
+page: { pane: "transparent", det: "#c9db8a", lay: "#c9db8a", sty: "#c9db8a", end: "#141416", edge: "transparent", bar: "#f2cf6b" },
+under: { pane: "transparent", det: "#c9db8a", lay: "#c9db8a", sty: "#c9db8a", end: "#141416", edge: "transparent" },
+blog: { pane: "transparent", det: "#dd6657", lay: "#dd6657", sty: "#dd6657", end: "#141416", edge: "transparent", bar: "#f2cf6b" },
+post: { pane: "transparent", det: "#dd6657", lay: "#dd6657", sty: "#dd6657", end: "#141416", edge: "transparent" },
+master: { pane: "transparent", det: "#d9d9d6", lay: "#d9d9d6", sty: "#d9d9d6", end: "#141416", edge: "transparent" }
 };
 function skinColour(k) { var c = PC[k] || PC.page; SK.edge = c.edge; SK.bar = c.bar || c.det; SK.pane = c.pane; SK.det = c.det; SK.lay = c.lay; SK.sty = c.sty; SK.eff = c.sty; SK.end = c.end; }
 var SK = { pane: "#e7e4dc", det: "#e6ebe6", lay: "#ffffff", sty: "#faf9f6", eff: "#faf9f6", end: "#f3e6df" };
