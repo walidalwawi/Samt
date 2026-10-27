@@ -144,3 +144,4 @@ Ask before assuming.
 - 28 Oct: page panel Details has "Show the title" (page.header) again, and a blog has "Post info on this blog’s posts" (page.postInfo = false hides the Post info block on its posts in the export, still shown in the editor). BD_BUILD = #f43f5e.
 
 - 28 Oct: Index link crumb shows only the open blog's name (blog page or its posts), nothing elsewhere. BD_BUILD = #f59e0b.
+- 28 Oct: Index link crumb is a link to the blog page (.bd-ix-c). BD_BUILD = #8b5cf6.
