@@ -4304,7 +4304,8 @@
     "gutter": 30,
     "gutterM": 20
    },
-   "box": {}
+   "box": {},
+   "mode": "sheet"
   },
   "nsye72w3": {
    "id": "nsye72w3",
