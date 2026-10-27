@@ -1551,6 +1551,16 @@ font-size: 11px;
 font-weight: 600;
 cursor: pointer;
 }
+.bd-ed-two .bd-ed-seg,
+.bd-ed-two .bd-ed-pins {
+display: flex;
+width: 100%;
+}
+.bd-ed-two .bd-ed-seg button,
+.bd-ed-two .bd-ed-pinpill {
+flex: 1;
+justify-content: center;
+}
 .bd-ed-pinpill + .bd-ed-pinpill {
 border-left: 1px solid var(--e-line);
 }
