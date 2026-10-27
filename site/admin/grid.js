@@ -5215,7 +5215,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#059669";
+var BD_BUILD = "#c8502d";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -7028,12 +7028,12 @@ return "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<
 /* WALID'S PANELS: ONE SKIN FOR SHEET AND PAGE. DETAILS · LAYOUT · STYLE · EFFECT · EXTRAS · INHERIT + DELETE */
 /* WALID'S PANEL DESIGNER COLOURS: ONE COLOUR PER PANEL, THE PANE BEHIND IS #e7e4dc */
 var PC = {
-sheet: { pane: "transparent", det: "#f2cf6b", lay: "#f2cf6b", sty: "#f2cf6b", end: "#141416", edge: "transparent" },
-page: { pane: "transparent", det: "#c9db8a", lay: "#c9db8a", sty: "#c9db8a", end: "#141416", edge: "transparent", bar: "#f2cf6b" },
-under: { pane: "transparent", det: "#c9db8a", lay: "#c9db8a", sty: "#c9db8a", end: "#141416", edge: "transparent" },
-blog: { pane: "transparent", det: "#dd6657", lay: "#dd6657", sty: "#dd6657", end: "#141416", edge: "transparent", bar: "#f2cf6b" },
-post: { pane: "transparent", det: "#dd6657", lay: "#dd6657", sty: "#dd6657", end: "#141416", edge: "transparent" },
-master: { pane: "transparent", det: "#d9d9d6", lay: "#d9d9d6", sty: "#d9d9d6", end: "#141416", edge: "transparent" }
+sheet: { pane: "transparent", det: "#f3f0e1", lay: "#f3f0e1", sty: "#f3f0e1", end: "#141416", edge: "transparent" },
+page: { pane: "transparent", det: "#f3f0e2", lay: "#f3f0e2", sty: "#f3f0e2", end: "#141416", edge: "transparent", bar: "#f3f0e7" },
+under: { pane: "transparent", det: "#f3f0e3", lay: "#f3f0e3", sty: "#f3f0e3", end: "#141416", edge: "transparent" },
+blog: { pane: "transparent", det: "#f3f0e4", lay: "#f3f0e4", sty: "#f3f0e4", end: "#141416", edge: "transparent", bar: "#f3f0e7" },
+post: { pane: "transparent", det: "#f3f0e5", lay: "#f3f0e5", sty: "#f3f0e5", end: "#141416", edge: "transparent" },
+master: { pane: "transparent", det: "#f3f0e6", lay: "#f3f0e6", sty: "#f3f0e6", end: "#141416", edge: "transparent" }
 };
 function skinColour(k) { var c = PC[k] || PC.page; SK.edge = c.edge; SK.bar = c.bar || c.det; SK.pane = c.pane; SK.det = c.det; SK.lay = c.lay; SK.sty = c.sty; SK.eff = c.sty; SK.end = c.end; }
 var SK = { pane: "#e7e4dc", det: "#e6ebe6", lay: "#ffffff", sty: "#faf9f6", eff: "#faf9f6", end: "#f3e6df" };
