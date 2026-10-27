@@ -105,7 +105,7 @@ async def run():
         # page click returns to page settings
         await ev("goPage(sheetList()[1].pages[0])"); await pg.wait_for_timeout(300)
         t = await ev("document.getElementById('bd-right').innerText")
-        ok('page click -> page settings with Sheet settings button', 'Space & card' in t and 'Sheet settings' in t)
+        ok('page click -> page settings with Sheet settings button', 'Style' in t and 'Sheet settings' in t and 'Inherit' in t)
         await ev("S.sheetSel = sheetList()[1].id; render()")
         # model edits
         K = "S.project.site.sheets.find(function(k){return k.id==='index'})"
@@ -290,6 +290,7 @@ async def run():
         ok('swap: no stray ghost left', await pg.locator('#bd-right svg.bd-lay rect[stroke-dasharray="5 3"]').count() == 0)
         # independent page + page handles on the drawing
         await ev("goPage('nsye72w3')"); await pg.wait_for_timeout(600)
+        await ev("S.project.pages[S.pageId].mode = 'card'; render()"); await pg.wait_for_timeout(500)
         ok('one piece: no Part of the sheet / Independent toggle, the page\'s own look is always there', await pg.locator('#bd-right [data-act=page-indep]').count() == 0 and await pg.locator('#bd-right [data-bind="page.box.blur"]').count() == 1 and await pg.locator('#bd-right [data-bind="page.box.card"], #bd-right [data-f=indep]').count() >= 0)
         ok('one piece: a page\'s Where it lies draws the sheet with its four sheet handles, no page handles', await pg.locator('#bd-right svg.bd-lay [data-lh=sheet]').count() == 4 and await pg.locator('#bd-right svg.bd-lay [data-lh=page]').count() == 0)
         ok('one piece: no per-page Opens with, no tilt, no Pages-underneath-keep-clear choice', await pg.locator('#bd-right [data-bind="page.trans"], #bd-right [data-bind="site.layers.tilt"], #bd-right [data-bind$=".pinPad"]').count() == 0)
