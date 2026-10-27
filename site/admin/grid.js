@@ -2399,13 +2399,13 @@ var P = boxLen(boxVal(b, "p" + sd[0], phone), sd[0]);
 var I = ins[sd[1]] || 0;
 if (M != null) {
 anyM = true;
-d.push("margin-" + sd[1] + ": " + (I ? "calc(" + I + "px + " + M + ")" : M) + ";");
+d.push("margin-" + sd[1] + ": " + (I ? "calc(" + I + "px" + pinGrow(sd[1], phone) + " + " + M + ")" : M) + ";");
 if (sd[0] === "l" || sd[0] === "r") sideM = true;
 if (P == null && I) d.push("padding-" + sd[1] + ": " + def[sd[0]] + ";");
 }
-if (P != null) d.push("padding-" + sd[1] + ": " + (I && M == null ? "calc(" + I + "px + " + P + ")" : P) + ";");
-else if (onSh && passed) d.push("padding-" + sd[1] + ": " + (I ? "calc(" + I + "px + " + def[sd[0]] + ")" : def[sd[0]]) + ";");
-else if (!onSh && M == null && I) d.push("padding-" + sd[1] + ": calc(" + I + "px + " + def[sd[0]] + ");");
+if (P != null) d.push("padding-" + sd[1] + ": " + (I && M == null ? "calc(" + I + "px" + pinGrow(sd[1], phone) + " + " + P + ")" : P) + ";");
+else if (onSh && passed) d.push("padding-" + sd[1] + ": " + (I ? "calc(" + I + "px" + pinGrow(sd[1], phone) + " + " + def[sd[0]] + ")" : def[sd[0]]) + ";");
+else if (!onSh && M == null && I) d.push("padding-" + sd[1] + ": calc(" + I + "px" + pinGrow(sd[1], phone) + " + " + def[sd[0]] + ");");
 });
 var w = boxLen(boxVal(b, "maxW", phone), "l");
 if (sideM) d.push("width: auto;");
@@ -3361,6 +3361,16 @@ var m = parseFloat(raw) || 0;
 if (/%$/.test(raw)) m = m * W / 100;
 return { edge: g.edge, px: Math.max(0, Math.min(W - m, W - 48)) };
 }
+/* WHAT A PINNED STRIP LEAVES OUT OF THE WINDOW ON ONE SIDE, AS DRAWN; THE RUNTIME ADDS WHAT THE STRIP REALLY NEEDS BEYOND THAT (--bd-pin-<side>) */
+function pinGrow(side, phone) {
+if (side !== "left" && side !== "right") return "";
+var n = 0;
+sheetList().forEach(function (k) {
+var pp = sheetPinPx(k, phone);
+if (pp && pp.edge === side) n += pp.px;
+});
+return n ? " + max(0px, calc(var(--bd-pin-" + side + ", 0px) - " + n + "px))" : "";
+}
 function sheetPinCSS(phone) {
 var out = [];
 var KD = "var(--ly-pdur, var(--k-dur, var(--ly-dur)))";
@@ -3853,8 +3863,8 @@ return out.join("\n");
 }
 function contentInsetCSS(phone) {
 var ins = sheetInsets(1e9, phone);
-var d = ["padding-top: calc(" + ins.top + "px + var(--bd-wt));", "padding-left: calc(" + ins.left + "px + var(--bd-wl));"];
-if (ins.right) d.push("padding-right: " + ins.right + "px;");
+var d = ["padding-top: calc(" + ins.top + "px + var(--bd-wt));", "padding-left: calc(" + ins.left + "px" + pinGrow("left", phone) + " + var(--bd-wl));"];
+if (ins.right) d.push("padding-right: calc(" + ins.right + "px" + pinGrow("right", phone) + ");");
 if (ins.bottom) d.push("padding-bottom: " + ins.bottom + "px;");
 var o = ".bd-ly-art > .bd-panel {\n" + d.join("\n") + "\n}";
 /* A PINNED STRIP TALLER THAN ITS DRAWN MARGIN PUSHES THE PAGES UNDERNEATH DOWN BY THE DIFFERENCE (RUNTIME --bd-pin-top / --bd-pin-bottom) */
@@ -4018,24 +4028,25 @@ pinLen();
 }
 /* PAGES SIDE BY SIDE ON ONE SHEET END ON THE SAME LINE: EVERY PAPER IS AS LONG AS THE LONGEST PAGE AND GROWS WITH IT */
 function pinLen() {
-/* A PINNED STRIP IS AS TALL AS ITS PAGE REALLY IS: THE SHEET, THE OPEN PAGE AND THE PAGES UNDERNEATH ALL USE THAT, NOT THE DRAWN MARGIN ALONE */
-var gt = 0;
-var gb = 0;
+/* A PINNED STRIP IS AS BIG AS ITS PAGE REALLY IS (HEIGHT ON A VERTICAL SHEET, WIDTH ON A HORIZONTAL ONE): THE SHEET, THE OPEN PAGE AND EVERYTHING UNDER IT USE THAT, NOT THE DRAWN MARGIN ALONE */
+var pg = { top: 0, bottom: 0, left: 0, right: 0 };
 model.forEach(function (m) {
 if (m.pin < 0) return;
 var kid = m.track.children[m.pin];
 var pp = kid && kid.querySelector(".bd-ly-paper");
-if (!pp || getComputedStyle(m.track).flexDirection !== "column") {
-m.el.style.removeProperty("--k-pl");
-return;
-}
-var h = Math.ceil(pp.getBoundingClientRect().height);
+if (!pp) return;
+var col = getComputedStyle(m.track).flexDirection === "column";
+var r = pp.getBoundingClientRect();
+if (col) {
+var h = Math.ceil(r.height);
 m.el.style.setProperty("--k-pl", h + "px");
-if (m.pin === 0) gb += h;
-else gt += h;
+pg[m.pin === 0 ? "bottom" : "top"] += h;
+} else {
+m.el.style.removeProperty("--k-pl");
+pg[m.pin === 0 ? "right" : "left"] += Math.ceil(r.width);
+}
 });
-root.style.setProperty("--bd-pin-top", gt + "px");
-root.style.setProperty("--bd-pin-bottom", gb + "px");
+["top", "bottom", "left", "right"].forEach(function (e) { root.style.setProperty("--bd-pin-" + e, pg[e] + "px"); });
 model.forEach(function (m) {
 if (getComputedStyle(m.track).flexDirection !== "row") return;
 var kids = Array.prototype.slice.call(m.track.children);
@@ -5339,7 +5350,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#a855f7";
+var BD_BUILD = "#14b8a6";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
