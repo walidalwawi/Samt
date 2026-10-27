@@ -45,8 +45,8 @@
     "font": "mono",
     "size": 13,
     "lh": 20,
-    "sizeM": 15,
-    "lhM": 22,
+    "sizeM": 13,
+    "lhM": 18,
     "weight": 400,
     "italic": false,
     "textCase": "none",
@@ -60,7 +60,7 @@
     "sizeM": 16,
     "lhM": 21,
     "weight": "400",
-    "italic": true,
+    "italic": false,
     "textCase": "none",
     "tracking": 0,
     "color": ""
@@ -81,8 +81,8 @@
     "font": "mono",
     "size": 12,
     "lh": 15,
-    "sizeM": 12,
-    "lhM": 17,
+    "sizeM": 13,
+    "lhM": 18,
     "weight": 400,
     "italic": false,
     "textCase": "none",
@@ -613,8 +613,8 @@
     "pin": "56ud3gky",
     "radius": 0,
     "vcM": 0,
-    "vrM": 0,
-    "mainM": "nsye72w3",
+    "vrM": 1,
+    "mainM": "56ud3gky",
     "axisM": "y"
    },
    {
@@ -666,8 +666,8 @@
     "vr": 0,
     "pin": "",
     "vcM": 0,
-    "vrM": 0,
-    "mainM": "fji5ongj"
+    "vrM": 1,
+    "mainM": "b2lr3tkr"
    }
   ],
   "editor": {
@@ -4311,7 +4311,9 @@
     "gutter": 30,
     "gutterM": 20
    },
-   "box": {},
+   "box": {
+    "mtM": "0"
+   },
    "mode": "sheet"
   },
   "nsye72w3": {
@@ -4513,7 +4515,7 @@
     "mt": "0",
     "mb": "0",
     "mbM": "0",
-    "mtM": "5%",
+    "mtM": "0",
     "mr": "5%",
     "radius": 0,
     "ml": "0",

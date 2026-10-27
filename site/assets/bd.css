@@ -1,4 +1,4 @@
-/* PUBLISHED mvqy8zxx */
+/* PUBLISHED mvqyecf3 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -1246,7 +1246,7 @@ line-height: 20px;
 .bd-list.is-heading ul {
 font-family: var(--bd-mono);
 font-weight: 400;
-font-style: italic;
+font-style: normal;
 text-transform: none;
 letter-spacing: 0em;
 font-size: 15px;
@@ -2801,8 +2801,8 @@ background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/200
 --bd-gap: 0px;
 --bd-indent: 0px;
 --bd-label: 88px;
---bd-fs: 15px;
---bd-lh: 22px;
+--bd-fs: 13px;
+--bd-lh: 18px;
 --bd-ms: 11px;
 --bd-ml: 16px;
 --bd-ls: 16px;
@@ -2860,8 +2860,8 @@ padding: 16px;
 .bd-site,
 .bd-ts-body,
 .bd-list.is-body ul {
-font-size: 15px;
-line-height: 22px;
+font-size: 13px;
+line-height: 18px;
 }
 .bd-text.is-heading,
 .bd-text.is-large,
@@ -2885,8 +2885,8 @@ line-height: 18px;
 .bd-gi figcaption,
 .bd-zoom-cap,
 .bd-list.is-caption ul {
-font-size: 12px;
-line-height: 17px;
+font-size: 13px;
+line-height: 18px;
 }
 .bd-text.is-mono,
 .bd-ptitle.is-mono,
@@ -3680,7 +3680,7 @@ margin-left: 0px;
 margin-right: 0px;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
-margin-top: 5vh;
+margin-top: 0px;
 padding-top: var(--bd-wt);
 margin-right: 0px;
 padding-right: var(--bd-wr);
@@ -3755,6 +3755,8 @@ box-shadow: none;
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="b2lr3tkr"] > .bd-ly-paper > .bd-panel {
+margin-top: calc(117px + 0px);
+padding-top: var(--bd-wt);
 padding-top: calc(117px + var(--bd-wt));
 padding-right: var(--bd-wr);
 padding-bottom: var(--bd-wb);
