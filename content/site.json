@@ -597,7 +597,7 @@
      "mtM": "",
      "mbM": "85%",
      "mlM": "",
-     "mrM": "10%"
+     "mrM": "5%"
     },
     "pattern": "",
     "patColor": "#000000",
@@ -612,7 +612,7 @@
     "vr": 0,
     "pin": "56ud3gky",
     "radius": 0,
-    "vcM": 1,
+    "vcM": 0,
     "vrM": 1,
     "mainM": "56ud3gky",
     "axisM": "y"
@@ -850,7 +850,8 @@
    "blog": true,
    "box": {
     "mr": "0",
-    "mb": "0"
+    "mb": "0",
+    "mrM": "0"
    },
    "mode": "sheet"
   },
