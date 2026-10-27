@@ -5038,7 +5038,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#10b981";
+var BD_BUILD = "#8b5cf6";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6869,7 +6869,7 @@ return b.card || parseFloat(b.blur) > 0 || parseFloat(b.radius) > 0 || (b.shadow
 }
 function inhDelBar(kind, i, delBtn) {
 var attrs = ' data-kind="' + kind + '" data-i="' + (i == null ? "" : i) + '"';
-var t = "Inherit · " + (kind === "sheet" ? "Dissolve" : "Delete");
+var t = "Controls";
 if (S.confirm === "inherit") return skin(t, SK.end, '<div class="bd-ed-confirm">Reset every setting of this ' + kind + ' to the master? <button class="bd-ed-btn bd-ed-inherit" data-act="inherit-yes"' + attrs + '>Inherit all</button><button class="bd-ed-btn" data-act="inherit-no">Keep</button></div>');
 if (S.confirm === "page" && kind === "page") return skin(t, SK.end, '<div class="bd-ed-confirm">Delete this page for good? <button class="bd-ed-btn is-danger" data-act="page-del-yes">Delete</button><button class="bd-ed-btn" data-act="confirm-no">Keep</button></div>');
 return skin(t, SK.end, two('<button class="bd-ed-btn bd-ed-inherit" data-act="inherit-ask"' + attrs + ">Inherit all</button>", delBtn));
@@ -6895,8 +6895,7 @@ return pages.length > 1 ? '<button class="bd-ed-pinpill' + (on ? " is-on" : "") 
 }).join("");
 var h = skin("Details", SK.det, '<div class="bd-ed-head"><span class="bd-ed-label" style="margin:0">Sheet</span><button class="bd-ed-btn" style="height:26px" data-act="sheet-done">Done</button></div>' + field("Name", input(P + "name", k.name || "")));
 h += skin("Layout", SK.lay, two(seg(P + "axis", k.axis === "x" ? "x" : "y", [["y", "Vertical"], ["x", "Horizontal"]]), '<div class="bd-ed-pins">' + pins + "</div>") + sheetLayoutHTML(n, true));
-h += skin("Style", SK.sty, '<span class="bd-ed-label">Background</span>' + fillIn("", P + "color", k.color, "#E4E1DA") + two(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur", P + "blur", k.blur)));
-h += skin("Effect", SK.eff, '<span class="bd-ed-label">Decoration</span>' + patThumbs(P + "pattern", k.pattern || "") + (k.pattern ? row(field("Lines", '<input type="color" class="bd-ed-input" data-bind="' + P + 'patColor" value="' + esc(k.patColor || "#000000") + '">'), numIn("Spacing px", P + "patSize", k.patSize), numIn("Strength %", P + "patAlpha", k.patAlpha)) : "") + two(numIn("Corners", P + "radius", k.radius == null ? "" : k.radius, "blank"), field("Edge", seg(P + "shadow", k.shadow === "none" || !k.shadow ? "none" : "soft", [["none", "None"], ["soft", "Soft shadow"]]))));
+h += skin("Style", SK.sty, '<span class="bd-ed-label">Background</span>' + fillIn("", P + "color", k.color, "#E4E1DA") + two(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur", P + "blur", k.blur)) + '<span class="bd-ed-label">Decoration</span>' + patThumbs(P + "pattern", k.pattern || "") + (k.pattern ? row(field("Lines", '<input type="color" class="bd-ed-input" data-bind="' + P + 'patColor" value="' + esc(k.patColor || "#000000") + '">'), numIn("Spacing px", P + "patSize", k.patSize), numIn("Strength %", P + "patAlpha", k.patAlpha)) : "") + two(numIn("Corners", P + "radius", k.radius == null ? "" : k.radius, "blank"), field("Edge", seg(P + "shadow", k.shadow === "none" || !k.shadow ? "none" : "soft", [["none", "None"], ["soft", "Soft shadow"]]))));
 h += inhDelBar("sheet", n, '<button class="bd-ed-btn is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve</button>");
 return h;
 }
@@ -7404,14 +7403,14 @@ return '<label class="bd-ed-field"><span class="bd-ed-label">' + sd[1] + '</span
 };
 var menuBox = function (m) { return '<label class="bd-ed-check"><input type="checkbox" data-act="page-menu" data-id="' + m.id + '"' + (m.items.some(function (it) { return it.type === "page" && it.page === pg.id; }) ? " checked" : "") + ">" + (s.menus.length > 1 ? esc(m.name) : "Show in menu") + "</label>"; };
 var det = (s.menus.length === 1 ? '<div class="bd-ed-two" style="grid-template-columns:minmax(0,1fr) auto">' + input("page.title", pg.title, "", ' aria-label="Title" placeholder="Title"') + menuBox(s.menus[0]) + "</div>" : field("Title", input("page.title", pg.title)) + '<span class="bd-ed-label">Show in menus</span>' + s.menus.map(menuBox).join(""))
-+ field("Group", select("page.section", pg.section, [["", "No group"]].concat(s.sections.map(function (x) { return [x.key, x.label]; }))))
 + (pg.slug === "" ? '<div class="bd-ed-hint">' + I.home.replace("<svg", '<svg style="width:12px;height:12px;vertical-align:-2px"') + " Home page</div>" : "")
 + (pg.blog ? '<div class="bd-ed-hint">This page is a blog. Its posts are listed under it in Pages.</div><button class="bd-ed-btn" data-act="post-add" data-id="' + pg.id + '">' + I.plus + "Post</button>" : "")
 + (pg.parent ? '<span class="bd-ed-label">Post</span>' + row(field("Blog", select("page.parent", pg.parent, blogs().map(function (b) { return [b.id, b.title]; }))), field("Date", '<input type="date" class="bd-ed-input" data-bind="page.date" value="' + esc(pg.date || "") + '">'))
 + field("Excerpt for the card", '<textarea class="bd-ed-input" data-bind="page.excerpt" rows="3">' + esc(pg.excerpt || "") + "</textarea>")
 + coverField(pg)
 + sw("Featured ★", "page.featured", !!pg.featured) : "")
-+ field("Description for search", '<textarea class="bd-ed-input" data-bind="page.desc" rows="3" style="font-family:var(--e-sans);font-size:12.5px">' + esc(pg.desc) + "</textarea>");
++ field("Description", '<textarea class="bd-ed-input" data-bind="page.desc" rows="3" style="font-family:var(--e-sans);font-size:12.5px">' + esc(pg.desc) + "</textarea>")
++ field("Group", select("page.section", pg.section, [["", "No group"]].concat(s.sections.map(function (x) { return [x.key, x.label]; }))));
 h += (pg.parent ? skin("Post", SK.det, '<div class="bd-ed-hint">' + (postFollows(pg) ? "This post follows All posts · master." : "This post has its own settings. Inherit all brings it back to All posts · master.") + '</div><button class="bd-ed-btn" data-act="post-master">' + I.sliders + "Edit All posts · master</button>") : "") + skin("Details", SK.det, det);
 var lay = "";
 if (onSheet) {
@@ -7420,18 +7419,13 @@ lay += '<span class="bd-ed-label">This page is</span>' + seg("page.mode", pageMo
 lay += '<span class="bd-ed-label">Where it lies · ' + esc(pgw.sheet.name || "Sheet") + '</span><div class="bd-lay-box">' + layoutDrawing(pgw.k, cardOn ? pg : undefined) + '</div><div class="bd-ed-hint">' + (cardOn ? "Handles move this card inside the sheet. Snaps to 5%." : "Handles move the sheet. Snaps to 5%.") + "</div>";
 } else if (pgw && pgw.k < 0 && !pg.parent) lay += '<div class="bd-ed-hint">This page lies underneath the sheets. Drag it by its grip in Layers onto a card or an empty part of a sheet’s drawing to lay it on that sheet.</div>';
 if (!onSheet) lay += '<span class="bd-ed-label">Margin · outside the page</span>' + four("m");
-lay += '<span class="bd-ed-label">Padding · inside the page' + (ph ? " · phone" : "") + "</span>" + four("p")
-+ field("Max width" + (ph ? " · phone" : ""), input("page.box.maxW" + (ph ? "M" : ""), (ph ? bx.maxWM : bx.maxW) || "", "", ' placeholder="720 or 60%"'));
+lay += two(field("Max width" + (ph ? " · phone" : ""), input("page.box.maxW" + (ph ? "M" : ""), (ph ? bx.maxWM : bx.maxW) || "", "", ' placeholder="720 or 60%"')), field("Padding" + (ph ? " · phone" : ""), '<input class="bd-ed-input bd-ed-n" data-bind="padall.page" data-type="blank" value="' + esc(bx["pt" + (ph ? "M" : "")] == null ? "" : bx["pt" + (ph ? "M" : "")]) + '" placeholder="all sides">'));
 h += skin("Layout", SK.lay, lay);
 var sty = (cardOn ? fillIn("Card colour", "page.box.card", bx.card || "", "#ffffff", "None") + (onSheet ? "" : fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site")) : "")
-+ (ph ? "" : colorIn("Text colour", "page.box.ink", bx.ink || "", s.colors.ink, "Site"))
-+ (cardOn ? (onSheet ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "Inherit"], ["none", "None"]]) : "") : "");
++ (cardOn ? two(numIn("Card see-through %", "page.box.cardA", bx.cardA == null ? "" : bx.cardA, "blank"), numIn("Blur", "page.box.blur", bx.blur == null ? "" : bx.blur, "blank")) : "")
++ (cardOn && onSheet ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "Inherit"], ["none", "None"]]) : "")
++ (cardOn ? two(numIn("Corners", "page.box.radius", bx.radius == null ? "" : bx.radius, "blank"), field("Shadow", seg("page.box.shadow", bx.shadow === "soft" ? "soft" : "none", [["none", "None"], ["soft", "Soft"]]))) : "");
 h += (onSheet ? skinFold : skin)("Style", SK.sty, sty, cardOn);
-var eff = (cardOn ? two(numIn("Card see-through %", "page.box.cardA", bx.cardA == null ? "" : bx.cardA, "blank"), numIn("Blur", "page.box.blur", bx.blur == null ? "" : bx.blur, "blank")) + two(numIn("Corners", "page.box.radius", bx.radius == null ? "" : bx.radius, "blank"), field("Shadow", seg("page.box.shadow", bx.shadow === "soft" ? "soft" : "none", [["none", "None"], ["soft", "Soft"]]))) : "")
-+ (onSheet ? field("On hover", seg("page.hover", pg.hover || "", [["", "Inherit"], ["lift", "Lift"]])) : "");
-if (eff) h += (onSheet ? skinFold : skin)("Effect", SK.eff, eff, cardOn);
-h += skin("Everything else", SK.eff, (s.header ? sw("Show the title at the top", "page.header", pg.header !== false) : "") + sw("Click images to zoom · whole site", "site.zoom", s.zoom) + (cardOn ? sw("Card only as tall as what’s on it", "page.box.fit", !!bx.fit) : ""));
-h += skin("Move & duplicate", SK.eff, '<div class="bd-ed-actions"><button class="bd-ed-btn" data-act="page-up" aria-label="Move up">' + I.up + '</button><button class="bd-ed-btn" data-act="page-down" aria-label="Move down">' + I.dn + '</button><button class="bd-ed-btn" data-act="page-dup">' + I.copy + "Duplicate</button></div>");
 var stack = "";
 S.project.order.forEach(function (id) {
 var q = S.project.pages[id];
@@ -10152,6 +10146,10 @@ var rest = path.slice(root.length + 1);
 var el = selEl();
 if (root === "ui") {
 S[rest] = v;
+} else if (root === "padall") {
+var pq = curPage();
+pq.box = pq.box || {};
+BOX_SIDES.forEach(function (sd) { pq.box["p" + sd[0] + (S.mode === "phone" ? "M" : "")] = v; });
 } else if (root === "fill") {
 var bar = rest.indexOf("|");
 var part = rest.slice(0, bar);
