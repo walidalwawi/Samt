@@ -5420,7 +5420,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#0891b2";
+var BD_BUILD = "#7c3aed";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -7933,6 +7933,12 @@ if (/\.(js|json|webmanifest)$/.test(p)) return "javascript";
 if (/\.(html|svg|xml)$/.test(p)) return "htmlmixed";
 return "text/plain";
 }
+var EDITOR_CSS = "site/admin/grid.css";
+function codeViewOn(id, cur) {
+if (id === "editor") return cur === "files" && S.filePath === EDITOR_CSS;
+if (id === "files") return cur === "files" && S.filePath !== EDITOR_CSS;
+return cur === id;
+}
 function codeMode(tab) {
 var e = selEl();
 if (tab === "site" || tab === "page") return "css";
@@ -7969,7 +7975,7 @@ h += '<div class="bd-ed-hint" style="font-family:var(--e-mono);font-size:10.5px;
 h += '<div class="bd-ed-hint">Pages, bd.css and bd.js are written by Publish, so they aren’t listed. PDFs and other files go to /files/.</div>';
 return h;
 }
-var CODE_VIEWS = [["out:css", "Full CSS"], ["el", "This block"], ["out:page", "Page HTML"], ["out:js", "JS"], ["head", "Head"], ["files", "Files"]];
+var CODE_VIEWS = [["out:css", "Full CSS"], ["el", "This block"], ["out:page", "Page HTML"], ["out:js", "JS"], ["head", "Head"], ["editor", "Editor CSS"], ["files", "Files"]];
 /* EVERY RULE IN THE PUBLISHED CSS THAT STYLES ONE BLOCK */
 function elRules(e) {
 var keys = ["bd-e-" + e.id, BD_TYPE_CLASS[e.type] || "bd-none"];
@@ -8195,7 +8201,7 @@ var elLabel = tapped ? nodeLabel(tapped) : e ? BD_TYPE_NAME[e.type].toLowerCase(
 if (tab === "el") hint = tapped ? "Inspecting " + elLabel + ". Top: its HTML (read-only until its block becomes an HTML block). Below: every published rule that styles it — edit them directly; each change you make is saved as an override in your CSS." : e ? "Inspecting the selected " + BD_TYPE_NAME[e.type].toLowerCase() + ". Top: its HTML" + (editableHtml ? " — edit it directly" : " as published (read-only until the block becomes an HTML block)") + ". Below: every published rule that styles it — edit them directly. Tap anything on the page to inspect it." : "Tap anything on the page to inspect its HTML and every rule that styles it. Then edit them right here.";
 if (cur === "out:css") hint = "Everything the site uses, exactly as Publish writes it. Edit any value: only what you change is saved, as an override at the end of your CSS (phone rules in its one mobile block).";
 var html = '<div class="bd-ed-codebar">' + CODE_VIEWS.map(function (t) {
-return '<button data-act="code-tab" data-val="' + t[0] + '" class="' + (cur === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
+return '<button data-act="code-tab" data-val="' + t[0] + '" class="' + (codeViewOn(t[0], cur) ? "is-on" : "") + '">' + t[1] + "</button>";
 }).join("") + '</div>' + (tab === "files" && !S.filePath ? "" : '<div class="bd-ed-codefind"><input class="bd-ed-input" id="bd-find" placeholder="Search this code" aria-label="Search this code" value="' + esc(S.findQ || "") + '" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="bd-ed-btn is-sm" data-act="code-find" data-val="-1" aria-label="Previous match">↑</button><button class="bd-ed-btn is-sm" data-act="code-find" data-val="1" aria-label="Next match">↓</button><span class="bd-ed-label" id="bd-find-count"></span></div>') + '<div class="bd-ed-hint bd-ed-codehint">' + esc(hint) + (tab === "out" ? ' <button class="bd-ed-btn is-sm" data-act="copy-out">' + I.copy + "Copy</button>" : "") + '<span id="bd-code-msg"></span></div>';
 if (tab === "el" && target && !(target.type === "text" || target.type === "html")) {
 html += S.codeConfirm === target.id
@@ -8305,6 +8311,15 @@ if (tab === "page") curPage().css = v;
 if (tab === "head") S.project.site.head = v;
 if (tab === "files") {
 if (S.filePath && S.files[S.filePath]) S.files[S.filePath].text = v;
+if (S.filePath === EDITOR_CSS) {
+var ls = $("bd-editor-live");
+if (!ls) {
+ls = document.createElement("style");
+ls.id = "bd-editor-live";
+document.head.appendChild(ls);
+}
+ls.textContent = v;
+}
 scheduleSave();
 renderTop();
 return;
@@ -10523,7 +10538,7 @@ render();
 "undo": doUndo,
 "redo": doRedo,
 "code": function () { S.codeOpen = !S.codeOpen; S.leftTab = S.codeOpen ? "code" : "pages"; if (S.codeOpen && window.innerWidth <= 980) S.leftOpen = true; render(); },
-"code-tab": function () { S.codeNode = null; if (val.indexOf("out:") === 0) { S.codeTab = "out"; S.outTab = val.slice(4); } else S.codeTab = val; renderCode(); },
+"code-tab": function () { S.codeNode = null; if (val === "editor") { S.codeTab = "files"; openFile(EDITOR_CSS); return; } if (val === "files" && S.filePath === EDITOR_CSS) S.filePath = ""; if (val.indexOf("out:") === 0) { S.codeTab = "out"; S.outTab = val.slice(4); } else S.codeTab = val; renderCode(); },
 "out-tab": function () { S.outTab = val; renderCode(); },
 "code-find": function () { codeFind(S.findQ || "", parseInt(val, 10) || 1); },
 "code-html-ask": function () { S.codeConfirm = S.codeBlockId; renderCode(); },
