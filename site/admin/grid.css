@@ -3145,3 +3145,19 @@ color: var(--e-bg);
 .bd-ed-rail-sep {
 background: var(--e-ink);
 }
+
+/* CODE SEARCH */
+.bd-ed-codefind {
+display: flex;
+align-items: center;
+gap: 6px;
+padding: 6px 10px;
+}
+.bd-ed-codefind .bd-ed-input {
+flex: 1;
+min-width: 0;
+}
+.bd-find-hit {
+background: rgba(200, 80, 45, 0.28);
+outline: 1px solid #c8502d;
+}

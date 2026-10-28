@@ -5420,7 +5420,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#84cc16";
+var BD_BUILD = "#0891b2";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -7898,9 +7898,14 @@ R.innerHTML = pg.kind === "pin" ? h : skinWrap(h);
 
 /* CODE DRAWER */
 var CODE_TABS = [["site", "Site CSS"], ["page", "Page CSS"], ["head", "Head"], ["el", "Block"], ["out", "Full output"], ["files", "Files"]];
+function codeBlock() {
+var id = S.codeBlockId;
+var b = id ? curPage().els.filter(function (x) { return x.id === id; })[0] : null;
+return b || selEl();
+}
 function codeValue(tab) {
 var pg = curPage();
-var e = selEl();
+var e = tab === "el" ? codeBlock() : selEl();
 if (tab === "site") return S.project.site.css || "";
 if (tab === "head") return S.project.site.head || "";
 if (tab === "page") return pg.css || "";
@@ -7938,7 +7943,7 @@ return S.outTab === "css" ? "css" : S.outTab === "js" ? "javascript" : "htmlmixe
 }
 function codeReadOnly(tab) {
 if (tab === "out") return true;
-if (tab === "el") return !selEl() || ["text", "html"].indexOf(selEl().type) < 0;
+if (tab === "el") return !codeBlock() || ["text", "html"].indexOf(codeBlock().type) < 0;
 if (tab === "files") return !S.filePath;
 return false;
 }
@@ -7977,7 +7982,7 @@ return cssRules(css).filter(function (r) { return hit(r.sel); }).map(function (r
 };
 var d = pick(sp.desk);
 var m = pick(sp.mob);
-return "/* EVERY RULE THAT STYLES THIS " + BD_TYPE_NAME[e.type].toUpperCase() + " — READ-ONLY */\n" + d.join("\n") + (m.length ? "\n\n/* PHONE */\n" + m.join("\n") : "");
+return "/* EVERY RULE THAT STYLES THIS " + BD_TYPE_NAME[e.type].toUpperCase() + " — EDIT THEM HERE */\n" + d.join("\n") + (m.length ? "\n\n/* PHONE */\n" + m.join("\n") : "");
 }
 /* RULES IN THE PUBLISHED CSS THAT HIT ONE ELEMENT ON THE CANVAS (HOVER/STATE PSEUDO-CLASSES IGNORED) */
 function nodeRules(node) {
@@ -8007,6 +8012,105 @@ return "<" + n.tagName.toLowerCase() + ">" + c;
 function prettyHTML(h) {
 return String(h).replace(/></g, ">\n<").replace(/ data-bd-[a-z-]+="[^"]*"/g, "").replace(/ is-selected/g, "");
 }
+/* EDITING PUBLISHED CSS: THE EDIT IS COMPARED WITH WHAT WAS SHOWN, AND ONLY THE DECLARATIONS YOU CHANGED ARE SAVED, AS OVERRIDES AT THE END OF YOUR CSS (PHONE ONES IN ITS ONE MOBILE BLOCK) */
+function cssMapOf(css) {
+var m = {};
+cssRules(css).forEach(function (r) {
+m[r.sel] = m[r.sel] || {};
+declList(r.body).forEach(function (d) { m[r.sel][d.prop] = d.val; });
+});
+return m;
+}
+function rulesSplit(text) {
+var t = String(text || "");
+var i = t.search(/\/\*\s*PHONE\s*\*\//);
+return i < 0 ? { desk: t, mob: "" } : { desk: t.slice(0, i), mob: t.slice(i).replace(/^\/\*\s*PHONE\s*\*\/\s*/, "") };
+}
+function cssFullSplit(text) {
+return cssSplit(text);
+}
+function cssDiffApply(base, now) {
+var changes = 0;
+var kept = 0;
+var site = cssSplit(S.project.site.css || "");
+var parts = ["desk", "mob"];
+parts.forEach(function (part) {
+var bm, nm;
+try {
+bm = cssMapOf(base[part]);
+nm = cssMapOf(now[part]);
+} catch (err) {
+return;
+}
+var target = site[part];
+Object.keys(nm).forEach(function (sel) {
+Object.keys(nm[sel]).forEach(function (prop) {
+if (bm[sel] && bm[sel][prop] === nm[sel][prop]) return;
+target = ruleSet(target, sel, [prop], nm[sel][prop]);
+changes++;
+});
+});
+Object.keys(bm).forEach(function (sel) {
+Object.keys(bm[sel]).forEach(function (prop) {
+if (nm[sel] && nm[sel][prop] != null) return;
+var had = ruleGet(target, sel, [prop]);
+if (had) {
+target = ruleSet(target, sel, [prop], "");
+changes++;
+} else kept++;
+});
+});
+site[part] = target;
+});
+if (changes) {
+S.project.site.css = cssJoin(site.desk, site.mob);
+scheduleSave();
+renderTop();
+renderCanvas();
+}
+return { changes: changes, kept: kept };
+}
+function cssEditLive(base, text, kind) {
+if (S.pendingSnap) {
+snap();
+S.pendingSnap = false;
+}
+var now = kind === "full" ? cssSplit(text) : rulesSplit(text);
+var r = cssDiffApply(base, now);
+var msg = $("bd-code-msg");
+if (msg) msg.textContent = r && r.kept ? "Some lines come from a panel and can’t be removed here — change them in the panel." : "";
+if (r && r.changes) {
+base.desk = now.desk;
+base.mob = now.mob;
+}
+}
+/* SEARCH BOX ABOVE THE CODE: ALL MATCHES MARKED, ENTER / ARROWS STEP THROUGH THEM */
+function codeFind(q, step) {
+S.findMarks = S.findMarks || [];
+S.findMarks.forEach(function (m) { try { m.clear(); } catch (err) {} });
+S.findMarks = [];
+var cms = (S.cms || []).filter(Boolean);
+var hits = [];
+if (q) cms.forEach(function (cm) {
+var t = cm.getValue().toLowerCase();
+var n = q.toLowerCase();
+var i = t.indexOf(n);
+while (i > -1 && hits.length < 4000) {
+hits.push({ cm: cm, from: cm.posFromIndex(i), to: cm.posFromIndex(i + n.length) });
+i = t.indexOf(n, i + n.length);
+}
+});
+hits.forEach(function (h) { S.findMarks.push(h.cm.markText(h.from, h.to, { className: "bd-find-hit" })); });
+var n = hits.length;
+S.findAt = n ? ((step === 0 ? S.findAt || 0 : (S.findAt || 0) + step) % n + n) % n : 0;
+var out = $("bd-find-count");
+if (out) out.textContent = q ? (n ? S.findAt + 1 + " / " + n : "none") : "";
+if (n) {
+var h = hits[S.findAt];
+h.cm.setSelection(h.from, h.to);
+h.cm.scrollIntoView({ from: h.from, to: h.to }, 80);
+}
+}
 function codeCM(host, val, mode, ro, onChange) {
 if (!window.CodeMirror) {
 var ta = document.createElement("textarea");
@@ -8016,7 +8120,19 @@ ta.value = val;
 ta.id = onChange ? "bd-code-ta-live" : "";
 if (onChange) ta.addEventListener("input", function () { clearTimeout(S.codeTimer); S.codeTimer = setTimeout(function () { onChange(ta.value); }, 220); });
 host.appendChild(ta);
-return null;
+/* THE SAME CALLS AS CODEMIRROR USES HERE, SO SEARCH AND JUMPS STILL WORK ON A PLAIN BOX */
+return {
+ta: ta,
+getValue: function () { return ta.value; },
+setValue: function (v) { ta.value = v; },
+getOption: function (k) { return k === "readOnly" ? !!ro : null; },
+posFromIndex: function (i) { return { line: 0, ch: i }; },
+markText: function () { return { clear: function () {} }; },
+setSelection: function (a, b) { try { ta.setSelectionRange(a.ch, b.ch); } catch (err) {} },
+scrollIntoView: function () {},
+refresh: function () {},
+execCommand: function () { ta.select(); }
+};
 }
 var cm = CodeMirror(host, { value: val, mode: mode, lineNumbers: true, lineWrapping: true, smartIndent: false, electricChars: false, indentUnit: 2, tabSize: 2, readOnly: ro, viewportMargin: 400, extraKeys: { "Cmd-S": function () { publish(); }, "Ctrl-S": function () { publish(); }, "Cmd-F": "findPersistent", "Ctrl-F": "findPersistent" } });
 cm.setSize("100%", "100%");
@@ -8056,27 +8172,110 @@ if (cur === "out:js") hint = "The published script. Read-only.";
 if (tab === "site") hint = "Your own CSS for every page. It comes last, so it wins over Styles and Look. Phone rules go in the one @media (max-width: 760px) block at the end.";
 if (tab === "page") hint = "CSS for this page only.";
 if (tab === "head") hint = "HTML in the <head> of every page: fonts, favicon, analytics.";
-var tapped = S.codeNode && shadow && shadow.contains(S.codeNode) && !(e && S.codeNode.classList && S.codeNode.classList.contains("bd-e-" + e.id) && (e.type === "text" || e.type === "html")) ? S.codeNode : null;
-if (tab === "el") hint = tapped ? "Inspecting " + nodeLabel(tapped) + ". Top: its HTML. Below: every published rule that styles it. Tap anything on the page to inspect it." : e ? "Inspecting the selected " + BD_TYPE_NAME[e.type].toLowerCase() + ". Top: its HTML" + (e.type === "text" || e.type === "html" ? " (editable)" : " as published") + ". Below: every published rule that styles it. Tap anything on the page to inspect it." : "Tap anything on the page to inspect its HTML and every rule that styles it.";
+var tapped = S.codeNode && shadow && shadow.contains(S.codeNode) ? S.codeNode : null;
+/* A TAPPED ELEMENT BELONGS TO A BLOCK; A TEXT OR HTML BLOCK'S CODE IS EDITABLE AS A WHOLE, ANY OTHER BLOCK'S ONLY AFTER IT BECOMES AN HTML BLOCK */
+var owner = null;
+if (tapped && tapped.closest) {
+var oh = tapped.closest('[class*="bd-e-"]');
+var om = oh ? (oh.getAttribute("class") || "").match(/bd-e-([\w]+)/) : null;
+if (om) owner = curPage().els.filter(function (x) { return x.id === om[1]; })[0] || null;
+}
+if (owner && (owner.type === "text" || owner.type === "html")) {
+e = owner;
+S.codeBlockId = owner.id;
+S.codeJumpNode = tapped;
+tapped = null;
+} else {
+S.codeBlockId = e ? e.id : "";
+S.codeJumpNode = null;
+}
+var target = tapped ? owner : e;
+var editableHtml = !!(e && (e.type === "text" || e.type === "html"));
+var elLabel = tapped ? nodeLabel(tapped) : e ? BD_TYPE_NAME[e.type].toLowerCase() : "";
+if (tab === "el") hint = tapped ? "Inspecting " + elLabel + ". Top: its HTML (read-only until its block becomes an HTML block). Below: every published rule that styles it — edit them directly; each change you make is saved as an override in your CSS." : e ? "Inspecting the selected " + BD_TYPE_NAME[e.type].toLowerCase() + ". Top: its HTML" + (editableHtml ? " — edit it directly" : " as published (read-only until the block becomes an HTML block)") + ". Below: every published rule that styles it — edit them directly. Tap anything on the page to inspect it." : "Tap anything on the page to inspect its HTML and every rule that styles it. Then edit them right here.";
+if (cur === "out:css") hint = "Everything the site uses, exactly as Publish writes it. Edit any value: only what you change is saved, as an override at the end of your CSS (phone rules in its one mobile block).";
 var html = '<div class="bd-ed-codebar">' + CODE_VIEWS.map(function (t) {
 return '<button data-act="code-tab" data-val="' + t[0] + '" class="' + (cur === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
-}).join("") + '</div><div class="bd-ed-hint bd-ed-codehint">' + esc(hint) + (tab === "out" ? ' <button class="bd-ed-btn is-sm" data-act="copy-out">' + I.copy + "Copy</button>" : "") + "</div>";
+}).join("") + '</div>' + (tab === "files" && !S.filePath ? "" : '<div class="bd-ed-codefind"><input class="bd-ed-input" id="bd-find" placeholder="Search this code" aria-label="Search this code" value="' + esc(S.findQ || "") + '" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="bd-ed-btn is-sm" data-act="code-find" data-val="-1" aria-label="Previous match">↑</button><button class="bd-ed-btn is-sm" data-act="code-find" data-val="1" aria-label="Next match">↓</button><span class="bd-ed-label" id="bd-find-count"></span></div>') + '<div class="bd-ed-hint bd-ed-codehint">' + esc(hint) + (tab === "out" ? ' <button class="bd-ed-btn is-sm" data-act="copy-out">' + I.copy + "Copy</button>" : "") + '<span id="bd-code-msg"></span></div>';
+if (tab === "el" && target && !(target.type === "text" || target.type === "html")) {
+html += S.codeConfirm === target.id
+? '<div class="bd-ed-hint bd-ed-codehint">Turn this ' + esc(BD_TYPE_NAME[target.type].toLowerCase()) + ' block into an HTML block? Its panel and Look settings stop applying. Undo brings it back. <button class="bd-ed-btn is-sm" data-act="code-html-yes">Turn into HTML</button> <button class="bd-ed-btn is-sm" data-act="code-html-no">Keep</button></div>'
+: '<div class="bd-ed-actions" style="padding:0 10px 6px"><button class="bd-ed-btn is-sm" data-act="code-html-ask">Make this block’s HTML editable</button></div>';
+}
 if (tab === "files") html += '<div class="bd-ed-codefiles">' + filesSide() + "</div>";
 html += '<div class="bd-ed-code-body" id="bd-code-host"></div>';
 if (tab === "el" && (e || tapped)) html += '<span class="bd-ed-label bd-ed-codehint">Styles on this ' + (tapped ? "element" : "block") + '</span><div class="bd-ed-code-body is-rules" id="bd-code-rules"></div>';
 C.innerHTML = html;
+S.cms = [];
 if (tab === "el" && tapped) {
-S.cm = codeCM($("bd-code-host"), prettyHTML(tapped.outerHTML).slice(0, 60000), "htmlmixed", true, null);
-codeCM($("bd-code-rules"), "/* EVERY PUBLISHED RULE THAT HITS " + nodeLabel(tapped).toUpperCase() + " — READ-ONLY */\n" + nodeRules(tapped), "css", true, null);
+S.cms.push(codeCM($("bd-code-host"), prettyHTML(tapped.outerHTML).slice(0, 60000), "htmlmixed", true, null));
+var rb = rulesSplit(nodeRules(tapped));
+var rtext = "/* EVERY PUBLISHED RULE THAT HITS " + nodeLabel(tapped).toUpperCase() + " — EDIT THEM HERE */\n" + nodeRules(tapped);
+var rbase = { desk: rulesSplit(rtext).desk, mob: rulesSplit(rtext).mob };
+S.cms.push(codeCM($("bd-code-rules"), rtext, "css", false, function (v) { cssEditLive(rbase, v, "rules"); }));
+S.cm = S.cms[0];
+} else if (tab === "out" && S.outTab === "css") {
+var full = codeValue("out");
+var fbase = cssSplit(full);
+S.cm = codeCM($("bd-code-host"), full, "css", false, function (v) { cssEditLive(fbase, v, "full"); });
+S.cms.push(S.cm);
 } else {
 var ro = codeReadOnly(tab);
 var val = ro && tab !== "out" && !(tab === "el" && e) ? "" : codeValue(tab);
 S.cm = codeCM($("bd-code-host"), val, codeMode(tab), ro, ro ? null : function (v) { applyCodeValue(tab, v); });
-if (S.cm) setTimeout(jumpCode, 0);
-if (tab === "el" && e) codeCM($("bd-code-rules"), elRules(e), "css", true, null);
+S.cms.push(S.cm);
+if (S.cm && S.cm.on) setTimeout(jumpCode, 0);
+if (tab === "el" && e) {
+var etext = elRules(e);
+var ebase = { desk: rulesSplit(etext).desk, mob: rulesSplit(etext).mob };
+S.cms.push(codeCM($("bd-code-rules"), etext, "css", false, function (v) { cssEditLive(ebase, v, "rules"); }));
+if (S.cm && S.codeJumpNode && editableHtml) setTimeout(function () { jumpNode(S.cm, S.codeJumpNode); }, 30);
+}
+}
+var fi = $("bd-find");
+if (fi) {
+fi.addEventListener("input", function () { S.findQ = fi.value; S.findAt = 0; codeFind(fi.value, 0); });
+fi.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); codeFind(fi.value, ev.shiftKey ? -1 : 1); } });
+if (S.findQ) codeFind(S.findQ, 0);
 }
 var fp = $("bd-file-pick");
 if (fp) fp.addEventListener("change", function () { openFile(fp.value); });
+}
+/* JUMP THE HTML EDITOR TO THE ELEMENT YOU TAPPED INSIDE A TEXT OR HTML BLOCK */
+function jumpNode(cm, node) {
+if (!cm || !node) return;
+var tag = "<" + node.tagName.toLowerCase();
+var txt = (node.textContent || "").trim().slice(0, 24);
+var val = cm.getValue();
+var i = -1;
+if (txt) {
+var ti = val.indexOf(txt);
+if (ti > -1) i = val.lastIndexOf(tag, ti);
+}
+if (i < 0) i = val.indexOf(tag);
+if (i < 0) return;
+var from = cm.posFromIndex(i);
+cm.setSelection(from, cm.posFromIndex(val.indexOf(">", i) + 1 || i + tag.length));
+cm.scrollIntoView(from, 80);
+}
+/* A GENERATED BLOCK BECOMES AN HTML BLOCK HOLDING ITS PUBLISHED HTML (THE BLOCK'S OWN WRAPPER CLASSES ARE DROPPED SO ITS RULES DON'T APPLY TWICE) */
+function blockToHtml(e) {
+var keep = S.renderPage;
+S.renderPage = curPage();
+var out = elHTML(e, "export");
+S.renderPage = keep;
+var tpl = document.createElement("template");
+tpl.innerHTML = out.trim();
+var root = tpl.content.firstElementChild;
+var inner = out;
+if (root) {
+root.classList.remove("bd-el", "bd-e-" + e.id);
+root.removeAttribute("style");
+inner = root.outerHTML;
+}
+snap();
+e.type = "html";
+e.props = { code: prettyHTML(inner) };
 }
 function jumpCode() {
 var j = S.codeJump;
@@ -8096,6 +8295,7 @@ return;
 }
 function applyCodeValue(tab, v) {
 var e = selEl();
+if (tab === "el" && S.codeBlockId) e = curPage().els.filter(function (x) { return x.id === S.codeBlockId; })[0] || e;
 if (S.pendingSnap && tab !== "files") {
 snap();
 S.pendingSnap = false;
@@ -10325,6 +10525,20 @@ render();
 "code": function () { S.codeOpen = !S.codeOpen; S.leftTab = S.codeOpen ? "code" : "pages"; if (S.codeOpen && window.innerWidth <= 980) S.leftOpen = true; render(); },
 "code-tab": function () { S.codeNode = null; if (val.indexOf("out:") === 0) { S.codeTab = "out"; S.outTab = val.slice(4); } else S.codeTab = val; renderCode(); },
 "out-tab": function () { S.outTab = val; renderCode(); },
+"code-find": function () { codeFind(S.findQ || "", parseInt(val, 10) || 1); },
+"code-html-ask": function () { S.codeConfirm = S.codeBlockId; renderCode(); },
+"code-html-no": function () { S.codeConfirm = null; renderCode(); },
+"code-html-yes": function () {
+var id = S.codeConfirm;
+S.codeConfirm = null;
+var blk = curPage().els.filter(function (x) { return x.id === id; })[0];
+if (!blk || blk.type === "html" || blk.type === "text") { renderCode(); return; }
+blockToHtml(blk);
+S.codeNode = null;
+S.sel = blk.id;
+changed();
+renderCode();
+},
 "copy-out": function () {
 var txt = S.cm ? S.cm.getValue() : codeValue("out");
 var done = function () { toast("Copied."); };
@@ -10390,7 +10604,7 @@ S.codeTab = S.ins.where === "page" ? "page" : "site";
 S.codeJump = { tab: S.codeTab, sel: sel, phone: S.mode === "phone" };
 renderCode();
 renderTop();
-if (!S.cm) toast("Look for " + sel);
+if (!S.cm || S.cm.ta) toast("Look for " + sel);
 },
 "ins-html": function () { S.codeOpen = true; S.codeTab = "el"; renderCode(); renderTop(); },
 "ins-img": function () {
