@@ -3891,7 +3891,6 @@ if (upx) out.push(upx);
 sheetList().forEach(function (k, n) {
 var padIns = sheetPadIns(k, n, phone);
 if (!phone && !sheetStrip(k) && sheetBlur(k) > 0) out.push('.bd-ly-k[data-k="' + k.id + '"] > .bd-ly-blur {\nposition: absolute;\ntop: 0;\nleft: 0;\nwidth: 100%;\nheight: 100%;\npointer-events: none;\n-webkit-backdrop-filter: blur(' + sheetBlur(k) + 'px);\nbackdrop-filter: blur(' + sheetBlur(k) + 'px);\n}');
-if (!phone) out.push('.bd-ly-k[data-k="' + k.id + '"] {\nbackground: ' + sheetPaper(k, k.alpha == null ? 55 : k.alpha) + ';\n}');
 var panesK = sheetPanes(k);
 (phone && sheetRev(k) ? sheetPanes(k, true) : (k.pages || []).map(sheetPage).filter(Boolean)).forEach(function (q, qi, qa) {
 var st = sheetStrip(k);
