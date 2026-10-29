@@ -769,7 +769,6 @@
   "k2b6e868",
   "ap7jj2t4",
   "1bp9xrs5",
-  "0kfa3zsh",
   "b2lr3tkr",
   "nsye72w3"
  ],
@@ -4565,122 +4564,6 @@
     "gutterM": 24
    },
    "mode": "sheet"
-  },
-  "0kfa3zsh": {
-   "id": "0kfa3zsh",
-   "title": "New post",
-   "h1": "",
-   "num": "",
-   "slug": "new-post",
-   "section": "",
-   "desc": "",
-   "header": true,
-   "layout": "master",
-   "css": "",
-   "els": [
-    {
-     "id": "d4bw91pb",
-     "type": "postinfo",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 3
-     },
-     "m": null,
-     "props": {
-      "back": true,
-      "backLabel": "<",
-      "date": false,
-      "words": true,
-      "time": true,
-      "sep": "",
-      "style": "",
-      "size": "",
-      "lh": "",
-      "sizeM": "",
-      "lhM": "",
-      "upper": "",
-      "tracking": "",
-      "ink": "",
-      "align": "",
-      "padT": "",
-      "padTM": "",
-      "padB": "",
-      "padBM": "",
-      "line": "",
-      "backGap": "",
-      "backSize": "",
-      "backInk": "",
-      "backDim": ""
-     }
-    },
-    {
-     "id": "hhvarpee",
-     "type": "text",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 8
-     },
-     "m": null,
-     "props": {
-      "html": "<p>Write here.</p>",
-      "style": "body",
-      "indent": false,
-      "align": "left",
-      "size": "",
-      "sizeM": "",
-      "lh": "",
-      "lhM": "",
-      "ink": "",
-      "tracking": "",
-      "measure": ""
-     }
-    },
-    {
-     "id": "yu8mv09y",
-     "type": "pager",
-     "col": 1,
-     "d": {
-      "x": 0,
-      "y": 0,
-      "w": 12,
-      "h": 3
-     },
-     "m": null,
-     "props": {
-      "num": "num",
-      "line": false,
-      "loop": false,
-      "scope": "blog",
-      "look": "text",
-      "nextLabel": "Next, ",
-      "prevLabel": "",
-      "align": "center",
-      "style": "",
-      "size": "",
-      "sizeM": "",
-      "lh": "",
-      "lhM": ""
-     }
-    }
-   ],
-   "kind": "page",
-   "parent": "fji5ongj",
-   "date": "2026-10-29",
-   "excerpt": "",
-   "featured": false,
-   "stack": [],
-   "pin": {
-    "place": "top",
-    "fixed": false,
-    "show": "all",
-    "pages": []
-   }
   }
  }
 }
