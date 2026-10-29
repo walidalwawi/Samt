@@ -332,7 +332,15 @@ a.classList.toggle("is-current", a.getAttribute("data-id") === on);
 document.querySelectorAll(".bd-ix-crumb").forEach(function (c) {
 if (!c.bdMap) { try { c.bdMap = JSON.parse(c.getAttribute("data-crumbs")); } catch (x) { c.bdMap = {}; } }
 var cr = c.bdMap[F];
-c.textContent = cr ? cr.join(c.getAttribute("data-sep")) : "";
+c.textContent = "";
+(cr || []).forEach(function (x, i) {
+if (i) c.appendChild(document.createTextNode(c.getAttribute("data-sep")));
+var l = document.createElement("a");
+l.className = "bd-ix-c";
+l.href = "/" + x.s;
+l.textContent = x.t;
+c.appendChild(l);
+});
 });
 }
 function go(id, pop) {
@@ -507,6 +515,7 @@ var BD_DATA = {"site":"Samt","menu":false,"groups":[{"label":"","items":[{"title
 {"section":"","slug":"militant-improvisation","num":"","title":"Militant Improvisation"},
 {"section":"","slug":"the-bourgeoi-rtist","num":"","title":"The Bourgeoi’rtist"},
 {"section":"","slug":"art-in-times-of-crisis","num":"","title":"Art In Times Of Crisis"},
+{"section":"","slug":"new-post","num":"","title":"New post"},
 {"section":"","slug":"library","num":"","title":"Library"},
 {"section":"","slug":"about","num":"","title":"About"}],"externals":[],"gDur":450};
 
