@@ -5648,7 +5648,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#2563eb";
+var BD_BUILD = "#d946ef";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -5775,7 +5775,13 @@ toast("The site changed on GitHub after your last draft. Opened the published ve
 }
 }
 S.booting = false;
+cssTidyOnce();
 render();
+if (S.tidyNote) {
+scheduleSave();
+toast("Tidied your CSS: " + S.tidyNote + " repeated or broken lines removed, the video frame fixed. Publish to put it live.");
+S.tidyNote = 0;
+}
 setStatus(hasDraft() ? "Not published" : "Published");
 }
 function setProject(p) {
@@ -5883,7 +5889,7 @@ return '<button class="bd-ed-tool' + (phone ? "" : " is-on") + '" data-act="mode
 "redo": { label: "Redo", icon: I.redo, act: "redo", iconOnly: true, disabled: function () { return !S.redo.length; } },
 "code-btn": { label: "Code", icon: I.code, act: "code", on: function () { return S.codeOpen; } },
 "preview": { label: "Preview", icon: I.eye, act: "preview", on: function () { return S.preview && !S.inspect; } },
-"arrange": { label: "Arrange", icon: I.sliders, act: "arrange", on: function () { return !!S.arrange; } },
+"arrange": { label: "Customize", icon: I.sliders, act: "arrange", on: function () { return !!S.arrange; } },
 "revert": { label: "Revert", only: ["top"], html: function () {
 if (S.confirm === "discard") return '<span class="bd-ed-confirm is-inline">Throw away unpublished changes? <button class="bd-ed-btn is-danger" data-act="discard-yes">Discard</button><button class="bd-ed-btn" data-act="confirm-no">Keep</button></span>';
 return '<button class="bd-ed-btn" data-act="revert"' + (hasDraft() ? "" : " disabled") + ' title="Go back to what is live — throws away everything not yet published">' + I.undo + '<span class="bd-ed-hide-narrow">Revert</span></button>';
@@ -6091,6 +6097,7 @@ return hit ? hit.node : null;
 /* APPLY ARCHIVE, MOVES AND ORDER TO THE PANEL THAT WAS JUST DRAWN; IN ARRANGE MODE ADD A BAR ABOVE EACH SECTION */
 function arrApply(R) {
 if (S.arrRaw) return;
+edThemeApply();
 S.arrCache = {};
 var pid = arrKeyNow();
 R.setAttribute("data-panel", pid);
@@ -6134,8 +6141,13 @@ list.forEach(function (s) { host.insertBefore(s.node, end); });
 S.arrIds = S.arrIds || {};
 S.arrIds[pid] = list.map(function (s) { return s.id; });
 E.labels = E.labels || {};
-list.forEach(function (s) { E.labels[s.id] = s.label; });
+var LK = edLooks();
+list.forEach(function (s) {
+E.labels[s.id] = (LK[s.id] && LK[s.id].name) || s.label;
+edLookOn(s.node, LK[s.id]);
+});
 if (!S.arrange) return;
+host.insertAdjacentHTML("afterbegin", edOfficeHTML());
 list.forEach(function (s, n) {
 var src = s.id.split(":")[0];
 var dests = Object.keys(ARR_PANELS).filter(function (q) { return q !== pid && arrCan(src, q); });
@@ -6145,8 +6157,10 @@ bar.innerHTML = '<span class="bd-ed-arr-name">' + esc(s.label) + (s.guest ? " ·
 + '<button class="bd-ed-chip" data-act="arr-up" data-id="' + esc(s.id) + '"' + (n ? "" : " disabled") + ' aria-label="Up">↑</button>'
 + '<button class="bd-ed-chip" data-act="arr-down" data-id="' + esc(s.id) + '"' + (n < list.length - 1 ? "" : " disabled") + ' aria-label="Down">↓</button>'
 + (dests.length || s.guest ? '<select class="bd-ed-input bd-ed-rsel" data-act-select="arr-move" data-id="' + esc(s.id) + '" aria-label="Move to"><option value="">Move to…</option>' + (s.guest ? '<option value="__home">Back to ' + esc(ARR_PANELS[src]) + "</option>" : "") + dests.filter(function (q) { return q !== src; }).map(function (q) { return '<option value="' + q + '">' + esc(ARR_PANELS[q]) + "</option>"; }).join("") + "</select>" : "")
++ '<button class="bd-ed-chip' + (S.arrStyle === s.id ? " is-on" : "") + '" data-act="arr-style" data-id="' + esc(s.id) + '">Style</button>'
 + '<button class="bd-ed-chip" data-act="arr-hide" data-id="' + esc(s.id) + '">Archive</button>';
 host.insertBefore(bar, s.node);
+if (S.arrStyle === s.id) bar.insertAdjacentHTML("afterend", edSecHTML(s.id, s.label));
 });
 }
 function arrAction(act, b) {
@@ -6154,6 +6168,7 @@ var E = editorPrefs();
 var id = b.getAttribute("data-id");
 var pid = arrKeyNow();
 if (act === "arrange") S.arrange = !S.arrange;
+else if (act === "arr-style") S.arrStyle = S.arrStyle === id ? "" : id;
 else if (act === "arr-hide") {
 if (E.hidden.indexOf(id) < 0) E.hidden.push(id);
 E.labels = E.labels || {};
@@ -6191,12 +6206,194 @@ return ((E.labels && E.labels[id]) || id.split(":")[1]) + " · " + (ARR_PANELS[p
 }
 return (defs[id] && defs[id].label) || (pdefs[id] && pdefs[id].label) || id;
 };
-var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">Archive</span><button class="bd-ed-chip' + (S.arrange ? " is-on" : "") + '" data-act="arrange">' + (S.arrange ? "Arranging panels" : "Arrange panels") + "</button></div>";
-h += E.hidden.length ? E.hidden.map(function (id) { return '<div class="bd-ed-trow is-archived"><span>' + esc(lab(id)) + '</span><span class="bd-ed-trow-acts"><button class="bd-ed-chip" data-act="arr-show" data-id="' + esc(id) + '">Restore</button></span></div>'; }).join("") : '<div class="bd-ed-hint">Nothing archived. Arrange panels puts Archive, Move and ↑ ↓ above every section of the panel on the right.</div>';
+var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">Archive</span><button class="bd-ed-chip' + (S.arrange ? " is-on" : "") + '" data-act="arrange">' + (S.arrange ? "Customizing" : "Customize the office") + "</button></div>";
+h += E.hidden.length ? E.hidden.map(function (id) { return '<div class="bd-ed-trow is-archived"><span>' + esc(lab(id)) + '</span><span class="bd-ed-trow-acts"><button class="bd-ed-chip" data-act="arr-show" data-id="' + esc(id) + '">Restore</button></span></div>'; }).join("") : '<div class="bd-ed-hint">Nothing archived. Customize puts Style, Archive, Move and ↑ ↓ above every section of the panel on the right, and the Office look at the top.</div>';
 var moved = Object.keys(E.moved).filter(function (id) { return ARR_PANELS[id.split(":")[0]] && ARR_PANELS[E.moved[id]]; });
 if (moved.length) h += '<span class="bd-ed-label">Moved</span>' + moved.map(function (id) { return '<div class="bd-ed-trow"><span>' + esc(lab(id)) + " → " + esc(ARR_PANELS[E.moved[id]]) + '</span><span class="bd-ed-trow-acts"><button class="bd-ed-chip" data-act="arr-home" data-id="' + esc(id) + '">Put back</button></span></div>'; }).join("");
 return h + "</div>";
 }
+/* CUSTOMIZE — THE WHOLE BACK OFFICE IS WALID'S: ONE OFFICE LOOK (COLOURS, LINES, CORNERS, TYPE, SPACING) IN site.editor.theme, AND A LOOK FOR EVERY SECTION (NAME, BACKGROUND, TEXT, BORDER, PADDING) IN site.editor.look[<section id>]. BOTH RIDE WITH PUBLISH LIKE ARCHIVE / ORDER / MOVES */
+var ED_THEME = [
+["bg", "Ground", ["--e-bg", "--e-surface"], "#EEEEEA"],
+["raise", "Fields", ["--e-raise"], "#F8F8F5"],
+["tint", "Open folds", ["--e-tint"], "#E2E2DC"],
+["well", "Canvas", ["--e-well"], "#E4E4DF"],
+["ink", "Ink", ["--e-ink", "--e-line", "--e-pill", "--e-tpill", "--e-on", "--e-accent"], "#141414"],
+["onInk", "Text on ink", ["--e-accent-ink", "--e-pill-ink", "--e-on-ink"], "#EEEEEA"],
+["mute", "Quiet text", ["--e-mute", "--e-pill-mute"], "#6B6B65"],
+["hair", "Thin lines", ["--e-hair"], "#C8C8C1"],
+["mark", "Mark", ["--e-orange", "--e-warn"], "#141414"]
+];
+var ED_FONTS = [["", "Plex Mono"], ["sans", "System sans"], ["grot", "Helvetica"], ["serif", "Serif"]];
+var ED_FONT_CSS = { sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', grot: '"Helvetica Neue", Helvetica, Arial, sans-serif', serif: 'Georgia, "Times New Roman", serif' };
+function edTheme() {
+return editorPrefs().theme || {};
+}
+function edLooks() {
+return editorPrefs().look || {};
+}
+function edHex(v) {
+return /^#[0-9a-f]{6}$/i.test(String(v || "")) ? v : "";
+}
+/* THE OFFICE LOOK AS CSS: TOKENS WIN OVER BOTH LIGHT AND DARK (:root x3), THEN LINES, CORNERS, SPACING */
+function edThemeCSS(T) {
+var v = [];
+ED_THEME.forEach(function (t) {
+var c = edHex(T[t[0]]);
+if (c) t[2].forEach(function (n) { v.push(n + ": " + c + ";"); });
+});
+if (ED_FONT_CSS[T.font]) v.push("--e-mono: " + ED_FONT_CSS[T.font] + ";", "--e-sans: " + ED_FONT_CSS[T.font] + ";");
+if (T.pad) v.push("--e-pad: " + T.pad + "px;");
+if (T.row) v.push("--e-row: " + T.row + "px;");
+var h = v.length ? ":root:root:root {\n" + v.join("\n") + "\n}\n" : "";
+if (T.lw != null && T.lw !== "") h += ".bd-ed-sec {\nborder-bottom-width: " + T.lw + "px;\n}\n.bd-ed-sec.is-end {\nborder-top-width: " + T.lw + "px;\n}\n";
+if (T.rad) h += ".bd-ed-btn,\n.bd-ed-chip,\n.bd-ed-input,\n.bd-ed-seg,\n.bd-ed-seg button,\n.bd-ed-tool,\n.bd-ed-sw {\nborder-radius: " + T.rad + "px;\n}\n";
+if (T.secGap) h += ".bd-ed-sec + .bd-ed-sec {\nmargin-top: " + T.secGap + "px;\n}\n";
+if (T.size) h += "body {\nfont-size: " + T.size + "px;\n}\n";
+return h;
+}
+function edThemeApply() {
+if (!S.project) return;
+var tag = document.getElementById("bd-ed-theme");
+if (!tag) {
+tag = document.createElement("style");
+tag.id = "bd-ed-theme";
+document.head.appendChild(tag);
+}
+var css = edThemeCSS(edTheme());
+if (tag.textContent !== css) tag.textContent = css;
+}
+/* ONE SECTION'S OWN LOOK, PUT ON THE NODE (NAME REPLACES ITS HEADING TEXT) */
+function edLookOn(node, L) {
+if (!L) return;
+var st = node.style;
+if (edHex(L.bg)) st.background = L.bg;
+if (edHex(L.ink)) {
+st.color = L.ink;
+st.setProperty("--e-ink", L.ink);
+}
+var bc = edHex(L.bc) || "var(--e-line)";
+var bw = (L.bw || 1) + "px solid " + bc;
+if (L.border === "none") st.border = "0";
+else if (L.border === "top") {
+st.border = "0";
+st.borderTop = bw;
+} else if (L.border === "left") {
+st.border = "0";
+st.borderLeft = bw;
+} else if (L.border === "box") st.border = bw;
+else if (L.border === "bottom") {
+st.border = "0";
+st.borderBottom = bw;
+}
+if (L.pad === "tight") st.padding = "6px var(--e-pad) 8px";
+else if (L.pad === "roomy") st.padding = "22px var(--e-pad) 26px";
+if (L.gap) st.marginTop = L.gap + "px";
+if (L.name) {
+var lab = node.querySelector(".bd-ed-label, .bd-ed-title, summary");
+if (lab) {
+var tn = Array.prototype.filter.call(lab.childNodes, function (c) { return c.nodeType === 3 && c.textContent.trim(); })[0];
+if (tn) tn.textContent = L.name;
+else lab.insertBefore(document.createTextNode(L.name), lab.firstChild);
+}
+}
+}
+/* CONTROLS — data-edlook="theme.<key>" OR "sec.<id>|<key>"; COLOURS ARE LIVE WHILE DRAGGING, SAVED WHEN LET GO */
+function edColour(path, val, fb) {
+return '<span class="bd-ed-cus-col"><input type="color" data-edlook="' + esc(path) + '" value="' + esc(edHex(val) || fb) + '" aria-label="Colour"><button class="bd-ed-chip' + (edHex(val) ? "" : " is-dim") + '" data-act="ed-look" data-path="' + esc(path) + '" data-val="" aria-label="Default">' + (edHex(val) ? "×" : "—") + "</button></span>";
+}
+function edSeg(path, cur, opts) {
+return '<span class="bd-ed-cus-seg">' + opts.map(function (o) { return '<button class="bd-ed-chip' + (String(cur == null ? "" : cur) === String(o[0]) ? " is-on" : "") + '" data-act="ed-look" data-path="' + esc(path) + '" data-val="' + esc(o[0]) + '">' + esc(o[1]) + "</button>"; }).join("") + "</span>";
+}
+function edRow(label, ctl) {
+return '<div class="bd-ed-cus-row"><span class="bd-ed-cus-lab">' + esc(label) + "</span>" + ctl + "</div>";
+}
+function edOfficeHTML() {
+var T = edTheme();
+var h = '<div class="bd-ed-sec bd-ed-cus" data-cus="office"><div class="bd-ed-head"><span class="bd-ed-label">Office look</span><button class="bd-ed-chip" data-act="ed-reset" data-val="theme">Reset</button></div>';
+h += '<div class="bd-ed-cus-grid">' + ED_THEME.map(function (t) { return edRow(t[1], edColour("theme." + t[0], T[t[0]], t[3])); }).join("") + "</div>";
+h += edRow("Type", edSeg("theme.font", T.font || "", ED_FONTS));
+h += edRow("Text size", edSeg("theme.size", T.size || "", [["", "11"], ["12", "12"], ["13", "13"], ["14", "14"]]));
+h += edRow("Section lines", edSeg("theme.lw", T.lw == null ? "" : T.lw, [["0", "None"], ["", "1"], ["2", "2"], ["4", "4"]]));
+h += edRow("Corners", edSeg("theme.rad", T.rad || "", [["", "Square"], ["4", "4"], ["8", "8"], ["99", "Pill"]]));
+h += edRow("Side space", edSeg("theme.pad", T.pad || "", [["10", "10"], ["", "14"], ["20", "20"], ["28", "28"]]));
+h += edRow("Row height", edSeg("theme.row", T.row || "", [["26", "26"], ["", "30"], ["36", "36"]]));
+h += edRow("Gap between", edSeg("theme.secGap", T.secGap || "", [["", "0"], ["6", "6"], ["12", "12"], ["24", "24"]]));
+return h + '<div class="bd-ed-hint">Each section below has Style for its own name, colours, border and space.</div></div>';
+}
+function edSecHTML(id, label) {
+var E = editorPrefs();
+var L = edLooks()[id] || {};
+var p = "sec." + id + "|";
+var h = '<div class="bd-ed-cus" data-cus="' + esc(id) + '">';
+h += edRow("Name", '<input class="bd-ed-input" data-edlook="' + esc(p) + 'name" value="' + esc(L.name || "") + '" placeholder="' + esc(label) + '" aria-label="Name">');
+h += edRow("Background", edColour(p + "bg", L.bg, "#ffffff"));
+h += edRow("Text", edColour(p + "ink", L.ink, "#141414"));
+h += edRow("Border", edSeg(p + "border", L.border || "", [["", "Default"], ["none", "None"], ["top", "Top"], ["bottom", "Bottom"], ["left", "Left"], ["box", "Box"]]));
+if (L.border && L.border !== "none") {
+h += edRow("Weight", edSeg(p + "bw", L.bw || "", [["", "1"], ["2", "2"], ["4", "4"], ["8", "8"]]));
+h += edRow("Border colour", edColour(p + "bc", L.bc, "#141414"));
+}
+h += edRow("Space inside", edSeg(p + "pad", L.pad || "", [["tight", "Tight"], ["", "Default"], ["roomy", "Roomy"]]));
+h += edRow("Space above", edSeg(p + "gap", L.gap || "", [["", "0"], ["8", "8"], ["16", "16"], ["32", "32"]]));
+return h + '<div class="bd-ed-cus-foot"><button class="bd-ed-chip" data-act="ed-reset" data-val="' + esc(id) + '">Reset this section</button></div></div>';
+}
+function edSet(path, v, live) {
+var E = editorPrefs();
+E.theme = E.theme || {};
+E.look = E.look || {};
+var key;
+var obj;
+if (path.indexOf("theme.") === 0) {
+obj = E.theme;
+key = path.slice(6);
+} else {
+var bar = path.indexOf("|");
+var id = path.slice(4, bar);
+key = path.slice(bar + 1);
+obj = E.look[id] = E.look[id] || {};
+}
+if (v === "" || v == null) delete obj[key];
+else obj[key] = /^-?\d+(\.\d+)?$/.test(v) && key !== "name" ? +v : v;
+if (live) {
+edThemeApply();
+var R = $("bd-right");
+if (path.indexOf("sec.") === 0 && R) {
+var sid = path.slice(4, path.indexOf("|"));
+var node = R.querySelector('[data-sec="' + sid.replace(/"/g, "") + '"]');
+if (node) {
+node.removeAttribute("style");
+edLookOn(node, edLooks()[sid]);
+}
+}
+return;
+}
+Object.keys(E.look).forEach(function (k) { if (!Object.keys(E.look[k]).length) delete E.look[k]; });
+if (!Object.keys(E.look).length) delete E.look;
+if (!Object.keys(E.theme).length) delete E.theme;
+toolsChanged();
+}
+function edReset(what) {
+var E = editorPrefs();
+if (what === "theme") delete E.theme;
+else if (E.look) {
+delete E.look[what];
+if (!Object.keys(E.look).length) delete E.look;
+}
+toolsChanged();
+}
+document.addEventListener("input", function (e) {
+var t = e.target;
+if (!t || !t.getAttribute || !t.getAttribute("data-edlook")) return;
+edSet(t.getAttribute("data-edlook"), t.value, true);
+clearTimeout(S.edLookT);
+if (t.type !== "color") S.edLookT = setTimeout(function () { scheduleSave(); }, 400);
+}, true);
+document.addEventListener("change", function (e) {
+var t = e.target;
+if (!t || !t.getAttribute || !t.getAttribute("data-edlook")) return;
+edSet(t.getAttribute("data-edlook"), t.value, false);
+}, true);
 /* SECTIONS OF A PANEL, EACH WITH A STEADY ID FROM ITS HEADING */
 function secLabel(node) {
 var lab = node.querySelector(".bd-ed-label, .bd-ed-title, summary") || node.querySelector(".bd-ed-hint, button");
@@ -8573,7 +8770,7 @@ return i < 0 ? { desk: t, mob: "" } : { desk: t.slice(0, i), mob: t.slice(i).rep
 function cssFullSplit(text) {
 return cssSplit(text);
 }
-function cssDiffApply(base, now) {
+function cssDiffApply(base, now, dry) {
 var changes = 0;
 var kept = 0;
 var site = cssSplit(S.project.site.css || "");
@@ -8606,7 +8803,7 @@ changes++;
 });
 site[part] = target;
 });
-if (changes) {
+if (changes && !dry) {
 S.project.site.css = cssJoin(site.desk, site.mob);
 scheduleSave();
 renderTop();
@@ -8632,14 +8829,104 @@ return;
 }
 S.cssLiveT = setTimeout(function () { cssEditApply(base, text, kind); }, 450);
 }
+var CSS_HOLD = 30;
+function cssHoldAct(yes) {
+var h = S.cssHold;
+S.cssHold = null;
+if (!h) return;
+if (yes) {
+S.cssHoldOk = true;
+cssEditApply(h.base, h.text, h.kind);
+} else renderCode();
+var msg = $("bd-code-msg");
+if (msg && !yes) msg.textContent = "Edit thrown away.";
+}
+/* ONCE PER SITE: YOUR CSS LOSES EVERY LINE THAT ONLY REPEATS WHAT THE PANELS ALREADY WRITE, AND RULES WHOSE SELECTOR CAN NEVER MATCH ("a: hover"), SO NOTHING LOOKS DIFFERENT BUT THE PANELS WORK AGAIN. THE VIDEO FRAME GETS ITS OWN GEOMETRY BACK (embedV1) */
+function cssTidy(css, gen) {
+var sp = cssSplit(css);
+var gs = cssSplit(gen);
+var out = { desk: "", mob: "" };
+var dropped = 0;
+["desk", "mob"].forEach(function (part) {
+var gm = cssMapOf(gs[part]);
+var src = sp[part];
+var i = 0;
+var bits = [];
+/* ONLY THE LAST DECLARATION OF A SELECTOR + PROPERTY COUNTS; EARLIER ONES ARE ALREADY DEAD AND GO */
+var last = {};
+cssRules(src).forEach(function (r, ri) {
+declList(r.body).forEach(function (d, di) { last[r.sel + "|" + d.prop] = ri + "." + di; });
+});
+cssRules(src).forEach(function (r, ri) {
+bits.push(src.slice(i, r.start));
+i = r.close + 1;
+var raw = src.slice(r.start, r.open).replace(/\/\*[\s\S]*?\*\//g, "").replace(/\[[^\]]*\]/g, "");
+if (/:\s+[a-z:-]/i.test(raw)) {
+dropped++;
+return;
+}
+var g = gm[r.sel] || {};
+var ds = declList(r.body).filter(function (d, di) {
+if (last[r.sel + "|" + d.prop] !== ri + "." + di) {
+dropped++;
+return false;
+}
+if (r.sel === ".bd-embed iframe" && /^(position|inset|top|left|right|bottom|width|height)$/.test(d.prop)) {
+dropped++;
+return false;
+}
+if (g[d.prop] != null && g[d.prop] === d.val) {
+dropped++;
+return false;
+}
+return true;
+});
+if (ds.length) bits.push("\n" + r.sel + " {\n" + ds.map(function (d) { return d.prop + ": " + d.val + ";"; }).join("\n") + "\n}");
+});
+bits.push(src.slice(i));
+out[part] = bits.join("").replace(/\n{3,}/g, "\n\n").trim();
+});
+return { css: cssJoin(out.desk, out.mob), dropped: dropped };
+}
+function cssTidyOnce() {
+var s = S.project && S.project.site;
+if (!s || s.cssTidyV1) return;
+s.cssTidyV1 = true;
+var css = s.css || "";
+/* ONLY A SITE CSS THAT HOLDS A PASTED COPY OF THE SHEET (OR THE BROKEN VIDEO FRAME) IS TOUCHED */
+if (!css.trim() || (css.length < 20000 && !/\.bd-embed\s+iframe\s*\{/.test(css))) return;
+var gen;
+try {
+s.css = "";
+gen = exportCSS();
+} catch (err) {
+gen = "";
+}
+s.css = css;
+if (!gen) return;
+var r = cssTidy(css, gen);
+if (r.dropped) {
+s.css = r.css;
+S.tidyNote = r.dropped;
+}
+}
 function cssEditApply(base, text, kind) {
 if (S.pendingSnap) {
 snap();
 S.pendingSnap = false;
 }
 var now = kind === "full" ? cssSplit(text) : rulesSplit(text);
-var r = cssDiffApply(base, now);
 var msg = $("bd-code-msg");
+/* A PASTE OR REFORMAT THAT TOUCHES MANY LINES AT ONCE WAITS FOR A YES: OTHERWISE THE WHOLE SHEET WOULD BE FROZEN INTO YOUR CSS AS OVERRIDES */
+var dryRun = cssDiffApply(base, now, true);
+if (dryRun.changes > CSS_HOLD && !S.cssHoldOk) {
+S.cssHold = { base: base, text: text, kind: kind };
+if (msg) msg.innerHTML = "This edit would save " + dryRun.changes + " lines as overrides. Pasted or reformatted CSS freezes the panels. <button class=\"bd-ed-chip\" data-act=\"css-hold-yes\">Save all " + dryRun.changes + "</button> <button class=\"bd-ed-chip\" data-act=\"css-hold-no\">Undo the edit</button>";
+return;
+}
+S.cssHoldOk = false;
+S.cssHold = null;
+var r = cssDiffApply(base, now);
 if (msg) msg.textContent = r && r.kept ? "Some lines come from a panel and can’t be removed here — change them in the panel." : "";
 if (r && r.changes) {
 base.desk = now.desk;
@@ -9040,7 +9327,7 @@ if (d === 0) return i;
 return css.length - 1;
 }
 function normSel(s) {
-return String(s).replace(/\/\*[\s\S]*?\*\//g, "").replace(/\s+/g, " ").replace(/\s*,\s*/g, ", ").trim();
+return String(s).replace(/\/\*[\s\S]*?\*\//g, "").replace(/\s+/g, " ").replace(/\s*,\s*/g, ", ").replace(/(:+)\s+(?=[a-z-])/gi, "$1").trim();
 }
 function cssRules(css) {
 var out = [];
@@ -10943,6 +11230,11 @@ var A = {
 "el-css-clear": function () { var e = selEl(); if (!e) return; snap(); clearElCss(e); changed(); },
 "arrange": function () { arrAction(act, b); },
 "arr-hide": function () { arrAction(act, b); },
+"arr-style": function () { arrAction(act, b); },
+"css-hold-yes": function () { cssHoldAct(true); },
+"css-hold-no": function () { cssHoldAct(false); },
+"ed-look": function () { edSet(b.getAttribute("data-path"), val, false); },
+"ed-reset": function () { edReset(val); },
 "arr-show": function () { arrAction(act, b); },
 "arr-home": function () { arrAction(act, b); },
 "arr-up": function () { arrAction(act, b); },
