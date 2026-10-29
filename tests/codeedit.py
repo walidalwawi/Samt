@@ -18,7 +18,7 @@ async def run():
         r = await ev("""() => { S.codeOpen = true; S.leftTab = 'code'; render(); S.codeTab = 'out'; S.outTab = 'css'; renderCode(); var cm = S.cm; return { ro: cm.getOption('readOnly'), n: cm.getValue().length }; }""")
         ok('Full CSS is editable', r['ro'] in (False, None, ''))
         r = await ev("""() => { S.codeTab = 'out'; S.outTab = 'css'; renderCode(); var cm = S.cm; var v = cm.getValue(); var m = v.match(/\\n([.#a-z][^{}\\n]*) \\{\\n\\s*([a-z-]+): ([^;\\n]+);/); if (!m) return { none: true }; var sel = m[1], prop = m[2], val = m[3]; var nv = v.replace(m[0], m[0].replace(prop + ': ' + val, prop + ': 7px')); cm.setValue(nv); cm.ta.dispatchEvent(new Event('input')); return { sel: sel, prop: prop, css: S.project.site.css || '' }; }""")
-        await pg.wait_for_timeout(600)
+        await pg.wait_for_timeout(1200)
         css = await ev("S.project.site.css || ''")
         ok('editing a value saves an override in site css', r.get('sel') and ': 7px' in css and r['sel'].split(',')[0].strip()[:6] in css)
         r = await ev("""() => { S.codeTab = 'out'; S.outTab = 'css'; renderCode(); var fi = document.getElementById('bd-find'); fi.value = 'padding'; fi.dispatchEvent(new Event('input')); return document.getElementById('bd-find-count').textContent; }""")

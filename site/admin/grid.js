@@ -613,6 +613,21 @@ if (s.showNum === undefined) s.showNum = false;
 s.layers = Object.assign(clone(LAYER_DEFAULTS), s.layers || {});
 if (!s.postGo || typeof s.postGo !== "object") s.postGo = { side: "", sideM: "" };
 if (!s.postArrows || typeof s.postArrows !== "object") s.postArrows = {};
+/* ONCE: "SEE-THROUGH %" USED TO BE STORED AS OPACITY. EVERY STORED VALUE BECOMES REAL SEE-THROUGH, SO NOTHING LOOKS DIFFERENT — EXCEPT A SHEET STORED AT 0, WHICH PAINTED ITS CHOSEN COLOUR INVISIBLY (THE BUG): IT BECOMES SOLID */
+if (!s.seeV1) {
+(s.sheets || []).forEach(function (k) {
+var a = k.alpha === "" || k.alpha == null ? 55 : parseFloat(k.alpha);
+k.alpha = isNaN(a) ? SHEET_DEFAULTS.alpha : a <= 0 ? 0 : Math.max(0, Math.min(100, 100 - a));
+});
+var flip = function (b) {
+if (!b || b.cardA === "" || b.cardA == null || isNaN(parseFloat(b.cardA))) return;
+b.cardA = Math.max(0, Math.min(100, 100 - parseFloat(b.cardA)));
+};
+Object.keys(p.pages || {}).forEach(function (id) { if (p.pages[id]) flip(p.pages[id].box); });
+flip(s.postBox);
+if (s.glass && s.glass.alpha !== "" && s.glass.alpha != null && !isNaN(parseFloat(s.glass.alpha))) s.glass.alpha = 100 - parseFloat(s.glass.alpha);
+s.seeV1 = true;
+}
 if (s.layers.on && !s.sheets) migrateSheets(p);
 s.sheets = (s.sheets || []).map(function (k) {
 var o = Object.assign(clone(SHEET_DEFAULTS), k);
@@ -684,7 +699,7 @@ layPinMenuIn(p);
 s.pinV1 = true;
 }
 /* THE GLASS: WHAT IS STUCK TO THE WINDOW ITSELF AND NEVER MOVES WHILE PAPER SLIDES UNDER IT */
-s.glass = Object.assign({ menu: "", at: "bottom", color: "", alpha: 92, blur: 8 }, s.glass || {});
+s.glass = Object.assign({ menu: "", at: "bottom", color: "", alpha: 8, blur: 8 }, s.glass || {});
 if (!s.glassV1) {
 layGlassIn(p);
 s.glassV1 = true;
@@ -5633,7 +5648,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#7c3aed";
+var BD_BUILD = "#2563eb";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -5796,7 +5811,7 @@ if (!opts.skipCode) renderCode();
 var TOOL_ZONES = { top: ["Top bar", "btn"], rail: ["Rail", "btn"], left: ["Left panel", "panel"], right: ["Right panel", "panel"] };
 var RAIL_TYPES = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"], ["quote", "Quote"], ["toggle", "Fold-out list"], ["sep1"], ["menubtn", "Menu"], ["sheetmenu", "Sheet menu"], ["indexlink", "Index link"], ["pager", "Page arrows"], ["sep2"], ["posts", "Blog posts"], ["postinfo", "Post info"], ["sep3"]];
 var TOOL_DEFAULT = {
-top: ["toggle-left", "brand", "projects", "mode", "undo", "redo", "code-btn", "preview", "revert", "publish", "status", "toggle-right"],
+top: ["toggle-left", "brand", "projects", "mode", "undo", "redo", "arrange", "code-btn", "preview", "revert", "publish", "status", "toggle-right"],
 rail: RAIL_TYPES.map(function (t) { return t.length > 1 ? "add:" + t[0] : t[0]; }).concat(["inspect"]),
 left: ["pages", "styles", "motion", "site", "code"],
 right: []
@@ -5868,6 +5883,7 @@ return '<button class="bd-ed-tool' + (phone ? "" : " is-on") + '" data-act="mode
 "redo": { label: "Redo", icon: I.redo, act: "redo", iconOnly: true, disabled: function () { return !S.redo.length; } },
 "code-btn": { label: "Code", icon: I.code, act: "code", on: function () { return S.codeOpen; } },
 "preview": { label: "Preview", icon: I.eye, act: "preview", on: function () { return S.preview && !S.inspect; } },
+"arrange": { label: "Arrange", icon: I.sliders, act: "arrange", on: function () { return !!S.arrange; } },
 "revert": { label: "Revert", only: ["top"], html: function () {
 if (S.confirm === "discard") return '<span class="bd-ed-confirm is-inline">Throw away unpublished changes? <button class="bd-ed-btn is-danger" data-act="discard-yes">Discard</button><button class="bd-ed-btn" data-act="confirm-no">Keep</button></span>';
 return '<button class="bd-ed-btn" data-act="revert"' + (hasDraft() ? "" : " disabled") + ' title="Go back to what is live — throws away everything not yet published">' + I.undo + '<span class="bd-ed-hide-narrow">Revert</span></button>';
@@ -5969,10 +5985,226 @@ h = h.slice(0, end) + '<div class="bd-ed-top-mid"></div>' + h.slice(end);
 }
 return h + (z === "rail" ? '<span class="bd-ed-rail-sep"></span><button class="bd-ed-tool" data-act="tools-open" data-val="rail" data-tip="Tools · hide, move, add" aria-label="Tools">' + I.more + "</button>" : '<button class="bd-ed-btn is-icon" data-act="tools-open" data-val="top" title="Tools · hide, move, add" aria-label="Tools">' + I.more + "</button>");
 }
+/* ARRANGE — EVERY SECTION OF EVERY RIGHT-HAND PANEL CAN BE ARCHIVED, PUT IN ORDER OR MOVED TO ANOTHER PANEL THAT CAN SHOW IT. A SECTION'S ID IS "<panel>:<slug of its heading>"; ARCHIVE, ORDER AND MOVES LIVE IN site.editor (hidden, order, moved, labels) AND RIDE WITH PUBLISH */
+var ARR_PANELS = { styles: "Master · Styles", motion: "Master · Motion", site: "Master · Site", blog: "Master · Blog", sheet: "Sheet", page: "Page on a sheet", under: "Page underneath", blogpage: "Blog page", post: "Post", block: "Block" };
+var ARR_SCOPE = { styles: "site", motion: "site", site: "site", blog: "site", sheet: "sheet", page: "page", under: "page", blogpage: "page", post: "page", block: "block" };
+/* WHICH PANEL IS OPEN ON THE RIGHT NOW */
+function arrKeyNow() {
+if (!S.project || S.inspect || S.sel === "__menu") return "";
+if (S.masterSel && !selEl()) return ARR_PANELS[S.masterTab] ? S.masterTab : "";
+if (S.postMaster && !selEl()) return "blog";
+if (S.sheetSel && !selEl()) return "sheet";
+if (selEl()) return "block";
+var pg = curPage();
+if (!pg || pg.kind === "pin") return "";
+if (pg.parent) return "post";
+var w = layersOn() ? sheetOf(pg.id) : null;
+var on = !!(w && w.k > -1);
+if (pg.blog) return "blogpage";
+return on ? "page" : "under";
+}
+/* THE SHEET THE OPEN PANEL BELONGS TO (THE SELECTED SHEET, OR THE SHEET THE PAGE LIES ON) */
+function arrSheetNow() {
+if (S.sheetSel) return sheetList().map(function (k) { return k.id; }).indexOf(S.sheetSel);
+var pg = curPage();
+if (!pg || !layersOn() || pg.parent) return -1;
+return sheetOf(pg.id).k;
+}
+/* CAN A SECTION FROM src BE SHOWN IN dst? */
+function arrCan(src, dst) {
+if (!ARR_PANELS[src] || !ARR_PANELS[dst] || src === dst) return false;
+var sc = ARR_SCOPE[src];
+if (sc === "site") return true;
+if (sc === "sheet") return ["page", "blogpage", "block"].indexOf(dst) > -1;
+if (sc === "page") return dst === "block";
+return false;
+}
+function arrSlug(lab, n) {
+return lab.split("·")[0].trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 32) || "part-" + (n + 1);
+}
+/* THE SECTIONS OF A PANEL'S HTML, WITH THEIR IDS (FIXED PARTS — THE MASTER TABS, THE SHEET BAR, CONTROLS — HAVE NONE) */
+function arrNodes(host, pid) {
+var used = {};
+var out = [];
+Array.prototype.forEach.call(host.children, function (node, n) {
+if (!node.classList || !node.classList.contains("bd-ed-sec")) return;
+if (node.classList.contains("is-end") || node.classList.contains("bd-ed-sheetbar") || node.querySelector(":scope > .bd-ed-tabs, :scope > .bd-ed-head + .bd-ed-tabs")) return;
+var lab = secLabel(node);
+var own = node.getAttribute("data-sec");
+var id = own && own.indexOf(":") > -1 ? own : pid + ":" + arrSlug(lab, n);
+while (used[id]) id += "-2";
+used[id] = true;
+node.setAttribute("data-sec", id);
+out.push({ id: id, node: node, label: (lab || "Part " + (n + 1)).slice(0, 48) });
+});
+return out;
+}
+/* THE RAW HTML OF ANOTHER PANEL, BUILT IN THE PRESENT CONTEXT (OR "" WHEN IT CAN'T BE SHOWN HERE) */
+function arrSource(pid) {
+S.arrCache = S.arrCache || {};
+if (S.arrCache[pid] != null) return S.arrCache[pid];
+var h = "";
+var keep = { sel: S.sel, sheetSel: S.sheetSel, masterSel: S.masterSel, postMaster: S.postMaster, ins: S.ins, confirm: S.confirm, raw: S.arrRaw, sk: Object.assign({}, SK) };
+try {
+S.arrRaw = true;
+if (pid === "styles") h = stylesPanel();
+else if (pid === "motion") h = motionPanel();
+else if (pid === "site") h = sitePanel();
+else if (pid === "blog") h = postMasterHTML(true);
+else if (pid === "sheet") {
+var n = arrSheetNow();
+h = n > -1 ? sheetEditHTML(n) : "";
+} else if (ARR_SCOPE[pid] === "page") {
+var pg = curPage();
+var d = document.createElement("div");
+S.sel = null;
+S.sheetSel = "";
+S.masterSel = false;
+S.postMaster = false;
+S.confirm = null;
+if (pg && arrKeyNow() === pid) renderRightInner(d);
+h = d.innerHTML;
+}
+} catch (err) {
+h = "";
+}
+S.sel = keep.sel;
+S.sheetSel = keep.sheetSel;
+S.masterSel = keep.masterSel;
+S.postMaster = keep.postMaster;
+S.ins = keep.ins;
+S.confirm = keep.confirm;
+S.arrRaw = keep.raw;
+Object.assign(SK, keep.sk);
+S.arrCache[pid] = h;
+return h;
+}
+function arrFind(pid, id) {
+var src = arrSource(pid);
+if (!src) return null;
+var box = document.createElement("div");
+box.innerHTML = src;
+var host = box.querySelector(".bd-ed-skinwrap") || box;
+var hit = arrNodes(host, pid).filter(function (s) { return s.id === id; })[0];
+return hit ? hit.node : null;
+}
+/* APPLY ARCHIVE, MOVES AND ORDER TO THE PANEL THAT WAS JUST DRAWN; IN ARRANGE MODE ADD A BAR ABOVE EACH SECTION */
+function arrApply(R) {
+if (S.arrRaw) return;
+S.arrCache = {};
+var pid = arrKeyNow();
+R.setAttribute("data-panel", pid);
+if (!pid) return;
+var E = editorPrefs();
+var host = R.querySelector(".bd-ed-skinwrap") || R;
+var list = arrNodes(host, pid);
+var end = Array.prototype.filter.call(host.children, function (n) { return n.classList && n.classList.contains("is-end"); })[0] || null;
+list.forEach(function (s) {
+var to = E.moved[s.id];
+if ((to && to !== pid) || toolHidden(s.id)) {
+s.node.remove();
+s.gone = true;
+}
+});
+list = list.filter(function (s) { return !s.gone; });
+var have = {};
+list.forEach(function (s) { have[s.id] = true; });
+Object.keys(E.moved).forEach(function (sid) {
+var src = sid.split(":")[0];
+if (E.moved[sid] !== pid || src === pid || have[sid] || toolHidden(sid) || !arrCan(src, pid)) return;
+var node = arrFind(src, sid);
+if (!node) return;
+node.setAttribute("data-sec", sid);
+node.classList.add("is-guest");
+host.insertBefore(node, end);
+list.push({ id: sid, node: node, label: (E.labels && E.labels[sid]) || secLabel(node), guest: src });
+have[sid] = true;
+});
+var order = E.order[pid] || [];
+list.forEach(function (s, n) { s.n = n; });
+list.sort(function (a, b) {
+var ia = order.indexOf(a.id);
+var ib = order.indexOf(b.id);
+if (ia < 0 && ib < 0) return a.n - b.n;
+if (ia < 0) return 1;
+if (ib < 0) return -1;
+return ia - ib;
+});
+list.forEach(function (s) { host.insertBefore(s.node, end); });
+S.arrIds = S.arrIds || {};
+S.arrIds[pid] = list.map(function (s) { return s.id; });
+E.labels = E.labels || {};
+list.forEach(function (s) { E.labels[s.id] = s.label; });
+if (!S.arrange) return;
+list.forEach(function (s, n) {
+var src = s.id.split(":")[0];
+var dests = Object.keys(ARR_PANELS).filter(function (q) { return q !== pid && arrCan(src, q); });
+var bar = document.createElement("div");
+bar.className = "bd-ed-arr";
+bar.innerHTML = '<span class="bd-ed-arr-name">' + esc(s.label) + (s.guest ? " · from " + esc(ARR_PANELS[s.guest]) : "") + "</span>"
++ '<button class="bd-ed-chip" data-act="arr-up" data-id="' + esc(s.id) + '"' + (n ? "" : " disabled") + ' aria-label="Up">↑</button>'
++ '<button class="bd-ed-chip" data-act="arr-down" data-id="' + esc(s.id) + '"' + (n < list.length - 1 ? "" : " disabled") + ' aria-label="Down">↓</button>'
++ (dests.length || s.guest ? '<select class="bd-ed-input bd-ed-rsel" data-act-select="arr-move" data-id="' + esc(s.id) + '" aria-label="Move to"><option value="">Move to…</option>' + (s.guest ? '<option value="__home">Back to ' + esc(ARR_PANELS[src]) + "</option>" : "") + dests.filter(function (q) { return q !== src; }).map(function (q) { return '<option value="' + q + '">' + esc(ARR_PANELS[q]) + "</option>"; }).join("") + "</select>" : "")
++ '<button class="bd-ed-chip" data-act="arr-hide" data-id="' + esc(s.id) + '">Archive</button>';
+host.insertBefore(bar, s.node);
+});
+}
+function arrAction(act, b) {
+var E = editorPrefs();
+var id = b.getAttribute("data-id");
+var pid = arrKeyNow();
+if (act === "arrange") S.arrange = !S.arrange;
+else if (act === "arr-hide") {
+if (E.hidden.indexOf(id) < 0) E.hidden.push(id);
+E.labels = E.labels || {};
+var nm = b.closest && b.closest(".bd-ed-arr") ? b.closest(".bd-ed-arr").querySelector(".bd-ed-arr-name") : null;
+E.labels[id] = nm ? nm.textContent.split(" · from ")[0] : E.labels[id] || id;
+} else if (act === "arr-show") E.hidden = E.hidden.filter(function (x) { return x !== id; });
+else if (act === "arr-home") delete E.moved[id];
+else if (act === "arr-up" || act === "arr-down") {
+var ids = (S.arrIds && S.arrIds[pid]) || [];
+var i = ids.indexOf(id);
+var j = act === "arr-up" ? i - 1 : i + 1;
+if (i < 0 || j < 0 || j >= ids.length) return;
+ids = ids.slice();
+ids.splice(j, 0, ids.splice(i, 1)[0]);
+E.order[pid] = ids;
+}
+toolsChanged();
+}
+function arrMove(id, to) {
+var E = editorPrefs();
+if (!to) return;
+if (to === "__home") delete E.moved[id];
+else E.moved[id] = to;
+toolsChanged();
+}
+/* THE ARCHIVE IN THE TOOLS SHEET: EVERYTHING TAKEN OUT OF VIEW, AND EVERY SECTION MOVED AWAY FROM HOME */
+function arrArchiveHTML() {
+var E = editorPrefs();
+var defs = toolDefs();
+var pdefs = panelDefs();
+var lab = function (id) {
+if (id.indexOf(":") > -1) {
+var p = id.split(":")[0];
+return ((E.labels && E.labels[id]) || id.split(":")[1]) + " · " + (ARR_PANELS[p] || (pdefs[p] && pdefs[p].label) || p);
+}
+return (defs[id] && defs[id].label) || (pdefs[id] && pdefs[id].label) || id;
+};
+var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-label">Archive</span><button class="bd-ed-chip' + (S.arrange ? " is-on" : "") + '" data-act="arrange">' + (S.arrange ? "Arranging panels" : "Arrange panels") + "</button></div>";
+h += E.hidden.length ? E.hidden.map(function (id) { return '<div class="bd-ed-trow is-archived"><span>' + esc(lab(id)) + '</span><span class="bd-ed-trow-acts"><button class="bd-ed-chip" data-act="arr-show" data-id="' + esc(id) + '">Restore</button></span></div>'; }).join("") : '<div class="bd-ed-hint">Nothing archived. Arrange panels puts Archive, Move and ↑ ↓ above every section of the panel on the right.</div>';
+var moved = Object.keys(E.moved).filter(function (id) { return ARR_PANELS[id.split(":")[0]] && ARR_PANELS[E.moved[id]]; });
+if (moved.length) h += '<span class="bd-ed-label">Moved</span>' + moved.map(function (id) { return '<div class="bd-ed-trow"><span>' + esc(lab(id)) + " → " + esc(ARR_PANELS[E.moved[id]]) + '</span><span class="bd-ed-trow-acts"><button class="bd-ed-chip" data-act="arr-home" data-id="' + esc(id) + '">Put back</button></span></div>'; }).join("");
+return h + "</div>";
+}
 /* SECTIONS OF A PANEL, EACH WITH A STEADY ID FROM ITS HEADING */
 function secLabel(node) {
 var lab = node.querySelector(".bd-ed-label, .bd-ed-title, summary") || node.querySelector(".bd-ed-hint, button");
-return lab ? lab.textContent.replace(/\s+/g, " ").trim() : "";
+if (!lab) return "";
+/* THE LIVE SUMMARY BESIDE A HEADING (SIZES, COUNTS) IS NOT PART OF ITS NAME, SO THE ID STAYS PUT WHEN A VALUE CHANGES */
+var c = lab.cloneNode(true);
+Array.prototype.forEach.call(c.querySelectorAll(".bd-ed-sum, .bd-ed-ph"), function (x) { x.remove(); });
+return c.textContent.replace(/\s+/g, " ").trim();
 }
 function panelSections(pid) {
 var pd = panelDefs()[pid];
@@ -6067,11 +6299,12 @@ var hid = toolHidden(id);
 var a = ' data-id="' + esc(id) + '" data-z="' + z + '"';
 return '<div class="bd-ed-trow' + (hid ? " is-hidden" : "") + '"><span>' + esc(t.label) + '</span><span class="bd-ed-trow-acts">'
 + (n > 0 ? chip("tool-up", "↑", a) : "") + (n < len - 1 ? chip("tool-down", "↓", a) : "")
-+ chip(hid ? "tool-show" : "tool-hide", hid ? "Show" : "Hide", a, hid)
++ chip(hid ? "tool-show" : "tool-hide", hid ? "Restore" : "Archive", a, hid)
 + (t.fixed || t.only ? "" : others.map(function (q) { return chip("tool-move", "→ " + TOOL_ZONES[q][0].replace(" panel", "").replace(" bar", ""), a + ' data-to="' + q + '"'); }).join(""))
 + "</span></div>";
 };
-var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Tools · ' + TOOL_ZONES[z][0] + '</span><button class="bd-ed-btn" style="height:26px" data-act="tools-close">Done</button></div><div class="bd-ed-hint">Hide what you don’t use, bring it back here, change the order, or move it to another ' + (btn ? "bar" : "panel") + ".</div></div>";
+var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Tools · ' + TOOL_ZONES[z][0] + '</span><button class="bd-ed-btn" style="height:26px" data-act="tools-close">Done</button></div><div class="bd-ed-hint">Archive what you don’t use, bring it back here, change the order, or move it to another ' + (btn ? "bar" : "panel") + ".</div></div>";
+h += arrArchiveHTML();
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">' + (btn ? "Buttons" : "Tabs") + "</span>" + mine.map(function (id, n) { return row(id, defs[id], n, mine.length); }).join("") + "</div>";
 if (!btn) {
 var pid = z === "left" ? S.leftTab : S.rightTab;
@@ -6084,7 +6317,7 @@ var hid = toolHidden(s.id);
 var a = ' data-id="' + esc(s.id) + '" data-p="' + esc(pid) + '"';
 return '<div class="bd-ed-trow' + (hid ? " is-hidden" : "") + '"><span>' + esc(s.label) + '</span><span class="bd-ed-trow-acts">'
 + (n > 0 ? chip("sec-up", "↑", a) : "") + (n < secs.length - 1 ? chip("sec-down", "↓", a) : "")
-+ chip(hid ? "sec-show" : "sec-hide", hid ? "Show" : "Hide", a, hid)
++ chip(hid ? "sec-show" : "sec-hide", hid ? "Restore" : "Archive", a, hid)
 + pids.map(function (q) { return chip("sec-move", "→ " + esc(panelDefs()[q].label), a + ' data-to="' + esc(q) + '"'); }).join("")
 + "</span></div>";
 }).join("") + '<div class="bd-ed-hint">Open another tab to arrange its sections.</div></div>';
@@ -6379,6 +6612,12 @@ h += '<div class="bd-ed-gthumb">' + (libCover(b, "edit") ? '<img src="' + esc(li
 });
 return h;
 }
+/* A BLOCK MASTER IS SHOWN ONLY FOR BLOCKS THAT CAN BE ON THIS SITE: NOT THE ONES DELETED IN THE REVIEW, NOT THE MENU BUTTON ON A PAPER-SHEET SITE */
+function blockMasterShown(t) {
+if ({ notes: 1, product: 1, ptitle: 1 }[t]) return false;
+if (t === "menubtn" && layersOn()) return false;
+return true;
+}
 function stylesPanel() {
 var s = S.project.site;
 var h = '<div class="bd-ed-sec">' + (S.mode === "phone" ? '<div class="bd-ed-hint">Showing phone sizes.</div>' : "")
@@ -6395,7 +6634,7 @@ row(dpIn("Size", p + ".size", p + ".sizeM", st.size, st.sizeM), dpIn("Line", p +
 + colorIn("Colour", p + ".color", st.color, s.colors.ink), i === 0) + "</div>";
 });
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Blocks</span></div>';
-Object.keys(BLOCK_STYLE).forEach(function (t) {
+Object.keys(BLOCK_STYLE).filter(blockMasterShown).forEach(function (t) {
 h += '<div class="bd-ed-sec">' + adv("bs-" + t, BD_TYPE_NAME[t], styleFields(t, "site", null, { skip: bsMotionKeys(t), hide: { quote: ["Text"], posts: ["Text"], library: ["Covers", "Book"] }[t] || [] }) + (bsMotionKeys(t).length && t !== "library" ? '<div class="bd-ed-hint">Card looks and gestures are in the Motion tab.</div>' : "")) + "</div>";
 });
 return h;
@@ -6419,7 +6658,6 @@ return '<button class="bd-ed-btn" data-act="ly-preset" data-val="' + x[0] + '">'
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Animation</span>'
 + row(numIn("Speed (ms)", "site.motion.gDur", M.gDur, "int"), field("Feel", select("site.motion.gEase", M.gEase, [["ease", "Ease"], ["cubic-bezier(.2,.8,.2,1)", "Paper"], ["cubic-bezier(.7,0,.25,1)", "Heavy drag"], ["ease-in-out", "Even"], ["steps(5, end)", "Stop-motion"], ["linear", "Straight"]])))
 + row(numIn("Book hover tease (°)", "site.motion.tease", M.tease), numIn("Book tap opens (°)", "site.motion.open", M.open)) + "</div>";
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Library</span>' + styleFields("library", "site", null, { only: ["book"].concat(bsMotionKeys("library").filter(function (x) { return x !== "hover"; })), flat: true }) + "</div>";
 return h;
 }
 function pagesPanel() {
@@ -7573,10 +7811,11 @@ var ext = s.externals.map(function (x, i) {
 return '<div class="bd-ed-field" style="gap:6px;padding-bottom:6px;border-bottom:1px dashed var(--e-line)"><div class="bd-ed-list-row">' + select("site.externals." + i + ".section", x.section, s.sections.map(function (q) { return [q.key, q.key]; })) + input("site.externals." + i + ".title", x.title, "", ' aria-label="Link title"') + '<button class="bd-ed-x" data-act="del-ext" data-i="' + i + '" aria-label="Remove link">' + I.x + "</button></div>" + input("site.externals." + i + ".url", x.url, "", ' aria-label="Link address" placeholder="https://"') + "</div>";
 }).join("") + '<button class="bd-ed-btn" data-act="add-ext">' + I.plus + "Outside link</button>";
 var oneMenu = layersOn() && s.menus.length === 1;
-if (oneMenu) h += '<div class="bd-ed-sec"><span class="bd-ed-label">Menu · the links on the menu sheet</span>' + menuEditor(s.menus[0].id, true) + '<div class="bd-ed-hint">Add pages, links or headings and put them in order. The Menu page on its sheet shows this list.</div></div>';
+if (oneMenu && menuPageOf()) h += "";
+else if (oneMenu) h += '<div class="bd-ed-sec"><span class="bd-ed-label">Menu · the links on the menu sheet</span>' + menuEditor(s.menus[0].id, true) + '<div class="bd-ed-hint">Add pages, links or headings and put them in order. The Menu page on its sheet shows this list.</div></div>';
 else h += '<div class="bd-ed-sec"><span class="bd-ed-label">Menus</span>' + menuPicker("ui.menuEdit", S.menuEdit) + menuEditor(S.menuEdit || s.menus[0].id) + '<div class="bd-ed-hint">A menu is the list of links a Menu block or the overlay shows. Make as many as you like; each Menu block picks one.</div>' + (s.menus.length > 1 ? '<button class="bd-ed-btn is-danger is-sm" data-act="menu-del" data-id="' + esc(S.menuEdit || s.menus[0].id) + '">Delete this menu</button>' : "") + "</div>";
-h += '<div class="bd-ed-sec">' + adv("site-sections", "Page groups (Pages tab)", '<div class="bd-ed-hint">Groups only sort the Pages list and number pages. They don’t decide what shows in a menu.</div>' + secs) + "</div>";
-h += '<div class="bd-ed-sec"><span class="bd-ed-title">Blog posts</span><div class="bd-ed-hint">Columns, colours and space for every post live in the post master.</div><button class="bd-ed-btn" data-act="post-master">' + I.sliders + "All posts · master</button></div>";
+h += '<div class="bd-ed-sec">' + adv("site-sections", "Page groups", '<div class="bd-ed-hint">Groups only sort the Pages list and number pages. They don’t decide what shows in a menu.</div>' + secs) + "</div>";
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">Columns · every page that follows the site</span>' + rulerCols({ kind: "", ownLayout: false }, S.mode === "phone", false, true) + '<div class="bd-ed-hint">A page with its own columns keeps them; its panel can send it back here.</div></div>';
 h += '<div class="bd-ed-sec">' + adv("site-adv", "Advanced", '<span class="bd-ed-label">Master placement</span>' + masterPanel()
 + '<span class="bd-ed-label">Grid</span>' + row(dpIn("Units", "site.cols", "site.colsM", s.cols, s.colsM, "int"), dpIn("Gap", "site.gap", "site.gapM", s.gap, s.gapM, "int"), numIn("Free-grid row", "site.row", s.row, "int"))) + "</div>";
 return h;
@@ -7764,6 +8003,7 @@ h += (S.project.site.menus.length > 1 ? field("Shows", menuPicker("el.menu", p.m
 + field("Text style", select("el.style", p.style || "heading", BD_STYLES))
 + row(dpIn("Side padding", "el.pad", "el.padM", p.pad, p.padM), dpIn("Between links", "el.gap", "el.gapM", p.gap, p.gapM))
 + field("Mark", input("el.mark", p.mark || "", "", ' placeholder="' + esc(S.project.site.name) + '"'))
++ (S.project.site.menus.length === 1 ? '<span class="bd-ed-label">Links</span>' + menuEditor(S.project.site.menus[0].id, true) : "")
 + '<div class="bd-ed-hint">' + (smw.strip ? "This page is the edge of the “" + esc(smw.sheet.name) + "” sheet: the menu sits in the part that peeks out. On desktop the links stack down the strip with the mark at the bottom; on phone they run along the band. Edit the links in Site → Menu." : "A sheet menu shows on a sheet’s edge. Make this page the edge of a sheet: drag it from Layers onto a sheet’s drawing.") + "</div>";
 }
 if (e.type === "menubtn") {
@@ -8063,10 +8303,12 @@ return;
 }
 if (rtabs) {
 renderRightInner(R);
+arrApply(R);
 R.insertAdjacentHTML("afterbegin", rtabs);
 return;
 }
 renderRightInner(R);
+arrApply(R);
 }
 function renderRightInner(R) {
 if (S.inspect) {
@@ -8166,7 +8408,7 @@ lay += '<span class="bd-ed-label">Where it lies · ' + esc(pgw.sheet.name || "Sh
 }
 if (pg.parent) lay += '<span class="bd-ed-label">Margin · outside the page</span>' + four("m");
 lay += two(field("Max width" + (ph ? " · phone" : ""), input("page.box.maxW" + (ph ? "M" : ""), (ph ? bx.maxWM : bx.maxW) || "", "", ' placeholder="720 or 60%"')), field("Padding" + (ph ? " · phone" : ""), '<input class="bd-ed-input bd-ed-n" data-bind="padall.page" data-type="blank" value="' + esc(bx["pt" + (ph ? "M" : "")] == null ? "" : bx["pt" + (ph ? "M" : "")]) + '" placeholder="all sides">'));
-if (isMaster(pg)) lay += '<span class="bd-ed-label">Columns & grid</span>' + rulerCols(pg, S.mode === "phone", false, true);
+if (isMaster(pg)) lay += '<span class="bd-ed-label">Columns & grid</span>' + pageColsHTML(pg);
 h += skin("Layout", SK.lay, lay);
 
 var pgOvr = ovrNote("page", pg);
@@ -9143,6 +9385,17 @@ if (z) z.textContent = Math.round(k * 100) + "%";
 if (window.ResizeObserver) {
 new ResizeObserver(function () { fitSheet(); }).observe(document.getElementById("bd-sheet"));
 new ResizeObserver(function () { fitSheet(); }).observe(document.getElementById("bd-stage"));
+}
+/* A PAGE'S COLUMNS: WHILE IT FOLLOWS THE SITE (OR ALL POSTS) IT ONLY SAYS SO, SO A PAGE PANEL NEVER CHANGES EVERY PAGE AT ONCE */
+function pageColsHTML(pg) {
+var who = layWho(pg);
+if (who === "site" || who === "post") {
+var L0 = lay(pg);
+var ph = S.mode === "phone";
+var n0 = ph ? L0.colsM || 1 : L0.cols;
+return '<div class="bd-ed-follow"><span>Follows ' + (who === "post" ? "All posts · master" : "Master · Site") + ": " + n0 + (n0 > 1 ? " columns · gutter " + (ph ? L0.gutterM : L0.gutter) : " column") + '</span><button class="bd-ed-btn is-sm" data-act="page-own" data-val="page">Own columns</button></div>';
+}
+return rulerCols(pg, S.mode === "phone", false, true) + '<div class="bd-ed-follow"><span>This ' + (pg.parent ? "post" : "page") + ' has its own columns.</span><button class="bd-ed-btn is-sm" data-act="page-own" data-val="' + (pg.parent ? "post" : "site") + '">Follow ' + (pg.parent ? "All posts" : "the site") + "</button></div>";
 }
 function rulerCols(page, phone, master, bare) {
 var who = master ? "post" : layWho(page);
@@ -10688,6 +10941,12 @@ var A = {
 "rim-side": function () { var cur = b.getAttribute("data-cur") || ""; var sd = b.getAttribute("data-s"); var one = b.parentNode.classList.contains("is-one"); var nv = one ? sd : cur.indexOf(sd) > -1 ? cur.replace(sd, "") : "trbl".split("").filter(function (x) { return x === sd || cur.indexOf(x) > -1; }).join(""); snap(); applyPath(b.getAttribute("data-path"), nv); changed(); },
 "ovr-clear": function () { var kind = b.getAttribute("data-kind"); var x = kind === "sheet" ? sheetList()[+b.getAttribute("data-i")] : curPage(); if (!x) return; snap(); ovrClear(ovrKeys(kind, x)); changed(); },
 "el-css-clear": function () { var e = selEl(); if (!e) return; snap(); clearElCss(e); changed(); },
+"arrange": function () { arrAction(act, b); },
+"arr-hide": function () { arrAction(act, b); },
+"arr-show": function () { arrAction(act, b); },
+"arr-home": function () { arrAction(act, b); },
+"arr-up": function () { arrAction(act, b); },
+"arr-down": function () { arrAction(act, b); },
 "tools-open": function () { toolAction(act, b); },
 "tools-close": function () { toolAction(act, b); },
 "tools-reset": function () { toolAction(act, b); },
@@ -11254,6 +11513,10 @@ var mm = S.project.site.menus[+t.getAttribute("data-m")];
 snap();
 mm.items.push({ id: uid(), type: "page", page: t.value, label: "" });
 changed();
+return;
+}
+if (t.getAttribute("data-act-select") === "arr-move") {
+arrMove(t.getAttribute("data-id"), t.value);
 return;
 }
 if (t.getAttribute("data-act-select") !== "lay-spans") return;

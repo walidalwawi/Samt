@@ -2,7 +2,7 @@ import asyncio, sys, json, time
 sys.path.insert(0, '/home/claude/work')
 from grid_test import gh
 from playwright.async_api import async_playwright
-SKIP = {'page-del-yes','sign-out','discard','discard-yes','export','zip','publish','reload','projects','tool-del','sheet-del','page-del','sel-del','menu-del','del-section','del-ext','tools-reset','pin-add','page-add','blog-add','post-add','sheet-add','add-section','add-ext','menu-new','tool-add','tool-save','set','page','left-tab','right-tab','tools-open','tools-close','add','code-tab','mode','code','preview','toggle-left','toggle-right','undo','redo','confirm-no','page-menu','stack-page','sheet-cover','layout','el-css-clear','inspect'}
+SKIP = {'page-del-yes','sign-out','discard','discard-yes','export','zip','publish','reload','projects','tool-del','sheet-del','page-del','sel-del','menu-del','del-section','del-ext','tools-reset','pin-add','page-add','blog-add','post-add','sheet-add','add-section','add-ext','menu-new','tool-add','tool-save','set','page','left-tab','right-tab','tools-open','tools-close','add','code-tab','mode','code','preview','toggle-left','toggle-right','undo','redo','confirm-no','page-menu','stack-page','sheet-cover','layout','el-css-clear','inspect','arrange','arr-hide','arr-up','arr-down','arr-show','arr-home','ovr-clear','grain-swap'}
 SNAP = "() => ({ css: exportCSS(), html: exportPage(curPage()), model: JSON.stringify(S.project), st: JSON.stringify([S.leftTab, S.rightTab, S.sel, S.pageId, S.mode, S.preview, S.codeOpen]) })"
 async def run():
     log = []

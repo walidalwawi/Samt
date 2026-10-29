@@ -90,7 +90,7 @@ async def run():
         # gradients: a sheet's paper and a page's card/behind colours can be solid or a two-colour gradient
         await ev("(function(){ var ix = S.project.site.sheets.find(function(k){return k.id==='index'}); ix.color='#ebebeb'; ix.alpha=30; applyPath('fill.mode|site.sheets.' + sheetList().map(function(k){return k.id}).indexOf('index') + '.color', 'grad'); applyPath('fill.a|site.sheets.' + sheetList().map(function(k){return k.id}).indexOf('index') + '.color', '#ff0000'); applyPath('fill.angle|site.sheets.' + sheetList().map(function(k){return k.id}).indexOf('index') + '.color', '90'); applyPath('fill.mode|page.sheetBg', 'grad'); changed(); })()")
         css = await ev("exportCSS()")
-        ok('gradient: a sheet\'s paper keeps its see-through on every stop', 'linear-gradient(90deg, rgba(255, 0, 0, 0.3), rgba(255, 255, 255, 0.3))' in css)
+        ok('gradient: a sheet\'s paper keeps its see-through on every stop', 'linear-gradient(90deg, rgba(255, 0, 0, 0.7), rgba(255, 255, 255, 0.7))' in css)
         ok('gradient: back to solid keeps the first colour', await ev("(function(){ applyPath('fill.mode|site.sheets.' + sheetList().map(function(k){return k.id}).indexOf('index') + '.color', 'solid'); return S.project.site.sheets.find(function(k){return k.id==='index'}).color; })()") == '#ff0000')
         # --- sheet panel, fills, patterns, margin/padding, leave/appear, page card ---
         import re
@@ -134,7 +134,7 @@ async def run():
         pid = await ev("sheetList().find(function(k){return k.id==='index'}).pages[0]")
         await ev(f"S.project.pages['{pid}'].box = {{card:'#ffffff', cardA:'40', blur:'6'}}; changed()")
         css = await ev("layerCSS(false)")
-        ok('css: page card see-through + blur', 'rgba(255, 255, 255, 0.4)' in css and 'blur(6px)' in css)
+        ok('css: page card see-through + blur', 'rgba(255, 255, 255, 0.6)' in css and 'blur(6px)' in css)
         # canvas
         await ev("goPage('%s'); S.sheetSel=''; render()"%pid); await pg.wait_for_timeout(600)
         ok('canvas renders', await ev("!!document.getElementById('bd-sheet').shadowRoot.querySelector('.bd-site')"))
@@ -341,7 +341,7 @@ async def run():
         await ev("(function(){ var k = sheetList()[1]; k.color = '#ff0000'; k.alpha = 10; k.blur = 40; k.box = { mr: '30%' }; k.pattern = 'dotted'; S.sheetSel = k.id; S.sel = null; render(); })()")
         ok('inherit: the sheet panel starts with the red button', await pg.locator('#bd-right .bd-ed-inherit[data-act=inherit-ask]').count() == 1)
         await pg.click('#bd-right [data-act=inherit-ask]'); await pg.click('#bd-right [data-act=inherit-yes]'); await pg.wait_for_timeout(300)
-        ok('inherit: a sheet goes back to the defaults but keeps its pages', await ev("(function(){ var k = sheetList()[1]; return k.color === '#E4E1DA' && k.alpha === 55 && k.blur === 9 && k.pattern === '' && Object.keys(k.box).length === 0 && k.pages.length === 2; })()"))
+        ok('inherit: a sheet goes back to the defaults but keeps its pages', await ev("(function(){ var k = sheetList()[1]; return k.color === '#E4E1DA' && k.alpha === 45 && k.blur === 9 && k.pattern === '' && Object.keys(k.box).length === 0 && k.pages.length === 2; })()"))
         # --- one sheet: pages always scroll together, and start and end on the same lines
         await ev("(function(){ var k = sheetList().filter(function(k){return k.pin})[0]; var o = k.pages.filter(function(id){return id !== k.pin})[0]; S.masterSel = false; S.postMaster = false; S.sheetSel = ''; S.sel = null; S.confirm = null; S.pageId = o; render(); })()")
         ok('one sheet: no Scrolls choice on a page of a pinned sheet', await pg.locator('#bd-right [data-path="page.scroll"]').count() == 0)

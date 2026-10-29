@@ -437,6 +437,35 @@ margin: 0;
 opacity: 0.9;
 }
 
+/* A SECTION THAT ONLY HOLDS A FOLD IS ONE ROW; ONE THAT ONLY HOLDS A LABEL IS A GROUP HEADING */
+.bd-ed-sec:has(> .bd-ed-adv:only-child) {
+gap: 0;
+padding: 0 var(--e-pad);
+border-bottom: 1px solid var(--e-hair);
+}
+.bd-ed-sec > .bd-ed-adv:only-child {
+border-top: 0;
+}
+.bd-ed-sec:has(> .bd-ed-label:only-child) {
+padding: 18px var(--e-pad) 6px;
+border-bottom: 1px solid var(--e-line);
+}
+.bd-ed-sec > .bd-ed-label:only-child {
+font-size: 10px;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: var(--e-ink);
+}
+.bd-ed-sec .bd-ed-tabs {
+position: static;
+margin: 2px calc(var(--e-pad) * -1) -16px;
+border-top: 1px solid var(--e-line);
+border-bottom: 0;
+}
+.bd-ed-skinfold > summary.bd-ed-title {
+display: flex;
+}
+
 /* LABELS, FIELDS, ROWS */
 .bd-ed-label {
 display: block;
@@ -642,6 +671,72 @@ width: 13px;
 height: 13px;
 margin: 0;
 accent-color: var(--e-ink);
+}
+
+/* ARRANGE: A BAR ABOVE EVERY SECTION (ARCHIVE, MOVE, ORDER) */
+.bd-ed-arr {
+display: flex;
+align-items: center;
+gap: 0;
+padding: 4px var(--e-pad);
+border-bottom: 1px solid var(--e-line);
+background: var(--e-ink);
+color: var(--e-bg);
+}
+.bd-ed-arr-name {
+flex: 1;
+min-width: 0;
+overflow: hidden;
+font-size: 9.5px;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+white-space: nowrap;
+text-overflow: ellipsis;
+}
+.bd-ed-arr .bd-ed-chip {
+border-color: currentColor;
+background: transparent;
+color: inherit;
+}
+.bd-ed-arr .bd-ed-chip + .bd-ed-chip,
+.bd-ed-arr .bd-ed-rsel + .bd-ed-chip,
+.bd-ed-arr .bd-ed-chip + .bd-ed-rsel {
+margin-left: -1px;
+}
+.bd-ed-arr .bd-ed-chip:hover {
+background: var(--e-bg);
+color: var(--e-ink);
+}
+.bd-ed-arr .bd-ed-chip:disabled {
+opacity: 0.35;
+cursor: default;
+}
+.bd-ed-arr .bd-ed-rsel {
+width: 104px;
+height: 22px;
+border-color: currentColor;
+background: transparent;
+color: inherit;
+font-size: 9.5px;
+}
+.bd-ed-arr .bd-ed-rsel option {
+color: #141414;
+}
+.bd-ed-sec.is-guest {
+border-left: 3px solid var(--e-ink);
+}
+
+/* FOLLOWING A MASTER */
+.bd-ed-follow {
+display: flex;
+flex-wrap: wrap;
+align-items: center;
+justify-content: space-between;
+gap: 8px;
+padding: 8px 0;
+border-top: 1px solid var(--e-hair);
+border-bottom: 1px solid var(--e-hair);
+font-size: 10.5px;
 }
 
 /* CONFIRM, OVERRIDES, INHERIT */
