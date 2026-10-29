@@ -5648,7 +5648,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#d946ef";
+var BD_BUILD = "#22c55e";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6217,12 +6217,18 @@ var ED_THEME = [
 ["bg", "Ground", ["--e-bg", "--e-surface"], "#EEEEEA"],
 ["raise", "Fields", ["--e-raise"], "#F8F8F5"],
 ["tint", "Open folds", ["--e-tint"], "#E2E2DC"],
-["well", "Canvas", ["--e-well"], "#E4E4DF"],
+["well", "Canvas", ["--e-well"], "#F9FFF9"],
 ["ink", "Ink", ["--e-ink", "--e-line", "--e-pill", "--e-tpill", "--e-on", "--e-accent"], "#141414"],
 ["onInk", "Text on ink", ["--e-accent-ink", "--e-pill-ink", "--e-on-ink"], "#EEEEEA"],
 ["mute", "Quiet text", ["--e-mute", "--e-pill-mute"], "#6B6B65"],
 ["hair", "Thin lines", ["--e-hair"], "#C8C8C1"],
-["mark", "Mark", ["--e-orange", "--e-warn"], "#141414"]
+["mark", "Mark", ["--e-orange", "--e-warn"], "#141414"],
+["sheet", "Sheet", ["--e-sheet"], "#FFE500"],
+["sheetSoft", "Sheet pages", ["--e-sheet-soft"], "#FFF6B0"],
+["blog", "Blog", ["--e-blog"], "#00F200"],
+["blogSoft", "Blog posts", ["--e-blog-soft"], "#D1FFD1"],
+["tile", "Plain pages", ["--e-tile"], "#FFFFFF"],
+["master", "Master", ["--e-master"], "#F6F6F2"]
 ];
 var ED_FONTS = [["", "Plex Mono"], ["sans", "System sans"], ["grot", "Helvetica"], ["serif", "Serif"]];
 var ED_FONT_CSS = { sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', grot: '"Helvetica Neue", Helvetica, Arial, sans-serif', serif: 'Georgia, "Times New Roman", serif' };
@@ -6246,10 +6252,18 @@ if (ED_FONT_CSS[T.font]) v.push("--e-mono: " + ED_FONT_CSS[T.font] + ";", "--e-s
 if (T.pad) v.push("--e-pad: " + T.pad + "px;");
 if (T.row) v.push("--e-row: " + T.row + "px;");
 var h = v.length ? ":root:root:root {\n" + v.join("\n") + "\n}\n" : "";
-if (T.lw != null && T.lw !== "") h += ".bd-ed-sec {\nborder-bottom-width: " + T.lw + "px;\n}\n.bd-ed-sec.is-end {\nborder-top-width: " + T.lw + "px;\n}\n";
+if (T.lw) h += ".bd-ed-sec,\n.bd-ed-skinwrap > .bd-ed-sec {\nborder-bottom: " + T.lw + "px solid var(--e-line);\n}\n";
 if (T.rad) h += ".bd-ed-btn,\n.bd-ed-chip,\n.bd-ed-input,\n.bd-ed-seg,\n.bd-ed-seg button,\n.bd-ed-tool,\n.bd-ed-sw {\nborder-radius: " + T.rad + "px;\n}\n";
 if (T.secGap) h += ".bd-ed-sec + .bd-ed-sec {\nmargin-top: " + T.secGap + "px;\n}\n";
 if (T.size) h += "body {\nfont-size: " + T.size + "px;\n}\n";
+if (T.gap != null && T.gap !== "") h += ":root:root:root {\n--e-gap: " + T.gap + "px;\n}\n";
+if (T.headCase === "caps") h += ".bd-ed-sec > .bd-ed-title,\n.bd-ed-skinfold > summary.bd-ed-title {\ntext-transform: uppercase;\nletter-spacing: 0.07em;\n}\n";
+if (T.headSize) h += ".bd-ed-title,\n.bd-ed-sec > .bd-ed-title {\nfont-size: " + T.headSize + "px;\n}\n";
+if (T.field === "line") h += ".bd-ed-input {\nborder-width: 0 0 1px;\nbackground: transparent;\n}\n";
+else if (T.field === "soft") h += ".bd-ed-input {\nborder-color: var(--e-hair);\n}\n";
+if (T.top === "ink") h += ".bd-ed-top {\nbackground: var(--e-ink);\ncolor: var(--e-bg);\n--e-line: var(--e-bg);\n}\n";
+else if (T.top === "sheet") h += ".bd-ed-top {\nbackground: var(--e-sheet);\n}\n";
+else if (T.top === "blog") h += ".bd-ed-top {\nbackground: var(--e-blog);\n}\n";
 return h;
 }
 function edThemeApply() {
@@ -6289,6 +6303,12 @@ st.borderBottom = bw;
 if (L.pad === "tight") st.padding = "6px var(--e-pad) 8px";
 else if (L.pad === "roomy") st.padding = "22px var(--e-pad) 26px";
 if (L.gap) st.marginTop = L.gap + "px";
+var hd = node.querySelector(".bd-ed-title, summary, .bd-ed-label");
+if (hd && L.head === "caps") {
+hd.style.textTransform = "uppercase";
+hd.style.letterSpacing = "0.07em";
+} else if (hd && L.head === "big") hd.style.fontSize = "16px";
+else if (hd && L.head === "hide" && hd.tagName !== "SUMMARY") hd.style.display = "none";
 if (L.name) {
 var lab = node.querySelector(".bd-ed-label, .bd-ed-title, summary");
 if (lab) {
@@ -6313,12 +6333,16 @@ var T = edTheme();
 var h = '<div class="bd-ed-sec bd-ed-cus" data-cus="office"><div class="bd-ed-head"><span class="bd-ed-label">Office look</span><button class="bd-ed-chip" data-act="ed-reset" data-val="theme">Reset</button></div>';
 h += '<div class="bd-ed-cus-grid">' + ED_THEME.map(function (t) { return edRow(t[1], edColour("theme." + t[0], T[t[0]], t[3])); }).join("") + "</div>";
 h += edRow("Type", edSeg("theme.font", T.font || "", ED_FONTS));
-h += edRow("Text size", edSeg("theme.size", T.size || "", [["", "11"], ["12", "12"], ["13", "13"], ["14", "14"]]));
-h += edRow("Section lines", edSeg("theme.lw", T.lw == null ? "" : T.lw, [["0", "None"], ["", "1"], ["2", "2"], ["4", "4"]]));
+h += edRow("Text size", edSeg("theme.size", T.size === 13 ? "" : T.size || "", [["11", "11"], ["12", "12"], ["", "13"], ["14", "14"]]));
+h += edRow("Headings", edSeg("theme.headCase", T.headCase || "", [["", "As written"], ["caps", "CAPS"]]));
+h += edRow("Heading size", edSeg("theme.headSize", T.headSize || "", [["", "Auto"], ["12", "12"], ["14", "14"], ["16", "16"]]));
+h += edRow("Fields", edSeg("theme.field", T.field || "", [["", "Box"], ["soft", "Soft box"], ["line", "Underline"]]));
+h += edRow("Top bar", edSeg("theme.top", T.top || "", [["", "Ground"], ["ink", "Ink"], ["sheet", "Yellow"], ["blog", "Green"]]));
+h += edRow("Tiles gap", edSeg("theme.gap", T.gap == null ? "" : T.gap, [["0", "0"], ["", "2"], ["4", "4"], ["8", "8"]]));
+h += edRow("Section lines", edSeg("theme.lw", T.lw === 0 ? "" : T.lw == null ? "" : T.lw, [["", "None"], ["1", "1"], ["2", "2"], ["4", "4"]]));
 h += edRow("Corners", edSeg("theme.rad", T.rad || "", [["", "Square"], ["4", "4"], ["8", "8"], ["99", "Pill"]]));
-h += edRow("Side space", edSeg("theme.pad", T.pad || "", [["10", "10"], ["", "14"], ["20", "20"], ["28", "28"]]));
+h += edRow("Side space", edSeg("theme.pad", T.pad === 10 ? "" : T.pad || "", [["", "10"], ["14", "14"], ["20", "20"], ["28", "28"]]));
 h += edRow("Row height", edSeg("theme.row", T.row || "", [["26", "26"], ["", "30"], ["36", "36"]]));
-h += edRow("Gap between", edSeg("theme.secGap", T.secGap || "", [["", "0"], ["6", "6"], ["12", "12"], ["24", "24"]]));
 return h + '<div class="bd-ed-hint">Each section below has Style for its own name, colours, border and space.</div></div>';
 }
 function edSecHTML(id, label) {
@@ -6336,6 +6360,7 @@ h += edRow("Border colour", edColour(p + "bc", L.bc, "#141414"));
 }
 h += edRow("Space inside", edSeg(p + "pad", L.pad || "", [["tight", "Tight"], ["", "Default"], ["roomy", "Roomy"]]));
 h += edRow("Space above", edSeg(p + "gap", L.gap || "", [["", "0"], ["8", "8"], ["16", "16"], ["32", "32"]]));
+h += edRow("Heading", edSeg(p + "head", L.head || "", [["", "Default"], ["caps", "CAPS"], ["big", "Large"], ["hide", "Hidden"]]));
 return h + '<div class="bd-ed-cus-foot"><button class="bd-ed-chip" data-act="ed-reset" data-val="' + esc(id) + '">Reset this section</button></div></div>';
 }
 function edSet(path, v, live) {
@@ -6815,10 +6840,28 @@ if ({ notes: 1, product: 1, ptitle: 1 }[t]) return false;
 if (t === "menubtn" && layersOn()) return false;
 return true;
 }
+/* MASTER ORDER: STYLES = TYPE, COLOURS AND THE LOOK OF EVERY GENERAL BLOCK; SITE = NAME, FRAME, WHAT IS ON EVERY PAGE, GROUPS, COLUMNS; BLOG = EVERYTHING ABOUT BLOGS AND POSTS (TITLES, CARDS, POST INFO, ARROWS, OPENING, POST LAYOUT) */
+var BLOG_MASTERS = ["posts", "postinfo"];
+function blockMasterSec(t, label) {
+return '<div class="bd-ed-sec">' + adv("bs-" + t, label || BD_TYPE_NAME[t], styleFields(t, "site", null, { skip: BLOG_MASTERS.indexOf(t) > -1 ? [] : bsMotionKeys(t), hide: { quote: ["Text"], library: ["Covers", "Book"] }[t] || [] })) + "</div>";
+}
+function siteColoursHTML() {
+var s = S.project.site;
+return '<div class="bd-ed-sec"><span class="bd-ed-label">Colours</span>' + row(
+field("Page", '<input type="color" class="bd-ed-input" data-bind="site.colors.page" value="' + esc(s.colors.page) + '">'),
+field("Panel", '<input type="color" class="bd-ed-input" data-bind="site.colors.panel" value="' + esc(s.colors.panel) + '">'),
+field("Ink", '<input type="color" class="bd-ed-input" data-bind="site.colors.ink" value="' + esc(s.colors.ink) + '">'),
+field("Rule", '<input type="color" class="bd-ed-input" data-bind="site.colors.rule" value="' + esc(s.colors.rule) + '">')) + "</div>";
+}
+function blogTitlesHTML() {
+var s = S.project.site;
+return '<div class="bd-ed-sec"><span class="bd-ed-title">Titles</span>' + row(field("Blog title shows", select("site.blogHead", s.blogHead || "both", HEAD_MODES)), field("Post titles show", select("site.postHead", s.postHead || "both", HEAD_MODES))) + '<div class="bd-ed-hint">' + (s.header ? "A blog’s number is how many posts it has; a post’s number is its place in its blog. A blog can set its own in its Details." : "Page title at the top is off in Master · Site, so these do nothing yet.") + "</div></div>";
+}
 function stylesPanel() {
 var s = S.project.site;
 var h = '<div class="bd-ed-sec">' + (S.mode === "phone" ? '<div class="bd-ed-hint">Showing phone sizes.</div>' : "")
 + row(field("Main face", select("site.sans", s.sans, BD_FONTS_SANS)), field("Mono face", select("site.mono", s.mono, BD_FONTS_MONO))) + "</div>";
+h += siteColoursHTML();
 BD_STYLES.forEach(function (k, i) {
 if (k[0] === "mono") return;
 var st = s.styles[k[0]];
@@ -6831,7 +6874,7 @@ row(dpIn("Size", p + ".size", p + ".sizeM", st.size, st.sizeM), dpIn("Line", p +
 + colorIn("Colour", p + ".color", st.color, s.colors.ink), i === 0) + "</div>";
 });
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Blocks</span></div>';
-Object.keys(BLOCK_STYLE).filter(blockMasterShown).forEach(function (t) {
+Object.keys(BLOCK_STYLE).filter(blockMasterShown).filter(function (t) { return BLOG_MASTERS.indexOf(t) < 0; }).forEach(function (t) {
 h += '<div class="bd-ed-sec">' + adv("bs-" + t, BD_TYPE_NAME[t], styleFields(t, "site", null, { skip: bsMotionKeys(t), hide: { quote: ["Text"], posts: ["Text"], library: ["Covers", "Book"] }[t] || [] }) + (bsMotionKeys(t).length && t !== "library" ? '<div class="bd-ed-hint">Card looks and gestures are in the Motion tab.</div>' : "")) + "</div>";
 });
 return h;
@@ -6891,7 +6934,7 @@ if (g.pins && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 
 g.pages.forEach(function (p) {
 var st = g.sheet ? sheetStrip(g.sheet) : null;
 var tag = p.kind === "pin" ? (p.pin.place === "bottom" ? "foot" : "head") : st && st.id === p.id ? "edge" : p.blog ? "blog" : esc(p.num || "·");
-h += '<div class="bd-ed-pgw' + (p.id === S.pageId ? " is-on" : "") + '" data-pid="' + p.id + '">' + (p.kind === "pin" ? '<span class="bd-ed-grip is-off"></span>' : '<span class="bd-ed-grip" data-grip="page" data-id="' + p.id + '" title="Drag to move">' + I.grip + "</span>") + '<button class="bd-ed-pg' + (p.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + p.id + '"><b>' + tag + "</b><span>" + (p.slug === "" && p.kind !== "pin" ? "⌂ " : "") + esc(p.title) + "</span></button></div>";
+h += '<div class="bd-ed-pgw' + (p.id === S.pageId ? " is-on" : "") + (p.blog ? " is-blog" : "") + '" data-pid="' + p.id + '">' + (p.kind === "pin" ? '<span class="bd-ed-grip is-off"></span>' : '<span class="bd-ed-grip" data-grip="page" data-id="' + p.id + '" title="Drag to move">' + I.grip + "</span>") + '<button class="bd-ed-pg' + (p.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + p.id + '"><b>' + tag + "</b><span>" + (p.slug === "" && p.kind !== "pin" ? "⌂ " : "") + esc(p.title) + "</span></button></div>";
 if (p.blog) {
 h += '<button class="bd-ed-pg is-post is-pmaster' + (S.postMaster ? " is-on" : "") + '" data-act="post-master" data-id="' + p.id + '"><b>▤</b><span>All posts · master</span></button>';
 postsOf(p.id).forEach(function (q) {
@@ -7986,19 +8029,14 @@ return h;
 }
 function sitePanel() {
 var s = S.project.site;
-var h = (layersOn() ? "" : layersPanel()) + '<div class="bd-ed-sec">' + field("Site name", input("site.name", s.name))
-+ '<span class="bd-ed-label">Colour</span>' + row(
-field("Page", '<input type="color" class="bd-ed-input" data-bind="site.colors.page" value="' + esc(s.colors.page) + '">'),
-field("Panel", '<input type="color" class="bd-ed-input" data-bind="site.colors.panel" value="' + esc(s.colors.panel) + '">'),
-field("Ink", '<input type="color" class="bd-ed-input" data-bind="site.colors.ink" value="' + esc(s.colors.ink) + '">'),
-field("Rule", '<input type="color" class="bd-ed-input" data-bind="site.colors.rule" value="' + esc(s.colors.rule) + '">')) + "</div>";
+var h = (layersOn() ? "" : layersPanel()) + '<div class="bd-ed-sec">' + field("Site name", input("site.name", s.name)) + "</div>";
 h += '<div class="bd-ed-sec"><span class="bd-ed-label">Page frame</span>'
 + row(numIn("Width", "site.w", s.w, "int"))
 + '<span class="bd-ed-label">Window margins</span>'
 + row(dpIn("Top", "site.mt", "site.mtM", s.mt, s.mtM, "int"), dpIn("Right", "site.mr", "site.mrM", s.mr, s.mrM, "int"), dpIn("Bottom", "site.mb", "site.mbM", s.mb, s.mbM, "int"), dpIn("Left", "site.ml", "site.mlM", s.ml, s.mlM, "int"))
 + row(dpIn("Paragraph indent", "site.indent", "site.indentM", s.indent, s.indentM, "int"))
-+ '<div class="bd-ed-hint">Columns are set in the bar above the canvas.</div></div>';
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title at the top", "site.header", s.header) + '<div class="bd-ed-hint">Writes each page’s heading above its content. A page can switch it off in its own panel (Show the title). Or leave this off and place a Page title block where you want it.</div>' + (s.header ? sw("Number above the title", "site.showNum", s.showNum) + field("Blog title shows", select("site.blogHead", s.blogHead || "both", HEAD_MODES)) + field("Post titles show", select("site.postHead", s.postHead || "both", HEAD_MODES)) + '<div class="bd-ed-hint">A blog’s number is how many posts it has; a post’s number is its place in its blog. A blog can set its own in its Details.</div>' : "") + (layersOn() ? "" : sw("Floating menu button", "site.menu", s.menu) + sw("Page arrows at the end", "site.pager", s.pager)) + sw("Click images to zoom", "site.zoom", s.zoom) + '<div class="bd-ed-hint">Tap an image to see it full screen. One image can opt out in its own panel.</div>'
++ "</div>";
+h += '<div class="bd-ed-sec"><span class="bd-ed-label">On every page</span>' + sw("Page title at the top", "site.header", s.header) + '<div class="bd-ed-hint">Writes each page’s heading above its content. A page can switch it off in its own panel (Show the title). Or leave this off and place a Page title block where you want it.</div>' + (s.header ? sw("Number above the title", "site.showNum", s.showNum) + '<div class="bd-ed-hint">Blog and post titles are set in Master · Blog.</div>' : "") + (layersOn() ? "" : sw("Floating menu button", "site.menu", s.menu) + sw("Page arrows at the end", "site.pager", s.pager)) + sw("Click images to zoom", "site.zoom", s.zoom) + '<div class="bd-ed-hint">Tap an image to see it full screen. One image can opt out in its own panel.</div>'
 + (!layersOn() && (s.menu || hasMenuButton()) ? '<button class="bd-ed-btn" data-act="menu-style">' + I.sliders + "Style the menu</button>" : "") + '<div class="bd-ed-hint">' + (layersOn() ? "With paper sheets the menu is a page on a sheet; what must stay still lives on the glass below." : "Or add Menu, Page title and Page arrows blocks to the header and footer.") + "</div></div>";
 
 var secs = s.sections.map(function (x, i) {
@@ -8056,6 +8094,9 @@ var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title
 + (S.confirm === "posts" ? '<div class="bd-ed-confirm">Drop the own columns, colours and space of ' + (all.length - nf) + ' post' + (all.length - nf === 1 ? "" : "s") + '? Their words and blocks stay; what most posts share moves into the master first. <button class="bd-ed-btn bd-ed-inherit" data-act="posts-follow-yes">Make all follow</button><button class="bd-ed-btn" data-act="inherit-no">Keep</button></div>'
 : '<button class="bd-ed-btn bd-ed-inherit"' + (nf === all.length ? " disabled" : "") + ' data-act="posts-follow-ask">' + (nf === all.length ? "All " + all.length + " posts follow the master" : "Make all " + all.length + " posts follow (" + (all.length - nf) + " have their own)") + "</button>")
 + "</div>";
+h += blogTitlesHTML();
+h += blockMasterSec("posts", "Post cards");
+h += blockMasterSec("postinfo", "Post info");
 h += postArrowsPanel();
 h += postGoHTML();
 h += '<div class="bd-ed-sec"><span class="bd-ed-title">Columns' + (S.mode === "phone" ? " · phone" : "") + '</span>' + rulerCols({ kind: "page", parent: "posts" }, S.mode === "phone", true) + '<div class="bd-ed-hint">Blocks keep the column they are in. With one column every block stacks.</div></div>';
@@ -8573,7 +8614,7 @@ var s = S.project.site;
 var pgw = layersOn() ? sheetOf(pg.id) : null;
 var onSheet = !!(pgw && pgw.k > -1 && !pg.parent);
 var cardOn = !onSheet || pageMode(pg) === "card";
-skinColour(pg.parent ? "post" : !onSheet ? "under" : pg.blog ? "blog" : "page");
+skinColour(pg.parent ? "post" : pg.blog ? "blog" : !onSheet ? "under" : "page");
 var ph = S.mode === "phone";
 var bx = pg.box || {};
 var four = function (pre) {
@@ -8595,7 +8636,10 @@ var det = (s.menus.length === 1 ? '<div class="bd-ed-two" style="grid-template-c
 + (pg.kind !== "pin" ? sw("Show the title", "page.header", pg.header !== false) + '<div class="bd-ed-hint">' + (s.header ? "The page heading at the top. Switch off to hide it on this page only." : "Page title at the top is off in Site, so this does nothing yet.") + "</div>" : "")
 + field("Description", '<textarea class="bd-ed-input" data-bind="page.desc" rows="3" style="font-family:var(--e-sans);font-size:12.5px">' + esc(pg.desc) + "</textarea>")
 + field("Group", select("page.section", pg.section, [["", "No group"]].concat(s.sections.map(function (x) { return [x.key, x.label]; }))));
-if (onSheet) h += '<div class="bd-ed-sec bd-ed-skin bd-ed-sheetbar" data-act="sheet-sel" data-id="' + esc(pgw.sheet.id) + '" title="Open the sheet\'s settings"><span class="bd-ed-title">' + esc(pgw.sheet.name || "Sheet") + "</span></div>";
+/* THE FAMILY HEADER: A PAGE ON A SHEET CARRIES THE SHEET'S YELLOW BAR, A POST CARRIES ITS BLOG'S GREEN BAR; TAP OPENS THE SHEET / THE BLOG */
+if (onSheet) h += '<div class="bd-ed-sec bd-ed-skin bd-ed-sheetbar is-sheetbar" data-act="sheet-sel" data-id="' + esc(pgw.sheet.id) + '" title="Open the sheet\'s settings"><span class="bd-ed-bartag">On the sheet</span><span class="bd-ed-title">' + esc(pgw.sheet.name || "Sheet") + '</span><span class="bd-ed-bargo">Open →</span></div>';
+var pblog = pg.parent ? S.project.pages[pg.parent] : null;
+if (pblog) h += '<div class="bd-ed-sec bd-ed-skin bd-ed-sheetbar is-blogbar" data-act="page" data-id="' + esc(pblog.id) + '" title="Open the blog"><span class="bd-ed-bartag">Part of the blog</span><span class="bd-ed-title">' + esc(pblog.title || "Blog") + '</span><span class="bd-ed-bargo">Open →</span></div>';
 h += (pg.parent ? skin("Post", SK.det, '<div class="bd-ed-hint">' + (postFollows(pg) ? "This post follows All posts · master." : "This post has its own settings. Inherit all brings it back to All posts · master.") + '</div><button class="bd-ed-btn" data-act="post-master">' + I.sliders + "Edit All posts · master</button>") : "") + skin("Details", SK.det, det);
 var lay = "";
 if (onSheet) {
@@ -8891,7 +8935,6 @@ return { css: cssJoin(out.desk, out.mob), dropped: dropped };
 function cssTidyOnce() {
 var s = S.project && S.project.site;
 if (!s || s.cssTidyV1) return;
-s.cssTidyV1 = true;
 var css = s.css || "";
 /* ONLY A SITE CSS THAT HOLDS A PASTED COPY OF THE SHEET (OR THE BROKEN VIDEO FRAME) IS TOUCHED */
 if (!css.trim() || (css.length < 20000 && !/\.bd-embed\s+iframe\s*\{/.test(css))) return;
@@ -8907,6 +8950,7 @@ if (!gen) return;
 var r = cssTidy(css, gen);
 if (r.dropped) {
 s.css = r.css;
+s.cssTidyV1 = true;
 S.tidyNote = r.dropped;
 }
 }

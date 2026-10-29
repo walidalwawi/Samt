@@ -12,7 +12,7 @@ Rows inside a section are divided by a lighter hairline.
 --e-surface: #EEEEEA;
 --e-raise: #F8F8F5;
 --e-tint: #E2E2DC;
---e-well: #E4E4DF;
+--e-well: #F9FFF9;
 --e-ink: #141414;
 --e-mute: #6B6B65;
 --e-line: #141414;
@@ -31,7 +31,16 @@ Rows inside a section are divided by a lighter hairline.
 --e-sans: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 --e-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 --e-row: 30px;
---e-pad: 14px;
+--e-pad: 10px;
+--e-gap: 2px;
+--e-sheet: #FFE500;
+--e-sheet-soft: #FFF6B0;
+--e-blog: #00F200;
+--e-blog-soft: #D1FFD1;
+--e-tile: #FFFFFF;
+--e-master: #F6F6F2;
+--e-tink: #141414;
+--e-tmute: #3F3F3A;
 }
 @media (prefers-color-scheme: dark) {
 :root:not([data-theme="light"]) {
@@ -95,7 +104,7 @@ body {
 background: var(--e-bg);
 color: var(--e-ink);
 font-family: var(--e-mono);
-font-size: 11px;
+font-size: 13px;
 line-height: 1.4;
 letter-spacing: 0.01em;
 overflow: hidden;
@@ -380,7 +389,6 @@ margin: 0;
 padding: 12px var(--e-pad) 16px;
 background: transparent;
 border: 0;
-border-bottom: 1px solid var(--e-line);
 }
 .bd-ed-sec > .bd-ed-title {
 display: block;
@@ -2068,6 +2076,124 @@ transition: none !important;
 }
 
 /* PHONE AND NARROW SCREENS */
+/* FAMILIES — SHEETS ARE YELLOW, BLOGS ARE GREEN. THE SHEET / BLOG PANEL ITSELF IS BRIGHT (ITS FIRST TILE PASTEL); ITS PAGES / POSTS ARE PASTEL WITH A BRIGHT HEADER BAR NAMING THE FAMILY. SECTIONS ARE TILES WITH A SMALL GAP; CONTROLS STAY BLACK */
+.bd-ed-skinwrap {
+gap: var(--e-gap);
+background: var(--e-bg);
+}
+.bd-ed-skinwrap > .bd-ed-sec,
+.bd-ed-skinwrap > .bd-ed-cus {
+border: 0;
+}
+.bd-ed-skinwrap.is-under > .bd-ed-sec:not(.is-end),
+.bd-ed-skinwrap[class*="bd-ed-pc-"] > .bd-ed-sec:not(.is-end) {
+background: var(--e-tile);
+}
+.bd-ed-skinwrap[class*="bd-ed-pc-"] > .bd-ed-sec:not(.is-end) {
+background: var(--e-master);
+}
+.bd-ed-skinwrap.is-sheet > .bd-ed-sec:not(.is-end),
+.bd-ed-skinwrap.is-blog > .bd-ed-sec:not(.is-end),
+.bd-ed-skinwrap.is-page > .bd-ed-sec:not(.is-end),
+.bd-ed-skinwrap.is-post > .bd-ed-sec:not(.is-end),
+.bd-ed-sheetbar,
+.bd-ed-group.is-sheet,
+.bd-ed-pgw.is-blog,
+.bd-ed-group .bd-ed-pg.is-post {
+--e-ink: var(--e-tink);
+--e-line: var(--e-tink);
+--e-mute: var(--e-tmute);
+--e-hair: rgba(20, 20, 20, 0.16);
+--e-raise: rgba(255, 255, 255, 0.72);
+--e-tint: rgba(20, 20, 20, 0.07);
+color: var(--e-tink);
+}
+.bd-ed-skinwrap.is-sheet > .bd-ed-sec:not(.is-end) {
+background: var(--e-sheet);
+}
+.bd-ed-skinwrap.is-sheet > .bd-ed-sec[data-sec$=":details"]:not(.is-end) {
+background: var(--e-sheet-soft);
+}
+.bd-ed-skinwrap.is-page > .bd-ed-sec:not(.is-end) {
+background: var(--e-sheet-soft);
+}
+.bd-ed-skinwrap.is-blog > .bd-ed-sec:not(.is-end) {
+background: var(--e-blog);
+}
+.bd-ed-skinwrap.is-blog > .bd-ed-sec[data-sec$=":details"]:not(.is-end) {
+background: var(--e-blog-soft);
+}
+.bd-ed-skinwrap.is-post > .bd-ed-sec:not(.is-end) {
+background: var(--e-blog-soft);
+}
+.bd-ed-skinwrap > .bd-ed-sec.bd-ed-sheetbar.is-sheetbar:not(.is-end),
+.bd-ed-sheetbar.is-sheetbar {
+background: var(--e-sheet);
+}
+.bd-ed-skinwrap > .bd-ed-sec.bd-ed-sheetbar.is-blogbar:not(.is-end),
+.bd-ed-sheetbar.is-blogbar {
+background: var(--e-blog);
+}
+.bd-ed-sheetbar {
+display: grid;
+grid-template-columns: auto minmax(0, 1fr) auto;
+align-items: baseline;
+gap: 10px;
+padding-top: 9px;
+padding-bottom: 9px;
+}
+.bd-ed-sheetbar .bd-ed-title {
+overflow: hidden;
+white-space: nowrap;
+text-overflow: ellipsis;
+font-weight: 700;
+}
+.bd-ed-bartag,
+.bd-ed-bargo {
+font-size: 9.5px;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+}
+.bd-ed-bargo {
+opacity: 0.55;
+}
+.bd-ed-sheetbar:hover .bd-ed-bargo {
+opacity: 1;
+}
+.bd-ed-sheetbar:hover {
+opacity: 1;
+filter: brightness(0.96);
+}
+/* LAYERS: THE SAME FAMILIES — SHEET GROUP BRIGHT YELLOW HEAD, ITS PAGES PASTEL; BLOG ROW BRIGHT GREEN, ITS POSTS PASTEL */
+.bd-ed-group.is-sheet {
+background: var(--e-sheet-soft);
+}
+.bd-ed-group.is-sheet > .bd-ed-glabel {
+background: var(--e-sheet);
+}
+.bd-ed-pgw.is-blog:not(.is-on) {
+background: var(--e-blog);
+}
+.bd-ed-group .bd-ed-pg.is-post:not(.is-on) {
+background: var(--e-blog-soft);
+color: var(--e-tink);
+}
+.bd-ed-group .bd-ed-pg.is-post.is-on,
+.bd-ed-group.is-sheet .bd-ed-pgw.is-on,
+.bd-ed-group.is-sheet .bd-ed-pg.is-on,
+.bd-ed-group.is-sheet button.bd-ed-group-label.is-btn.is-on {
+background: #141414;
+color: #EEEEEA;
+}
+.bd-ed-group .bd-ed-pg.is-post:not(.is-on):hover,
+.bd-ed-pgw.is-blog:not(.is-on):hover {
+filter: brightness(0.96);
+}
+.bd-ed-group.is-blog > .bd-ed-glabel button b::after {
+color: inherit;
+opacity: 0.6;
+}
+
 @media (max-width: 980px) {
 .bd-ed-cus-grid {
 grid-template-columns: minmax(0, 1fr);
