@@ -2446,12 +2446,11 @@ if (bl > 0) d.push("-webkit-backdrop-filter: blur(" + bl + "px);", "backdrop-fil
 var r = cardOn ? parseFloat(b.radius) : 0;
 if (r > 0) d.push("border-radius: " + r + "px;");
 if (!cardOn) { /* SHEET MODE: NO CARD */ }
-else if (b.shadow === "hard") d.push("box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.08);");
-else if (b.shadow === "soft") d.push("box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);");
-else if (b.shadow === "line") d.push("box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);");
+else if (b.shadow && b.shadow !== "none") d.push("box-shadow: " + shadowCSS(b, true) + ";");
 if (b.fit) d.push("min-height: 0;");
 }
-return d.length ? sel + " {\n" + d.join("\n") + "\n}" : "";
+var rc = !phone && cardOn && q.id ? rimCardCSS(q, sel, !onSh) : "";
+return (d.length ? sel + " {\n" + d.join("\n") + "\n}" : "") + (rc ? (d.length ? "\n" : "") + rc : "");
 }
 /* THE PAGE'S SPACE & CARD FIELDS (RIGHT PANEL) */
 function pageBoxPanel(pg, tail) {
@@ -3393,7 +3392,7 @@ return out.join(", ");
 }
 /* SHEETS — ANY PAGE CAN LIE ON A PAPER SHEET; THE SHEETS LIST (TOP → BOTTOM) DECIDES WHAT LIES OVER WHAT */
 var SHEET_PATTERNS;
-var SHEET_DEFAULTS = { id: "", name: "Sheet", pages: [], restPage: "", edge: "left", edgeM: "top", rest: "open", peek: 200, peekM: 52, sliver: 44, sliverM: 14, axis: "y", covers: "all", coverPages: [], color: "#E4E1DA", alpha: 45, blur: 9, shadow: "line", grain: 0, nudge: 0, dur: "", box: {}, pattern: "", patColor: "#000000", patSize: 28, patAlpha: 14, out: "peek", lv: "", arrive: "slide", main: "", hover: "" };
+var SHEET_DEFAULTS = { id: "", name: "Sheet", pages: [], restPage: "", edge: "left", edgeM: "top", rest: "open", peek: 200, peekM: 52, sliver: 44, sliverM: 14, axis: "y", covers: "all", coverPages: [], color: "#E4E1DA", alpha: 45, blur: 9, shadow: "soft", grain: 0, nudge: 0, dur: "", box: {}, pattern: "", patColor: "#000000", patSize: 28, patAlpha: 14, out: "peek", lv: "", arrive: "slide", main: "", hover: "" };
 /* THE PAGE A PEEKING SHEET SHOWS AT REST — DRAWN ON ITS EDGE, ALWAYS THERE; THE OTHER PAGES SLIDE INTO VIEW */
 function sheetStrip(k) {
 if (!k || k.rest !== "peek") return null;
@@ -3808,6 +3807,190 @@ var f = Ls.reveal === "focus" ? parseFloat(Ls.focusBlur) || 0 : 0;
 return Math.round(Math.sqrt(b * b + f * f) * 10) / 10;
 }
 /* A SHEET IS ONE PIECE: ONLY ITS OUTER CORNERS ROUND, NEVER THE JOIN BETWEEN ITS PAGES */
+/* EDGES — THE SHAPE OF A SHEET'S (OR A CARD'S) OUTER EDGES ON THE SIDES YOU CHOOSE. SHAPES ARE CUT WITH A MASK, SO THEY WORK ON SEE-THROUGH AND BLURRED PAPER; ON A TWO-PAGE SHEET ONLY THE SHEET'S OUTER EDGES ARE CUT, NEVER THE JOIN */
+var RIM_SHAPES = [["", "Plain"], ["line", "Line"], ["torn", "Torn"], ["stamp", "Stamp"], ["notch", "Ticket"], ["punch", "Punched"], ["tab", "Tab"]];
+var RIM_SIZE = { line: 1, torn: 10, stamp: 5, notch: 16, punch: 6, tab: 28 };
+var RIM_GAP = { stamp: 6, punch: 64, tab: 120 };
+var RIM_SVG = {
+"": '<svg viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" fill="#fff" stroke="#111"/></svg>',
+line: '<svg viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" fill="#fff"/><path d="M8 8H32" stroke="#111" stroke-width="2.5"/></svg>',
+torn: '<svg viewBox="0 0 40 40"><path d="M8 32V12L11 9L14 12L17 8L20 11L23 8L26 12L29 9L32 11V32Z" fill="#fff" stroke="#111"/></svg>',
+stamp: '<svg viewBox="0 0 40 40"><path d="M8 8H11A2 2 0 0 0 15 8H18A2 2 0 0 0 22 8H25A2 2 0 0 0 29 8H32V32H8Z" fill="#fff" stroke="#111"/></svg>',
+notch: '<svg viewBox="0 0 40 40"><path d="M8 8H16A4 4 0 0 0 24 8H32V32H8Z" fill="#fff" stroke="#111"/></svg>',
+punch: '<svg viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" fill="#fff" stroke="#111"/><circle cx="13" cy="14" r="2" fill="#111"/><circle cx="13" cy="20" r="2" fill="#111"/><circle cx="13" cy="26" r="2" fill="#111"/></svg>',
+tab: '<svg viewBox="0 0 40 40"><path d="M8 13H17V8H27V13H32V32H8Z" fill="#fff" stroke="#111"/></svg>'
+};
+function rimNum(v, d) {
+var n = parseFloat(v);
+return v === "" || v == null || isNaN(n) || n < 0 ? d : n;
+}
+function rimOf(o) {
+var r = (o && o.rim) || {};
+var shape = r.shape || "";
+return { shape: shape, sides: r.sides == null ? "trbl" : String(r.sides), size: rimNum(r.size, RIM_SIZE[shape] || 0) || RIM_SIZE[shape] || 0, gap: rimNum(r.gap, RIM_GAP[shape] || 0), color: r.color || "", at: rimNum(r.at, 10), label: r.label || "" };
+}
+/* WHICH OF THE CHOSEN SIDES ARE OUTER EDGES OF THE SHEET FOR PAGE j OF N */
+function rimOuter(sides, ax, j, N) {
+return sides.split("").filter(function (s) {
+if (N < 2) return true;
+if (ax === "x") return !((s === "l" && j > 0) || (s === "r" && j < N - 1));
+return !((s === "t" && j > 0) || (s === "b" && j < N - 1));
+}).join("");
+}
+var RIM_TEAR = [0.35, 0.8, 0.2, 0.65, 0.1, 0.9, 0.4, 0.15, 0.7, 0.3, 0.85, 0.5, 0.35];
+function rimTornSVG(side, D) {
+var pts = RIM_TEAR.map(function (f, i) { return [i * 5, Math.round(D * (0.1 + 0.85 * f) * 10) / 10]; });
+var P;
+if (side === "t") P = pts.map(function (p) { return p[0] + "," + p[1]; }).concat(["60," + D, "0," + D]);
+else if (side === "b") P = pts.map(function (p) { return p[0] + "," + (D - p[1]); }).concat(["60,0", "0,0"]);
+else if (side === "l") P = pts.map(function (p) { return p[1] + "," + p[0]; }).concat([D + ",60", D + ",0"]);
+else P = pts.map(function (p) { return (D - p[1]) + "," + p[0]; }).concat(["0,60", "0,0"]);
+var w = side === "t" || side === "b" ? 60 : D;
+var h = side === "t" || side === "b" ? D : 60;
+return "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='" + w + "' height='" + h + "' viewBox='0 0 " + w + " " + h + "' preserveAspectRatio='none'><polygon points='" + P.join(" ") + "'/></svg>\")";
+}
+/* THE MASK LAYERS: THE MIDDLE OF THE PAPER STAYS WHOLE, EACH CUT SIDE GETS A STRIP WITH ITS PATTERN */
+function rimMask(rim, on) {
+var sh = rim.shape;
+if (!on || ["torn", "stamp", "notch", "punch"].indexOf(sh) < 0) return "";
+var r = rim.size;
+var D = sh === "punch" ? Math.round(r * 3) * 2 : r;
+var off = D / 2;
+var d = { t: on.indexOf("t") > -1 ? D : 0, r: on.indexOf("r") > -1 ? D : 0, b: on.indexOf("b") > -1 ? D : 0, l: on.indexOf("l") > -1 ? D : 0 };
+var L = ["linear-gradient(#000 0 0) " + d.l + "px " + d.t + "px / calc(100% - " + (d.l + d.r) + "px) calc(100% - " + (d.t + d.b) + "px) no-repeat"];
+var hole = function (at) { return "radial-gradient(circle at " + at + ", #0000 " + r + "px, #000 " + (r + 0.5) + "px)"; };
+var pos = { t: "0 0", b: "0 100%", l: "0 0", r: "100% 0" };
+on.split("").forEach(function (s) {
+var along = s === "t" || s === "b";
+if (sh === "torn") L.push(rimTornSVG(s, D) + " " + pos[s] + " / " + (along ? "60px " + D + "px repeat-x" : D + "px 60px repeat-y"));
+else if (sh === "stamp") {
+var t = r * 2 + rim.gap;
+var at = { t: "50% 0", b: "50% 100%", l: "0 50%", r: "100% 50%" }[s];
+L.push(hole(at) + " " + pos[s] + " / " + (along ? t + "px " + D + "px round no-repeat" : D + "px " + t + "px no-repeat round"));
+} else if (sh === "notch") {
+var at2 = { t: "50% 0", b: "50% 100%", l: "0 50%", r: "100% 50%" }[s];
+L.push(hole(at2) + " " + pos[s] + " / " + (along ? "100% " + D + "px" : D + "px 100%") + " no-repeat");
+} else {
+var g = Math.max(r * 3, rim.gap || 64);
+var at3 = { t: "50% " + off + "px", b: "50% " + off + "px", l: off + "px 50%", r: off + "px 50%" }[s];
+L.push(hole(at3) + " " + pos[s] + " / " + (along ? g + "px " + D + "px round no-repeat" : D + "px " + g + "px no-repeat round"));
+}
+});
+return "-webkit-mask: " + L.join(", ") + ";\nmask: " + L.join(", ") + ";\n";
+}
+/* A LINE EDGE AND A TAB: DRAWN BY THE PAPER'S OWN ::before / ::after (THE PAPER IS position: relative) */
+function rimLineCSS(rim, on, sel) {
+if (rim.shape !== "line" || !on) return "";
+var w = function (s) { return on.indexOf(s) > -1 ? rim.size + "px" : "0"; };
+return sel + "::before {\ncontent: \"\";\nposition: absolute;\ninset: 0;\nz-index: 2;\npointer-events: none;\nborder-style: solid;\nborder-color: " + (rim.color || "currentColor") + ";\nborder-width: " + [w("t"), w("r"), w("b"), w("l")].join(" ") + ";\nborder-radius: inherit;\n}";
+}
+function rimTabCSS(rim, on, sel, fill) {
+if (rim.shape !== "tab" || !on) return "";
+var s = on.charAt(0);
+var h = rim.size;
+var w = rim.gap || 120;
+var at = Math.max(0, Math.min(100, rim.at));
+var d = ["content: " + JSON.stringify(rim.label) + ";", "position: absolute;", "z-index: 1;", "pointer-events: none;", "box-sizing: border-box;", "display: flex;", "align-items: center;", "justify-content: center;", "background: " + fill + ";", "font: 11px/1 var(--bd-mono);", "letter-spacing: 0.04em;", "color: " + (rim.color || "currentColor") + ";", "white-space: nowrap;"];
+if (s === "t" || s === "b") d.push((s === "t" ? "bottom" : "top") + ": 100%;", "left: calc(" + at + "% - " + (w * at / 100) + "px);", "width: " + w + "px;", "height: " + h + "px;", "border-radius: " + (s === "t" ? "6px 6px 0 0" : "0 0 6px 6px") + ";");
+else d.push((s === "l" ? "right" : "left") + ": 100%;", "top: calc(" + at + "% - " + (w * at / 100) + "px);", "width: " + h + "px;", "height: " + w + "px;", "writing-mode: vertical-rl;", "border-radius: " + (s === "l" ? "6px 0 0 6px" : "0 6px 6px 0") + ";");
+return sel + "::after {\n" + d.join("\n") + "\n}";
+}
+/* THE SOLID COLOUR A TAB IS PAINTED IN (A GRADIENT GIVES ITS FIRST STOP) */
+function rimTabFill(color, pct) {
+var g = parseFill(color || "");
+var c = g ? (g.a !== "transparent" ? g.a : g.b) : color;
+if (!c || c === "none" || c === "transparent") return "transparent";
+return fillCSS(c, pct);
+}
+/* SHADOWS: NONE | SOFT | HARD | LINE, WITH SIZE AND STRENGTH (BLANK = THE USUAL LOOK) */
+function shadowCSS(o, card) {
+var sh = o.shadow || "none";
+if (sh === "none") return "none";
+var S = rimNum(o.shadowSize, -1);
+var A = rimNum(o.shadowA, -1);
+if (sh === "soft") return card ? "0 " + Math.round((S < 0 ? 50 : S) * 0.36) + "px " + (S < 0 ? 50 : S) + "px rgba(0, 0, 0, " + (A < 0 ? 12 : A) / 100 + ")" : "0 0 " + (S < 0 ? 28 : S) + "px rgba(0, 0, 0, " + (A < 0 ? 16 : A) / 100 + ")";
+if (sh === "hard") { var h = S < 0 ? 8 : S; return h + "px " + h + "px 0 rgba(0, 0, 0, " + (A < 0 ? (card ? 8 : 10) : A) / 100 + ")"; }
+return "0 0 0 " + (S < 0 ? 1 : S) + "px rgba(0, 0, 0, " + (A < 0 ? 12 : A) / 100 + ")";
+}
+/* THE SAME SHADOW AS A FILTER, SO IT FOLLOWS A CUT EDGE */
+function shadowDrop(o, card) {
+var b = shadowCSS(o, card);
+if (b === "none") return "";
+var m = b.match(/^(-?[\d.]+(?:px)?) (-?[\d.]+(?:px)?) ([\d.]+(?:px)?)(?: ([\d.]+px))? (rgba\([^)]*\))$/);
+if (!m) return "";
+if (m[4]) return "drop-shadow(0 0 " + Math.max(0.5, parseFloat(m[4]) * 0.6) + "px " + m[5] + ")";
+return "drop-shadow(" + m[1] + " " + m[2] + " " + m[3] + " " + m[5] + ")";
+}
+/* ONE SHEET PAPER: ITS CUT, LINE OR TAB ON THE OUTER SIDES; THE SHADOW MOVES TO THE PANE (A FILTER) WHEN THE EDGE IS CUT */
+function rimPaperCSS(k, q, qi, qn, phone, sel) {
+var rim = rimOf(k);
+if (!rim.shape) return "";
+var on = rimOuter(rim.sides, sheetAx(k, phone), qi, qn);
+var out = [];
+var pane = '.bd-ly-pane[data-page="' + q.id + '"]';
+var m = rimMask(rim, on);
+out.push(sel + " {\nposition: relative;\n" + (m || "-webkit-mask: none;\nmask: none;\n") + (m ? "box-shadow: none;\n" : "") + "}");
+var drop = m ? shadowDrop(k) : "";
+if (drop) {
+var ax = sheetAx(k, phone);
+var cut = qn < 2 ? "" : ax === "x" ? (qi === 0 ? "inset(-80px 0 -80px -80px)" : "inset(-80px -80px -80px 0)") : (qi === 0 ? "inset(-80px -80px 0 -80px)" : "inset(0 -80px -80px -80px)");
+out.push(pane + " {\nfilter: " + drop + ";\n" + (cut ? "clip-path: " + cut + ";\n" : "") + "}");
+} else if (phone) out.push(pane + " {\nfilter: none;\n}");
+var ln = rimLineCSS(rim, on, sel);
+if (ln) out.push(ln);
+var tb = rimTabCSS(rim, on, sel, rimTabFill(k.color || "#E4E1DA", sheetSolid(k)));
+if (tb) out.push(tb);
+if (phone && !on) out.push(sel + "::before,\n" + sel + "::after {\ndisplay: none;\n}");
+return out.join("\n");
+}
+/* A CARD (A CARD PAGE ON A SHEET, OR A PAGE UNDERNEATH) WITH ITS OWN EDGE; UNDERNEATH, THE SHADOW OF A CUT EDGE LIES ON THE ARTICLE AROUND IT */
+function rimCardCSS(q, sel, under) {
+var b = q.box || {};
+var rim = rimOf(b);
+if (!rim.shape || !rim.sides) return "";
+var out = [];
+var m = rimMask(rim, rim.sides);
+out.push(sel + " {\nposition: relative;\n" + m + (m ? "box-shadow: none;\n" : "") + "}");
+if (m && under) {
+var drop = shadowDrop(b, true);
+if (drop) out.push(".bd-ly-art:has(> .bd-panel.bd-pg-" + q.id + "),\n.bd-site:has(> .bd-panel.bd-pg-" + q.id + ") {\nfilter: " + drop + ";\n}");
+}
+var ln = rimLineCSS(rim, rim.sides, sel);
+if (ln) out.push(ln);
+var tb = rimTabCSS(rim, rim.sides, sel, b.card ? rimTabFill(b.card, solidPct(b.cardA, 0)) : "var(--bd-panel, #fff)");
+if (tb) out.push(tb);
+return out.join("\n");
+}
+/* THE EDGE PANEL: SHAPE THUMBNAILS, THE FOUR SIDES AROUND A SQUARE, THE NUMBERS THAT SHAPE NEEDS, THEN THE SHADOW */
+function rimPanel(base, o, card) {
+var rim = rimOf(o);
+var r = o.rim || {};
+var P = base + "rim.";
+var h = '<span class="bd-ed-label">Edge</span><div class="bd-ed-thumbs bd-ed-rims">' + RIM_SHAPES.map(function (x) {
+var on = rim.shape === x[0];
+return '<button class="bd-ed-thumb' + (on ? " is-on" : "") + '" data-act="set" data-path="' + P + 'shape" data-val="' + x[0] + '" aria-pressed="' + on + '">' + RIM_SVG[x[0]] + "<i>" + x[1] + "</i></button>";
+}).join("") + "</div>";
+if (rim.shape) {
+var side = function (s, name) {
+var on = rim.sides.indexOf(s) > -1;
+return '<button class="bd-ed-side is-' + s + (on ? " is-on" : "") + '" data-act="rim-side" data-path="' + P + 'sides" data-s="' + s + '" data-cur="' + rim.sides + '" aria-pressed="' + on + '" title="' + name + '">' + name + "</button>";
+};
+var one = rim.shape === "tab";
+h += '<div class="bd-ed-rimrow"><div class="bd-ed-sides' + (one ? " is-one" : "") + '">' + side("t", "Top") + side("l", "Left") + '<span class="bd-ed-sides-box"></span>' + side("r", "Right") + side("b", "Bottom") + "</div>";
+var sz = { line: "Line px", torn: "Tear depth", stamp: "Hole size", notch: "Notch size", punch: "Hole size", tab: "Tab height" }[rim.shape];
+var gp = { stamp: "Gap", punch: "Spacing", tab: "Tab width" }[rim.shape];
+h += '<div class="bd-ed-rimnums">' + numIn(sz, P + "size", r.size == null ? "" : r.size, "blank", RIM_SIZE[rim.shape]) + (gp ? numIn(gp, P + "gap", r.gap == null ? "" : r.gap, "blank", RIM_GAP[rim.shape]) : "") + "</div></div>";
+if (one) h += two(numIn("Along %", P + "at", r.at == null ? "" : r.at, "blank", 10), field("Label", input(P + "label", r.label || ""))) + '<div class="bd-ed-hint">One tab, on the first side ticked.</div>';
+if (rim.shape === "line" || rim.shape === "tab") h += field(rim.shape === "line" ? "Line colour" : "Label colour", '<input type="color" class="bd-ed-input" data-bind="' + P + 'color" value="' + esc(rim.color || "#111111") + '">');
+if (!card) h += '<div class="bd-ed-hint">Only the sheet’s outer edges are cut, never the join between its pages.</div>';
+if (["torn", "stamp", "notch", "punch"].indexOf(rim.shape) > -1) h += '<div class="bd-ed-hint">Drawings set to Multiply show a faint box on see-through paper with a cut edge; set them to Lines only.</div>';
+}
+var sh = o.shadow || "none";
+h += '<span class="bd-ed-label">Shadow</span>' + seg(base + "shadow", sh, [["none", "None"], ["soft", "Soft"], ["hard", "Hard"], ["line", "Line"]]);
+if (sh !== "none") h += two(numIn(sh === "line" ? "Line px" : sh === "hard" ? "Offset px" : "Size px", base + "shadowSize", o.shadowSize == null ? "" : o.shadowSize, "blank", sh === "line" ? 1 : sh === "hard" ? 8 : card ? 50 : 28), numIn("Strength %", base + "shadowA", o.shadowA == null ? "" : o.shadowA, "blank", sh === "soft" ? (card ? 12 : 16) : sh === "hard" ? (card ? 8 : 10) : 12));
+if (card && ["torn", "stamp", "notch", "punch"].indexOf(rim.shape) > -1 && sh !== "none") h += '<div class="bd-ed-hint">A cut card on a sheet casts no shadow; underneath it follows the cut.</div>';
+return h;
+}
 function sheetRadius(k, i, N, pinned, phone) {
 var r = parseFloat(k.radius);
 if (!(r > 0) || pinned) return "";
@@ -3829,6 +4012,7 @@ return "clip-path: inset(" + t + " " + r + " " + b + " " + l + ");\n";
 function sheetLine(k, phone) {
 var sh = k.shadow || "none";
 if (sh === "none") return "none";
+if (!sheetStrip(k)) return shadowCSS(k);
 if (sh === "soft") return "0 0 28px rgba(0, 0, 0, 0.16)";
 var e = (phone ? k.edgeM : k.edge) || "left";
 if (sh === "hard") return { left: "8px 8px 0", right: "-8px 8px 0", top: "8px 8px 0", bottom: "8px -8px 0" }[e] + " rgba(0, 0, 0, 0.1)";
@@ -3919,6 +4103,8 @@ var pm = sheetPaperMargins(k, q, phone);
 var kpin = sheetPin(k, phone);
 var hitPane = !!kpin && kpin !== String(q.id);
 out.push(sel + " {\nmargin: " + pm.t + " " + (hitPane ? "0" : pm.r) + " 0 " + (hitPane ? "0" : pm.l) + ";\nmin-height: calc(100% - " + pm.t + " - " + pm.b + ");\nbox-shadow: " + sheetLine(k, phone) + ";\n" + sheetJoinClip(k, qi, qa.length, phone) + sheetRadius(k, qi, qa.length, hitPane === false && !!kpin, phone) + "}");
+var rp = rimPaperCSS(k, q, qi, qa.length, phone, sel);
+if (rp) out.push(rp);
 out.push('.bd-ly-pane[data-page="' + q.id + '"] {\n--pm-b: ' + pm.b + ';\n' + (hitPane ? "margin-left: " + pm.l + ";\nmargin-right: " + pm.r + ";\n" + (sheetAx(k, phone) === "x" ? "flex-basis: calc(100% / var(--n) - " + pm.l + " - " + pm.r + ");\n" : "") : "") + "}");
 }
 if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPaper(k, sheetSolid(k)) : sheetPaper(cardPaperK(k, q), sheetSolid(k), panesK.indexOf(q), panesK.length)) + ";\n}");
@@ -4565,7 +4751,16 @@ var b = page.box || {};
 var edge = [ins.top, ins.right, ins.bottom, ins.left];
 var paper = page.sheetBg ? bgVal(page.sheetBg) : sheetPaper(cardPaperK(w.sheet, page), 100, sheetPanes(w.sheet).indexOf(page), sheetPanes(w.sheet).length);
 out.push(".bd-site.is-layered {\nposition: relative;\nbox-sizing: border-box;\nbackground: #dcd9d2;\npadding: " + edge.join(" ") + ";\n}");
-out.push(".bd-site.is-layered::before {\ncontent: \"\";\nposition: absolute;\ntop: " + ins.top + ";\nright: " + ins.right + ";\nbottom: " + ins.bottom + ";\nleft: " + ins.left + ";\nbackground: " + paper + ";\nbox-shadow: 0 0 0 1px rgba(0, 0, 0, 0.16);\n}");
+/* THE PAPER IS THE SITE'S ::before, WHICH THE NAV OVERLAY ALSO USES (opacity 0, z-index 9): TAKE IT BACK */
+out.push(".bd-site.is-layered::before {\ncontent: \"\";\nposition: absolute;\nopacity: 1;\nz-index: 0;\ntransition: none;\npointer-events: none;\ntop: " + ins.top + ";\nright: " + ins.right + ";\nbottom: " + ins.bottom + ";\nleft: " + ins.left + ";\nbackground: " + paper + ";\nbox-shadow: 0 0 0 1px rgba(0, 0, 0, 0.16);\n}");
+var rimK = rimOf(w.sheet);
+if (rimK.shape) {
+var panesC = sheetPanes(w.sheet, phone);
+var onK = rimOuter(rimK.sides, sheetAx(w.sheet, phone), Math.max(0, panesC.map(function (x) { return x.id; }).indexOf(page.id)), panesC.length);
+var mk = rimMask(rimK, onK);
+if (mk) out.push(".bd-site.is-layered::before {\n" + mk + "}");
+if (rimK.shape === "line" && onK) out.push(".bd-site.is-layered::before {\nbox-sizing: border-box;\nborder-style: solid;\nborder-color: " + (rimK.color || "currentColor") + ";\nborder-width: " + ["t", "r", "b", "l"].map(function (x) { return onK.indexOf(x) > -1 ? rimK.size + "px" : "0"; }).join(" ") + ";\n}");
+}
 out.push(".bd-site.is-layered .bd-panel {\nposition: relative;\nbackground: transparent;\nmargin: 0;\n}");
 var bx = pageBoxCSS(page, phone, ".bd-site.is-layered .bd-panel.bd-pg-" + page.id, padIns, true);
 if (bx) out.push(bx);
@@ -6050,8 +6245,8 @@ return '<label class="bd-ed-field"><span class="bd-ed-label">' + label + "</span
 function input(path, val, type, extra) {
 return '<input class="bd-ed-input" data-bind="' + path + '"' + (type ? ' data-type="' + type + '"' : "") + ' value="' + esc(val) + '"' + (extra || "") + ">";
 }
-function numIn(label, path, val, type) {
-return field(label, '<input class="bd-ed-input bd-ed-n" inputmode="decimal" data-bind="' + path + '" data-type="' + (type || "num") + '" value="' + esc(val) + '">');
+function numIn(label, path, val, type, ph) {
+return field(label, '<input class="bd-ed-input bd-ed-n" inputmode="decimal" data-bind="' + path + '" data-type="' + (type || "num") + '" value="' + esc(val) + '"' + (ph != null && ph !== "" ? ' placeholder="' + esc(ph) + '"' : "") + ">");
 }
 /* ONE FIELD THAT EDITS THE DESKTOP VALUE ON DESKTOP AND THE PHONE VALUE ON PHONE */
 function dpIn(label, pathD, pathM, vD, vM, type) {
@@ -6455,7 +6650,6 @@ if (k.pin && k.rest !== "still") k.rest = "still";
 if (k.pinM && k.pinM !== "none" && (k.pages || []).indexOf(k.pinM) < 0) delete k.pinM;
 if (k.revM && sheetPanes(k).length !== 2) delete k.revM;
 if (k.hover === "nudge" && k.rest !== "peek") k.hover = "";
-if (k.shadow === "line" || k.shadow === "hard") k.shadow = "soft";
 /* ONE SHEET, ONE PIECE: PAGES ON IT NEVER OWN GEOMETRY. NO OWN SCROLL, NO OWN MARGINS, NO STAYS-PUT BAND */
 delete k.pinMode;
 delete k.pinModeM;
@@ -7258,16 +7452,20 @@ blog: { pane: "transparent", det: "#f3f0e4", lay: "#f3f0e4", sty: "#f3f0e4", end
 post: { pane: "transparent", det: "#f3f0e5", lay: "#f3f0e5", sty: "#f3f0e5", end: "#141416", edge: "transparent" },
 master: { pane: "transparent", det: "#f3f0e6", lay: "#f3f0e6", sty: "#f3f0e6", end: "#141416", edge: "transparent" }
 };
-function skinColour(k) { var c = PC[k] || PC.page; SK.edge = c.edge; SK.bar = c.bar || c.det; SK.pane = c.pane; SK.det = c.det; SK.lay = c.lay; SK.sty = c.sty; SK.eff = c.sty; SK.end = c.end; }
+function skinColour(k) { SK.kind = PC[k] ? k : "page"; var c = PC[k] || PC.page; SK.edge = c.edge; SK.bar = c.bar || c.det; SK.pane = c.pane; SK.det = c.det; SK.lay = c.lay; SK.sty = c.sty; SK.eff = c.sty; SK.end = c.end; }
 var SK = { pane: "#e7e4dc", det: "#e6ebe6", lay: "#ffffff", sty: "#faf9f6", eff: "#faf9f6", end: "#f3e6df" };
+/* PANEL SECTIONS ARE FLAT: NO COLOURS OF THEIR OWN, ONLY CLASSES (THE STYLESHEET DECIDES THE LOOK) */
+function skinCls(color) {
+return color === SK.end ? " is-end" : "";
+}
 function skin(title, color, inner) {
-return '<div class="bd-ed-sec bd-ed-skin" style="background:' + color + '"><span class="bd-ed-title">' + title + "</span>" + inner + "</div>";
+return '<div class="bd-ed-sec bd-ed-skin' + skinCls(color) + '"><span class="bd-ed-title">' + title + "</span>" + inner + "</div>";
 }
 function skinFold(title, color, inner, open) {
-return '<details class="bd-ed-sec bd-ed-skin bd-ed-skinfold" style="background:' + color + '"' + (open ? " open" : "") + '><summary class="bd-ed-title">' + title + "</summary>" + inner + "</details>";
+return '<details class="bd-ed-sec bd-ed-skin bd-ed-skinfold' + skinCls(color) + '"' + (open ? " open" : "") + '><summary class="bd-ed-title">' + title + "</summary>" + inner + "</details>";
 }
 function skinWrap(inner) {
-return '<div class="bd-ed-skinwrap" style="background:' + SK.pane + ";--sk-edge:" + SK.edge + '">' + inner + "</div>";
+return '<div class="bd-ed-skinwrap is-' + (SK.kind || "page") + '">' + inner + "</div>";
 }
 function two(a, b) {
 return '<div class="bd-ed-two">' + a + b + "</div>";
@@ -7320,7 +7518,7 @@ return pages.length > 1 ? '<button class="bd-ed-pinpill' + (on ? " is-on" : "") 
 }).join("");
 var h = skin("Details", SK.det, field("Name", input(P + "name", k.name || "")));
 h += skin("Layout", SK.lay, two(seg(P + (S.mode === "phone" ? "axisM" : "axis"), sheetAx(k, S.mode === "phone"), [["y", "Vertical"], ["x", "Horizontal"]]), '<div class="bd-ed-pins">' + pins + "</div>") + sheetLayoutHTML(n, true));
-h += skin("Style", SK.sty, ovrNote("sheet", k, n) + blendNote() + '<span class="bd-ed-label">Background</span>' + fillIn("", P + "color", k.color, "#E4E1DA") + two(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur", P + "blur", k.blur)) + '<span class="bd-ed-label">Decoration</span>' + patThumbs(P + "pattern", k.pattern || "") + numIn("Grain %", P + "grain", k.grain || "", "0") + (k.pattern ? row(field("Lines", '<input type="color" class="bd-ed-input" data-bind="' + P + 'patColor" value="' + esc(k.patColor || "#000000") + '">'), numIn("Spacing px", P + "patSize", k.patSize), numIn("Strength %", P + "patAlpha", k.patAlpha)) : "") + two(numIn("Corners", P + "radius", k.radius == null ? "" : k.radius, "blank"), field("Edge", seg(P + "shadow", k.shadow === "none" || !k.shadow ? "none" : "soft", [["none", "None"], ["soft", "Soft shadow"]]))));
+h += skin("Style", SK.sty, ovrNote("sheet", k, n) + blendNote() + '<span class="bd-ed-label">Background</span>' + fillIn("", P + "color", k.color, "#E4E1DA") + two(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur", P + "blur", k.blur)) + '<span class="bd-ed-label">Decoration</span>' + patThumbs(P + "pattern", k.pattern || "") + numIn("Grain %", P + "grain", k.grain || "", "blank", 0) + (k.pattern ? row(field("Lines", '<input type="color" class="bd-ed-input" data-bind="' + P + 'patColor" value="' + esc(k.patColor || "#000000") + '">'), numIn("Spacing px", P + "patSize", k.patSize), numIn("Strength %", P + "patAlpha", k.patAlpha)) : "") + numIn("Corners", P + "radius", k.radius == null ? "" : k.radius, "blank") + rimPanel(P, k, false));
 h += inhDelBar("sheet", n, '<button class="bd-ed-btn is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve</button>");
 return h;
 }
@@ -7428,7 +7626,7 @@ h += '<div class="bd-ed-sec"><span class="bd-ed-title">Columns' + (S.mode === "p
 var pb = pageBoxPanel({ id: "", box: s.postBox || {}, sheetBg: (s.postBox || {}).sheetBg || "" }).replace(/page\.box\./g, "site.postBox.").replace(/page\.sheetBg/g, "site.postBox.sheetBg").replace("Space & card", "Space, card &amp; colour");
 if (bare) return h + pb;
 skinColour("master");
-return '<div class="bd-ed-skinwrap bd-ed-pc-bm" style="background:' + SK.pane + '">' + h + pb + "</div>";
+return '<div class="bd-ed-skinwrap bd-ed-pc-bm">' + h + pb + "</div>";
 }
 /* THE GLASS: A MENU BAR STUCK TO THE WINDOW. IT NEVER MOVES WHILE PAPER SLIDES UNDER IT, SO NO SHEET EVER NEEDS A BAND */
 function glassPanel() {
@@ -7484,7 +7682,7 @@ T.forEach(function (t) {
 h += '<button data-act="master-tab" data-val="' + t[0] + '" class="' + (S.masterTab === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
 });
 skinColour("master");
-return '<div class="bd-ed-skinwrap bd-ed-pc-' + (S.masterTab === "blog" ? "bm" : S.masterTab) + '" style="background:' + SK.pane + '">' + h + "</div></div>" + (S.masterTab === "blog" ? postMasterHTML(true) : panelHTML(S.masterTab)) + "</div>";
+return '<div class="bd-ed-skinwrap bd-ed-pc-' + (S.masterTab === "blog" ? "bm" : S.masterTab) + '">' + h + "</div></div>" + (S.masterTab === "blog" ? postMasterHTML(true) : panelHTML(S.masterTab)) + "</div>";
 }
 function renderLeft() {
 var L = $("bd-left");
@@ -7958,7 +8156,7 @@ var det = (s.menus.length === 1 ? '<div class="bd-ed-two" style="grid-template-c
 + (pg.kind !== "pin" ? sw("Show the title", "page.header", pg.header !== false) + '<div class="bd-ed-hint">' + (s.header ? "The page heading at the top. Switch off to hide it on this page only." : "Page title at the top is off in Site, so this does nothing yet.") + "</div>" : "")
 + field("Description", '<textarea class="bd-ed-input" data-bind="page.desc" rows="3" style="font-family:var(--e-sans);font-size:12.5px">' + esc(pg.desc) + "</textarea>")
 + field("Group", select("page.section", pg.section, [["", "No group"]].concat(s.sections.map(function (x) { return [x.key, x.label]; }))));
-if (onSheet) h += '<div class="bd-ed-sec bd-ed-skin" style="background:' + SK.bar + ';cursor:pointer" data-act="sheet-sel" data-id="' + esc(pgw.sheet.id) + '" title="Open the sheet\'s settings"><span class="bd-ed-title">' + esc(pgw.sheet.name || "Sheet") + "</span></div>";
+if (onSheet) h += '<div class="bd-ed-sec bd-ed-skin bd-ed-sheetbar" data-act="sheet-sel" data-id="' + esc(pgw.sheet.id) + '" title="Open the sheet\'s settings"><span class="bd-ed-title">' + esc(pgw.sheet.name || "Sheet") + "</span></div>";
 h += (pg.parent ? skin("Post", SK.det, '<div class="bd-ed-hint">' + (postFollows(pg) ? "This post follows All posts · master." : "This post has its own settings. Inherit all brings it back to All posts · master.") + '</div><button class="bd-ed-btn" data-act="post-master">' + I.sliders + "Edit All posts · master</button>") : "") + skin("Details", SK.det, det);
 var lay = "";
 if (onSheet) {
@@ -7976,7 +8174,7 @@ var sty = pgOvr + (cardOn ? fillIn("Card colour", "page.box.card", bx.card || ""
 + (cardOn ? two(numIn("Card see-through %", "page.box.cardA", bx.cardA == null ? "" : bx.cardA, "blank"), numIn("Blur", "page.box.blur", bx.blur == null ? "" : bx.blur, "blank")) : "")
 + (cardOn && onSheet ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "Inherit"], ["none", "None"]]) : "")
 + (cardOn && !onSheet && !pg.parent ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "None"]]) : "")
-+ (cardOn ? two(numIn("Corners", "page.box.radius", bx.radius == null ? "" : bx.radius, "blank"), field("Shadow", seg("page.box.shadow", bx.shadow === "soft" ? "soft" : "none", [["none", "None"], ["soft", "Soft"]]))) : "");
++ (cardOn ? numIn("Corners", "page.box.radius", bx.radius == null ? "" : bx.radius, "blank") + rimPanel("page.box.", bx, true) : '<div class="bd-ed-hint">This page uses its sheet’s edges. Make it a Card to give it its own.</div>');
 h += (onSheet ? skinFold : skin)("Style", SK.sty, sty, cardOn || !!pgOvr);
 var stack = "";
 S.project.order.forEach(function (id) {
@@ -10487,6 +10685,7 @@ var A = {
 "sign-out": function () { closePop(); lock("Key forgotten on this device."); },
 "reload": loadSite,
 "grain-swap": function () { snap(); grainSwap(); changed(); },
+"rim-side": function () { var cur = b.getAttribute("data-cur") || ""; var sd = b.getAttribute("data-s"); var one = b.parentNode.classList.contains("is-one"); var nv = one ? sd : cur.indexOf(sd) > -1 ? cur.replace(sd, "") : "trbl".split("").filter(function (x) { return x === sd || cur.indexOf(x) > -1; }).join(""); snap(); applyPath(b.getAttribute("data-path"), nv); changed(); },
 "ovr-clear": function () { var kind = b.getAttribute("data-kind"); var x = kind === "sheet" ? sheetList()[+b.getAttribute("data-i")] : curPage(); if (!x) return; snap(); ovrClear(ovrKeys(kind, x)); changed(); },
 "el-css-clear": function () { var e = selEl(); if (!e) return; snap(); clearElCss(e); changed(); },
 "tools-open": function () { toolAction(act, b); },
@@ -10830,7 +11029,7 @@ if (kind === "sheet") {
 var k = sheetList()[+b.getAttribute("data-i")];
 if (!k) return;
 var d = clone(SHEET_DEFAULTS);
-["color", "alpha", "blur", "shadow", "grain", "nudge", "dur", "box", "pattern", "patColor", "patSize", "patAlpha", "lv", "arrive", "hover", "covers", "coverPages", "edge", "edgeM", "sliver", "sliverM", "out", "peek", "peekM"].forEach(function (x) { k[x] = d[x]; });
+["color", "alpha", "blur", "shadow", "shadowSize", "shadowA", "rim", "grain", "nudge", "dur", "box", "pattern", "patColor", "patSize", "patAlpha", "lv", "arrive", "hover", "covers", "coverPages", "edge", "edgeM", "sliver", "sliverM", "out", "peek", "peekM"].forEach(function (x) { k[x] = d[x]; });
 ["pinPad", "pinMode", "pinModeM", "layPg"].forEach(function (x) { delete k[x]; });
 } else {
 var pg = curPage();
