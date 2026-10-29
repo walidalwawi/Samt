@@ -3375,7 +3375,7 @@ return out.join(", ");
 }
 /* SHEETS — ANY PAGE CAN LIE ON A PAPER SHEET; THE SHEETS LIST (TOP → BOTTOM) DECIDES WHAT LIES OVER WHAT */
 var SHEET_PATTERNS;
-var SHEET_DEFAULTS = { id: "", name: "Sheet", pages: [], restPage: "", edge: "left", edgeM: "top", rest: "open", peek: 200, peekM: 52, sliver: 44, sliverM: 14, axis: "y", covers: "all", coverPages: [], color: "#E4E1DA", alpha: 55, blur: 9, shadow: "line", nudge: 0, dur: "", box: {}, pattern: "", patColor: "#000000", patSize: 28, patAlpha: 14, out: "peek", lv: "", arrive: "slide", main: "", hover: "" };
+var SHEET_DEFAULTS = { id: "", name: "Sheet", pages: [], restPage: "", edge: "left", edgeM: "top", rest: "open", peek: 200, peekM: 52, sliver: 44, sliverM: 14, axis: "y", covers: "all", coverPages: [], color: "#E4E1DA", alpha: 55, blur: 9, shadow: "line", nudge: 0, dur: "", box: {}, pattern: "", patColor: "#000000", patSize: 28, patAlpha: 14, out: "peek", lv: "", arrive: "slide", main: "", hover: "", edgeStyle: "none", edgeSides: [] };
 /* THE PAGE A PEEKING SHEET SHOWS AT REST — DRAWN ON ITS EDGE, ALWAYS THERE; THE OTHER PAGES SLIDE INTO VIEW */
 function sheetStrip(k) {
 if (!k || k.rest !== "peek") return null;
@@ -3818,6 +3818,33 @@ var side = k.rest === "peek" ? { left: "right", right: "left", top: "bottom", bo
 var a = k.rest === "peek" ? "0.12" : "0.1";
 return { left: "-1px 0 0", right: "1px 0 0", top: "0 -1px 0", bottom: "0 1px 0" }[side] + " rgba(0, 0, 0, " + a + ")";
 }
+function sheetEdgeCSS(k) {
+var style = k.edgeStyle || "none";
+var sides = k.edgeSides || [];
+if (style === "none" || !sides.length) return "";
+var out = [];
+var sel = '.bd-ly-k[data-k="' + k.id + '"]';
+if (style === "line") {
+var width = "2px";
+var color = "rgba(0, 0, 0, 0.12)";
+sides.forEach(function(side) {
+out.push(sel + " { border-" + side + ": " + width + " solid " + color + "; }");
+});
+} else if (style === "tab") {
+sides.forEach(function(side) {
+out.push(sel + " { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }");
+});
+} else if (style === "torn") {
+sides.forEach(function(side) {
+out.push(sel + " { filter: drop-shadow(0 0 2px rgba(0,0,0,0.1)); }");
+});
+} else if (style === "stamp") {
+sides.forEach(function(side) {
+out.push(sel + " { border-" + side + ": 2px dashed rgba(0, 0, 0, 0.3); }");
+});
+}
+return out.join("\n");
+}
 /* PER SHEET: WHERE IT SITS, HOW MUCH PEEKS, ITS PAPER */
 function sheetBoxCSS(phone) {
 var K = sheetList();
@@ -4028,6 +4055,7 @@ sheetStateCSS("is-e-", sheetEdges(false)),
 sheetMenuCSS(false),
 layerPageCSS(false),
 glassCSS(false),
+(function() { return sheetList().map(sheetEdgeCSS).filter(Boolean).join("\n"); })(),
 ".is-t-unfold .bd-ly-art.is-enter {\ntransform-origin: 50% 0;\nanimation: bd-ly-unfold var(--ly-pdur, var(--ly-dur)) var(--ly-ease) both;\n}",
 "@keyframes bd-ly-unfold {\nfrom {\ntransform: perspective(1600px) rotateX(-88deg);\n}\nto {\ntransform: none;\n}\n}",
 "@media (prefers-reduced-motion: reduce) {\n.bd-ly-sheet,\n.bd-ly-track {\ntransition-duration: 1ms;\n}\n}"
@@ -7303,7 +7331,8 @@ return pages.length > 1 ? '<button class="bd-ed-pinpill' + (on ? " is-on" : "") 
 }).join("");
 var h = skin("Details", SK.det, field("Name", input(P + "name", k.name || "")));
 h += skin("Layout", SK.lay, two(seg(P + (S.mode === "phone" ? "axisM" : "axis"), sheetAx(k, S.mode === "phone"), [["y", "Vertical"], ["x", "Horizontal"]]), '<div class="bd-ed-pins">' + pins + "</div>") + sheetLayoutHTML(n, true));
-h += skin("Style", SK.sty, '<span class="bd-ed-label">Background</span>' + fillIn("", P + "color", k.color, "#E4E1DA") + two(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur", P + "blur", k.blur)) + '<span class="bd-ed-label">Decoration</span>' + patThumbs(P + "pattern", k.pattern || "") + (k.pattern ? row(field("Lines", '<input type="color" class="bd-ed-input" data-bind="' + P + 'patColor" value="' + esc(k.patColor || "#000000") + '">'), numIn("Spacing px", P + "patSize", k.patSize), numIn("Strength %", P + "patAlpha", k.patAlpha)) : "") + two(numIn("Corners", P + "radius", k.radius == null ? "" : k.radius, "blank"), field("Edge", seg(P + "shadow", k.shadow === "none" || !k.shadow ? "none" : "soft", [["none", "None"], ["soft", "Soft shadow"]]))));
+var edgeSideButtons = ["top", "right", "bottom", "left"].map(function(s) { return '<button class="bd-ed-pinpill' + ((k.edgeSides || []).indexOf(s) > -1 ? ' is-on' : '') + '" data-act="edge-side-toggle" data-i="' + n + '" data-side="' + s + '">' + s.charAt(0).toUpperCase() + s.slice(1) + '</button>'; }).join("");
+	h += skin("Style", SK.sty, '<span class="bd-ed-label">Background</span>' + fillIn("", P + "color", k.color, "#E4E1DA") + two(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur", P + "blur", k.blur)) + '<span class="bd-ed-label">Decoration</span>' + patThumbs(P + "pattern", k.pattern || "") + (k.pattern ? row(field("Lines", '<input type="color" class="bd-ed-input" data-bind="' + P + 'patColor" value="' + esc(k.patColor || "#000000") + '">'), numIn("Spacing px", P + "patSize", k.patSize), numIn("Strength %", P + "patAlpha", k.patAlpha)) : "") + two(numIn("Corners", P + "radius", k.radius == null ? "" : k.radius, "blank"), field("Edge", seg(P + "shadow", k.shadow || "line", [["none", "None"], ["line", "Line"], ["hard", "Hard"], ["soft", "Soft shadow"]]))) + '<span class="bd-ed-label">Edge style</span>' + field("Type", seg(P + "edgeStyle", k.edgeStyle || "none", [["none", "None"], ["line", "Line"], ["tab", "Tab"], ["torn", "Torn"], ["stamp", "Postage stamp"]])) + field("Sides", '<div class="bd-ed-pills">' + edgeSideButtons + '</div>'));
 h += inhDelBar("sheet", n, '<button class="bd-ed-btn is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve</button>");
 return h;
 }
@@ -7879,7 +7908,7 @@ var sty = (cardOn ? fillIn("Card colour", "page.box.card", bx.card || "", "#ffff
 + (cardOn ? two(numIn("Card see-through %", "page.box.cardA", bx.cardA == null ? "" : bx.cardA, "blank"), numIn("Blur", "page.box.blur", bx.blur == null ? "" : bx.blur, "blank")) : "")
 + (cardOn && onSheet ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "Inherit"], ["none", "None"]]) : "")
 + (cardOn && !onSheet && !pg.parent ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "None"]]) : "")
-+ (cardOn ? two(numIn("Corners", "page.box.radius", bx.radius == null ? "" : bx.radius, "blank"), field("Shadow", seg("page.box.shadow", bx.shadow === "soft" ? "soft" : "none", [["none", "None"], ["soft", "Soft"]]))) : "");
++ (cardOn ? two(numIn("Corners", "page.box.radius", bx.radius == null ? "" : bx.radius, "blank"), field("Shadow", seg("page.box.shadow", bx.shadow || "none", [["none", "None"], ["line", "Line"], ["hard", "Hard"], ["soft", "Soft"]]))) : "");
 h += (onSheet ? skinFold : skin)("Style", SK.sty, sty, cardOn);
 var stack = "";
 S.project.order.forEach(function (id) {
@@ -10526,6 +10555,7 @@ render();
 },
 "sheet-done": function () { S.sheetSel = ""; render(); },
 "sheet-del": function () { snap(); S.sheetSel = ""; S.project.site.sheets.splice(+b.getAttribute("data-i"), 1); changed(); },
+"edge-side-toggle": function () { snap(); var k = S.project.site.sheets[+b.getAttribute("data-i")]; var side = b.getAttribute("data-side"); k.edgeSides = k.edgeSides || []; var idx = k.edgeSides.indexOf(side); idx > -1 ? k.edgeSides.splice(idx, 1) : k.edgeSides.push(side); changed(); },
 "sheet-up": function () { var K = S.project.site.sheets; var i = +b.getAttribute("data-i"); if (i < 1) return; snap(); K.splice(i - 1, 0, K.splice(i, 1)[0]); changed(); },
 "sheet-down": function () { var K = S.project.site.sheets; var i = +b.getAttribute("data-i"); if (i >= K.length - 1) return; snap(); K.splice(i + 1, 0, K.splice(i, 1)[0]); changed(); },
 "sheet-page-add": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; if (!k || sheetFull(k)) return; S.layAdd = -1; snap(); k.pages = (k.pages || []).concat([b.getAttribute("data-id")]); changed(); },
@@ -10713,7 +10743,7 @@ if (kind === "sheet") {
 var k = sheetList()[+b.getAttribute("data-i")];
 if (!k) return;
 var d = clone(SHEET_DEFAULTS);
-["color", "alpha", "blur", "shadow", "nudge", "dur", "box", "pattern", "patColor", "patSize", "patAlpha", "lv", "arrive", "hover", "covers", "coverPages", "edge", "edgeM", "sliver", "sliverM", "out", "peek", "peekM"].forEach(function (x) { k[x] = d[x]; });
+["color", "alpha", "blur", "shadow", "nudge", "dur", "box", "pattern", "patColor", "patSize", "patAlpha", "lv", "arrive", "hover", "covers", "coverPages", "edge", "edgeM", "sliver", "sliverM", "out", "peek", "peekM", "edgeStyle", "edgeSides"].forEach(function (x) { k[x] = d[x]; });
 ["pinPad", "pinMode", "pinModeM", "layPg"].forEach(function (x) { delete k[x]; });
 } else {
 var pg = curPage();
