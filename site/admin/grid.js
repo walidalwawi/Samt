@@ -2438,8 +2438,8 @@ if (w && onSh && !anyM) d.push("margin: 0;");
 if (!phone) {
 if (b.ink) d.push("color: " + b.ink + ";", "--bd-ink: " + b.ink + ";");
 if (cardOn && b.card) {
-var ca = b.cardA === "" || b.cardA == null ? 100 : parseFloat(b.cardA);
-d.push("background: " + fillCSS(b.card, isNaN(ca) ? 100 : ca) + ";");
+var ca = solidPct(b.cardA, 0);
+d.push("background: " + fillCSS(b.card, ca) + ";");
 }
 var bl = cardOn ? parseFloat(b.blur) : 0;
 if (bl > 0) d.push("-webkit-backdrop-filter: blur(" + bl + "px);", "backdrop-filter: blur(" + bl + "px);");
@@ -3314,6 +3314,15 @@ var g = parseFill(v);
 if (g) return "linear-gradient(" + g.angle + "deg, " + fillStop(g.a, pct) + ", " + fillStop(g.b, pct) + ")";
 return hexAlpha(v, pct);
 }
+/* SEE-THROUGH % (WHAT EVERY PANEL SHOWS) → HOW SOLID THE PAINT IS: 0 = SOLID PAPER, 100 = CLEAR GLASS; BLANK = THE GIVEN DEFAULT */
+function solidPct(v, dflt) {
+var t = v === "" || v == null ? dflt : parseFloat(v);
+if (isNaN(t)) t = dflt;
+return Math.max(0, Math.min(100, 100 - t));
+}
+function sheetSolid(k) {
+return solidPct(k.alpha, SHEET_DEFAULTS.alpha);
+}
 /* "NONE" PAINTS NOTHING; ANYTHING ELSE IS WRITTEN AS IT IS */
 function bgVal(v) {
 return v === "none" ? "transparent" : v;
@@ -3348,8 +3357,8 @@ if (phone || !q || pageMode(q) !== "card" || !q.pattern || q.pattern === "none")
 var L = sheetPatternList(pagePaperK(k, q)).map(function (t) { return t + " local"; });
 if (!L.length) return "";
 var b = effPage(q).box || {};
-var ca = b.cardA === "" || b.cardA == null ? 100 : parseFloat(b.cardA);
-return sel + " {\nbackground: " + L.join(", ") + ", " + (b.card ? fillCSS(b.card, isNaN(ca) ? 100 : ca) : "transparent") + ";\n}";
+var ca = solidPct(b.cardA, 0);
+return sel + " {\nbackground: " + L.join(", ") + ", " + (b.card ? fillCSS(b.card, ca) : "transparent") + ";\n}";
 }
 /* A PAGE WITH NO SHEET HAS ITS OWN CARD: ITS DECORATION LIES ON THAT CARD (SAME LINES AS A SHEET'S PAPER) */
 function underPatternCSS(q, sel, phone) {
@@ -3357,13 +3366,22 @@ if (phone || !q || q.parent || q.kind === "pin" || !q.pattern || q.pattern === "
 var L = sheetPatternList({ pattern: q.pattern, patColor: SHEET_DEFAULTS.patColor, patSize: SHEET_DEFAULTS.patSize, patAlpha: SHEET_DEFAULTS.patAlpha }).map(function (t) { return t + " local"; });
 if (!L.length) return "";
 var b = effPage(q).box || {};
-var ca = b.cardA === "" || b.cardA == null ? 100 : parseFloat(b.cardA);
-return sel + " {\nbackground: " + L.join(", ") + ", " + (b.card ? fillCSS(b.card, isNaN(ca) ? 100 : ca) : "transparent") + ";\n}";
+var ca = solidPct(b.cardA, 0);
+return sel + " {\nbackground: " + L.join(", ") + ", " + (b.card ? fillCSS(b.card, ca) : "transparent") + ";\n}";
+}
+/* GRAIN: A NOISE LAYER PAINTED AS PART OF THE PAPER (NO BLEND MODE, SO THE SHEET'S BLUR STILL SEES WHAT LIES UNDER IT) */
+function grainLayer(g) {
+g = Math.max(0, Math.min(100, parseFloat(g) || 0));
+if (!g) return "";
+var a = Math.round(g * 0.9) / 100;
+return "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .3 0 0 0 0 .25 0 0 0 0 .2 0 0 0 " + a + " 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>\") 0 0 / 160px 160px repeat local";
 }
 function sheetPaper(k, pct, j, N) {
 var f = fillCSS(k.color || "#E4E1DA", pct);
 var g = parseFill(k.color || "");
 var out = sheetPatternList(k).map(function (t) { return t + " local"; });
+var gr = grainLayer(k.grain);
+if (gr) out.unshift(gr);
 N = Math.max(1, N || 1);
 j = j || 0;
 if (g) {
@@ -3375,7 +3393,7 @@ return out.join(", ");
 }
 /* SHEETS — ANY PAGE CAN LIE ON A PAPER SHEET; THE SHEETS LIST (TOP → BOTTOM) DECIDES WHAT LIES OVER WHAT */
 var SHEET_PATTERNS;
-var SHEET_DEFAULTS = { id: "", name: "Sheet", pages: [], restPage: "", edge: "left", edgeM: "top", rest: "open", peek: 200, peekM: 52, sliver: 44, sliverM: 14, axis: "y", covers: "all", coverPages: [], color: "#E4E1DA", alpha: 55, blur: 9, shadow: "line", nudge: 0, dur: "", box: {}, pattern: "", patColor: "#000000", patSize: 28, patAlpha: 14, out: "peek", lv: "", arrive: "slide", main: "", hover: "" };
+var SHEET_DEFAULTS = { id: "", name: "Sheet", pages: [], restPage: "", edge: "left", edgeM: "top", rest: "open", peek: 200, peekM: 52, sliver: 44, sliverM: 14, axis: "y", covers: "all", coverPages: [], color: "#E4E1DA", alpha: 45, blur: 9, shadow: "line", grain: 0, nudge: 0, dur: "", box: {}, pattern: "", patColor: "#000000", patSize: 28, patAlpha: 14, out: "peek", lv: "", arrive: "slide", main: "", hover: "" };
 /* THE PAGE A PEEKING SHEET SHOWS AT REST — DRAWN ON ITS EDGE, ALWAYS THERE; THE OTHER PAGES SLIDE INTO VIEW */
 function sheetStrip(k) {
 if (!k || k.rest !== "peek") return null;
@@ -3903,7 +3921,7 @@ var hitPane = !!kpin && kpin !== String(q.id);
 out.push(sel + " {\nmargin: " + pm.t + " " + (hitPane ? "0" : pm.r) + " 0 " + (hitPane ? "0" : pm.l) + ";\nmin-height: calc(100% - " + pm.t + " - " + pm.b + ");\nbox-shadow: " + sheetLine(k, phone) + ";\n" + sheetJoinClip(k, qi, qa.length, phone) + sheetRadius(k, qi, qa.length, hitPane === false && !!kpin, phone) + "}");
 out.push('.bd-ly-pane[data-page="' + q.id + '"] {\n--pm-b: ' + pm.b + ';\n' + (hitPane ? "margin-left: " + pm.l + ";\nmargin-right: " + pm.r + ";\n" + (sheetAx(k, phone) === "x" ? "flex-basis: calc(100% / var(--n) - " + pm.l + " - " + pm.r + ");\n" : "") : "") + "}");
 }
-if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPaper(k, k.alpha == null ? 55 : k.alpha) : sheetPaper(cardPaperK(k, q), k.alpha == null ? 55 : k.alpha, panesK.indexOf(q), panesK.length)) + ";\n}");
+if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPaper(k, sheetSolid(k)) : sheetPaper(cardPaperK(k, q), sheetSolid(k), panesK.indexOf(q), panesK.length)) + ";\n}");
 if (!phone && q.sheetBg) out.push(sel + " {\nbackground: " + bgVal(q.sheetBg) + ";\n}");
 var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", st && st.id === q.id ? null : padIns, true);
 if (bx) out.push(bx);
@@ -4593,7 +4611,7 @@ var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
 var ins = sheetInsets(n, phone);
 var pos = e === "left" ? "top:" + ins.top + "px;bottom:" + ins.bottom + "px;left:" + ins.left + "px;width:" + peek + "px" : e === "right" ? "top:" + ins.top + "px;bottom:" + ins.bottom + "px;right:" + ins.right + "px;width:" + peek + "px" : e === "top" ? "left:" + ins.left + "px;right:" + ins.right + "px;top:" + ins.top + "px;height:" + peek + "px" : "left:" + ins.left + "px;right:" + ins.right + "px;bottom:" + ins.bottom + "px;height:" + peek + "px";
 var strip = sheetStrip(k);
-h += '<div class="bd-ly-edit" style="' + pos + ";background:" + sheetPaper(k, k.alpha == null ? 55 : k.alpha) + ";box-shadow:" + sheetLine(k, phone) + (parseFloat(k.radius) > 0 ? ";border-radius:" + parseFloat(k.radius) + "px" : "") + ";-webkit-backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + "px);backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + 'px)">' + (strip ? layerBody(strip, "view") : "") + "</div>";
+h += '<div class="bd-ly-edit" style="' + pos + ";background:" + sheetPaper(k, sheetSolid(k)) + ";box-shadow:" + sheetLine(k, phone) + (parseFloat(k.radius) > 0 ? ";border-radius:" + parseFloat(k.radius) + "px" : "") + ";-webkit-backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + "px);backdrop-filter:blur(" + (parseFloat(k.blur) || 0) + 'px)">' + (strip ? layerBody(strip, "view") : "") + "</div>";
 });
 S.layerFocus = keep;
 return h;
@@ -4615,8 +4633,8 @@ p.pages[menu.id] = menu;
 p.order.push(menu.id);
 var idx = [journal, library].filter(Boolean).map(function (q) { return q.id; }).filter(function (id, i, a) { return a.indexOf(id) === i; });
 s.sheets = [
-Object.assign(clone(SHEET_DEFAULTS), { id: "menu", name: "Menu", pages: (about && idx.indexOf(about.id) < 0 ? [about.id] : []).concat([menu.id]), restPage: menu.id, edge: "left", edgeM: "top", rest: "peek", peek: L.menuW, peekM: L.menuBand, sliver: L.sliver, sliverM: L.sliverM, color: L.menuColor, alpha: L.menuAlpha, blur: L.menuBlur, shadow: L.menuEdge ? "line" : "none", dur: L.menuDur !== L.dur ? L.menuDur : "" }),
-Object.assign(clone(SHEET_DEFAULTS), { id: "index", name: "Index", pages: idx, edge: "left", edgeM: "top", rest: "open", peek: 0, peekM: 0, sliver: L.sliver - L.menuW, sliverM: L.sliverM, color: L.indexColor, alpha: L.indexAlpha, blur: L.indexBlur, shadow: L.indexEdge ? "line" : "none" })
+Object.assign(clone(SHEET_DEFAULTS), { id: "menu", name: "Menu", pages: (about && idx.indexOf(about.id) < 0 ? [about.id] : []).concat([menu.id]), restPage: menu.id, edge: "left", edgeM: "top", rest: "peek", peek: L.menuW, peekM: L.menuBand, sliver: L.sliver, sliverM: L.sliverM, color: L.menuColor, alpha: 100 - L.menuAlpha, blur: L.menuBlur, shadow: L.menuEdge ? "line" : "none", dur: L.menuDur !== L.dur ? L.menuDur : "" }),
+Object.assign(clone(SHEET_DEFAULTS), { id: "index", name: "Index", pages: idx, edge: "left", edgeM: "top", rest: "open", peek: 0, peekM: 0, sliver: L.sliver - L.menuW, sliverM: L.sliverM, color: L.indexColor, alpha: 100 - L.indexAlpha, blur: L.indexBlur, shadow: L.indexEdge ? "line" : "none" })
 ];
 if (about && idx.indexOf(about.id) < 0) {
 about.box = Object.assign({}, about.box || {}, { maxW: String(L.aboutW + L.aboutPad * 2), pl: String(L.aboutPad), pr: String(L.aboutPad), plM: String(L.aboutPadM), prM: String(L.aboutPadM) });
@@ -7212,7 +7230,7 @@ var rel = { l: s.slot.l - G.rect.l, t: s.slot.t - G.rect.t, r: s.slot.r - G.rect
 body += '<div class="bd-sp-slot" style="left:' + Math.round(rel.l) + "px;top:" + Math.round(rel.t) + "px;width:" + Math.round(rel.r - rel.l) + "px;height:" + Math.round(rel.b - rel.t) + 'px"><div class="bd-ly-pane is-on" data-page="' + q.id + '"><div class="bd-ly-paper">' + layerBody(q, "view") + "</div></div></div>";
 if (st && st.id === q.id) {
 var sel = '.bd-ly-pane[data-page="' + q.id + '"] > .bd-ly-paper';
-extra.push(sel + " {\nbackground: " + sheetPaper(k, k.alpha == null ? 55 : k.alpha) + ";\n}");
+extra.push(sel + " {\nbackground: " + sheetPaper(k, sheetSolid(k)) + ";\n}");
 var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", null, true);
 if (bx) extra.push(bx);
 }
@@ -7302,7 +7320,7 @@ return pages.length > 1 ? '<button class="bd-ed-pinpill' + (on ? " is-on" : "") 
 }).join("");
 var h = skin("Details", SK.det, field("Name", input(P + "name", k.name || "")));
 h += skin("Layout", SK.lay, two(seg(P + (S.mode === "phone" ? "axisM" : "axis"), sheetAx(k, S.mode === "phone"), [["y", "Vertical"], ["x", "Horizontal"]]), '<div class="bd-ed-pins">' + pins + "</div>") + sheetLayoutHTML(n, true));
-h += skin("Style", SK.sty, '<span class="bd-ed-label">Background</span>' + fillIn("", P + "color", k.color, "#E4E1DA") + two(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur", P + "blur", k.blur)) + '<span class="bd-ed-label">Decoration</span>' + patThumbs(P + "pattern", k.pattern || "") + (k.pattern ? row(field("Lines", '<input type="color" class="bd-ed-input" data-bind="' + P + 'patColor" value="' + esc(k.patColor || "#000000") + '">'), numIn("Spacing px", P + "patSize", k.patSize), numIn("Strength %", P + "patAlpha", k.patAlpha)) : "") + two(numIn("Corners", P + "radius", k.radius == null ? "" : k.radius, "blank"), field("Edge", seg(P + "shadow", k.shadow === "none" || !k.shadow ? "none" : "soft", [["none", "None"], ["soft", "Soft shadow"]]))));
+h += skin("Style", SK.sty, ovrNote("sheet", k, n) + blendNote() + '<span class="bd-ed-label">Background</span>' + fillIn("", P + "color", k.color, "#E4E1DA") + two(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur", P + "blur", k.blur)) + '<span class="bd-ed-label">Decoration</span>' + patThumbs(P + "pattern", k.pattern || "") + numIn("Grain %", P + "grain", k.grain || "", "0") + (k.pattern ? row(field("Lines", '<input type="color" class="bd-ed-input" data-bind="' + P + 'patColor" value="' + esc(k.patColor || "#000000") + '">'), numIn("Spacing px", P + "patSize", k.patSize), numIn("Strength %", P + "patAlpha", k.patAlpha)) : "") + two(numIn("Corners", P + "radius", k.radius == null ? "" : k.radius, "blank"), field("Edge", seg(P + "shadow", k.shadow === "none" || !k.shadow ? "none" : "soft", [["none", "None"], ["soft", "Soft shadow"]]))));
 h += inhDelBar("sheet", n, '<button class="bd-ed-btn is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve</button>");
 return h;
 }
@@ -7432,10 +7450,10 @@ var s = S.project.site;
 var g = s.glass || {};
 if (!g.menu) return "";
 if (phone) return [".bd-glass.is-on-desktop {\ndisplay: none;\n}", ".bd-glass.is-on-phone {\ndisplay: flex;\n}", ".bd-glass {\npadding: 10px max(14px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));\n}", ".bd-glass.is-at-top {\npadding-top: calc(10px + env(safe-area-inset-top, 0px));\npadding-bottom: 10px;\n}"].join("\n");
-var a = g.alpha == null ? 92 : parseFloat(g.alpha);
+var a = solidPct(g.alpha, 8);
 var bl = parseFloat(g.blur) || 0;
 return [
-".bd-glass {\nposition: fixed;\nleft: 0;\nright: 0;\n" + (g.at === "top" ? "top: 0;" : "bottom: 0;") + "\nz-index: 60;\ndisplay: " + (g.menu === "phone" ? "none" : "flex") + ";\nalign-items: center;\njustify-content: space-between;\ngap: 18px;\npadding: 12px 24px;\nbox-sizing: border-box;\nbackground: " + fillCSS(g.color || s.colors.panel, isNaN(a) ? 92 : a) + ";\n" + (bl ? "-webkit-backdrop-filter: blur(" + bl + "px);\nbackdrop-filter: blur(" + bl + "px);\n" : "") + "color: var(--bd-ink);\nfont-family: var(--bd-mono);\nfont-size: var(--bd-fs);\nline-height: var(--bd-lh);\n}",
+".bd-glass {\nposition: fixed;\nleft: 0;\nright: 0;\n" + (g.at === "top" ? "top: 0;" : "bottom: 0;") + "\nz-index: 60;\ndisplay: " + (g.menu === "phone" ? "none" : "flex") + ";\nalign-items: center;\njustify-content: space-between;\ngap: 18px;\npadding: 12px 24px;\nbox-sizing: border-box;\nbackground: " + fillCSS(g.color || s.colors.panel, a) + ";\n" + (bl ? "-webkit-backdrop-filter: blur(" + bl + "px);\nbackdrop-filter: blur(" + bl + "px);\n" : "") + "color: var(--bd-ink);\nfont-family: var(--bd-mono);\nfont-size: var(--bd-fs);\nline-height: var(--bd-lh);\n}",
 ".bd-glass .bd-ly-list {\ndisplay: flex;\nflex-wrap: wrap;\ngap: 4px 18px;\nmargin: 0;\npadding: 0;\nlist-style: none;\n}",
 ".bd-glass .bd-ly-mark {\nmargin: 0;\nwhite-space: nowrap;\n}",
 ".bd-glass .bd-ly-a {\ncolor: inherit;\ntext-decoration: none;\n}",
@@ -7706,6 +7724,85 @@ if (r.sel.indexOf(key) > -1) found.push({ where: w[0], phone: i === 1, props: de
 });
 return found;
 }
+/* HAND CSS (SITE OR PAGE CODE) AIMED AT A SHEET OR A PAGE: IT WINS OVER THE PANEL, SO THE PANEL SAYS SO AND CAN REMOVE IT */
+function ovrKeys(kind, x) {
+if (kind === "sheet") {
+var keys = ['data-k="' + x.id + '"'];
+(x.pages || []).forEach(function (id) { keys.push('data-page="' + id + '"', ".bd-pg-" + id); });
+return keys;
+}
+return ['data-page="' + x.id + '"', ".bd-pg-" + x.id];
+}
+function ovrHit(sel, keys) {
+return keys.some(function (k) { return sel.indexOf(k) > -1 && !(k.charAt(0) === "." && new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[\\w-]").test(sel)); });
+}
+function ovrFind(keys) {
+var out = [];
+var scan = function (css, where) {
+var sp = cssSplit(css || "");
+[["desk", false], ["mob", true]].forEach(function (pp) {
+cssRules(sp[pp[0]]).forEach(function (r) {
+if (r.sel.indexOf("@") === 0 || !ovrHit(r.sel, keys)) return;
+out.push({ where: where, phone: pp[1], props: declList(r.body).map(function (d) { return d.prop; }) });
+});
+});
+};
+scan(S.project.site.css, "Site CSS");
+S.project.order.forEach(function (id) { var q = S.project.pages[id]; if (q && q.css) scan(q.css, "Page CSS · " + (q.title || id)); });
+return out;
+}
+function ovrStrip(css, keys) {
+var sp = cssSplit(css || "");
+var cut = function (part) {
+var rules = cssRules(part).filter(function (r) { return r.sel.indexOf("@") !== 0 && ovrHit(r.sel, keys); });
+for (var i = rules.length - 1; i >= 0; i--) part = part.slice(0, rules[i].start) + part.slice(rules[i].close + 1);
+return part.replace(/\n{3,}/g, "\n\n");
+};
+return cssJoin(cut(sp.desk), cut(sp.mob));
+}
+function ovrClear(keys) {
+S.project.site.css = ovrStrip(S.project.site.css, keys);
+S.project.order.forEach(function (id) { var q = S.project.pages[id]; if (q && q.css) q.css = ovrStrip(q.css, keys); });
+}
+/* A BLEND MODE ON A SHEET (USUALLY A GRAIN LAYER IN SITE CSS) ISOLATES THE SHEET, SO ITS BLUR SEES NOTHING BEHIND IT */
+function blendRules() {
+var out = [];
+var sp = cssSplit(S.project.site.css || "");
+["desk", "mob"].forEach(function (part) {
+cssRules(sp[part]).forEach(function (r) {
+if (r.sel.indexOf("@") === 0) return;
+if (!/\.bd-ly-(k|paper|pane|sheet)/.test(r.sel)) return;
+if (declList(r.body).some(function (d) { return d.prop === "mix-blend-mode" && !/normal/.test(d.val); })) out.push({ part: part, r: r });
+});
+});
+return out;
+}
+function blendNote() {
+if (!blendRules().length) return "";
+return '<div class="bd-ed-ovr"><div class="bd-ed-hint">A blend mode in Site CSS lies on the sheets, which switches their blur off (it can’t see through a blend). Grain below does the same paper texture without it.</div><button class="bd-ed-btn is-sm" data-act="grain-swap">Use Grain instead</button></div>';
+}
+function grainSwap() {
+var sp = cssSplit(S.project.site.css || "");
+["desk", "mob"].forEach(function (part) {
+var rules = cssRules(sp[part]).filter(function (r) { return r.sel.indexOf("@") !== 0 && /\.bd-ly-(k|paper|pane|sheet)/.test(r.sel) && declList(r.body).some(function (d) { return d.prop === "mix-blend-mode" && !/normal/.test(d.val); }); });
+for (var i = rules.length - 1; i >= 0; i--) sp[part] = sp[part].slice(0, rules[i].start) + sp[part].slice(rules[i].close + 1);
+sp[part] = sp[part].replace(/\/\*\s*PAPER\s*\*\/\s*(?=\n|$)/g, "").replace(/\n{3,}/g, "\n\n");
+});
+S.project.site.css = cssJoin(sp.desk, sp.mob);
+sheetList().forEach(function (k) { if (!parseFloat(k.grain)) k.grain = 22; });
+}
+function ovrNote(kind, x, i) {
+var ov = ovrFind(ovrKeys(kind, x));
+if (!ov.length) return "";
+var props = [];
+var where = [];
+ov.forEach(function (o) {
+o.props.forEach(function (p) { if (props.indexOf(p) < 0) props.push(p); });
+var w = o.where + (o.phone ? " · phone" : "");
+if (where.indexOf(w) < 0) where.push(w);
+});
+return '<div class="bd-ed-ovr"><div class="bd-ed-hint">Code overrides this ' + kind + " (" + esc(props.join(", ")) + ") in " + esc(where.join(", ")) + ". Those lines win over the settings below.</div>" + '<button class="bd-ed-btn is-sm" data-act="ovr-clear" data-kind="' + kind + '" data-i="' + (i == null ? "" : i) + '">Remove the code overrides</button></div>';
+}
 function clearElCss(e) {
 var key = ".bd-e-" + e.id;
 var strip = function (css) {
@@ -7874,12 +7971,13 @@ lay += two(field("Max width" + (ph ? " · phone" : ""), input("page.box.maxW" + 
 if (isMaster(pg)) lay += '<span class="bd-ed-label">Columns & grid</span>' + rulerCols(pg, S.mode === "phone", false, true);
 h += skin("Layout", SK.lay, lay);
 
-var sty = (cardOn ? fillIn("Card colour", "page.box.card", bx.card || "", "#ffffff", "None") + (pg.parent ? fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site") : "") : "")
+var pgOvr = ovrNote("page", pg);
+var sty = pgOvr + (cardOn ? fillIn("Card colour", "page.box.card", bx.card || "", "#ffffff", "None") + (pg.parent ? fillIn("Behind the page", "page.sheetBg", pg.sheetBg || "", "#ffffff", "Site") : "") : "")
 + (cardOn ? two(numIn("Card see-through %", "page.box.cardA", bx.cardA == null ? "" : bx.cardA, "blank"), numIn("Blur", "page.box.blur", bx.blur == null ? "" : bx.blur, "blank")) : "")
 + (cardOn && onSheet ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "Inherit"], ["none", "None"]]) : "")
 + (cardOn && !onSheet && !pg.parent ? '<span class="bd-ed-label">Decoration</span>' + patThumbs("page.pattern", pg.pattern || "", [["", "None"]]) : "")
 + (cardOn ? two(numIn("Corners", "page.box.radius", bx.radius == null ? "" : bx.radius, "blank"), field("Shadow", seg("page.box.shadow", bx.shadow === "soft" ? "soft" : "none", [["none", "None"], ["soft", "Soft"]]))) : "");
-h += (onSheet ? skinFold : skin)("Style", SK.sty, sty, cardOn);
+h += (onSheet ? skinFold : skin)("Style", SK.sty, sty, cardOn || !!pgOvr);
 var stack = "";
 S.project.order.forEach(function (id) {
 var q = S.project.pages[id];
@@ -8076,7 +8174,25 @@ renderCanvas();
 }
 return { changes: changes, kept: kept };
 }
+/* A HALF-TYPED EDIT IS NEVER WRITTEN: BRACES MUST CLOSE AND THE ONE PHONE BLOCK MUST STILL BE THERE, OTHERWISE PHONE RULES WOULD LAND IN THE DESKTOP PART AS OVERRIDES */
+function cssWhole(text, base) {
+var t = String(text || "").replace(/\/\*[\s\S]*?\*\//g, "");
+var o = (t.match(/\{/g) || []).length;
+var c = (t.match(/\}/g) || []).length;
+if (o !== c) return false;
+if (base && base.mob && String(base.mob).trim() && !/@media\s*\(max-width:\s*760px\)/.test(t) && !/\/\*\s*PHONE\s*\*\//.test(String(text))) return false;
+return true;
+}
 function cssEditLive(base, text, kind) {
+clearTimeout(S.cssLiveT);
+var msg0 = $("bd-code-msg");
+if (!cssWhole(text, base)) {
+if (msg0) msg0.textContent = "Waiting for the code to be complete (every { needs its }).";
+return;
+}
+S.cssLiveT = setTimeout(function () { cssEditApply(base, text, kind); }, 450);
+}
+function cssEditApply(base, text, kind) {
 if (S.pendingSnap) {
 snap();
 S.pendingSnap = false;
@@ -10370,6 +10486,8 @@ var A = {
 "discard-yes": discardDraft,
 "sign-out": function () { closePop(); lock("Key forgotten on this device."); },
 "reload": loadSite,
+"grain-swap": function () { snap(); grainSwap(); changed(); },
+"ovr-clear": function () { var kind = b.getAttribute("data-kind"); var x = kind === "sheet" ? sheetList()[+b.getAttribute("data-i")] : curPage(); if (!x) return; snap(); ovrClear(ovrKeys(kind, x)); changed(); },
 "el-css-clear": function () { var e = selEl(); if (!e) return; snap(); clearElCss(e); changed(); },
 "tools-open": function () { toolAction(act, b); },
 "tools-close": function () { toolAction(act, b); },
@@ -10712,7 +10830,7 @@ if (kind === "sheet") {
 var k = sheetList()[+b.getAttribute("data-i")];
 if (!k) return;
 var d = clone(SHEET_DEFAULTS);
-["color", "alpha", "blur", "shadow", "nudge", "dur", "box", "pattern", "patColor", "patSize", "patAlpha", "lv", "arrive", "hover", "covers", "coverPages", "edge", "edgeM", "sliver", "sliverM", "out", "peek", "peekM"].forEach(function (x) { k[x] = d[x]; });
+["color", "alpha", "blur", "shadow", "grain", "nudge", "dur", "box", "pattern", "patColor", "patSize", "patAlpha", "lv", "arrive", "hover", "covers", "coverPages", "edge", "edgeM", "sliver", "sliverM", "out", "peek", "peekM"].forEach(function (x) { k[x] = d[x]; });
 ["pinPad", "pinMode", "pinModeM", "layPg"].forEach(function (x) { delete k[x]; });
 } else {
 var pg = curPage();
