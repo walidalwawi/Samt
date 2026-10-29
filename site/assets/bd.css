@@ -1,4 +1,4 @@
-/* PUBLISHED mvtflsua */
+/* PUBLISHED mvttmgaf */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -1505,8 +1505,8 @@ grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
 column-gap: 50px;
 }
 .bd-cols.bd-cl-nsye72w3 {
-grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-column-gap: 40px;
+grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+column-gap: 30px;
 }
 
 /* PAGE: HOW TO DESEED A WATERMELON FOR SAFE CONSUMPTION */
@@ -2647,7 +2647,7 @@ margin-right: 0px;
 flex-basis: calc(100% / var(--n) - 0px - 0px);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
-background: rgba(255, 255, 255, 0);
+background: rgba(255, 255, 255, 1);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
 margin-top: 0px;
@@ -2660,25 +2660,6 @@ margin-left: 0px;
 padding-left: var(--bd-wl);
 width: auto;
 }
-.bd-ly-pane[data-page="nsye72w3"] {
-overflow: hidden;
-}
-.bd-ly-pane[data-page="nsye72w3"]::after {
-display: none;
-}
-.bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
-height: calc(100% - 0px - 0px);
-overflow-y: auto;
-background-attachment: scroll;
-scrollbar-width: none;
-}
-.bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper::-webkit-scrollbar {
-display: none;
-}
-.bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
-flex: none;
-height: auto;
-}
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
 margin: 0px 85vw 0 0px;
 min-height: calc(100% - 0px - 0px);
@@ -2689,7 +2670,7 @@ clip-path: inset(-60px -60px -60px 0);
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
-background: rgba(255, 255, 255, 0);
+background: rgba(255, 255, 255, 1);
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper > .bd-panel {
 padding-top: var(--bd-wt);
@@ -2820,6 +2801,9 @@ box-shadow: 0 0 15px rgba(0, 0, 0, 0.09)!important;
 font-size: 12px;
 line-height: 15px;
 margin-top: 20px;
+}
+.bd-pager {
+margin-top: 120px;
 }
 
 /* MOBILE */
@@ -3682,25 +3666,6 @@ padding-bottom: var(--bd-wb);
 margin-left: 0px;
 padding-left: var(--bd-wl);
 width: auto;
-}
-.bd-ly-pane[data-page="nsye72w3"] {
-overflow: hidden;
-}
-.bd-ly-pane[data-page="nsye72w3"]::after {
-display: none;
-}
-.bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
-height: calc(100% - 0px - 0px);
-overflow-y: auto;
-background-attachment: scroll;
-scrollbar-width: none;
-}
-.bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper::-webkit-scrollbar {
-display: none;
-}
-.bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
-flex: none;
-height: auto;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
 margin: 0px 0px 0 0px;
