@@ -658,8 +658,8 @@
     "coverPages": [
      "56ud3gky"
     ],
-    "color": "none",
-    "alpha": 30,
+    "color": "#ffffff",
+    "alpha": 10,
     "blur": 10,
     "shadow": "soft",
     "nudge": 0,

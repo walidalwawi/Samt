@@ -1,4 +1,4 @@
-/* PUBLISHED mvtb7dbe */
+/* PUBLISHED mvtb8x2b */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2714,7 +2714,7 @@ clip-path: inset(-60px -60px 0 -60px);
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-ly-paper {
-background: transparent;
+background: rgba(255, 255, 255, 0.1);
 }
 .bd-ly-pane[data-page="fji5ongj"] > .bd-ly-paper > .bd-panel {
 padding-top: var(--bd-wt);
@@ -2735,7 +2735,7 @@ clip-path: inset(0 -60px -60px -60px);
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="b2lr3tkr"] > .bd-ly-paper {
-background: transparent;
+background: rgba(255, 255, 255, 0.1);
 }
 .bd-ly-pane[data-page="b2lr3tkr"] > .bd-ly-paper > .bd-panel {
 padding-top: var(--bd-wt);
