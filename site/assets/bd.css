@@ -1,4 +1,4 @@
-/* PUBLISHED mvtfj855 */
+/* PUBLISHED mvtflsua */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2815,6 +2815,11 @@ box-shadow: 0 0 15px rgba(0, 0, 0, 0.09)!important;
 }
 .bd-ly-pane[data-page="b2lr3tkr"] > .bd-ly-paper {
 box-shadow: 0 0 15px rgba(0, 0, 0, 0.09)!important;
+}
+.bd-text.is-mono, .bd-ptitle.is-mono, .bd-ts-mono, .bd-notes, .bd-list.is-mono ul {
+font-size: 12px;
+line-height: 15px;
+margin-top: 20px;
 }
 
 /* MOBILE */
