@@ -1,4 +1,4 @@
-/* PUBLISHED mvttmgaf */
+/* PUBLISHED mvttnlv1 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2647,7 +2647,7 @@ margin-right: 0px;
 flex-basis: calc(100% / var(--n) - 0px - 0px);
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper {
-background: rgba(255, 255, 255, 1);
+background: transparent;
 }
 .bd-ly-pane[data-page="nsye72w3"] > .bd-ly-paper > .bd-panel {
 margin-top: 0px;
@@ -2670,7 +2670,7 @@ clip-path: inset(-60px -60px -60px 0);
 --pm-b: 0px;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper {
-background: rgba(255, 255, 255, 1);
+background: transparent;
 }
 .bd-ly-pane[data-page="56ud3gky"] > .bd-ly-paper > .bd-panel {
 padding-top: var(--bd-wt);
