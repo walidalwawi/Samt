@@ -714,7 +714,14 @@
     ]
    },
    "moved": {},
-   "custom": []
+   "custom": [],
+   "theme": {
+    "ink": "#474747",
+    "bg": "#d6d6d6",
+    "headCase": "caps",
+    "headSize": 16,
+    "hair": "#d6d6d6"
+   }
   },
   "followV1": true,
   "layOrderV1": true,
@@ -772,7 +779,8 @@
    "line": false,
    "loop": true
   },
-  "seeV1": true
+  "seeV1": true,
+  "cssTidyV1": true
  },
  "order": [
   "56ud3gky",
@@ -783,7 +791,9 @@
   "ap7jj2t4",
   "1bp9xrs5",
   "b2lr3tkr",
-  "nsye72w3"
+  "nsye72w3",
+  "4m4yldsj",
+  "yqzmnfrc"
  ],
  "pages": {
   "fji5ongj": {
@@ -4585,6 +4595,227 @@
     "gutterM": 24
    },
    "mode": "sheet"
+  },
+  "4m4yldsj": {
+   "id": "4m4yldsj",
+   "title": "Blog",
+   "h1": "",
+   "num": "",
+   "slug": "blog",
+   "section": "",
+   "desc": "",
+   "header": true,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "jkrh7wkc",
+     "type": "posts",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 30
+     },
+     "m": null,
+     "props": {
+      "blog": "",
+      "layout": "grid",
+      "cols": 3,
+      "colsM": 1,
+      "gap": 40,
+      "gapM": 24,
+      "rowGap": 40,
+      "rowGapM": 24,
+      "sort": "order",
+      "limit": "",
+      "featured": "none",
+      "fLayout": "stack",
+      "fTitleStyle": "",
+      "showImage": true,
+      "showTitle": true,
+      "showDate": false,
+      "showMeta": true,
+      "showExcerpt": false,
+      "imagePos": "",
+      "ratio": "",
+      "imgGap": "",
+      "cardBg": "",
+      "cardPad": "",
+      "cardPadM": "",
+      "minH": "",
+      "titleStyle": "",
+      "titleSize": "",
+      "titleLh": "",
+      "metaStyle": "",
+      "metaSize": "",
+      "metaLh": "",
+      "metaGap": "",
+      "hover": "",
+      "titleSizeM": "",
+      "titleLhM": "",
+      "metaSizeM": "",
+      "metaLhM": "",
+      "look": "",
+      "zine": "",
+      "staple": "",
+      "pageBg": "",
+      "paperBg": "",
+      "paperInk": "",
+      "paperAlpha": "",
+      "paperFrost": "",
+      "paperPad": "",
+      "paperPadM": "",
+      "paperInset": "",
+      "paperLine": "",
+      "paperTilt": "",
+      "textPos": "",
+      "slideDir": "",
+      "slideHover": "",
+      "slideTap": "",
+      "imgBlur": "",
+      "imgTone": "",
+      "imgBlend": "",
+      "imgBackdrop": ""
+     }
+    }
+   ],
+   "kind": "page",
+   "blog": true,
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
+   },
+   "box": {}
+  },
+  "yqzmnfrc": {
+   "id": "yqzmnfrc",
+   "title": "First post",
+   "h1": "",
+   "num": "",
+   "slug": "first-post",
+   "section": "",
+   "desc": "",
+   "header": true,
+   "layout": "master",
+   "css": "",
+   "els": [
+    {
+     "id": "mcobxu0a",
+     "type": "postinfo",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 3
+     },
+     "m": null,
+     "props": {
+      "back": true,
+      "backLabel": "<",
+      "date": false,
+      "words": true,
+      "time": true,
+      "sep": "",
+      "style": "",
+      "size": "",
+      "lh": "",
+      "sizeM": "",
+      "lhM": "",
+      "upper": "",
+      "tracking": "",
+      "ink": "",
+      "align": "",
+      "padT": "",
+      "padTM": "",
+      "padB": "",
+      "padBM": "",
+      "line": "",
+      "backGap": "",
+      "backSize": "",
+      "backInk": "",
+      "backDim": ""
+     }
+    },
+    {
+     "id": "mwb26pu9",
+     "type": "text",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 8
+     },
+     "m": null,
+     "props": {
+      "html": "<p>Write here.</p>",
+      "style": "body",
+      "indent": false,
+      "align": "left",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": "",
+      "ink": "",
+      "tracking": "",
+      "measure": ""
+     }
+    },
+    {
+     "id": "mfr3od7b",
+     "type": "pager",
+     "col": 1,
+     "d": {
+      "x": 0,
+      "y": 0,
+      "w": 12,
+      "h": 3
+     },
+     "m": null,
+     "props": {
+      "num": "num",
+      "line": false,
+      "loop": false,
+      "scope": "blog",
+      "look": "text",
+      "nextLabel": "Next, ",
+      "prevLabel": "",
+      "align": "center",
+      "style": "",
+      "size": "",
+      "sizeM": "",
+      "lh": "",
+      "lhM": ""
+     }
+    }
+   ],
+   "kind": "page",
+   "parent": "4m4yldsj",
+   "date": "2026-10-29",
+   "excerpt": "",
+   "featured": false,
+   "stack": [],
+   "pin": {
+    "place": "top",
+    "fixed": false,
+    "show": "all",
+    "pages": [],
+    "h": "",
+    "hM": "",
+    "gap": "",
+    "gapM": ""
+   },
+   "box": {}
   }
  }
 }
