@@ -717,25 +717,29 @@
     "blocks:animation": "site"
    },
    "custom": [],
-   "theme": {
-    "mark": "#000000",
-    "hair": "#000000",
-    "lbw": 32,
-    "size": 11,
-    "headCase": "caps",
-    "field": "soft",
-    "gap": 4,
-    "rad": 4,
-    "row": 36,
-    "card": "#ffffff",
-    "ground": "#ebebeb",
-    "mbar": "#adadad",
-    "master": "row"
-   },
    "look": {
     "sheet:details": {
      "bg": "#f2e500"
     }
+   },
+   "theme": {
+    "mbar": "#0061fe",
+    "lbw": 32,
+    "size": 11,
+    "headCase": "caps",
+    "z-rail-bg": "#ff6250",
+    "z-rail-ink": "#000000",
+    "z-rail-line": "#000000",
+    "d-z-rail-bg": "#e22400",
+    "d-z-rail-rad": 4,
+    "d-z-rail-size": 13,
+    "d-z-rail-line": "#000000",
+    "d-z-rail-ink": "#ffffff",
+    "d-hair": "#000000",
+    "d-mute": "#ffffff",
+    "mute": "#000000",
+    "hair": "#333333",
+    "z-rail-rad": 8
    }
   },
   "followV1": true,
