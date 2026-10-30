@@ -739,7 +739,16 @@
     "d-mute": "#ffffff",
     "mute": "#000000",
     "hair": "#333333",
-    "z-rail-rad": 8
+    "z-rail-rad": 8,
+    "tint": "#ff4015",
+    "mark": "#000000",
+    "d-tint": "#b51a00",
+    "d-z-right-rad": 8,
+    "d-z-right-size": 14,
+    "z-right-rad": 4,
+    "z-right-size": 13,
+    "z-right-row": 36,
+    "z-right-pad": 16
    }
   },
   "followV1": true,
