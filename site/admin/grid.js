@@ -18,6 +18,7 @@ var I = {};
 (function () {
 var p = {
 panel: '<rect x="2.5" y="3.5" width="15" height="13" rx="1"/><path d="M7.5 3.5v13"/>',
+folder: '<path d="M2.5 5.5h5l1.6 1.8h8.4v8.7h-15z"/>',
 more: '<circle cx="4.5" cy="10" r="1"/><circle cx="10" cy="10" r="1"/><circle cx="15.5" cy="10" r="1"/>',
 grip: '<circle cx="7.5" cy="5" r="1"/><circle cx="12.5" cy="5" r="1"/><circle cx="7.5" cy="10" r="1"/><circle cx="12.5" cy="10" r="1"/><circle cx="7.5" cy="15" r="1"/><circle cx="12.5" cy="15" r="1"/>',
 panelR: '<rect x="2.5" y="3.5" width="15" height="13" rx="1"/><path d="M12.5 3.5v13"/>',
@@ -5648,7 +5649,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#2d6be4";
+var BD_BUILD = "#f97066";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -5817,7 +5818,7 @@ if (!opts.skipCode) renderCode();
 var TOOL_ZONES = { top: ["Top bar", "btn"], rail: ["Rail", "btn"], left: ["Left panel", "panel"], right: ["Right panel", "panel"] };
 var RAIL_TYPES = [["text", "Text"], ["image", "Image"], ["gallery", "Gallery"], ["library", "Library"], ["link", "Link"], ["list", "List"], ["embed", "Video"], ["html", "HTML"], ["rule", "Rule"], ["quote", "Quote"], ["toggle", "Fold-out list"], ["sep1"], ["menubtn", "Menu"], ["sheetmenu", "Sheet menu"], ["indexlink", "Index link"], ["pager", "Page arrows"], ["sep2"], ["posts", "Blog posts"], ["postinfo", "Post info"], ["sep3"]];
 var TOOL_DEFAULT = {
-top: ["toggle-left", "brand", "projects", "mode", "undo", "redo", "arrange", "code-btn", "preview", "revert", "publish", "status", "toggle-right"],
+top: ["toggle-left", "brand", "projects", "mode", "undo", "redo", "arrange", "code-btn", "preview", "revert", "sync", "publish", "status", "toggle-right"],
 rail: RAIL_TYPES.map(function (t) { return t.length > 1 ? "add:" + t[0] : t[0]; }).concat(["inspect"]),
 left: ["pages", "styles", "motion", "site", "code"],
 right: []
@@ -5894,6 +5895,11 @@ return '<button class="bd-ed-tool' + (phone ? "" : " is-on") + '" data-act="mode
 if (S.confirm === "discard") return '<span class="bd-ed-confirm is-inline">Throw away unpublished changes? <button class="bd-ed-btn is-danger" data-act="discard-yes">Discard</button><button class="bd-ed-btn" data-act="confirm-no">Keep</button></span>';
 return '<button class="bd-ed-btn" data-act="revert"' + (hasDraft() ? "" : " disabled") + ' title="Go back to what is live — throws away everything not yet published">' + I.undo + '<span class="bd-ed-hide-narrow">Revert</span></button>';
 } },
+"sync": { label: "Push back office to every site", only: ["top"], html: function () {
+var names = SITES.map(function (x) { return x.domain || x.repo; }).join(" and ");
+if (S.confirm === "sync") return '<span class="bd-ed-confirm is-inline">Push this back office (look, layout, Editor CSS) to ' + esc(names) + '? <button class="bd-ed-btn is-primary" data-act="sync-yes">Push</button><button class="bd-ed-btn" data-act="confirm-no">Keep</button></span>';
+return '<button class="bd-ed-btn" data-act="sync"' + (S.syncing ? " disabled" : "") + ' title="Commit the back office to ' + esc(names) + ' — its files, its Office look and arrangement. Your site content is not published.">' + I.up + '<span class="bd-ed-hide-narrow">' + (S.syncing ? "Pushing…" : "Push office") + "</span></button>";
+} },
 "publish": { label: "Save & publish", icon: I.up, act: "export", primary: true, disabled: function () { return S.publishing; }, text: function () { return S.publishing ? "Publishing…" : "Save & publish"; } },
 "status": { label: "Saved / published status", only: ["top"], html: function () { return '<span class="bd-ed-build" style="background:' + BD_BUILD + '" title="Build ' + BD_BUILD + '"></span><span class="bd-ed-status bd-ed-hide-narrow"></span>'; } },
 "toggle-right": { label: "Right panel", icon: I.panelR, act: "toggle-right", iconOnly: true },
@@ -5915,7 +5921,7 @@ return d;
 }
 function panelDefs() {
 loadCustomTools();
-var d = { pages: { label: "Pages", html: pagesPanel }, styles: { label: "Styles", html: stylesPanel }, motion: { label: "Motion", html: motionPanel }, site: { label: "Site", html: sitePanel }, code: { label: "Code", fixed: "left" } };
+var d = { pages: { label: "Pages", html: pagesPanel }, styles: { label: "Styles", html: stylesPanel }, motion: { label: "Motion", html: motionPanel }, site: { label: "Site", html: function () { return typeHTML() + sitePanel(); } }, blocks: { label: "Blocks", html: function () { return blocksHTML() + motionPanel(); } }, code: { label: "Code", fixed: "left" } };
 Object.keys(TOOLS_X).forEach(function (id) {
 var x = TOOLS_X[id];
 if (x.kind !== "panel") return;
@@ -5992,8 +5998,8 @@ h = h.slice(0, end) + '<div class="bd-ed-top-mid"></div>' + h.slice(end);
 return h + (z === "rail" ? '<span class="bd-ed-rail-sep"></span><button class="bd-ed-tool" data-act="tools-open" data-val="rail" data-tip="Tools · hide, move, add" aria-label="Tools">' + I.more + "</button>" : '<button class="bd-ed-btn is-icon" data-act="tools-open" data-val="top" title="Tools · hide, move, add" aria-label="Tools">' + I.more + "</button>");
 }
 /* ARRANGE — EVERY SECTION OF EVERY RIGHT-HAND PANEL CAN BE ARCHIVED, PUT IN ORDER OR MOVED TO ANOTHER PANEL THAT CAN SHOW IT. A SECTION'S ID IS "<panel>:<slug of its heading>"; ARCHIVE, ORDER AND MOVES LIVE IN site.editor (hidden, order, moved, labels) AND RIDE WITH PUBLISH */
-var ARR_PANELS = { styles: "Master · Styles", motion: "Master · Motion", site: "Master · Site", blog: "Master · Blog", sheet: "Sheet", page: "Page on a sheet", under: "Page underneath", blogpage: "Blog page", post: "Post", block: "Block" };
-var ARR_SCOPE = { styles: "site", motion: "site", site: "site", blog: "site", sheet: "sheet", page: "page", under: "page", blogpage: "page", post: "page", block: "block" };
+var ARR_PANELS = { styles: "Master · Styles", motion: "Master · Motion", site: "Master · Site", blog: "Master · Blog", blocks: "Master · Blocks", sheet: "Sheet", page: "Page on a sheet", under: "Page underneath", blogpage: "Blog page", post: "Post", block: "Block" };
+var ARR_SCOPE = { styles: "site", motion: "site", site: "site", blog: "site", blocks: "site", sheet: "sheet", page: "page", under: "page", blogpage: "page", post: "page", block: "block" };
 /* WHICH PANEL IS OPEN ON THE RIGHT NOW */
 function arrKeyNow() {
 if (!S.project || S.inspect || S.sel === "__menu") return "";
@@ -6232,8 +6238,31 @@ var ED_THEME = [
 ["ground", "Ground behind panels", ["--e-ground"], "#ECECEA"],
 ["card", "Panels", ["--e-card"], "#FAFAF8"],
 ["chipOn", "Active tab", ["--e-chip-on"], "#2D6BE4"],
-["mbar", "Master bar", ["--e-mbar"], "#232321"]
+["mbar", "Master bar", ["--e-mbar"], "#232321"],
+["chip", "Chips", ["--e-chip"], "#E6E6E3"],
+["gchip", "Group labels", ["--e-gchip"], "#8E8E8A"]
 ];
+/* AREAS OF THE BACK OFFICE THE OFFICE LOOK CAN STYLE ONE BY ONE: KEYS theme["z-<area>-<prop>"] */
+var ED_ZONES = [["top", "Top bar", ".bd-ed-top"], ["left", "Pages panel", ".bd-ed-left"], ["right", "Tool panel", ".bd-ed-right"], ["stage", "Canvas", ".bd-ed-stage"], ["rail", "Insert rail", ".bd-ed-rail"]];
+function edZoneCSS(T) {
+var h = "";
+ED_ZONES.forEach(function (z) {
+var g = function (k) { return T["z-" + z[0] + "-" + k]; };
+var v = [];
+var bg = edHex(g("bg"));
+var ink = edHex(g("ink"));
+var line = edHex(g("line"));
+if (bg) v.push("--e-bg: " + bg + ";", "--e-card: " + bg + ";", "--e-surface: " + bg + ";", z[0] === "stage" ? "background-color: " + bg + ";" : "background: " + bg + ";");
+if (ink) v.push("--e-ink: " + ink + ";", "color: " + ink + ";");
+if (line) v.push("--e-line: " + line + ";", "--e-cardline: " + line + ";", "border-color: " + line + ";");
+if (g("rad") != null && g("rad") !== "") v.push("border-radius: " + g("rad") + "px;");
+if (g("size")) v.push("font-size: " + g("size") + "px;");
+if (g("row")) v.push("--e-row: " + g("row") + "px;");
+if (g("pad")) v.push("--e-pad: " + g("pad") + "px;");
+if (v.length) h += "html " + z[2] + " {\n" + v.join("\n") + "\n}\n";
+});
+return h;
+}
 var ED_FONTS = [["", "Plex Mono"], ["sans", "System sans"], ["grot", "Helvetica"], ["serif", "Serif"]];
 var ED_FONT_CSS = { sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', grot: '"Helvetica Neue", Helvetica, Arial, sans-serif', serif: 'Georgia, "Times New Roman", serif' };
 function edTheme() {
@@ -6269,6 +6298,7 @@ else if (T.field === "soft") h += ".bd-ed-input {\nborder-color: var(--e-hair);\
 if (T.top === "ink") h += ".bd-ed-top {\nbackground: var(--e-ink);\ncolor: var(--e-bg);\n--e-line: var(--e-bg);\n}\n";
 else if (T.top === "sheet") h += ".bd-ed-top {\nbackground: var(--e-sheet);\n}\n";
 else if (T.top === "blog") h += ".bd-ed-top {\nbackground: var(--e-blog);\n}\n";
+h += edZoneCSS(T);
 return h;
 }
 function edThemeApply() {
@@ -6285,6 +6315,7 @@ if (tag.textContent !== css) tag.textContent = css;
 var R = document.documentElement.classList;
 R.toggle("is-ed-panels", T.look !== "flat");
 R.toggle("is-ed-bars", T.labels !== "rows");
+R.toggle("is-ed-tiles", T.tiles === "colour");
 }
 /* ONE SECTION'S OWN LOOK, PUT ON THE NODE (NAME REPLACES ITS HEADING TEXT) */
 function edLookOn(node, L) {
@@ -6342,6 +6373,7 @@ var T = edTheme();
 var h = '<div class="bd-ed-sec bd-ed-cus" data-cus="office"><div class="bd-ed-head"><span class="bd-ed-label">Office look</span><button class="bd-ed-chip" data-act="ed-reset" data-val="theme">Reset</button></div>';
 h += '<div class="bd-ed-cus-grid">' + ED_THEME.map(function (t) { return edRow(t[1], edColour("theme." + t[0], T[t[0]], t[3])); }).join("") + "</div>";
 h += edRow("Look", edSeg("theme.look", T.look || "", [["", "Panels"], ["flat", "Flat"]]));
+h += edRow("Section colour", edSeg("theme.tiles", T.tiles || "", [["", "Soft · family on the bars"], ["colour", "Family colour"]]));
 h += edRow("Layer labels", edSeg("theme.labels", T.labels || "", [["", "Bars"], ["rows", "Rows"]]));
 if (T.labels !== "rows") {
 h += edRow("Label width", edSeg("theme.lbw", T.lbw || "", [["18", "18"], ["", "24"], ["32", "32"]]));
@@ -6358,6 +6390,18 @@ h += edRow("Section lines", edSeg("theme.lw", T.lw === 0 ? "" : T.lw == null ? "
 h += edRow("Corners", edSeg("theme.rad", T.rad || "", [["", "Square"], ["4", "4"], ["8", "8"], ["99", "Pill"]]));
 h += edRow("Side space", edSeg("theme.pad", T.pad === 10 ? "" : T.pad || "", [["", "10"], ["14", "14"], ["20", "20"], ["28", "28"]]));
 h += edRow("Row height", edSeg("theme.row", T.row || "", [["26", "26"], ["", "30"], ["36", "36"]]));
+h += '<div class="bd-ed-cus-zones"><span class="bd-ed-label">Each area</span>' + ED_ZONES.map(function (z) {
+var P = "theme.z-" + z[0] + "-";
+var g = function (k) { return T["z-" + z[0] + "-" + k]; };
+return '<details class="bd-ed-cus-zone"' + (S.open["zone-" + z[0]] ? " open" : "") + ' data-key="zone-' + z[0] + '"><summary>' + esc(z[1]) + "</summary>"
++ edRow("Background", edColour(P + "bg", g("bg"), "#FAFAF8"))
++ edRow("Text", edColour(P + "ink", g("ink"), "#232321"))
++ edRow("Lines", edColour(P + "line", g("line"), "#E4E4E1"))
++ edRow("Corners", edSeg(P + "rad", g("rad") == null ? "" : g("rad"), [["", "Look"], ["0", "0"], ["4", "4"], ["8", "8"], ["16", "16"]]))
++ edRow("Text size", edSeg(P + "size", g("size") || "", [["", "Look"], ["12", "12"], ["13", "13"], ["14", "14"], ["15", "15"]]))
++ (z[0] === "left" || z[0] === "right" ? edRow("Row height", edSeg(P + "row", g("row") || "", [["", "Look"], ["30", "30"], ["36", "36"], ["40", "40"], ["44", "44"]])) + edRow("Side space", edSeg(P + "pad", g("pad") || "", [["", "Look"], ["12", "12"], ["16", "16"], ["20", "20"], ["24", "24"]])) : "")
++ "</details>";
+}).join("") + "</div>";
 return h + '<div class="bd-ed-hint">Each section below has Style for its own name, colours, border and space.</div></div>';
 }
 function edSecHTML(id, label) {
@@ -6872,9 +6916,13 @@ function blogTitlesHTML() {
 var s = S.project.site;
 return '<div class="bd-ed-sec"><span class="bd-ed-title">Titles</span>' + row(field("Blog title shows", select("site.blogHead", s.blogHead || "both", HEAD_MODES)), field("Post titles show", select("site.postHead", s.postHead || "both", HEAD_MODES))) + '<div class="bd-ed-hint">' + (s.header ? "A blog’s number is how many posts it has; a post’s number is its place in its blog. A blog can set its own in its Details." : "Page title at the top is off in Master · Site, so these do nothing yet.") + "</div></div>";
 }
+/* MASTER · SITE STARTS WITH THE TYPE (FACES, COLOURS, TEXT STYLES); MASTER · BLOCKS IS THE LOOK OF EVERY GENERAL BLOCK, THEN ANIMATION */
 function stylesPanel() {
+return typeHTML() + blocksHTML();
+}
+function typeHTML() {
 var s = S.project.site;
-var h = '<div class="bd-ed-sec">' + (S.mode === "phone" ? '<div class="bd-ed-hint">Showing phone sizes.</div>' : "")
+var h = '<div class="bd-ed-sec"><span class="bd-ed-title">Fonts</span>' + (S.mode === "phone" ? '<div class="bd-ed-hint">Showing phone sizes.</div>' : "")
 + row(field("Main face", select("site.sans", s.sans, BD_FONTS_SANS)), field("Mono face", select("site.mono", s.mono, BD_FONTS_MONO))) + "</div>";
 h += siteColoursHTML();
 BD_STYLES.forEach(function (k, i) {
@@ -6888,9 +6936,12 @@ row(dpIn("Size", p + ".size", p + ".sizeM", st.size, st.sizeM), dpIn("Line", p +
 + sw("Italic", p + ".italic", st.italic)
 + colorIn("Colour", p + ".color", st.color, s.colors.ink), i === 0) + "</div>";
 });
-h += '<div class="bd-ed-sec"><span class="bd-ed-label">Blocks</span></div>';
+return h;
+}
+function blocksHTML() {
+var h = "";
 Object.keys(BLOCK_STYLE).filter(blockMasterShown).filter(function (t) { return BLOG_MASTERS.indexOf(t) < 0; }).forEach(function (t) {
-h += '<div class="bd-ed-sec">' + adv("bs-" + t, BD_TYPE_NAME[t], styleFields(t, "site", null, { skip: bsMotionKeys(t), hide: { quote: ["Text"], posts: ["Text"], library: ["Covers", "Book"] }[t] || [] }) + (bsMotionKeys(t).length && t !== "library" ? '<div class="bd-ed-hint">Card looks and gestures are in the Motion tab.</div>' : "")) + "</div>";
+h += '<div class="bd-ed-sec">' + adv("bs-" + t, BD_TYPE_NAME[t], styleFields(t, "site", null, { skip: bsMotionKeys(t), hide: { quote: ["Text"], posts: ["Text"], library: ["Covers", "Book"] }[t] || [] }) + (bsMotionKeys(t).length && t !== "library" ? '<div class="bd-ed-hint">Speed and feel are under Animation, at the end.</div>' : "")) + "</div>";
 });
 return h;
 }
@@ -6947,7 +6998,7 @@ if (bars) h += '<div class="bd-ed-tree' + (mrow ? " is-nomaster" : "") + '">' + 
 groups.forEach(function (g) {
 if (!g.pages.length && !g.pins && !g.sheet) return;
 var gl = g.sheet ? "<b>" + esc(g.sheet.name || "Sheet") + '</b><span class="bd-ed-gtag">' + (sheetPin(g.sheet) ? "pinned" : g.sheet.rest === "open" ? "open" : g.sheet.rest === "still" ? "still" : g.sheet.rest === "peek" ? "peeks" : "hidden") + "</span>" + I.sliders : esc(g.label);
-h += '<div class="bd-ed-group' + (g.sheet ? " is-sheet" : "") + (bars && g.sheet && g.pages.length > 1 ? " is-bar" : "") + (g.sheet && g.pages.some(function (q) { return q.blog; }) ? " is-blog" : "") + (g.pins ? " is-pins" : "") + '" data-gk="' + esc(g.key) + '"' + (g.sheet ? ' data-sheet="' + esc(g.sheet.id) + '"' : "") + '>' + (g.sheet ? '<div class="bd-ed-glabel"><span class="bd-ed-grip is-sheet" data-grip="sheet" data-id="' + esc(g.sheet.id) + '" title="Drag to change the stack order">' + I.grip + '</span><button class="bd-ed-group-label is-btn' + (S.sheetSel === g.sheet.id ? " is-on" : "") + '" data-act="sheet-sel" data-id="' + esc(g.sheet.id) + '" title="' + esc(g.sheet.name || "Sheet") + '">' + gl + "</button></div>" : '<div class="bd-ed-group-label">' + gl + "</div>");
+h += '<div class="bd-ed-group' + (g.sheet ? " is-sheet" : "") + (bars && g.sheet && g.pages.length > 1 ? " is-bar" : "") + (g.sheet && g.pages.some(function (q) { return q.blog; }) ? " is-blog" : "") + (g.pins ? " is-pins" : "") + '" data-gk="' + esc(g.key) + '"' + (g.sheet ? ' data-sheet="' + esc(g.sheet.id) + '"' : "") + '>' + (g.sheet ? '<div class="bd-ed-glabel"><span class="bd-ed-grip is-sheet" data-grip="sheet" data-id="' + esc(g.sheet.id) + '" title="Drag to change the stack order">' + I.grip + '</span><button class="bd-ed-group-label is-btn' + (S.sheetSel === g.sheet.id ? " is-on" : "") + '" data-act="sheet-sel" data-id="' + esc(g.sheet.id) + '" title="' + esc(g.sheet.name || "Sheet") + '">' + gl + "</button></div>" : '<div class="bd-ed-group-label"><span class="bd-ed-gchip">' + I.folder + "<span>" + gl + '</span></span><i class="bd-ed-gcount">' + g.pages.length + "</i></div>");
 h += '<div class="bd-ed-gbody">';
 if (g.sheet && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">Empty · tap the name, then Dissolve to remove it.</div>';
 if (g.pins && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">None yet. A header or footer shows on every page, with its own columns.</div>';
@@ -8176,9 +8227,9 @@ if (T.labels !== "rows" && T.master !== "row") return "";
 return '<div class="bd-ed-layers"><button class="bd-ed-master' + (S.masterSel ? " is-on" : "") + '" data-act="master-sel"><b>Master</b><span>everything on the site</span></button></div>';
 }
 function masterPanelHTML() {
-var T = [["styles", "Styles"], ["motion", "Motion"], ["site", "Site"], ["blog", "Blog"]];
+var T = [["site", "Site"], ["blog", "Blog"], ["blocks", "Blocks"]];
 if (S.postMaster) S.masterTab = "blog";
-else if (S.masterTab === "blog" || T.map(function (t) { return t[0]; }).indexOf(S.masterTab) < 0) S.masterTab = "styles";
+else if (S.masterTab === "blog" || T.map(function (t) { return t[0]; }).indexOf(S.masterTab) < 0) S.masterTab = "site";
 var h = '<div class="bd-ed-sec"><div class="bd-ed-head"><span class="bd-ed-title">Master</span></div><div class="bd-ed-tabs" role="tablist">';
 T.forEach(function (t) {
 h += '<button data-act="master-tab" data-val="' + t[0] + '" class="' + (S.masterTab === t[0] ? "is-on" : "") + '">' + t[1] + "</button>";
@@ -11056,6 +11107,84 @@ return failed;
 function siteJSON(pr) {
 return JSON.stringify({ id: pr.id, name: pr.site.name, site: pr.site, order: pr.order, pages: pr.pages }, null, 1);
 }
+/* PUSH THE BACK OFFICE TO EVERY SITE (top-bar "Push office"): ONE COMMIT PER REPO WITH site/admin/grid.css (EDITOR CSS EDITS INCLUDED), site/admin/grid.js AND THIS SITE'S OFFICE SETTINGS (site.editor: look, arrangement, custom tools) WRITTEN INTO ITS content/site.json. NOTHING ELSE IN site.json CHANGES, SO NO SITE CONTENT IS PUBLISHED. admin.html IS NOT TOUCHED (BD_HOST DIFFERS PER REPO) */
+var OFFICE_FILES = ["site/admin/grid.css", "site/admin/grid.js"];
+async function syncOffice() {
+if (S.syncing || !S.project) return;
+S.syncing = true;
+S.confirm = null;
+renderTop();
+var done = [];
+try {
+var files = {};
+for (var i = 0; i < OFFICE_FILES.length; i++) {
+var fp = OFFICE_FILES[i];
+var mine = S.files[fp];
+if (mine && mine.text !== mine.orig) files[fp] = mine.text;
+else {
+var cur = await ghFile(fp);
+if (!cur) throw new Error(fp + " is missing on " + (REPO.domain || REPO.repo));
+files[fp] = cur.text;
+}
+}
+var ed = clone(editorPrefs());
+for (var n = 0; n < SITES.length; n++) {
+var x = SITES[n];
+var base = "https://api.github.com/repos/" + x.owner + "/" + x.repo;
+var br = x.branch || "main";
+var ref = await gh("GET", base + "/git/ref/heads/" + br);
+var head = ref.object.sha;
+var commit = await gh("GET", base + "/git/commits/" + head);
+var sj = await gh("GET", base + "/contents/" + SITE_FILE + "?ref=" + br);
+var sb = sj.content || (await gh("GET", base + "/git/blobs/" + sj.sha)).content;
+var data = JSON.parse(b64ToText(sb));
+data.site = data.site || {};
+data.site.editor = clone(ed);
+var tree = [{ path: SITE_FILE, mode: "100644", type: "blob", content: siteJSON({ id: data.id, site: data.site, order: data.order || [], pages: data.pages || {} }) }];
+OFFICE_FILES.forEach(function (f) { tree.push({ path: f, mode: "100644", type: "blob", content: files[f] }); });
+var nt = await gh("POST", base + "/git/trees", { base_tree: commit.tree.sha, tree: tree });
+var nc = await gh("POST", base + "/git/commits", { message: "Back office pushed from " + (REPO.domain || REPO.repo), tree: nt.sha, parents: [head] });
+await gh("PATCH", base + "/git/refs/heads/" + br, { sha: nc.sha });
+var after = await gh("GET", base + "/contents/" + SITE_FILE + "?ref=" + nc.sha);
+if (x.repo === REPO.repo) {
+S.base = after.sha;
+for (var k = 0; k < OFFICE_FILES.length; k++) {
+var of = OFFICE_FILES[k];
+if (!S.files[of]) continue;
+S.files[of].orig = S.files[of].text = files[of];
+try {
+S.files[of].sha = (await gh("GET", "/contents/" + of + "?ref=" + nc.sha)).sha;
+} catch (e) {}
+}
+var pub = JSON.parse(S.published || "{}");
+if (pub.site) {
+pub.site.editor = clone(ed);
+S.published = JSON.stringify(pub);
+}
+} else {
+var dk = "bd-draft-" + x.repo;
+try {
+var dr = JSON.parse(lsGet(dk) || "null");
+if (dr && dr.data) {
+var dd = JSON.parse(dr.data);
+if (dd.site) dd.site.editor = clone(ed);
+dr.data = JSON.stringify(dd);
+dr.base = after.sha;
+lsSet(dk, JSON.stringify(dr));
+}
+} catch (e) {}
+}
+done.push(x.domain || x.repo);
+}
+scheduleSave();
+toast("Back office pushed to " + done.join(" and ") + ". Refresh in about 30 seconds.");
+} catch (err) {
+var msg = err && err.message === "KEY" ? "The GitHub key was refused." : String((err && err.message) || err);
+toast((done.length ? "Pushed to " + done.join(", ") + ", then stopped: " : "Couldn't push the back office: ") + msg);
+}
+S.syncing = false;
+renderTop();
+}
 async function publish() {
 if (!S.project || S.publishing) return;
 if (S.live) endEdit();
@@ -11290,6 +11419,8 @@ var A = {
 "zip": exportZip,
 "discard": function () { S.confirm = "discard"; openPop(); },
 "revert": function () { S.confirm = "discard"; renderTop(); },
+"sync": function () { S.confirm = "sync"; renderTop(); },
+"sync-yes": function () { syncOffice(); },
 "discard-yes": discardDraft,
 "sign-out": function () { closePop(); lock("Key forgotten on this device."); },
 "reload": loadSite,
@@ -11470,7 +11601,7 @@ render();
 "sheet-page-down": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; var j = +b.getAttribute("data-j"); if (!k || j >= k.pages.length - 1) return; snap(); k.pages.splice(j + 1, 0, k.pages.splice(j, 1)[0]); changed(); },
 "sheet-cover": function () { var k = S.project.site.sheets[+b.getAttribute("data-i")]; var id = b.getAttribute("data-id"); if (!k) return; snap(); var c = k.coverPages = k.coverPages || []; var x = c.indexOf(id); if (x > -1) c.splice(x, 1); else c.push(id); changed(); },
 "ly-preset": function () { var v = b.getAttribute("data-val"); if (!LAYER_PRESETS[v]) return; snap(); Object.assign(S.project.site.layers, clone(LAYER_PRESETS[v])); changed(); },
-"confirm-no": function () { var was = S.confirm; S.confirm = null; if (was === "discard") { renderTop(); if (!$("bd-pop").hidden) openPop(); } else { renderLeft(); renderRight(); } },
+"confirm-no": function () { var was = S.confirm; S.confirm = null; if (was === "sync") { renderTop(); return; } if (was === "discard") { renderTop(); if (!$("bd-pop").hidden) openPop(); } else { renderLeft(); renderRight(); } },
 "mode": function () { if (S.live) endEdit(); S.mode = val; render(); },
 "undo": doUndo,
 "redo": doRedo,

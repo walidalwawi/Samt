@@ -50,6 +50,9 @@ Rows inside a section are divided by a lighter hairline.
 --e-mbar: #232321;
 --e-mbar-ink: #FAFAF8;
 --e-lbw: 24px;
+--e-field: #FFFFFF;
+--e-field-line: #DADAD6;
+--e-gchip: #8E8E8A;
 }
 @media (prefers-color-scheme: dark) {
 :root:not([data-theme="light"]) {
@@ -80,6 +83,9 @@ Rows inside a section are divided by a lighter hairline.
 --e-chip: #2A2A27;
 --e-mbar: #3A3A36;
 --e-mbar-ink: #ECECE6;
+--e-field: #222220;
+--e-field-line: #3A3A36;
+--e-gchip: #55554F;
 color-scheme: dark;
 }
 }
@@ -111,6 +117,9 @@ color-scheme: dark;
 --e-chip: #2A2A27;
 --e-mbar: #3A3A36;
 --e-mbar-ink: #ECECE6;
+--e-field: #222220;
+--e-field-line: #3A3A36;
+--e-gchip: #55554F;
 color-scheme: dark;
 }
 
@@ -2217,59 +2226,525 @@ color: inherit;
 opacity: 0.6;
 }
 
-/* LOOK · PANELS (html.is-ed-panels, Office look → Look) — TOP BAR, PANES AND CANVAS ARE CARDS ON A GRID GROUND; TABS ARE CHIPS */
-html.is-ed-panels body {
+/* LOOK · PANELS (html.is-ed-panels, Office look → Look) — FROM WALID'S TASK-BOARD REFERENCE: SOFT GREY CARDS ON A GRID GROUND, ROOMY ROWS, CHIPS FOR TABS AND BUTTONS, HAIRLINES INSTEAD OF RULES, FAMILY COLOUR ONLY ON LABELS. RULES SIT BEHIND :where() SO THE OFFICE LOOK'S OWN SETTINGS (SIZE, CORNERS, FIELDS, HEADINGS) STILL WIN */
+:where(html.is-ed-panels) body {
 background-color: var(--e-ground);
 background-image: linear-gradient(var(--e-ground-line) 1px, transparent 1px), linear-gradient(90deg, var(--e-ground-line) 1px, transparent 1px);
 background-size: 32px 32px;
+font-size: 14px;
+line-height: 1.45;
+letter-spacing: 0;
 }
-html.is-ed-panels .bd-ed-app {
-gap: 10px;
-padding: 10px;
+:where(html.is-ed-panels) .bd-ed-app {
+gap: 12px;
+padding: 12px;
+grid-template-rows: 58px minmax(0, 1fr) auto;
+}
+:where(html.is-ed-panels) .bd-ed-app {
+grid-template-columns: 300px var(--e-rw, 340px) minmax(0, 1fr);
+}
+:where(html.is-ed-panels) .bd-ed-app.is-no-right {
+grid-template-columns: 300px 0 minmax(0, 1fr);
+}
+:where(html.is-ed-panels) .bd-ed-app.has-code {
+grid-template-rows: 58px minmax(0, 1fr) minmax(180px, 38%);
 }
 html.is-ed-panels .bd-ed-top,
 html.is-ed-panels .bd-ed-panel,
 html.is-ed-panels .bd-ed-code {
 --e-bg: var(--e-card);
 --e-surface: var(--e-card);
+--e-tint: var(--e-chip);
+--e-hair: var(--e-cardline);
 background: var(--e-card);
 border: 1px solid var(--e-cardline);
 border-radius: 4px;
-}
-html.is-ed-panels .bd-ed-top {
-overflow: hidden;
 }
 html.is-ed-panels .bd-ed-stage {
 border: 1px solid var(--e-cardline);
 border-radius: 4px;
 }
-html.is-ed-panels .bd-ed-tabs {
+
+/* PANELS · TOP BAR — CHIPS ON ONE CARD, NO RULES BETWEEN THEM */
+:where(html.is-ed-panels) .bd-ed-top {
+align-items: center;
 gap: 6px;
-padding: 8px var(--e-pad);
+padding: 0 10px;
+overflow: hidden;
+}
+:where(html.is-ed-panels) .bd-ed-top .bd-ed-btn,
+:where(html.is-ed-panels) .bd-ed-top .bd-ed-seg button {
+height: 36px;
+padding: 0 12px;
+border: 0;
+border-radius: 3px;
+font-size: 12px;
+letter-spacing: 0;
+text-transform: none;
+}
+:where(html.is-ed-panels) .bd-ed-top .bd-ed-btn.is-icon {
+width: 36px;
+padding: 0;
+}
+:where(html.is-ed-panels) .bd-ed-top .bd-ed-btn:hover {
+background: var(--e-chip);
+}
+:where(html.is-ed-panels) .bd-ed-top .bd-ed-btn.is-primary,
+:where(html.is-ed-panels) .bd-ed-top .bd-ed-btn.is-on {
+background: var(--e-ink);
+color: var(--e-card);
+}
+:where(html.is-ed-panels) .bd-ed-seg {
+gap: 3px;
+padding: 3px;
+border: 0;
+border-radius: 4px;
+background: var(--e-chip);
+}
+:where(html.is-ed-panels) .bd-ed-top .bd-ed-seg button {
+height: 30px;
+}
+:where(html.is-ed-panels) .bd-ed-seg button.is-on {
+background: var(--e-card);
+color: var(--e-ink);
+outline: 1px solid var(--e-cardline);
+}
+:where(html.is-ed-panels) .bd-ed-top-sep {
+display: none;
+}
+:where(html.is-ed-panels) .bd-ed-brand {
+padding: 0 8px;
+border: 0;
+font-size: 12px;
+letter-spacing: 0.02em;
+text-transform: none;
+}
+:where(html.is-ed-panels) .bd-ed-status {
+padding: 0 6px;
+font-size: 11.5px;
+letter-spacing: 0;
+text-transform: none;
+}
+:where(html.is-ed-panels) .bd-ed-build {
+width: 12px;
+height: 12px;
+margin: auto 0 auto 6px;
+border-radius: 50%;
+}
+
+/* PANELS · TABS ARE CHIPS */
+:where(html.is-ed-panels) .bd-ed-tabs {
+gap: 6px;
+padding: 12px calc(var(--e-pad) + 10px);
 border-bottom: 1px solid var(--e-cardline);
 }
-html.is-ed-panels .bd-ed-tabs button {
+:where(html.is-ed-panels) .bd-ed-tabs button {
 flex: 0 1 auto;
-height: 28px;
-padding: 0 12px;
+height: 32px;
+padding: 0 14px;
 border: 0;
 border-radius: 3px;
 background: var(--e-chip);
 color: var(--e-ink);
+font-size: 12px;
+letter-spacing: 0;
+text-transform: none;
 }
-html.is-ed-panels .bd-ed-tabs button:hover {
+:where(html.is-ed-panels) .bd-ed-tabs button:last-child {
+border-right: 0;
+}
+:where(html.is-ed-panels) .bd-ed-tabs button:hover {
+background: var(--e-chip);
 filter: brightness(0.96);
 }
-html.is-ed-panels .bd-ed-tabs button.is-on {
+:where(html.is-ed-panels) .bd-ed-tabs button.is-on {
 background: var(--e-chip-on);
 color: #FFFFFF;
 }
-html.is-ed-panels .bd-ed-tabs .bd-ed-tabs-more {
+:where(html.is-ed-panels) .bd-ed-tabs .bd-ed-tabs-more {
 margin-left: auto;
 background: transparent;
 }
-html.is-ed-panels .bd-ed-master {
+:where(html.is-ed-panels) .bd-ed-sec .bd-ed-tabs {
+margin: 4px calc((var(--e-pad) + 10px) * -1) -20px;
+padding-top: 14px;
+border-top: 1px solid var(--e-cardline);
+border-bottom: 0;
+}
+
+/* PANELS · SECTIONS — ROOMY, ONE HAIRLINE BETWEEN THEM */
+:where(html.is-ed-panels) .bd-ed-sec {
+gap: 14px;
+padding: 20px calc(var(--e-pad) + 10px) 22px;
+}
+:where(html.is-ed-panels) .bd-ed-sec > .bd-ed-title,
+:where(html.is-ed-panels) .bd-ed-title {
+font-weight: 500;
+letter-spacing: 0;
+}
+:where(html.is-ed-panels) .bd-ed-label {
+font-size: 11.5px;
+letter-spacing: 0;
+}
+:where(html.is-ed-panels) .bd-ed-sec > .bd-ed-label:not(:first-child) {
+margin-top: 6px;
+padding-top: 14px;
+border-top: 1px solid var(--e-cardline);
+}
+:where(html.is-ed-panels) .bd-ed-sec:has(> .bd-ed-label:only-child) {
+padding: 22px calc(var(--e-pad) + 10px) 8px;
 border-bottom: 1px solid var(--e-cardline);
+}
+:where(html.is-ed-panels) .bd-ed-sec > .bd-ed-label:only-child {
+font-size: 11.5px;
+letter-spacing: 0.04em;
+}
+:where(html.is-ed-panels) .bd-ed-sec:has(> .bd-ed-adv:only-child) {
+padding: 0 calc(var(--e-pad) + 10px);
+border-bottom: 1px solid var(--e-cardline);
+}
+:where(html.is-ed-panels) .bd-ed-hint {
+font-size: 12px;
+line-height: 1.55;
+}
+:where(html.is-ed-panels) .bd-ed-field {
+gap: 6px;
+}
+:where(html.is-ed-panels) .bd-ed-row {
+gap: 10px;
+}
+:where(html.is-ed-panels) .bd-ed-adv {
+margin: 0 calc((var(--e-pad) + 10px) * -1);
+padding: 0 calc(var(--e-pad) + 10px);
+border-top: 1px solid var(--e-cardline);
+}
+:where(html.is-ed-panels) .bd-ed-adv > summary {
+min-height: 44px;
+font-size: 13px;
+letter-spacing: 0;
+}
+:where(html.is-ed-panels) .bd-ed-adv > summary::before {
+content: "+";
+width: 14px;
+color: var(--e-mute);
+}
+:where(html.is-ed-panels) .bd-ed-adv[open] > summary::before {
+content: "−";
+}
+:where(html.is-ed-panels) .bd-ed-adv[open] {
+padding-bottom: 18px;
+}
+html.is-ed-panels:not(.is-ed-tiles) .bd-ed-skinwrap {
+gap: 0;
+background: transparent;
+}
+html.is-ed-panels:not(.is-ed-tiles) .bd-ed-skinwrap > .bd-ed-sec:not(.is-end):not(.bd-ed-sheetbar),
+html.is-ed-panels:not(.is-ed-tiles) .bd-ed-skinwrap > .bd-ed-sec[data-sec$=":details"]:not(.is-end):not(.bd-ed-sheetbar) {
+background: transparent;
+border-top: 1px solid var(--e-cardline);
+}
+html.is-ed-panels .bd-ed-skinwrap > .bd-ed-sec.bd-ed-sheetbar:not(.is-end) {
+margin: 14px calc(var(--e-pad) + 10px) 2px;
+padding: 10px 14px;
+border: 0;
+border-radius: 3px;
+}
+html.is-ed-panels .bd-ed-skinwrap > .bd-ed-sec.is-end {
+margin: 16px calc(var(--e-pad) + 10px) 18px;
+padding: 16px;
+border: 0;
+border-radius: 4px;
+}
+
+/* PANELS · FIELDS, BUTTONS, SWITCHES */
+:where(html.is-ed-panels) .bd-ed-input {
+height: calc(var(--e-row) + 6px);
+padding: 0 10px;
+border: 1px solid var(--e-field-line);
+border-radius: 3px;
+background: var(--e-field);
+font-size: 13px;
+}
+:where(html.is-ed-panels) .bd-ed-input:hover {
+background: var(--e-field);
+border-color: var(--e-mute);
+}
+:where(html.is-ed-panels) .bd-ed-input:focus {
+background: var(--e-field);
+box-shadow: none;
+outline: 2px solid var(--e-chip-on);
+outline-offset: -1px;
+}
+:where(html.is-ed-panels) textarea.bd-ed-input {
+height: auto;
+padding: 10px;
+}
+:where(html.is-ed-panels) .bd-ed-input[type="range"] {
+height: auto;
+border: 0;
+background: transparent;
+outline: 0;
+}
+:where(html.is-ed-panels) .bd-ed-sec .bd-ed-seg {
+gap: 3px;
+padding: 3px;
+border: 0;
+border-radius: 4px;
+background: var(--e-chip);
+}
+:where(html.is-ed-panels) .bd-ed-sec .bd-ed-seg button {
+height: calc(var(--e-row) + 2px);
+border: 0;
+border-radius: 3px;
+font-size: 12px;
+letter-spacing: 0;
+text-transform: none;
+}
+:where(html.is-ed-panels) .bd-ed-sec .bd-ed-seg button.is-on {
+background: var(--e-card);
+color: var(--e-ink);
+outline: 1px solid var(--e-cardline);
+}
+:where(html.is-ed-panels) .bd-ed-sec .bd-ed-btn,
+:where(html.is-ed-panels) .bd-ed-actions .bd-ed-btn {
+height: calc(var(--e-row) + 4px);
+padding: 0 12px;
+border: 0;
+border-radius: 3px;
+background: var(--e-chip);
+font-size: 12px;
+letter-spacing: 0;
+text-transform: none;
+}
+:where(html.is-ed-panels) .bd-ed-sec .bd-ed-btn + .bd-ed-btn {
+margin-left: 0;
+}
+:where(html.is-ed-panels) .bd-ed-actions {
+gap: 6px;
+}
+:where(html.is-ed-panels) .bd-ed-sec .bd-ed-btn:hover {
+background: var(--e-chip);
+filter: brightness(0.95);
+}
+:where(html.is-ed-panels) .bd-ed-sec .bd-ed-btn.is-on,
+:where(html.is-ed-panels) .bd-ed-sec .bd-ed-btn.is-primary {
+background: var(--e-ink);
+color: var(--e-card);
+}
+:where(html.is-ed-panels) .bd-ed-switch {
+width: 34px;
+height: 20px;
+border: 1px solid var(--e-field-line);
+border-radius: 10px;
+background: var(--e-chip);
+}
+:where(html.is-ed-panels) .bd-ed-switch::after {
+top: 2px;
+left: 2px;
+width: 14px;
+height: 14px;
+border-radius: 50%;
+background: var(--e-card);
+outline: 1px solid var(--e-field-line);
+}
+:where(html.is-ed-panels) .bd-ed-switch.is-on {
+border-color: var(--e-chip-on);
+background: var(--e-chip-on);
+}
+:where(html.is-ed-panels) .bd-ed-switch.is-on::after {
+transform: translateX(14px);
+background: #FFFFFF;
+outline: 0;
+}
+:where(html.is-ed-panels) .bd-ed-toggle {
+min-height: 32px;
+}
+
+/* PANELS · PAGES LIST — ROOMY ROWS, NO RULES, THE SELECTED RO:where(html.is-ed-panels) IS A SOFT CHIP; FAMILY COLOUR LIVES ON THE LABELS */
+:where(html.is-ed-panels) .bd-ed-pg {
+min-height: 38px;
+grid-template-columns: 26px minmax(0, 1fr);
+padding: 0 10px;
+border-radius: 3px;
+font-size: 13px;
+}
+:where(html.is-ed-panels) .bd-ed-pg b {
+font-size: 11px;
+}
+:where(html.is-ed-panels) .bd-ed-pgw {
+border-bottom: 0;
+border-radius: 3px;
+}
+:where(html.is-ed-panels) .bd-ed-pg.is-post {
+padding-left: 30px;
+border-bottom: 0;
+}
+:where(html.is-ed-panels) .bd-ed-grip {
+width: 22px;
+border-right: 0;
+opacity: 0.45;
+}
+:where(html.is-ed-panels) .bd-ed-pgw:hover .bd-ed-grip,
+:where(html.is-ed-panels) .bd-ed-glabel:hover .bd-ed-grip {
+opacity: 1;
+}
+html.is-ed-panels .bd-ed-pgw.is-on,
+html.is-ed-panels .bd-ed-group .bd-ed-pgw.is-on,
+html.is-ed-panels .bd-ed-group .bd-ed-pg.is-on,
+html.is-ed-panels .bd-ed-group.is-sheet .bd-ed-pg.is-on,
+html.is-ed-panels .bd-ed-pg.is-on {
+background: var(--e-chip);
+color: var(--e-ink);
+}
+html.is-ed-panels .bd-ed-pgw.is-on .bd-ed-pg {
+font-weight: 500;
+}
+html.is-ed-panels:not(.is-ed-tiles) .bd-ed-group.is-sheet,
+html.is-ed-panels:not(.is-ed-tiles) .bd-ed-group.is-sheet.is-bar > .bd-ed-gbody,
+html.is-ed-panels:not(.is-ed-tiles) .bd-ed-group .bd-ed-pg.is-post:not(.is-on) {
+background: transparent;
+}
+:where(html.is-ed-panels) .bd-ed-sec .bd-ed-group {
+margin: 0;
+border: 0;
+}
+:where(html.is-ed-panels) .bd-ed-sec .bd-ed-group + .bd-ed-group {
+margin-top: 10px;
+}
+:where(html.is-ed-panels) .bd-ed-glabel {
+min-height: 38px;
+border-bottom: 0;
+}
+html.is-ed-panels .bd-ed-group.is-sheet:not(.is-bar) > .bd-ed-glabel {
+margin-bottom: 4px;
+border-radius: 3px;
+}
+:where(html.is-ed-panels) button.bd-ed-group-label.is-btn {
+min-height: 38px;
+font-size: 12.5px;
+}
+:where(html.is-ed-panels) .bd-ed-gtag {
+padding: 1px 6px;
+border: 0;
+border-radius: 3px;
+background: rgba(20, 20, 20, 0.08);
+font-size: 10.5px;
+letter-spacing: 0;
+}
+html.is-ed-panels .bd-ed-pgw.is-blog:not(.is-on) {
+border-radius: 3px;
+}
+html.is-ed-bars .bd-ed-blogbox > .bd-ed-pgw.is-blog,
+html.is-ed-bars .bd-ed-blogbox > .bd-ed-pgw.is-blog.is-on {
+background: var(--e-blog);
+color: var(--e-tink);
+}
+html.is-ed-bars .bd-ed-blogbox > .bd-ed-pgw.is-blog .bd-ed-pg.is-on {
+background: transparent;
+color: inherit;
+}
+html.is-ed-bars .bd-ed-blogbox > .bd-ed-pgw.is-blog.is-on .bd-ed-pg span {
+text-decoration: underline;
+text-underline-offset: 3px;
+}
+
+/* GROUP LABELS — A CHIP WITH A FOLDER, THE COUNT IN A CIRCLE */
+.bd-ed-gchip {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+min-width: 0;
+}
+.bd-ed-gchip svg {
+flex: none;
+width: 12px;
+height: 12px;
+}
+.bd-ed-gchip span {
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+}
+.bd-ed-gcount {
+margin-left: auto;
+font-style: normal;
+opacity: 0.6;
+}
+:where(html.is-ed-panels) .bd-ed-group:not(.is-sheet) > .bd-ed-group-label {
+padding: 4px 0 10px;
+color: var(--e-ink);
+font-size: 12px;
+letter-spacing: 0;
+text-transform: none;
+}
+:where(html.is-ed-panels) .bd-ed-gchip {
+gap: 8px;
+padding: 6px 12px 6px 10px;
+border-radius: 3px;
+background: var(--e-gchip);
+color: #FFFFFF;
+}
+:where(html.is-ed-panels) .bd-ed-gchip svg {
+width: 15px;
+height: 15px;
+}
+:where(html.is-ed-panels) .bd-ed-gcount {
+flex: none;
+width: 26px;
+height: 26px;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+border: 1.5px solid var(--e-ink);
+border-radius: 50%;
+font-size: 11.5px;
+opacity: 1;
+}
+
+/* PANELS · LAYERS BAR AND THE LEFT PANE'S OWN ACTIONS */
+:where(html.is-ed-panels) .bd-ed-master {
+height: 44px;
+padding: 0 calc(var(--e-pad) + 10px);
+border-bottom: 1px solid var(--e-cardline);
+font-size: 12px;
+letter-spacing: 0;
+text-transform: none;
+}
+:where(html.is-ed-panels) .bd-ed-master.is-on {
+background: var(--e-chip);
+color: var(--e-ink);
+}
+
+:where(html.is-ed-panels) .bd-ed-cus-seg {
+gap: 3px;
+padding: 3px;
+border-radius: 4px;
+background: var(--e-chip);
+}
+:where(html.is-ed-panels) .bd-ed-cus .bd-ed-chip {
+border: 0;
+border-radius: 3px;
+background: transparent;
+}
+:where(html.is-ed-panels) .bd-ed-cus .bd-ed-chip.is-on {
+background: var(--e-ink);
+color: var(--e-card);
+}
+/* CUSTOMIZE · EACH AREA */
+.bd-ed-cus-zones {
+display: flex;
+flex-direction: column;
+gap: 4px;
+margin-top: 8px;
+}
+.bd-ed-cus-zone > summary {
+min-height: 32px;
+display: flex;
+align-items: center;
+cursor: pointer;
+}
+.bd-ed-cus-zone[open] {
+padding-bottom: 8px;
 }
 
 /* LAYER LABELS · BARS (html.is-ed-bars, Office look → Layer labels) — MASTER = ONE LONG VERTICAL BAR LEFT OF EVERYTHING; A SHEET WITH SEVERAL PAGES = A YELLOW VERTICAL BAR LEFT OF ITS PAGES; A BLOG = A GREEN HORIZONTAL BAR ABOVE ITS POSTS */
@@ -2409,6 +2884,10 @@ padding: 0;
 }
 html.is-ed-panels .bd-ed-top {
 border-radius: 0;
+}
+html.is-ed-panels .bd-ed-left,
+html.is-ed-panels .bd-ed-right {
+top: 58px;
 }
 .bd-ed-cus-grid {
 grid-template-columns: minmax(0, 1fr);
