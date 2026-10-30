@@ -341,12 +341,12 @@
     "titleStyle": "body",
     "titleSize": 15,
     "titleSizeM": "",
-    "titleLh": 20,
+    "titleLh": 18,
     "titleLhM": "",
     "metaStyle": "mono",
     "metaSize": 10,
     "metaSizeM": "",
-    "metaLh": 14,
+    "metaLh": 0,
     "metaLhM": "",
     "metaGap": 10,
     "cardBg": "",
@@ -581,7 +581,7 @@
   },
   "motion": {
    "gDur": 450,
-   "gEase": "ease",
+   "gEase": "ease-in-out",
    "tease": 8,
    "open": 24
   },
@@ -658,7 +658,7 @@
     ],
     "restPage": "",
     "edge": "left",
-    "edgeM": "left",
+    "edgeM": "top",
     "rest": "still",
     "peek": 200,
     "peekM": 52,
@@ -711,15 +711,42 @@
     "pages": [
      "pages:page",
      "pages:part-2"
+    ],
+    "site": [
+     "site:site-name",
+     "site:colours",
+     "site:fonts",
+     "site:heading",
+     "site:body",
+     "site:small",
+     "site:caption",
+     "site:page-frame",
+     "site:columns",
+     "site:on-every-page",
+     "site:page-groups",
+     "site:sheet-motion",
+     "site:advanced"
     ]
    },
    "moved": {
-    "blocks:animation": "site"
+    "blocks:animation": "blog"
    },
    "custom": [],
    "look": {
     "sheet:details": {
      "bg": "#f2e500"
+    },
+    "site:sheet-motion": {
+     "bg": "#3a87fe",
+     "bw": 4,
+     "border": "left",
+     "bc": "#cbf0ff"
+    },
+    "site:advanced": {
+     "ink": "#ffffff",
+     "bg": "#ff8c82",
+     "border": "left",
+     "bw": 4
     }
    },
    "theme": {
@@ -748,7 +775,8 @@
     "z-right-rad": 4,
     "z-right-size": 13,
     "z-right-row": 36,
-    "z-right-pad": 16
+    "z-right-pad": 16,
+    "d-well": "#000000"
    }
   },
   "followV1": true,
@@ -1387,7 +1415,9 @@
     "gutter": 40,
     "gutterM": 24
    },
-   "box": {}
+   "box": {
+    "card": ""
+   }
   },
   "ipk7ns57": {
    "id": "ipk7ns57",

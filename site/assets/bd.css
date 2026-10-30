@@ -1,4 +1,4 @@
-/* PUBLISHED mvves2xf */
+/* PUBLISHED mvvfbsc3 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -45,7 +45,7 @@
 --bd-nav-fade: 0.08;
 --bd-nav-bg: transparent;
 --bd-g-dur: 450ms;
---bd-g-ease: ease;
+--bd-g-ease: ease-in-out;
 --bd-g-tease: 8deg;
 --bd-g-open: 24deg;
 }
@@ -1646,12 +1646,12 @@ mix-blend-mode: multiply;
 }
 .bd-e-5ygn83c2 .bd-post:not(.is-featured) .bd-post-t {
 font-size: 15px;
-line-height: 20px;
+line-height: 18px;
 }
 .bd-e-5ygn83c2 .bd-post-m,
 .bd-e-5ygn83c2 .bd-post-d {
 font-size: 10px;
-line-height: 14px;
+line-height: 0px;
 }
 .bd-e-5ygn83c2.bd-posts .bd-post-img img {
 mix-blend-mode: multiply;
@@ -3043,12 +3043,12 @@ line-height: 20px;
 }
 .bd-e-5ygn83c2 .bd-post:not(.is-featured) .bd-post-t {
 font-size: 15px;
-line-height: 20px;
+line-height: 18px;
 }
 .bd-e-5ygn83c2 .bd-post-m,
 .bd-e-5ygn83c2 .bd-post-d {
 font-size: 10px;
-line-height: 14px;
+line-height: 0px;
 }
 .bd-e-5ygn83c2 {
 --pcols: 1;
@@ -3279,7 +3279,7 @@ right: 0px;
 bottom: 0px;
 left: 0px;
 --k-peek: 52px;
---k-sliver: 14px;
+--k-sliver: 131px;
 --k-strip: 0px;
 --k-nudge: 0px;
 box-shadow: none;
