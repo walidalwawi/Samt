@@ -41,6 +41,15 @@ Rows inside a section are divided by a lighter hairline.
 --e-master: #F6F6F2;
 --e-tink: #141414;
 --e-tmute: #3F3F3A;
+--e-ground: #ECECEA;
+--e-ground-line: #E2E2DF;
+--e-card: #FAFAF8;
+--e-cardline: #E4E4E1;
+--e-chip: #E6E6E3;
+--e-chip-on: #2D6BE4;
+--e-mbar: #232321;
+--e-mbar-ink: #FAFAF8;
+--e-lbw: 24px;
 }
 @media (prefers-color-scheme: dark) {
 :root:not([data-theme="light"]) {
@@ -64,6 +73,13 @@ Rows inside a section are divided by a lighter hairline.
 --e-on-ink: #151514;
 --e-orange: #ECECE6;
 --e-warn: #ECECE6;
+--e-ground: #10100F;
+--e-ground-line: rgba(236, 236, 230, 0.05);
+--e-card: #1A1A18;
+--e-cardline: #2E2E2B;
+--e-chip: #2A2A27;
+--e-mbar: #3A3A36;
+--e-mbar-ink: #ECECE6;
 color-scheme: dark;
 }
 }
@@ -88,6 +104,13 @@ color-scheme: dark;
 --e-on-ink: #151514;
 --e-orange: #ECECE6;
 --e-warn: #ECECE6;
+--e-ground: #10100F;
+--e-ground-line: rgba(236, 236, 230, 0.05);
+--e-card: #1A1A18;
+--e-cardline: #2E2E2B;
+--e-chip: #2A2A27;
+--e-mbar: #3A3A36;
+--e-mbar-ink: #ECECE6;
 color-scheme: dark;
 }
 
@@ -2194,7 +2217,199 @@ color: inherit;
 opacity: 0.6;
 }
 
+/* LOOK · PANELS (html.is-ed-panels, Office look → Look) — TOP BAR, PANES AND CANVAS ARE CARDS ON A GRID GROUND; TABS ARE CHIPS */
+html.is-ed-panels body {
+background-color: var(--e-ground);
+background-image: linear-gradient(var(--e-ground-line) 1px, transparent 1px), linear-gradient(90deg, var(--e-ground-line) 1px, transparent 1px);
+background-size: 32px 32px;
+}
+html.is-ed-panels .bd-ed-app {
+gap: 10px;
+padding: 10px;
+}
+html.is-ed-panels .bd-ed-top,
+html.is-ed-panels .bd-ed-panel,
+html.is-ed-panels .bd-ed-code {
+--e-bg: var(--e-card);
+--e-surface: var(--e-card);
+background: var(--e-card);
+border: 1px solid var(--e-cardline);
+border-radius: 4px;
+}
+html.is-ed-panels .bd-ed-top {
+overflow: hidden;
+}
+html.is-ed-panels .bd-ed-stage {
+border: 1px solid var(--e-cardline);
+border-radius: 4px;
+}
+html.is-ed-panels .bd-ed-tabs {
+gap: 6px;
+padding: 8px var(--e-pad);
+border-bottom: 1px solid var(--e-cardline);
+}
+html.is-ed-panels .bd-ed-tabs button {
+flex: 0 1 auto;
+height: 28px;
+padding: 0 12px;
+border: 0;
+border-radius: 3px;
+background: var(--e-chip);
+color: var(--e-ink);
+}
+html.is-ed-panels .bd-ed-tabs button:hover {
+filter: brightness(0.96);
+}
+html.is-ed-panels .bd-ed-tabs button.is-on {
+background: var(--e-chip-on);
+color: #FFFFFF;
+}
+html.is-ed-panels .bd-ed-tabs .bd-ed-tabs-more {
+margin-left: auto;
+background: transparent;
+}
+html.is-ed-panels .bd-ed-master {
+border-bottom: 1px solid var(--e-cardline);
+}
+
+/* LAYER LABELS · BARS (html.is-ed-bars, Office look → Layer labels) — MASTER = ONE LONG VERTICAL BAR LEFT OF EVERYTHING; A SHEET WITH SEVERAL PAGES = A YELLOW VERTICAL BAR LEFT OF ITS PAGES; A BLOG = A GREEN HORIZONTAL BAR ABOVE ITS POSTS */
+.bd-ed-gbody {
+display: flex;
+flex-direction: column;
+min-width: 0;
+}
+.bd-ed-pcount {
+justify-self: end;
+font-style: normal;
+font-size: 10px;
+opacity: 0.7;
+}
+html.is-ed-bars .bd-ed-tree {
+display: flex;
+align-items: stretch;
+gap: 6px;
+margin-top: 10px;
+}
+html.is-ed-bars .bd-ed-tree-body {
+flex: 1;
+min-width: 0;
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+html.is-ed-bars .bd-ed-mbar {
+flex: none;
+width: var(--e-lbw);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: flex-start;
+padding: 10px 0;
+border: 0;
+border-radius: 3px;
+background: var(--e-mbar);
+color: var(--e-mbar-ink);
+font-size: 10.5px;
+letter-spacing: 0.06em;
+}
+html.is-ed-bars .bd-ed-mbar span {
+writing-mode: vertical-rl;
+transform: rotate(180deg);
+white-space: nowrap;
+}
+html.is-ed-bars .bd-ed-mbar:hover {
+filter: brightness(1.25);
+}
+html.is-ed-bars .bd-ed-mbar.is-on {
+outline: 2px solid var(--e-chip-on);
+outline-offset: 1px;
+}
+html.is-ed-bars .bd-ed-tree .bd-ed-group,
+html.is-ed-bars .bd-ed-tree .bd-ed-group + .bd-ed-group {
+margin: 0;
+border: 0;
+}
+html.is-ed-bars .bd-ed-tree .bd-ed-group.is-sheet:not(.is-bar) {
+border-radius: 3px;
+overflow: hidden;
+}
+html.is-ed-bars .bd-ed-group.is-sheet.is-bar {
+flex-direction: row;
+gap: 6px;
+background: transparent;
+}
+html.is-ed-bars .bd-ed-group.is-bar > .bd-ed-glabel {
+flex: none;
+width: var(--e-lbw);
+flex-direction: column;
+min-height: 0;
+border: 0;
+border-radius: 3px;
+background: var(--e-sheet);
+overflow: hidden;
+}
+html.is-ed-bars .bd-ed-group.is-bar > .bd-ed-glabel .bd-ed-grip {
+width: auto;
+height: 22px;
+border-right: 0;
+border-bottom: 1px solid rgba(20, 20, 20, 0.16);
+}
+html.is-ed-bars .bd-ed-group.is-bar > .bd-ed-glabel button.bd-ed-group-label.is-btn {
+flex: 1;
+min-height: 0;
+justify-content: flex-end;
+padding: 10px 0;
+writing-mode: vertical-rl;
+transform: rotate(180deg);
+white-space: nowrap;
+}
+html.is-ed-bars .bd-ed-group.is-bar > .bd-ed-glabel button.bd-ed-group-label.is-btn svg,
+html.is-ed-bars .bd-ed-group.is-bar > .bd-ed-glabel button.bd-ed-group-label.is-btn .bd-ed-gtag {
+display: none;
+}
+html.is-ed-bars .bd-ed-group.is-bar > .bd-ed-glabel button.bd-ed-group-label.is-btn b::after {
+content: none;
+}
+html.is-ed-bars .bd-ed-group.is-bar > .bd-ed-glabel button.bd-ed-group-label.is-btn b {
+overflow: hidden;
+text-overflow: ellipsis;
+}
+html.is-ed-bars .bd-ed-group.is-bar > .bd-ed-glabel button.bd-ed-group-label.is-btn.is-on {
+background: #141414;
+color: #EEEEEA;
+}
+html.is-ed-bars .bd-ed-group.is-bar > .bd-ed-gbody {
+flex: 1;
+border-radius: 3px;
+background: var(--e-sheet-soft);
+overflow: hidden;
+}
+html.is-ed-bars .bd-ed-blogbox {
+display: flex;
+flex-direction: column;
+margin: 6px 0;
+border-radius: 3px;
+overflow: hidden;
+}
+html.is-ed-bars .bd-ed-blogbox > .bd-ed-pgw.is-blog {
+border-bottom: 0;
+font-weight: 500;
+}
+html.is-ed-bars .bd-ed-blogbox > .bd-ed-pgw .bd-ed-pg {
+grid-template-columns: 30px minmax(0, 1fr) auto;
+}
+html.is-ed-bars .bd-ed-blogbox > .bd-ed-pg.is-post {
+padding-left: 24px;
+}
+
 @media (max-width: 980px) {
+html.is-ed-panels .bd-ed-app {
+gap: 0;
+padding: 0;
+}
+html.is-ed-panels .bd-ed-top {
+border-radius: 0;
+}
 .bd-ed-cus-grid {
 grid-template-columns: minmax(0, 1fr);
 }

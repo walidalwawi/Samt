@@ -5648,7 +5648,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#22c55e";
+var BD_BUILD = "#2d6be4";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6228,7 +6228,11 @@ var ED_THEME = [
 ["blog", "Blog", ["--e-blog"], "#00F200"],
 ["blogSoft", "Blog posts", ["--e-blog-soft"], "#D1FFD1"],
 ["tile", "Plain pages", ["--e-tile"], "#FFFFFF"],
-["master", "Master", ["--e-master"], "#F6F6F2"]
+["master", "Master", ["--e-master"], "#F6F6F2"],
+["ground", "Ground behind panels", ["--e-ground"], "#ECECEA"],
+["card", "Panels", ["--e-card"], "#FAFAF8"],
+["chipOn", "Active tab", ["--e-chip-on"], "#2D6BE4"],
+["mbar", "Master bar", ["--e-mbar"], "#232321"]
 ];
 var ED_FONTS = [["", "Plex Mono"], ["sans", "System sans"], ["grot", "Helvetica"], ["serif", "Serif"]];
 var ED_FONT_CSS = { sans: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', grot: '"Helvetica Neue", Helvetica, Arial, sans-serif', serif: 'Georgia, "Times New Roman", serif' };
@@ -6251,6 +6255,7 @@ if (c) t[2].forEach(function (n) { v.push(n + ": " + c + ";"); });
 if (ED_FONT_CSS[T.font]) v.push("--e-mono: " + ED_FONT_CSS[T.font] + ";", "--e-sans: " + ED_FONT_CSS[T.font] + ";");
 if (T.pad) v.push("--e-pad: " + T.pad + "px;");
 if (T.row) v.push("--e-row: " + T.row + "px;");
+if (T.lbw) v.push("--e-lbw: " + T.lbw + "px;");
 var h = v.length ? ":root:root:root {\n" + v.join("\n") + "\n}\n" : "";
 if (T.lw) h += ".bd-ed-sec,\n.bd-ed-skinwrap > .bd-ed-sec {\nborder-bottom: " + T.lw + "px solid var(--e-line);\n}\n";
 if (T.rad) h += ".bd-ed-btn,\n.bd-ed-chip,\n.bd-ed-input,\n.bd-ed-seg,\n.bd-ed-seg button,\n.bd-ed-tool,\n.bd-ed-sw {\nborder-radius: " + T.rad + "px;\n}\n";
@@ -6274,8 +6279,12 @@ tag = document.createElement("style");
 tag.id = "bd-ed-theme";
 document.head.appendChild(tag);
 }
-var css = edThemeCSS(edTheme());
+var T = edTheme();
+var css = edThemeCSS(T);
 if (tag.textContent !== css) tag.textContent = css;
+var R = document.documentElement.classList;
+R.toggle("is-ed-panels", T.look !== "flat");
+R.toggle("is-ed-bars", T.labels !== "rows");
 }
 /* ONE SECTION'S OWN LOOK, PUT ON THE NODE (NAME REPLACES ITS HEADING TEXT) */
 function edLookOn(node, L) {
@@ -6332,6 +6341,12 @@ function edOfficeHTML() {
 var T = edTheme();
 var h = '<div class="bd-ed-sec bd-ed-cus" data-cus="office"><div class="bd-ed-head"><span class="bd-ed-label">Office look</span><button class="bd-ed-chip" data-act="ed-reset" data-val="theme">Reset</button></div>';
 h += '<div class="bd-ed-cus-grid">' + ED_THEME.map(function (t) { return edRow(t[1], edColour("theme." + t[0], T[t[0]], t[3])); }).join("") + "</div>";
+h += edRow("Look", edSeg("theme.look", T.look || "", [["", "Panels"], ["flat", "Flat"]]));
+h += edRow("Layer labels", edSeg("theme.labels", T.labels || "", [["", "Bars"], ["rows", "Rows"]]));
+if (T.labels !== "rows") {
+h += edRow("Label width", edSeg("theme.lbw", T.lbw || "", [["18", "18"], ["", "24"], ["32", "32"]]));
+h += edRow("Master", edSeg("theme.master", T.master || "", [["", "Bar on the left"], ["row", "Row on top"]]));
+}
 h += edRow("Type", edSeg("theme.font", T.font || "", ED_FONTS));
 h += edRow("Text size", edSeg("theme.size", T.size === 13 ? "" : T.size || "", [["11", "11"], ["12", "12"], ["", "13"], ["14", "14"]]));
 h += edRow("Headings", edSeg("theme.headCase", T.headCase || "", [["", "As written"], ["caps", "CAPS"]]));
@@ -6924,27 +6939,35 @@ if (layersOn()) {
 pins.label = "Header & footer · not shown with paper sheets";
 if (pins.pages.length) groups.push(pins);
 } else groups.push(pins);
+var T = edTheme();
+var bars = T.labels !== "rows";
+var mrow = !bars || T.master === "row";
 var h = '<div class="bd-ed-sec"><div class="bd-ed-actions"><button class="bd-ed-btn" data-act="page-add">' + I.plus + 'Page</button><button class="bd-ed-btn" data-act="blog-add">' + I.plus + 'Blog</button>' + (layersOn() ? '<button class="bd-ed-btn" data-act="sheet-add">' + I.plus + "Sheet</button>" : '<button class="bd-ed-btn" data-act="pin-add" data-val="top">' + I.plus + 'Header</button><button class="bd-ed-btn" data-act="pin-add" data-val="bottom">' + I.plus + "Footer</button>") + "</div>";
+if (bars) h += '<div class="bd-ed-tree' + (mrow ? " is-nomaster" : "") + '">' + (mrow ? "" : '<button class="bd-ed-mbar' + (S.masterSel ? " is-on" : "") + '" data-act="master-sel" title="Master · everything on the site"><span>Master — ' + esc(s.name || "Site") + "</span></button>") + '<div class="bd-ed-tree-body">';
 groups.forEach(function (g) {
 if (!g.pages.length && !g.pins && !g.sheet) return;
 var gl = g.sheet ? "<b>" + esc(g.sheet.name || "Sheet") + '</b><span class="bd-ed-gtag">' + (sheetPin(g.sheet) ? "pinned" : g.sheet.rest === "open" ? "open" : g.sheet.rest === "still" ? "still" : g.sheet.rest === "peek" ? "peeks" : "hidden") + "</span>" + I.sliders : esc(g.label);
-h += '<div class="bd-ed-group' + (g.sheet ? " is-sheet" : "") + (g.sheet && g.pages.some(function (q) { return q.blog; }) ? " is-blog" : "") + (g.pins ? " is-pins" : "") + '" data-gk="' + esc(g.key) + '"' + (g.sheet ? ' data-sheet="' + esc(g.sheet.id) + '"' : "") + '>' + (g.sheet ? '<div class="bd-ed-glabel"><span class="bd-ed-grip is-sheet" data-grip="sheet" data-id="' + esc(g.sheet.id) + '" title="Drag to change the stack order">' + I.grip + '</span><button class="bd-ed-group-label is-btn' + (S.sheetSel === g.sheet.id ? " is-on" : "") + '" data-act="sheet-sel" data-id="' + esc(g.sheet.id) + '">' + gl + "</button></div>" : '<div class="bd-ed-group-label">' + gl + "</div>");
+h += '<div class="bd-ed-group' + (g.sheet ? " is-sheet" : "") + (bars && g.sheet && g.pages.length > 1 ? " is-bar" : "") + (g.sheet && g.pages.some(function (q) { return q.blog; }) ? " is-blog" : "") + (g.pins ? " is-pins" : "") + '" data-gk="' + esc(g.key) + '"' + (g.sheet ? ' data-sheet="' + esc(g.sheet.id) + '"' : "") + '>' + (g.sheet ? '<div class="bd-ed-glabel"><span class="bd-ed-grip is-sheet" data-grip="sheet" data-id="' + esc(g.sheet.id) + '" title="Drag to change the stack order">' + I.grip + '</span><button class="bd-ed-group-label is-btn' + (S.sheetSel === g.sheet.id ? " is-on" : "") + '" data-act="sheet-sel" data-id="' + esc(g.sheet.id) + '" title="' + esc(g.sheet.name || "Sheet") + '">' + gl + "</button></div>" : '<div class="bd-ed-group-label">' + gl + "</div>");
+h += '<div class="bd-ed-gbody">';
 if (g.sheet && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">Empty · tap the name, then Dissolve to remove it.</div>';
 if (g.pins && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">None yet. A header or footer shows on every page, with its own columns.</div>';
 g.pages.forEach(function (p) {
 var st = g.sheet ? sheetStrip(g.sheet) : null;
 var tag = p.kind === "pin" ? (p.pin.place === "bottom" ? "foot" : "head") : st && st.id === p.id ? "edge" : p.blog ? "blog" : esc(p.num || "·");
-h += '<div class="bd-ed-pgw' + (p.id === S.pageId ? " is-on" : "") + (p.blog ? " is-blog" : "") + '" data-pid="' + p.id + '">' + (p.kind === "pin" ? '<span class="bd-ed-grip is-off"></span>' : '<span class="bd-ed-grip" data-grip="page" data-id="' + p.id + '" title="Drag to move">' + I.grip + "</span>") + '<button class="bd-ed-pg' + (p.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + p.id + '"><b>' + tag + "</b><span>" + (p.slug === "" && p.kind !== "pin" ? "⌂ " : "") + esc(p.title) + "</span></button></div>";
+if (p.blog) h += '<div class="bd-ed-blogbox">';
+h += '<div class="bd-ed-pgw' + (p.id === S.pageId ? " is-on" : "") + (p.blog ? " is-blog" : "") + '" data-pid="' + p.id + '">' + (p.kind === "pin" ? '<span class="bd-ed-grip is-off"></span>' : '<span class="bd-ed-grip" data-grip="page" data-id="' + p.id + '" title="Drag to move">' + I.grip + "</span>") + '<button class="bd-ed-pg' + (p.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + p.id + '"><b>' + tag + "</b><span>" + (p.slug === "" && p.kind !== "pin" ? "⌂ " : "") + esc(p.title) + "</span>" + (bars && p.blog ? '<i class="bd-ed-pcount">' + postsOf(p.id).length + "</i>" : "") + "</button></div>";
 if (p.blog) {
 h += '<button class="bd-ed-pg is-post is-pmaster' + (S.postMaster ? " is-on" : "") + '" data-act="post-master" data-id="' + p.id + '"><b>▤</b><span>All posts · master</span></button>';
 postsOf(p.id).forEach(function (q) {
 h += '<button class="bd-ed-pg is-post' + (q.id === S.pageId ? " is-on" : "") + '" data-act="page" data-id="' + q.id + '"><b>' + (q.featured ? "★" : "↳") + "</b><span>" + esc(q.title) + "</span></button>";
 });
 h += '<button class="bd-ed-pg is-post is-add" data-act="post-add" data-id="' + p.id + '"><b>+</b><span>Post</span></button>';
+h += "</div>";
 }
 });
-h += "</div>";
+h += "</div></div>";
 });
+if (bars) h += "</div></div>";
 h += "</div>";
 var cp = curPage();
 h += '<div class="bd-ed-sec"><div class="bd-ed-actions">'
@@ -7541,7 +7564,7 @@ return;
 }
 D.grp = g;
 var row = el.closest(".bd-ed-pgw");
-if (row && row.getAttribute("data-pid") !== D.id && row.parentNode === g) {
+if (row && row.getAttribute("data-pid") !== D.id && row.closest(".bd-ed-group") === g) {
 var r = row.getBoundingClientRect();
 D.row = row;
 D.after = y > r.top + r.height / 2;
@@ -8148,6 +8171,8 @@ else if (d) s.glass.menu = s.glass.menu === "phone" ? "both" : "desktop";
 }
 /* THE LAYERS PANE: MASTER ABOVE THE LIST */
 function layersBarHTML() {
+var T = edTheme();
+if (T.labels !== "rows" && T.master !== "row") return "";
 return '<div class="bd-ed-layers"><button class="bd-ed-master' + (S.masterSel ? " is-on" : "") + '" data-act="master-sel"><b>Master</b><span>everything on the site</span></button></div>';
 }
 function masterPanelHTML() {
