@@ -715,12 +715,15 @@
    },
    "moved": {},
    "custom": [],
+   "look": {
+    "sheet:details": {
+     "bg": "#f5ec00"
+    }
+   },
    "theme": {
     "ink": "#474747",
-    "bg": "#d6d6d6",
-    "headCase": "caps",
-    "headSize": 16,
-    "hair": "#d6d6d6"
+    "mark": "#000000",
+    "hair": "#000000"
    }
   },
   "followV1": true,
