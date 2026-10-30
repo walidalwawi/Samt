@@ -5649,7 +5649,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#6366f1";
+var BD_BUILD = "#b45309";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -5921,7 +5921,7 @@ return d;
 }
 function panelDefs() {
 loadCustomTools();
-var d = { pages: { label: "Pages", html: pagesPanel }, styles: { label: "Styles", html: stylesPanel }, motion: { label: "Motion", html: motionPanel }, site: { label: "Site", html: function () { return typeHTML() + sitePanel(); } }, blocks: { label: "Blocks", html: function () { return blocksHTML() + motionPanel(); } }, code: { label: "Code", fixed: "left" } };
+var d = { pages: { label: "Pages", html: pagesPanel }, styles: { label: "Styles", html: stylesPanel }, motion: { label: "Motion", html: motionPanel }, site: { label: "Site", html: function () { return typeHTML() + sheetMotionHTML() + sitePanel(); } }, blocks: { label: "Blocks", html: function () { return blocksHTML() + motionPanel(); } }, code: { label: "Code", fixed: "left" } };
 Object.keys(TOOLS_X).forEach(function (id) {
 var x = TOOLS_X[id];
 if (x.kind !== "panel") return;
@@ -8101,6 +8101,44 @@ if (!Lz.on) return h + "</div>";
 h += '<div class="bd-ed-hint">' + (sheetList().length ? sheetList().length + " sheet" + (sheetList().length > 1 ? "s" : "") + ". " : "No sheets yet. ") + "Tap a sheet’s title in Pages to edit it, move it up or down the stack, or change how it moves. Pages and posts not on a sheet lie underneath, one at a time.</div></div>";
 return h;
 }
+/* MASTER · SITE → SHEET MOTION: HOW EVERY SHEET LEAVES AND APPEARS, IN ONE PLACE. "LEAVES BY" = site.layers.trans (ALSO CLEARS ANY SHEET'S OWN k.lv), "TOWARDS" WRITES EVERY SHEET'S k.edge / k.edgeM (A PINNED SHEET NEVER LEAVES, SO IT IS SKIPPED), "APPEARS" WRITES EVERY k.arrive */
+var MOTION_LEAVE = [["slide", "Slide"], ["push", "Push"], ["drop", "Drop"], ["rise", "Rise"], ["cut", "Cut"]];
+var MOTION_SIDES = [["top", "Up"], ["bottom", "Down"], ["left", "Left"], ["right", "Right"]];
+function motionMoving() {
+return sheetList().filter(function (k) { return k && !sheetPin(k); });
+}
+function motionSame(list, f, dflt) {
+var v = list.map(function (k) { return k[f] || dflt; });
+return v.length && v.every(function (x) { return x === v[0]; }) ? v[0] : "";
+}
+function motionSeg(f, cur, opts) {
+return '<div class="bd-ed-seg">' + opts.map(function (o) {
+return '<button data-act="motion-all" data-f="' + f + '" data-val="' + o[0] + '" class="' + (cur === o[0] ? "is-on" : "") + '">' + o[1] + "</button>";
+}).join("") + "</div>";
+}
+function sheetMotionHTML() {
+if (!layersOn()) return "";
+var L = S.project.site.layers;
+var mv = motionMoving();
+var all = sheetList().filter(Boolean);
+var tr = L.trans || "slide";
+var own = all.filter(function (k) { return k.lv; }).length;
+var d = motionSame(mv, "edge", "left");
+var m = motionSame(mv, "edgeM", "top");
+var ap = motionSame(all, "arrive", "slide");
+var said = { slide: "slides out of", push: "slides off the opposite side of", drop: "drops to the bottom of", rise: "lifts off the top of", cut: "vanishes from" }[tr] || "slides";
+var dir = { top: "up", bottom: "down", left: "left", right: "right" };
+var opp = { top: "down", bottom: "up", left: "right", right: "left" };
+var out = function (e) { return !e ? "a different way per sheet" : tr === "push" ? opp[e] : tr === "drop" ? "down" : tr === "rise" ? "up" : tr === "cut" ? "at once" : dir[e]; };
+var h = '<div class="bd-ed-sec"><span class="bd-ed-title">Sheet motion</span>';
+h += field("When a sheet leaves, it", motionSeg("trans", tr, MOTION_LEAVE));
+h += field("Towards · desktop", motionSeg("edge", d, MOTION_SIDES)) + field("Towards · phone", motionSeg("edgeM", m, MOTION_SIDES));
+h += '<div class="bd-ed-hint">Right now a sheet ' + esc(said) + " the window and moves <b>" + esc(out(d)) + "</b> on a desktop, <b>" + esc(out(m)) + "</b> on a phone" + (own ? " · " + own + " sheet" + (own === 1 ? " has" : "s have") + " its own way of leaving; choosing above resets them" : "") + ". A pinned sheet never leaves.</div>";
+h += field("When a sheet appears, it", motionSeg("arrive", ap, [["slide", "Slides in"], ["fade", "Fades in"], ["cut", "Is just there"]]));
+h += row(numIn("Speed (ms)", "site.layers.dur", L.dur, "int"), field("Feel", select("site.layers.ease", L.ease || "paper", Object.keys(LAYER_EASE).map(function (k) { return [k, LAYER_EASE[k][0]]; }))));
+h += '<div class="bd-ed-hint">Opening a post can send its blog’s sheet its own way: Master · Blog → Opening a post.</div>';
+return h + "</div>";
+}
 function sitePanel() {
 var s = S.project.site;
 var h = (layersOn() ? "" : layersPanel()) + '<div class="bd-ed-sec">' + field("Site name", input("site.name", s.name)) + "</div>";
@@ -8251,7 +8289,7 @@ if (LT.indexOf(S.leftTab) < 0 && S.leftTab !== "code") S.leftTab = LT.filter(fun
 if (S.leftTab !== "code") S.leftTab = "pages";
 /* MASTER OPEN (BARS): THE PAGES LIST FOLDS AWAY, THE MASTER BAR STAYS ON THE LEFT AND THE MASTER SETTINGS OPEN RIGHT BESIDE IT IN LIGHT BLUE (THEY STAY IN #bd-right, SO CUSTOMIZE STILL WORKS ON THEM) */
 var ET = edTheme();
-var mOpen = !!S.masterSel && S.leftTab !== "code" && ET.labels !== "rows" && ET.master !== "row";
+var mOpen = !!(S.masterSel || S.postMaster) && S.leftTab !== "code" && ET.labels !== "rows" && ET.master !== "row";
 $("bd-app").classList.toggle("is-master", mOpen);
 if (mOpen) {
 $("bd-app").classList.remove("has-wide-left");
@@ -11533,6 +11571,15 @@ S.layAdd = -1;
 changed();
 },
 "lay-filter": function () { S.layFilter = S.layFilter === val ? "" : val; renderLeft(); },
+"motion-all": function () {
+var f = b.getAttribute("data-f");
+snap();
+if (f === "trans") {
+S.project.site.layers.trans = val;
+sheetList().forEach(function (k) { if (k) k.lv = ""; });
+} else (f === "arrive" ? sheetList().filter(Boolean) : motionMoving()).forEach(function (k) { k[f] = val; });
+changed();
+},
 "master-close": function () { S.masterSel = false; S.postMaster = false; render(); },
 "master-sel": function () { S.masterSel = true; S.postMaster = false; S.sheetSel = ""; S.sel = null; if (S.live) endEdit(); render(); },
 "master-done": function () { S.masterSel = false; render(); },
