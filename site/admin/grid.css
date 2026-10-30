@@ -2730,6 +2730,121 @@ background: transparent;
 background: var(--e-ink);
 color: var(--e-card);
 }
+/* PAGE ROWS CARRY THEIR FAMILY: PAGES ON A SHEET VERY LIGHT YELLOW, A BLOG'S POSTS VERY LIGHT GREEN (MIXED FROM THE SHEET / BLOG COLOURS, SO OFFICE LOOK COLOURS FOLLOW) */
+:root {
+--e-sheet-row: color-mix(in srgb, var(--e-sheet) 18%, var(--e-card));
+--e-blog-row: color-mix(in srgb, var(--e-blog) 14%, var(--e-card));
+--e-mlight: color-mix(in srgb, var(--e-mbar) 9%, #FFFFFF);
+--e-mchip: color-mix(in srgb, var(--e-mbar) 16%, #FFFFFF);
+}
+html.is-ed-panels:not(.is-ed-tiles) .bd-ed-group.is-sheet .bd-ed-gbody {
+gap: 3px;
+}
+html.is-ed-panels:not(.is-ed-tiles) .bd-ed-group.is-sheet .bd-ed-pgw:not(.is-blog):not(.is-on) {
+background: var(--e-sheet-row);
+}
+html.is-ed-panels:not(.is-ed-tiles) .bd-ed-group .bd-ed-pg.is-post:not(.is-on) {
+margin-top: 3px;
+background: var(--e-blog-row);
+}
+html.is-ed-panels .bd-ed-group.is-sheet .bd-ed-pgw.is-on:not(.is-blog),
+html.is-ed-panels .bd-ed-group .bd-ed-pg.is-post.is-on {
+background: color-mix(in srgb, var(--e-ink) 12%, var(--e-card));
+}
+html.is-ed-bars .bd-ed-gbody > .bd-ed-blogbox:first-child {
+margin-top: 0;
+}
+
+/* CUSTOMIZE BARS — SOFT CHIPS ON A LIGHT STRIP, NOT BLACK */
+:where(html.is-ed-panels) .bd-ed-arr {
+gap: 4px;
+margin: 12px calc(var(--e-pad) + 10px) 0;
+padding: 5px 6px 5px 12px;
+border: 0;
+border-radius: 4px;
+background: var(--e-chip);
+color: var(--e-ink);
+}
+:where(html.is-ed-panels) .bd-ed-arr-name {
+font-size: 11.5px;
+letter-spacing: 0.02em;
+text-transform: none;
+color: var(--e-mute);
+}
+:where(html.is-ed-panels) .bd-ed-arr .bd-ed-chip,
+:where(html.is-ed-panels) .bd-ed-arr .bd-ed-rsel {
+height: 26px;
+border: 0;
+border-radius: 3px;
+background: var(--e-card);
+color: var(--e-ink);
+font-size: 11.5px;
+}
+:where(html.is-ed-panels) .bd-ed-arr .bd-ed-chip + .bd-ed-chip,
+:where(html.is-ed-panels) .bd-ed-arr .bd-ed-rsel + .bd-ed-chip,
+:where(html.is-ed-panels) .bd-ed-arr .bd-ed-chip + .bd-ed-rsel {
+margin-left: 0;
+}
+:where(html.is-ed-panels) .bd-ed-arr .bd-ed-chip:hover,
+:where(html.is-ed-panels) .bd-ed-arr .bd-ed-chip.is-on {
+background: var(--e-ink);
+color: var(--e-card);
+}
+
+/* MASTER OPEN — THE BLUE BAR STAYS, THE SETTINGS OPEN BESIDE IT IN LIGHT BLUE, THE PAGES LIST FOLDS AWAY */
+.bd-ed-app.is-master {
+grid-template-columns: 44px var(--e-mw, 440px) minmax(0, 1fr);
+}
+.bd-ed-app.is-master .bd-ed-left {
+padding: 0;
+overflow: hidden;
+background: var(--e-mbar);
+border-color: var(--e-mbar);
+}
+.bd-ed-app.is-master .bd-ed-right {
+--e-card: var(--e-mlight);
+--e-bg: var(--e-mlight);
+--e-surface: var(--e-mlight);
+--e-master: var(--e-mlight);
+--e-tile: var(--e-mlight);
+--e-chip: var(--e-mchip);
+--e-cardline: color-mix(in srgb, var(--e-mbar) 22%, #FFFFFF);
+--e-hair: color-mix(in srgb, var(--e-mbar) 22%, #FFFFFF);
+--e-ink: #141414;
+--e-mute: #4A4A55;
+color: #141414;
+background: var(--e-mlight);
+border-color: var(--e-mbar);
+}
+.bd-ed-mbar.is-open {
+flex: 1;
+width: 100%;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: flex-start;
+padding: 16px 0;
+border: 0;
+background: var(--e-mbar);
+color: var(--e-mbar-ink);
+font-size: 11.5px;
+letter-spacing: 0.06em;
+cursor: pointer;
+}
+.bd-ed-mbar.is-open span {
+writing-mode: vertical-rl;
+transform: rotate(180deg);
+white-space: nowrap;
+}
+html.is-ed-panels .bd-ed-app.is-master .bd-ed-left {
+border-radius: 4px 0 0 4px;
+}
+html.is-ed-panels .bd-ed-app.is-master .bd-ed-right {
+margin-left: -12px;
+border-left: 0;
+border-radius: 0 4px 4px 0;
+}
+
 /* CUSTOMIZE · EACH AREA */
 .bd-ed-cus-zones {
 display: flex;

@@ -5649,7 +5649,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#f97066";
+var BD_BUILD = "#6366f1";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6998,7 +6998,7 @@ if (bars) h += '<div class="bd-ed-tree' + (mrow ? " is-nomaster" : "") + '">' + 
 groups.forEach(function (g) {
 if (!g.pages.length && !g.pins && !g.sheet) return;
 var gl = g.sheet ? "<b>" + esc(g.sheet.name || "Sheet") + '</b><span class="bd-ed-gtag">' + (sheetPin(g.sheet) ? "pinned" : g.sheet.rest === "open" ? "open" : g.sheet.rest === "still" ? "still" : g.sheet.rest === "peek" ? "peeks" : "hidden") + "</span>" + I.sliders : esc(g.label);
-h += '<div class="bd-ed-group' + (g.sheet ? " is-sheet" : "") + (bars && g.sheet && g.pages.length > 1 ? " is-bar" : "") + (g.sheet && g.pages.some(function (q) { return q.blog; }) ? " is-blog" : "") + (g.pins ? " is-pins" : "") + '" data-gk="' + esc(g.key) + '"' + (g.sheet ? ' data-sheet="' + esc(g.sheet.id) + '"' : "") + '>' + (g.sheet ? '<div class="bd-ed-glabel"><span class="bd-ed-grip is-sheet" data-grip="sheet" data-id="' + esc(g.sheet.id) + '" title="Drag to change the stack order">' + I.grip + '</span><button class="bd-ed-group-label is-btn' + (S.sheetSel === g.sheet.id ? " is-on" : "") + '" data-act="sheet-sel" data-id="' + esc(g.sheet.id) + '" title="' + esc(g.sheet.name || "Sheet") + '">' + gl + "</button></div>" : '<div class="bd-ed-group-label"><span class="bd-ed-gchip">' + I.folder + "<span>" + gl + '</span></span><i class="bd-ed-gcount">' + g.pages.length + "</i></div>");
+h += '<div class="bd-ed-group' + (g.sheet ? " is-sheet" : "") + (bars && g.sheet && (g.pages.length > 1 || g.pages.some(function (q) { return q.blog; })) ? " is-bar" : "") + (g.sheet && g.pages.some(function (q) { return q.blog; }) ? " is-blog" : "") + (g.pins ? " is-pins" : "") + '" data-gk="' + esc(g.key) + '"' + (g.sheet ? ' data-sheet="' + esc(g.sheet.id) + '"' : "") + '>' + (g.sheet ? '<div class="bd-ed-glabel"><span class="bd-ed-grip is-sheet" data-grip="sheet" data-id="' + esc(g.sheet.id) + '" title="Drag to change the stack order">' + I.grip + '</span><button class="bd-ed-group-label is-btn' + (S.sheetSel === g.sheet.id ? " is-on" : "") + '" data-act="sheet-sel" data-id="' + esc(g.sheet.id) + '" title="' + esc(g.sheet.name || "Sheet") + '">' + gl + "</button></div>" : '<div class="bd-ed-group-label"><span class="bd-ed-gchip">' + I.folder + "<span>" + gl + '</span></span><i class="bd-ed-gcount">' + g.pages.length + "</i></div>");
 h += '<div class="bd-ed-gbody">';
 if (g.sheet && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">Empty · tap the name, then Dissolve to remove it.</div>';
 if (g.pins && !g.pages.length) h += '<div class="bd-ed-hint" style="padding:2px 4px">None yet. A header or footer shows on every page, with its own columns.</div>';
@@ -8249,6 +8249,17 @@ if (S.codeOpen) S.leftTab = "code";
 else if (S.leftTab === "code") S.leftTab = "";
 if (LT.indexOf(S.leftTab) < 0 && S.leftTab !== "code") S.leftTab = LT.filter(function (id) { return id !== "code"; })[0] || "";
 if (S.leftTab !== "code") S.leftTab = "pages";
+/* MASTER OPEN (BARS): THE PAGES LIST FOLDS AWAY, THE MASTER BAR STAYS ON THE LEFT AND THE MASTER SETTINGS OPEN RIGHT BESIDE IT IN LIGHT BLUE (THEY STAY IN #bd-right, SO CUSTOMIZE STILL WORKS ON THEM) */
+var ET = edTheme();
+var mOpen = !!S.masterSel && S.leftTab !== "code" && ET.labels !== "rows" && ET.master !== "row";
+$("bd-app").classList.toggle("is-master", mOpen);
+if (mOpen) {
+$("bd-app").classList.remove("has-wide-left");
+L.classList.remove("has-codepane");
+L.innerHTML = '<button class="bd-ed-mbar is-open" data-act="master-close" title="Close Master · back to the pages"><span>Master — ' + esc(S.project.site.name || "Site") + "  ·  close ✕</span></button>";
+requestAnimationFrame(fitSheet);
+return;
+}
 var h = S.leftTab === "code" ? tabsHTML("left", S.leftTab) : layersBarHTML();
 $("bd-app").classList.toggle("has-wide-left", S.leftTab === "code");
 L.classList.toggle("has-codepane", S.leftTab === "code");
@@ -11522,6 +11533,7 @@ S.layAdd = -1;
 changed();
 },
 "lay-filter": function () { S.layFilter = S.layFilter === val ? "" : val; renderLeft(); },
+"master-close": function () { S.masterSel = false; S.postMaster = false; render(); },
 "master-sel": function () { S.masterSel = true; S.postMaster = false; S.sheetSel = ""; S.sel = null; if (S.live) endEdit(); render(); },
 "master-done": function () { S.masterSel = false; render(); },
 "post-master": function () {
