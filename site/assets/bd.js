@@ -516,9 +516,7 @@ var BD_DATA = {"site":"Samt","menu":false,"groups":[{"label":"","items":[{"title
 {"section":"","slug":"the-bourgeoi-rtist","num":"","title":"The Bourgeoi’rtist"},
 {"section":"","slug":"art-in-times-of-crisis","num":"","title":"Art In Times Of Crisis"},
 {"section":"","slug":"library","num":"","title":"Library"},
-{"section":"","slug":"about","num":"","title":"About"},
-{"section":"","slug":"blog","num":"","title":"Blog"},
-{"section":"","slug":"first-post","num":"","title":"First post"}],"externals":[],"gDur":450};
+{"section":"","slug":"about","num":"","title":"About"}],"externals":[],"gDur":450};
 
 /* CHROME */
 function bdChrome(root, data, nav) {
