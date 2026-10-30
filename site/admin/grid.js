@@ -5649,7 +5649,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#b45309";
+var BD_BUILD = "#0f766e";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -6249,9 +6249,10 @@ var h = "";
 ED_ZONES.forEach(function (z) {
 var g = function (k) { return T["z-" + z[0] + "-" + k]; };
 var v = [];
-var bg = edHex(g("bg"));
-var ink = edHex(g("ink"));
-var line = edHex(g("line"));
+var col = function (k) { return edHex(T[(edDark() ? "d-" : "") + "z-" + z[0] + "-" + k]); };
+var bg = col("bg");
+var ink = col("ink");
+var line = col("line");
 if (bg) v.push("--e-bg: " + bg + ";", "--e-card: " + bg + ";", "--e-surface: " + bg + ";", z[0] === "stage" ? "background-color: " + bg + ";" : "background: " + bg + ";");
 if (ink) v.push("--e-ink: " + ink + ";", "color: " + ink + ";");
 if (line) v.push("--e-line: " + line + ";", "--e-cardline: " + line + ";", "border-color: " + line + ";");
@@ -6259,7 +6260,7 @@ if (g("rad") != null && g("rad") !== "") v.push("border-radius: " + g("rad") + "
 if (g("size")) v.push("font-size: " + g("size") + "px;");
 if (g("row")) v.push("--e-row: " + g("row") + "px;");
 if (g("pad")) v.push("--e-pad: " + g("pad") + "px;");
-if (v.length) h += "html " + z[2] + " {\n" + v.join("\n") + "\n}\n";
+if (v.length) h += "html.is-ed-" + (edDark() ? "dk" : "lt") + " " + z[2] + " {\n" + v.join("\n") + "\n}\n";
 });
 return h;
 }
@@ -6275,10 +6276,37 @@ function edHex(v) {
 return /^#[0-9a-f]{6}$/i.test(String(v || "")) ? v : "";
 }
 /* THE OFFICE LOOK AS CSS: TOKENS WIN OVER BOTH LIGHT AND DARK (:root x3), THEN LINES, CORNERS, SPACING */
+/* LIGHT / DARK: THE OFFICE LOOK KEEPS ONE SET OF COLOURS PER MODE — theme.<key> FOR LIGHT, theme["d-<key>"] FOR DARK (ALSO z-… AREA COLOURS). DARK WITH NOTHING SET = THE BUILT-IN DARK PALETTE. MODE = DEVICE (DEFAULT) | LIGHT | DARK, KEPT ON THIS DEVICE (localStorage bd-ed-mode); html GETS is-ed-dk / is-ed-lt AND data-theme */
+/* IDENTITY COLOURS CARRY INTO DARK MODE UNLESS A DARK ONE IS SET */
+var ED_SHARED = ["sheet", "blog", "mbar", "chipOn"];
+function edMode() {
+var m = lsGet("bd-ed-mode") || "";
+return m === "light" || m === "dark" ? m : "";
+}
+function edDark() {
+var m = edMode();
+if (m) return m === "dark";
+return !!(window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+}
+if (window.matchMedia) {
+var edMq = matchMedia("(prefers-color-scheme: dark)");
+var edMqGo = function () { if (!edMode() && S.project) { edThemeApply(); if (S.arrange) renderRight(); } };
+if (edMq.addEventListener) edMq.addEventListener("change", edMqGo);
+else if (edMq.addListener) edMq.addListener(edMqGo);
+}
+/* TEXT THAT READS ON A GIVEN BACKGROUND */
+function edInkOn(hex) {
+var c = edHex(hex);
+if (!c) return "";
+var n = parseInt(c.slice(1), 16);
+var l = ((n >> 16) * 0.299 + ((n >> 8) & 255) * 0.587 + (n & 255) * 0.114) / 255;
+return l > 0.55 ? "#141414" : "#EEEEEA";
+}
 function edThemeCSS(T) {
 var v = [];
+var pre = edDark() ? "d-" : "";
 ED_THEME.forEach(function (t) {
-var c = edHex(T[t[0]]);
+var c = edHex(T[pre + t[0]]) || (pre && ED_SHARED.indexOf(t[0]) > -1 ? edHex(T[t[0]]) : "");
 if (c) t[2].forEach(function (n) { v.push(n + ": " + c + ";"); });
 });
 if (ED_FONT_CSS[T.font]) v.push("--e-mono: " + ED_FONT_CSS[T.font] + ";", "--e-sans: " + ED_FONT_CSS[T.font] + ";");
@@ -6313,6 +6341,11 @@ var T = edTheme();
 var css = edThemeCSS(T);
 if (tag.textContent !== css) tag.textContent = css;
 var R = document.documentElement.classList;
+var dk = edDark();
+R.toggle("is-ed-dk", dk);
+R.toggle("is-ed-lt", !dk);
+if (edMode()) document.documentElement.setAttribute("data-theme", edMode());
+else document.documentElement.removeAttribute("data-theme");
 R.toggle("is-ed-panels", T.look !== "flat");
 R.toggle("is-ed-bars", T.labels !== "rows");
 R.toggle("is-ed-tiles", T.tiles === "colour");
@@ -6321,10 +6354,16 @@ R.toggle("is-ed-tiles", T.tiles === "colour");
 function edLookOn(node, L) {
 if (!L) return;
 var st = node.style;
-if (edHex(L.bg)) st.background = L.bg;
-if (edHex(L.ink)) {
-st.color = L.ink;
-st.setProperty("--e-ink", L.ink);
+var dk = edDark();
+var bg = edHex(L.bg);
+/* A SECTION'S OWN COLOUR: AS PICKED IN LIGHT MODE; IN DARK MODE A DEEP MIX OF IT, SO IT STAYS RECOGNISABLE WITHOUT GLARING. ITS TEXT ALWAYS READS */
+if (bg) st.background = dk ? "color-mix(in srgb, " + bg + " 28%, var(--e-card))" : bg;
+var ink = dk ? "" : edHex(L.ink) || (bg ? edInkOn(bg) : "");
+if (ink) {
+st.color = ink;
+st.setProperty("--e-ink", ink);
+st.setProperty("--e-line", ink);
+st.setProperty("--e-mute", ink === "#EEEEEA" ? "#B8B8B0" : "#3F3F3A");
 }
 var bc = edHex(L.bc) || "var(--e-line)";
 var bw = (L.bw || 1) + "px solid " + bc;
@@ -6371,7 +6410,13 @@ return '<div class="bd-ed-cus-row"><span class="bd-ed-cus-lab">' + esc(label) + 
 function edOfficeHTML() {
 var T = edTheme();
 var h = '<div class="bd-ed-sec bd-ed-cus" data-cus="office"><div class="bd-ed-head"><span class="bd-ed-label">Office look</span><button class="bd-ed-chip" data-act="ed-reset" data-val="theme">Reset</button></div>';
-h += '<div class="bd-ed-cus-grid">' + ED_THEME.map(function (t) { return edRow(t[1], edColour("theme." + t[0], T[t[0]], t[3])); }).join("") + "</div>";
+var dk = edDark();
+var pre = dk ? "d-" : "";
+var cs = getComputedStyle(document.documentElement);
+var now = function (t) { var v = cs.getPropertyValue(t[2][0]).trim(); return edHex(v) || t[3]; };
+h += edRow("Mode", '<span class="bd-ed-cus-seg">' + [["", "Device"], ["light", "Light"], ["dark", "Dark"]].map(function (o) { return '<button class="bd-ed-chip' + (edMode() === o[0] ? " is-on" : "") + '" data-act="ed-mode" data-val="' + o[0] + '">' + o[1] + "</button>"; }).join("") + "</span>");
+h += '<div class="bd-ed-hint">Colours below are the ' + (dk ? "dark" : "light") + " mode set" + (dk ? " · blank = the built-in dark colours" : "") + ". Switch Mode to set the other one.</div>";
+h += '<div class="bd-ed-cus-grid">' + ED_THEME.map(function (t) { return edRow(t[1], edColour("theme." + pre + t[0], T[pre + t[0]], now(t))); }).join("") + "</div>";
 h += edRow("Look", edSeg("theme.look", T.look || "", [["", "Panels"], ["flat", "Flat"]]));
 h += edRow("Section colour", edSeg("theme.tiles", T.tiles || "", [["", "Soft · family on the bars"], ["colour", "Family colour"]]));
 h += edRow("Layer labels", edSeg("theme.labels", T.labels || "", [["", "Bars"], ["rows", "Rows"]]));
@@ -6391,8 +6436,8 @@ h += edRow("Corners", edSeg("theme.rad", T.rad || "", [["", "Square"], ["4", "4"
 h += edRow("Side space", edSeg("theme.pad", T.pad === 10 ? "" : T.pad || "", [["", "10"], ["14", "14"], ["20", "20"], ["28", "28"]]));
 h += edRow("Row height", edSeg("theme.row", T.row || "", [["26", "26"], ["", "30"], ["36", "36"]]));
 h += '<div class="bd-ed-cus-zones"><span class="bd-ed-label">Each area</span>' + ED_ZONES.map(function (z) {
-var P = "theme.z-" + z[0] + "-";
-var g = function (k) { return T["z-" + z[0] + "-" + k]; };
+var P = "theme." + (edDark() ? "d-" : "") + "z-" + z[0] + "-";
+var g = function (k) { return T[(/^(bg|ink|line)$/.test(k) && edDark() ? "d-" : "") + "z-" + z[0] + "-" + k]; };
 return '<details class="bd-ed-cus-zone"' + (S.open["zone-" + z[0]] ? " open" : "") + ' data-key="zone-' + z[0] + '"><summary>' + esc(z[1]) + "</summary>"
 + edRow("Background", edColour(P + "bg", g("bg"), "#FAFAF8"))
 + edRow("Text", edColour(P + "ink", g("ink"), "#232321"))
@@ -11579,6 +11624,12 @@ S.project.site.layers.trans = val;
 sheetList().forEach(function (k) { if (k) k.lv = ""; });
 } else (f === "arrive" ? sheetList().filter(Boolean) : motionMoving()).forEach(function (k) { k[f] = val; });
 changed();
+},
+"ed-mode": function () {
+if (val) lsSet("bd-ed-mode", val);
+else lsDel("bd-ed-mode");
+edThemeApply();
+render();
 },
 "master-close": function () { S.masterSel = false; S.postMaster = false; render(); },
 "master-sel": function () { S.masterSel = true; S.postMaster = false; S.sheetSel = ""; S.sel = null; if (S.live) endEdit(); render(); },

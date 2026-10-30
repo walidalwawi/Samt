@@ -2440,8 +2440,15 @@ background: transparent;
 }
 html.is-ed-panels:not(.is-ed-tiles) .bd-ed-skinwrap > .bd-ed-sec:not(.is-end):not(.bd-ed-sheetbar),
 html.is-ed-panels:not(.is-ed-tiles) .bd-ed-skinwrap > .bd-ed-sec[data-sec$=":details"]:not(.is-end):not(.bd-ed-sheetbar) {
+--e-ink: var(--e-ink0);
+--e-mute: var(--e-mute0);
+--e-line: var(--e-ink0);
+--e-hair: var(--e-cardline);
+--e-raise: var(--e-field);
+--e-tint: var(--e-chip);
 background: transparent;
 border-top: 1px solid var(--e-cardline);
+color: var(--e-ink0);
 }
 html.is-ed-panels .bd-ed-skinwrap > .bd-ed-sec.bd-ed-sheetbar:not(.is-end) {
 margin: 14px calc(var(--e-pad) + 10px) 2px;
@@ -2734,8 +2741,11 @@ color: var(--e-card);
 :root {
 --e-sheet-row: color-mix(in srgb, var(--e-sheet) 18%, var(--e-card));
 --e-blog-row: color-mix(in srgb, var(--e-blog) 14%, var(--e-card));
---e-mlight: color-mix(in srgb, var(--e-mbar) 9%, #FFFFFF);
---e-mchip: color-mix(in srgb, var(--e-mbar) 16%, #FFFFFF);
+--e-mlight: color-mix(in srgb, var(--e-mbar) 10%, var(--e-card));
+--e-mchip: color-mix(in srgb, var(--e-mbar) 20%, var(--e-card));
+--e-mline: color-mix(in srgb, var(--e-mbar) 26%, var(--e-card));
+--e-ink0: var(--e-ink);
+--e-mute0: var(--e-mute);
 }
 html.is-ed-panels:not(.is-ed-tiles) .bd-ed-group.is-sheet .bd-ed-gbody {
 gap: 3px;
@@ -2746,6 +2756,12 @@ background: var(--e-sheet-row);
 html.is-ed-panels:not(.is-ed-tiles) .bd-ed-group .bd-ed-pg.is-post:not(.is-on) {
 margin-top: 3px;
 background: var(--e-blog-row);
+}
+html.is-ed-panels:not(.is-ed-tiles) .bd-ed-group.is-sheet .bd-ed-pgw:not(.is-blog),
+html.is-ed-panels:not(.is-ed-tiles) .bd-ed-group .bd-ed-pg.is-post {
+--e-ink: var(--e-ink0);
+--e-mute: var(--e-mute0);
+color: var(--e-ink0);
 }
 html.is-ed-panels .bd-ed-group.is-sheet .bd-ed-pgw.is-on:not(.is-blog),
 html.is-ed-panels .bd-ed-group .bd-ed-pg.is-post.is-on {
@@ -2808,11 +2824,9 @@ border-color: var(--e-mbar);
 --e-master: var(--e-mlight);
 --e-tile: var(--e-mlight);
 --e-chip: var(--e-mchip);
---e-cardline: color-mix(in srgb, var(--e-mbar) 22%, #FFFFFF);
---e-hair: color-mix(in srgb, var(--e-mbar) 22%, #FFFFFF);
---e-ink: #141414;
---e-mute: #4A4A55;
-color: #141414;
+--e-cardline: var(--e-mline);
+--e-hair: var(--e-mline);
+--e-field-line: var(--e-mline);
 background: var(--e-mlight);
 border-color: var(--e-mbar);
 }
