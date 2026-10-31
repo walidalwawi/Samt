@@ -733,9 +733,6 @@
    },
    "custom": [],
    "look": {
-    "sheet:details": {
-     "bg": "#f2e500"
-    },
     "site:sheet-motion": {
      "bg": "#3a87fe",
      "bw": 4,
@@ -751,7 +748,6 @@
    },
    "theme": {
     "mbar": "#0061fe",
-    "lbw": 32,
     "size": 11,
     "headCase": "caps",
     "z-rail-bg": "#ff6250",
@@ -768,7 +764,6 @@
     "hair": "#333333",
     "z-rail-rad": 8,
     "tint": "#ff4015",
-    "mark": "#000000",
     "d-tint": "#b51a00",
     "d-z-right-rad": 8,
     "d-z-right-size": 14,
@@ -776,7 +771,10 @@
     "z-right-size": 13,
     "z-right-row": 36,
     "z-right-pad": 16,
-    "d-well": "#000000"
+    "d-well": "#000000",
+    "d-z-left-row": 36,
+    "row": 26,
+    "gap": 0
    }
   },
   "followV1": true,
