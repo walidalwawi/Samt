@@ -17,10 +17,10 @@ async def run():
         ev = pg.evaluate
         # the Blog tab sits with the Master tabs and the tool is a pad
         await pg.click('#bd-left [data-act=master-sel]'); await pg.wait_for_timeout(300)
-        ok('master: four tabs, Styles Motion Site Blog', await pg.locator('#bd-right [data-act=master-tab]').count() == 4)
+        ok('master: three tabs, Site Blog Blocks', await pg.locator('#bd-right [data-act=master-tab]').count() == 3)
         ok('master: no Done button, no About line', await pg.locator('#bd-right [data-act=master-done]').count() == 0)
         await pg.click('#bd-right [data-act=master-tab][data-val=blog]'); await pg.wait_for_timeout(400)
-        ok('master: the Blog tab shows All posts · master and keeps the four tabs', await pg.locator('#bd-right [data-act=master-tab]').count() == 4 and await pg.locator('#bd-right .is-pf, #bd-right .bd-ed-pfollow').count() == 1)
+        ok('master: the Blog tab shows All posts · master and keeps the three tabs', await pg.locator('#bd-right [data-act=master-tab]').count() == 3 and await pg.locator('#bd-right .is-pf, #bd-right .bd-ed-pfollow').count() == 1)
         ok('blog tool: a pad of five buttons (up, left, own, right, down)', await pg.locator('#bd-right .bd-ed-padb').count() == 5)
         await pg.click('#bd-right .bd-ed-padb.is-r'); await pg.wait_for_timeout(300)
         ok('blog tool: Right is saved on the site', await ev("S.project.site.postGo.side === 'right'"))

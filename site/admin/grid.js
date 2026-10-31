@@ -5649,7 +5649,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#0f766e";
+var BD_BUILD = "#0ea5e9";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -8694,9 +8694,63 @@ var cur = insEl();
 if (cur && node.contains(cur) && S.ins.block === e.id) return;
 S.ins = { path: insPath(node), block: e.id, scope: S.ins ? S.ins.scope : "one", where: S.ins ? S.ins.where : "site" };
 }
+/* EVERY SETTINGS PANEL OPENS LIKE MASTER: A SPINE IN ITS FAMILY COLOUR (VERTICAL LABEL) JOINED TO A FRAMED, LIGHTLY TINTED CARD OF ONE FIXED WIDTH. SHEET + ITS PAGES = YELLOW, BLOG + ITS POSTS = GREEN, ANYTHING ELSE = GREY, MASTER = ITS BLUE BAR (THE PAGES LIST FOLDS INTO IT) */
+function spineNow() {
+if (!S.project) return null;
+var s = S.project.site;
+var pg = curPage();
+var e = selEl();
+if (S.inspect) return { f: "plain", label: "Inspect" };
+if (S.sheetSel && !e) {
+var k = sheetList().filter(function (x) { return x.id === S.sheetSel; })[0];
+return { f: "sheet", label: "Sheet — " + ((k && k.name) || "Sheet") };
+}
+if (!pg) return null;
+var w = layersOn() && !pg.parent ? sheetOf(pg.id) : null;
+var on = !!(w && w.k > -1);
+var blog = pg.parent ? S.project.pages[pg.parent] : null;
+var f = pg.parent || pg.blog ? "blog" : on ? "sheet" : "plain";
+var lab = pg.parent ? "Post — " + (pg.title || "Post") + (blog ? "  ·  in " + (blog.title || "Blog") : "") : pg.blog ? "Blog — " + (pg.title || "Blog") + (on ? "  ·  on " + (w.sheet.name || "Sheet") : "") : pg.kind === "pin" ? "Header & footer — " + (pg.title || "") : "Page — " + (pg.title || "Page") + (on ? "  ·  on " + (w.sheet.name || "Sheet") : "");
+var go = blog ? { act: "page", id: blog.id } : on ? { act: "sheet-sel", id: w.sheet.id } : null;
+if (e) {
+lab = "Block — " + (BD_TYPE_NAME[e.type] || e.type) + "  ·  " + (pg.title || "Page");
+go = { act: "deselect", id: "" };
+}
+return { f: f, label: lab, go: go };
+}
+function spineSync() {
+var app = $("bd-app");
+if (!app) return;
+var sp = $("bd-spine");
+var info = app.classList.contains("is-master") ? null : spineNow();
+["sheet", "blog", "plain"].forEach(function (x) { app.classList.toggle("is-fam-" + x, !!info && info.f === x); });
+app.classList.toggle("is-fam", !!info);
+if (!info) {
+if (sp) sp.hidden = true;
+return;
+}
+if (!sp) {
+sp = document.createElement("button");
+sp.id = "bd-spine";
+sp.className = "bd-ed-spine";
+app.insertBefore(sp, $("bd-right"));
+}
+sp.hidden = false;
+if (info.go) {
+sp.setAttribute("data-act", info.go.act);
+sp.setAttribute("data-id", info.go.id);
+sp.title = info.go.act === "deselect" ? "Back to the page" : info.go.act === "page" ? "Open the blog" : "Open the sheet";
+} else {
+sp.removeAttribute("data-act");
+sp.removeAttribute("data-id");
+sp.title = "";
+}
+sp.innerHTML = "<span>" + esc(info.label) + (info.go ? "  ↗" : "") + "</span>";
+}
 function renderRight() {
 var R = $("bd-right");
 R.classList.toggle("is-open", S.rightOpen);
+requestAnimationFrame(spineSync);
 if (!S.project) {
 R.innerHTML = "";
 return;
@@ -9853,6 +9907,7 @@ window.__bdInkCache = window.__bdInkCache || {};
 function wideScreen() {
 return window.innerWidth > 980;
 }
+var PANEL_W = 420;
 function applyPanels() {
 var app = $("bd-app");
 var wide = wideScreen();
@@ -9860,7 +9915,9 @@ var hl = wide && S.hideLeft;
 var hr = wide && S.hideRight;
 app.classList.toggle("is-no-left", !!hl);
 app.classList.toggle("is-no-right", !!hr);
-app.style.setProperty("--e-rw", "380px");
+/* ONE WIDTH FOR EVERY SETTINGS PANEL: THE CARD IS ALWAYS PANEL_W; THE COLUMN ALSO HOLDS THE 32PX SPINE */
+app.style.setProperty("--e-rw", (PANEL_W + 32) + "px");
+app.style.setProperty("--e-pw", PANEL_W + "px");
 document.querySelectorAll('[data-act="toggle-left"]').forEach(function (b) { b.classList.toggle("is-on", wide ? !hl : !!S.leftOpen); b.setAttribute("aria-label", hl ? "Show left panel" : "Hide left panel"); });
 document.querySelectorAll('[data-act="toggle-right"]').forEach(function (b) { b.classList.toggle("is-on", wide ? !hr : !!S.rightOpen); b.setAttribute("aria-label", hr ? "Show right panel" : "Hide right panel"); });
 requestAnimationFrame(fitSheet);

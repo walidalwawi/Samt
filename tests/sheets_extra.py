@@ -190,7 +190,7 @@ async def run():
         await ev("(function(){ var k = sheetList().filter(function(k){return k.id==='index'})[0]; k.axis='x'; k.main=''; k.hover='lift'; k.box={}; k.rest='still'; sheetPanes(k).forEach(function(q){ q.box={}; }); S.mode='desktop'; S.sheetSel=k.id; S.preview=false; S.sel=null; render(); })()"); await pg.wait_for_timeout(600)
         SHB = "document.getElementById('bd-sheet').shadowRoot"
         RT = "document.getElementById('bd-right')"
-        ok('layout: the panel is the same width for a sheet and a page', abs(await ev(f"{RT}.getBoundingClientRect().width") - 380) < 2)
+        ok('layout: the panel is the same width for a sheet and a page', abs(await ev(f"{RT}.getBoundingClientRect().width") - 420) < 2)
         ok('layout: the drawing has 4 sheet handles, no page-inset handles and no other sheets drawn', await ev(f"{RT}.querySelectorAll('svg.bd-lay [data-lh=sheet]').length") == 4 and await ev(f"{RT}.querySelectorAll('svg.bd-lay [data-lh=page]').length") == 0 and await ev(f"{RT}.querySelectorAll('svg.bd-lay [stroke-dasharray=\"4 3\"][fill-opacity]').length") == 0)
         ok('canvas: four halves, the window on one, three to tap', await ev(f"{RT}.querySelectorAll('svg.bd-lay [data-act=lay-cell]:not([data-swap])').length") == 3)
         ok('canvas: no seam, no ▽, no ▼ any more', await ev(f"{RT}.querySelectorAll('svg.bd-lay [data-lh=seam], svg.bd-lay [data-lh=away], svg.bd-lay [data-lh=win]').length") == 0)
