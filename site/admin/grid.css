@@ -2807,18 +2807,38 @@ background: var(--e-ink);
 color: var(--e-card);
 }
 
-/* MASTER OPEN — THE BLUE BAR STAYS, THE SETTINGS OPEN BESIDE IT IN LIGHT BLUE, THE PAGES LIST FOLDS AWAY */
-.bd-ed-app.is-master {
-grid-template-columns: 44px var(--e-pw, 420px) minmax(0, 1fr);
+/* MASTER OPEN — THE MASTER PANEL SITS FAR LEFT, ITS BLUE SPINE ON ITS RIGHT EDGE ("Master — <site> · close"), THE PAGES LIST STAYS OPEN BESIDE IT; THE CARD IS --e-pw LIKE EVERY OTHER PANEL */
+/* EVERY PANEL (MASTER INCLUDED) SITS IN THE SAME PLACE: SETTINGS FAR LEFT, SPINE ON ITS RIGHT EDGE, PAGES LIST BESIDE IT, THEN THE CANVAS — NOTHING MOVES WHEN YOU SWITCH PANELS */
+.bd-ed-app.is-master,
+.bd-ed-app.is-fam,
+html.is-ed-panels .bd-ed-app.is-master,
+html.is-ed-panels .bd-ed-app.is-fam {
+grid-template-columns: var(--e-rw, 452px) 300px minmax(0, 1fr);
+grid-template-areas: "top top top" "right left canvas" "code code code";
 }
-html.is-ed-panels .bd-ed-app.is-master {
-grid-template-columns: 44px calc(var(--e-pw, 420px) - 12px) minmax(0, 1fr);
+.bd-ed-app.is-master.has-wide-left,
+.bd-ed-app.is-fam.has-wide-left,
+html.is-ed-panels .bd-ed-app.is-master.has-wide-left,
+html.is-ed-panels .bd-ed-app.is-fam.has-wide-left {
+grid-template-columns: var(--e-rw, 452px) minmax(420px, 42%) minmax(0, 1fr);
 }
-.bd-ed-app.is-master .bd-ed-left {
-padding: 0;
-overflow: hidden;
-background: var(--e-mbar);
-border-color: var(--e-mbar);
+.bd-ed-app.is-master.is-no-left,
+.bd-ed-app.is-fam.is-no-left,
+html.is-ed-panels .bd-ed-app.is-master.is-no-left,
+html.is-ed-panels .bd-ed-app.is-fam.is-no-left {
+grid-template-columns: var(--e-rw, 452px) 0 minmax(0, 1fr);
+}
+.bd-ed-app.is-master.is-no-right,
+.bd-ed-app.is-fam.is-no-right,
+html.is-ed-panels .bd-ed-app.is-master.is-no-right,
+html.is-ed-panels .bd-ed-app.is-fam.is-no-right {
+grid-template-columns: 0 300px minmax(0, 1fr);
+}
+.bd-ed-app.is-master.is-no-left.is-no-right,
+.bd-ed-app.is-fam.is-no-left.is-no-right,
+html.is-ed-panels .bd-ed-app.is-master.is-no-left.is-no-right,
+html.is-ed-panels .bd-ed-app.is-fam.is-no-left.is-no-right {
+grid-template-columns: 0 0 minmax(0, 1fr);
 }
 .bd-ed-app.is-master .bd-ed-right {
 --e-card: var(--e-mlight);
@@ -2830,36 +2850,23 @@ border-color: var(--e-mbar);
 --e-cardline: var(--e-mline);
 --e-hair: var(--e-mline);
 --e-field-line: var(--e-mline);
+margin-left: 0;
+margin-right: var(--e-spw);
 background: var(--e-mlight);
-border-color: var(--e-mbar);
-}
-.bd-ed-mbar.is-open {
-flex: 1;
-width: 100%;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: flex-start;
-padding: 16px 0;
-border: 0;
-background: var(--e-mbar);
-color: var(--e-mbar-ink);
-font-size: 11.5px;
-letter-spacing: 0.06em;
-cursor: pointer;
-}
-.bd-ed-mbar.is-open span {
-writing-mode: vertical-rl;
-transform: rotate(180deg);
-white-space: nowrap;
-}
-html.is-ed-panels .bd-ed-app.is-master .bd-ed-left {
+border: 2px solid var(--e-mbar);
+border-right: 0;
 border-radius: 4px 0 0 4px;
 }
-html.is-ed-panels .bd-ed-app.is-master .bd-ed-right {
-margin-left: -12px;
-border-left: 0;
+.bd-ed-app.is-master .bd-ed-spine {
+display: flex;
+justify-self: end;
 border-radius: 0 4px 4px 0;
+background: var(--e-mbar);
+color: var(--e-mbar-ink, #ffffff);
+cursor: pointer;
+}
+.bd-ed-app.is-master .bd-ed-tree > .bd-ed-mbar {
+visibility: hidden;
 }
 
 /* CUSTOMIZE · EACH AREA */
@@ -3036,7 +3043,7 @@ padding-left: 24px;
 }
 .bd-ed-spine {
 grid-area: right;
-justify-self: start;
+justify-self: end;
 align-self: stretch;
 z-index: 3;
 width: var(--e-spw);
@@ -3048,7 +3055,7 @@ justify-content: flex-start;
 padding: 16px 0;
 overflow: hidden;
 border: 0;
-border-radius: 4px 0 0 4px;
+border-radius: 0 4px 4px 0;
 background: var(--e-fam);
 color: var(--e-fam-ink);
 font: inherit;
@@ -3079,24 +3086,78 @@ text-overflow: ellipsis;
 --e-cardline: var(--e-famline);
 --e-hair: var(--e-famline);
 --e-field-line: var(--e-famline);
-margin-left: var(--e-spw);
+margin-left: 0;
+margin-right: var(--e-spw);
 background: var(--e-famlight);
 border: 2px solid var(--e-fam);
-border-left: 0;
-border-radius: 0 4px 4px 0;
+border-right: 0;
+border-radius: 4px 0 0 4px;
 }
-.bd-ed-app.is-no-right .bd-ed-spine,
-.bd-ed-app.is-master .bd-ed-spine {
+.bd-ed-app.is-no-right .bd-ed-spine {
+display: none;
+}
+
+/* THE PANEL HEAD — SAME ON EVERY PANEL */
+.bd-ed-phead {
+position: sticky;
+top: 0;
+z-index: 4;
+display: grid;
+grid-template-columns: minmax(0, 1fr) auto;
+grid-template-areas: "eye chip" "title chip";
+align-items: center;
+column-gap: 10px;
+row-gap: 2px;
+padding: 14px calc(var(--e-pad) + 10px) 12px;
+background: var(--e-card);
+border-bottom: 1px solid var(--e-hair);
+color: var(--e-ink);
+}
+.bd-ed-peye {
+grid-area: eye;
+font-size: 10px;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(--e-mute);
+}
+.bd-ed-ptitle {
+grid-area: title;
+overflow: hidden;
+font-size: 17px;
+font-weight: 600;
+line-height: 1.25;
+white-space: nowrap;
+text-overflow: ellipsis;
+}
+.bd-ed-phead > .bd-ed-chip {
+grid-area: chip;
+}
+.bd-ed-right .bd-ed-sec > .bd-ed-head:has(+ .bd-ed-tabs) > .bd-ed-title,
+.bd-ed-right .bd-ed-sec > .bd-ed-head:has(> [data-act="deselect"]) {
 display: none;
 }
 
 @media (max-width: 980px) {
+.bd-ed-app.is-master,
+.bd-ed-app.is-fam,
+html.is-ed-panels .bd-ed-app.is-master,
+html.is-ed-panels .bd-ed-app.is-fam,
+html.is-ed-panels .bd-ed-app.is-fam.is-no-left,
+html.is-ed-panels .bd-ed-app.is-fam.is-no-right,
+html.is-ed-panels .bd-ed-app.is-fam.has-wide-left {
+grid-template-columns: minmax(0, 1fr);
+grid-template-areas: "top" "canvas" "code";
+}
+.bd-ed-app.is-master .bd-ed-right {
+margin-right: 0;
+border-right: 2px solid var(--e-mbar);
+}
 .bd-ed-spine {
 display: none;
 }
 .bd-ed-app.is-fam .bd-ed-right {
-margin-left: 0;
-border-left: 2px solid var(--e-fam);
+margin-right: 0;
+border-right: 2px solid var(--e-fam);
 }
 html.is-ed-panels .bd-ed-app {
 gap: 0;

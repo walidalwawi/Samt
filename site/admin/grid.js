@@ -5649,7 +5649,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#0ea5e9";
+var BD_BUILD = "#9333ea";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -8336,13 +8336,7 @@ if (S.leftTab !== "code") S.leftTab = "pages";
 var ET = edTheme();
 var mOpen = !!(S.masterSel || S.postMaster) && S.leftTab !== "code" && ET.labels !== "rows" && ET.master !== "row";
 $("bd-app").classList.toggle("is-master", mOpen);
-if (mOpen) {
-$("bd-app").classList.remove("has-wide-left");
-L.classList.remove("has-codepane");
-L.innerHTML = '<button class="bd-ed-mbar is-open" data-act="master-close" title="Close Master · back to the pages"><span>Master — ' + esc(S.project.site.name || "Site") + "  ·  close ✕</span></button>";
-requestAnimationFrame(fitSheet);
-return;
-}
+/* MASTER OPEN: THE MASTER PANEL MOVES TO THE FAR LEFT WITH ITS BLUE SPINE ON ITS RIGHT EDGE; THE PAGES LIST STAYS OPEN BESIDE IT (grid areas swap in grid.css) */
 var h = S.leftTab === "code" ? tabsHTML("left", S.leftTab) : layersBarHTML();
 $("bd-app").classList.toggle("has-wide-left", S.leftTab === "code");
 L.classList.toggle("has-codepane", S.leftTab === "code");
@@ -8722,9 +8716,9 @@ function spineSync() {
 var app = $("bd-app");
 if (!app) return;
 var sp = $("bd-spine");
-var info = app.classList.contains("is-master") ? null : spineNow();
-["sheet", "blog", "plain"].forEach(function (x) { app.classList.toggle("is-fam-" + x, !!info && info.f === x); });
-app.classList.toggle("is-fam", !!info);
+var info = app.classList.contains("is-master") ? { f: "master", label: "Master — " + (S.project.site.name || "Site") + "  ·  close ✕", go: { act: "master-close", id: "" } } : spineNow();
+["sheet", "blog", "plain", "master"].forEach(function (x) { app.classList.toggle("is-fam-" + x, !!info && info.f === x); });
+app.classList.toggle("is-fam", !!info && info.f !== "master");
 if (!info) {
 if (sp) sp.hidden = true;
 return;
@@ -8739,13 +8733,42 @@ sp.hidden = false;
 if (info.go) {
 sp.setAttribute("data-act", info.go.act);
 sp.setAttribute("data-id", info.go.id);
-sp.title = info.go.act === "deselect" ? "Back to the page" : info.go.act === "page" ? "Open the blog" : "Open the sheet";
+sp.title = info.go.act === "master-close" ? "Close Master" : info.go.act === "deselect" ? "Back to the page" : info.go.act === "page" ? "Open the blog" : "Open the sheet";
 } else {
 sp.removeAttribute("data-act");
 sp.removeAttribute("data-id");
 sp.title = "";
 }
-sp.innerHTML = "<span>" + esc(info.label) + (info.go ? "  ↗" : "") + "</span>";
+sp.innerHTML = "<span>" + esc(info.label) + (info.go && info.f !== "master" ? "  ↗" : "") + "</span>";
+}
+/* THE SAME HEAD ON EVERY PANEL: KIND (SMALL CAPS), NAME (LARGE), ONE ACTION CHIP. MASTER'S OWN "Master" TITLE AND A BLOCK'S OWN TITLE + DONE ROW ARE HIDDEN IN ITS FAVOUR (grid.css) */
+function pheadHTML() {
+var s = S.project.site;
+var pg = curPage();
+var e = selEl();
+var kind = "";
+var name = "";
+var chip = "";
+if (S.masterSel || S.postMaster) {
+kind = S.postMaster ? "Master · All posts" : "Master";
+name = s.name || "Site";
+chip = '<button class="bd-ed-chip" data-act="master-close">Close</button>';
+} else if (S.inspect) {
+kind = "Inspect";
+name = "Tap anything on the page";
+} else if (e) {
+kind = "Block · " + (pg ? pg.title || "Page" : "");
+name = BD_TYPE_NAME[e.type] || e.type;
+chip = '<button class="bd-ed-chip" data-act="deselect">Done</button>';
+} else if (S.sheetSel) {
+var k = sheetList().filter(function (x) { return x.id === S.sheetSel; })[0];
+kind = "Sheet";
+name = (k && k.name) || "Sheet";
+} else if (pg) {
+kind = pg.parent ? "Post" : pg.blog ? "Blog" : pg.kind === "pin" ? "Header & footer" : "Page";
+name = pg.title || kind;
+} else return "";
+return '<div class="bd-ed-phead"><span class="bd-ed-peye">' + esc(kind) + '</span><span class="bd-ed-ptitle">' + esc(name) + "</span>" + chip + "</div>";
 }
 function renderRight() {
 var R = $("bd-right");
@@ -8766,11 +8789,12 @@ return;
 if (rtabs) {
 renderRightInner(R);
 arrApply(R);
-R.insertAdjacentHTML("afterbegin", rtabs);
+R.insertAdjacentHTML("afterbegin", rtabs + pheadHTML());
 return;
 }
 renderRightInner(R);
 arrApply(R);
+R.insertAdjacentHTML("afterbegin", pheadHTML());
 }
 function renderRightInner(R) {
 if (S.inspect) {
