@@ -5649,7 +5649,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#9333ea";
+var BD_BUILD = "#db2777";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;

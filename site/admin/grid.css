@@ -2808,36 +2808,26 @@ color: var(--e-card);
 }
 
 /* MASTER OPEN — THE MASTER PANEL SITS FAR LEFT, ITS BLUE SPINE ON ITS RIGHT EDGE ("Master — <site> · close"), THE PAGES LIST STAYS OPEN BESIDE IT; THE CARD IS --e-pw LIKE EVERY OTHER PANEL */
-/* EVERY PANEL (MASTER INCLUDED) SITS IN THE SAME PLACE: SETTINGS FAR LEFT, SPINE ON ITS RIGHT EDGE, PAGES LIST BESIDE IT, THEN THE CANVAS — NOTHING MOVES WHEN YOU SWITCH PANELS */
+/* MASTER SITS LEFT OF THE PAGES LIST (SPINE ON ITS RIGHT EDGE); EVERY OTHER PANEL SITS RIGHT OF THE PAGES LIST (SPINE ON ITS LEFT EDGE). BOTH CARDS ARE --e-pw WIDE */
 .bd-ed-app.is-master,
-.bd-ed-app.is-fam,
-html.is-ed-panels .bd-ed-app.is-master,
-html.is-ed-panels .bd-ed-app.is-fam {
+html.is-ed-panels .bd-ed-app.is-master {
 grid-template-columns: var(--e-rw, 452px) 300px minmax(0, 1fr);
 grid-template-areas: "top top top" "right left canvas" "code code code";
 }
 .bd-ed-app.is-master.has-wide-left,
-.bd-ed-app.is-fam.has-wide-left,
-html.is-ed-panels .bd-ed-app.is-master.has-wide-left,
-html.is-ed-panels .bd-ed-app.is-fam.has-wide-left {
+html.is-ed-panels .bd-ed-app.is-master.has-wide-left {
 grid-template-columns: var(--e-rw, 452px) minmax(420px, 42%) minmax(0, 1fr);
 }
 .bd-ed-app.is-master.is-no-left,
-.bd-ed-app.is-fam.is-no-left,
-html.is-ed-panels .bd-ed-app.is-master.is-no-left,
-html.is-ed-panels .bd-ed-app.is-fam.is-no-left {
+html.is-ed-panels .bd-ed-app.is-master.is-no-left {
 grid-template-columns: var(--e-rw, 452px) 0 minmax(0, 1fr);
 }
 .bd-ed-app.is-master.is-no-right,
-.bd-ed-app.is-fam.is-no-right,
-html.is-ed-panels .bd-ed-app.is-master.is-no-right,
-html.is-ed-panels .bd-ed-app.is-fam.is-no-right {
+html.is-ed-panels .bd-ed-app.is-master.is-no-right {
 grid-template-columns: 0 300px minmax(0, 1fr);
 }
 .bd-ed-app.is-master.is-no-left.is-no-right,
-.bd-ed-app.is-fam.is-no-left.is-no-right,
-html.is-ed-panels .bd-ed-app.is-master.is-no-left.is-no-right,
-html.is-ed-panels .bd-ed-app.is-fam.is-no-left.is-no-right {
+html.is-ed-panels .bd-ed-app.is-master.is-no-left.is-no-right {
 grid-template-columns: 0 0 minmax(0, 1fr);
 }
 .bd-ed-app.is-master .bd-ed-right {
@@ -3043,7 +3033,7 @@ padding-left: 24px;
 }
 .bd-ed-spine {
 grid-area: right;
-justify-self: end;
+justify-self: start;
 align-self: stretch;
 z-index: 3;
 width: var(--e-spw);
@@ -3055,7 +3045,7 @@ justify-content: flex-start;
 padding: 16px 0;
 overflow: hidden;
 border: 0;
-border-radius: 0 4px 4px 0;
+border-radius: 4px 0 0 4px;
 background: var(--e-fam);
 color: var(--e-fam-ink);
 font: inherit;
@@ -3086,12 +3076,12 @@ text-overflow: ellipsis;
 --e-cardline: var(--e-famline);
 --e-hair: var(--e-famline);
 --e-field-line: var(--e-famline);
-margin-left: 0;
-margin-right: var(--e-spw);
+margin-left: var(--e-spw);
+margin-right: 0;
 background: var(--e-famlight);
 border: 2px solid var(--e-fam);
-border-right: 0;
-border-radius: 4px 0 0 4px;
+border-left: 0;
+border-radius: 0 4px 4px 0;
 }
 .bd-ed-app.is-no-right .bd-ed-spine {
 display: none;
@@ -3139,12 +3129,7 @@ display: none;
 
 @media (max-width: 980px) {
 .bd-ed-app.is-master,
-.bd-ed-app.is-fam,
-html.is-ed-panels .bd-ed-app.is-master,
-html.is-ed-panels .bd-ed-app.is-fam,
-html.is-ed-panels .bd-ed-app.is-fam.is-no-left,
-html.is-ed-panels .bd-ed-app.is-fam.is-no-right,
-html.is-ed-panels .bd-ed-app.is-fam.has-wide-left {
+html.is-ed-panels .bd-ed-app.is-master {
 grid-template-columns: minmax(0, 1fr);
 grid-template-areas: "top" "canvas" "code";
 }
@@ -3156,8 +3141,8 @@ border-right: 2px solid var(--e-mbar);
 display: none;
 }
 .bd-ed-app.is-fam .bd-ed-right {
-margin-right: 0;
-border-right: 2px solid var(--e-fam);
+margin-left: 0;
+border-left: 2px solid var(--e-fam);
 }
 html.is-ed-panels .bd-ed-app {
 gap: 0;
