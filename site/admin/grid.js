@@ -3568,7 +3568,7 @@ function sheetModel() {
 return sheetList().map(function (k) {
 var pids = sheetPanes(k).map(function (q) { return q.id; });
 var pe = postEdges(k);
-return { rest: k.rest || "open", covers: k.covers === "some" ? (k.coverPages || []).slice() : null, panes: pids, main: Math.max(0, pids.indexOf(k.main)), pin: pids.indexOf(sheetPin(k)), pe: pe ? pe.d : "", blogs: pe ? sheetBlogs(k) : [] };
+return { rest: k.rest || "open", covers: k.covers === "some" ? (k.coverPages || []).slice() : null, panes: pids, main: Math.max(0, pids.indexOf(k.main)), pin: pids.indexOf(sheetPin(k)), pe: pe ? pe.d : "", blogs: pe ? sheetBlogs(k) : [], out: k.out || "peek", bl: k.out === "posts" ? sheetBlogs(k) : [] };
 });
 }
 function sheetFocus(page) {
@@ -3591,6 +3591,8 @@ var pane = p ? p.i : k.main || 0;
 var cov = !k.covers || k.covers.indexOf(f.id) > -1 || k.panes.indexOf(f.id) > -1;
 if (f.k === n) return { st: "open", i: f.i };
 if (k.pin > -1) return { st: "open", i: k.main };
+/* "STRIP ONLY FOR ITS POSTS" (Walid, 1 Nov): A POST OF THIS SHEET'S BLOG OPENS → THE SHEET LEAVES A STRIP YOU CAN TAP TO COME BACK; ANY OTHER PAGE UNDERNEATH → IT SLIDES FULLY AWAY */
+if (k.out === "posts" && f.k < 0 && k.rest !== "still") return { st: f.par && (k.bl || []).indexOf(f.par) > -1 ? "tuck" : "hidden", i: pane };
 /* THE BLOG ANIMATION TOOL: A POST OF THIS SHEET'S BLOG OPENS UNDERNEATH, SO THE SHEET LEAVES TO THE CHOSEN SIDE */
 if (k.pe && f.k < 0 && f.par && (k.blogs || []).indexOf(f.par) > -1) return { st: "hidden", i: pane };
 /* A STILL SHEET BELOW THE PAGE THAT OPENS STAYS WHERE IT IS: THAT PAGE ALREADY LIES OVER IT */
@@ -3700,7 +3702,7 @@ var onPage = pl.st === "peek" && strip ? strip : panes[pl.i] || strip;
 var pe = postEdges(k);
 var fq = S.project.pages[f.id];
 var usePe = !!(pe && pl.st !== "open" && fq && fq.parent && sheetBlogs(k).indexOf(fq.parent) > -1);
-return '<section class="bd-ly-sheet bd-ly-k' + (strip ? "" : " is-paper") + ' is-e-' + esc(usePe ? pe.d : k.edge || "left") + " is-em-" + esc(usePe ? pe.m : k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + (onPage ? " is-on-" + onPage.id : "") + (k.lv ? " is-lv-" + esc(k.lv) : "") + (k.hover === "lift" ? " is-hv-lift" : "") + (k.arrive === "fade" || k.arrive === "cut" ? " is-ap-" + k.arrive : "") + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-edge="' + esc(k.edge || "left") + '" data-edge-m="' + esc(k.edgeM || "top") + '"' + (pe ? ' data-blogs="' + esc(sheetBlogs(k).join(" ")) + '" data-pe="' + pe.d + '" data-pe-m="' + pe.m + '"' : "") + ' data-main="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(k.main)) + '" data-main-m="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(sheetMain(k, true))) + '" data-pin="' + panes.map(function (q) { return q.id; }).indexOf(sheetPin(k)) + '" data-pin-m="' + panes.map(function (q) { return q.id; }).indexOf(sheetPin(k, true)) + '"' + (sheetRev(k) ? ' data-rev-m="1"' : "") + ' data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
+return '<section class="bd-ly-sheet bd-ly-k' + (strip ? "" : " is-paper") + ' is-e-' + esc(usePe ? pe.d : k.edge || "left") + " is-em-" + esc(usePe ? pe.m : k.edgeM || "top") + " is-r-" + esc(k.rest || "open") + " is-st-" + pl.st + (onPage ? " is-on-" + onPage.id : "") + (k.lv ? " is-lv-" + esc(k.lv) : "") + (k.hover === "lift" ? " is-hv-lift" : "") + (k.arrive === "fade" || k.arrive === "cut" ? " is-ap-" + k.arrive : "") + '" data-k="' + esc(k.id) + '" data-rest="' + esc(k.rest || "open") + '" data-edge="' + esc(k.edge || "left") + '" data-edge-m="' + esc(k.edgeM || "top") + '"' + (pe ? ' data-blogs="' + esc(sheetBlogs(k).join(" ")) + '" data-pe="' + pe.d + '" data-pe-m="' + pe.m + '"' : "") + (k.out === "posts" ? ' data-out="posts" data-bl="' + esc(sheetBlogs(k).join(" ")) + '"' : "") + ' data-main="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(k.main)) + '" data-main-m="' + Math.max(0, panes.map(function (q) { return q.id; }).indexOf(sheetMain(k, true))) + '" data-pin="' + panes.map(function (q) { return q.id; }).indexOf(sheetPin(k)) + '" data-pin-m="' + panes.map(function (q) { return q.id; }).indexOf(sheetPin(k, true)) + '"' + (sheetRev(k) ? ' data-rev-m="1"' : "") + ' data-covers="' + (k.covers === "some" ? esc((k.coverPages || []).join(",")) : "all") + '" aria-label="' + esc(k.name || "Sheet") + '">\n'
 + (!strip && sheetBlur(k) > 0 ? '<div class="bd-ly-blur" aria-hidden="true"></div>\n' : "") + '<div class="bd-ly-body">\n<div class="bd-ly-track is-ax-' + sheetAx(k) + " is-axm-" + sheetAx(k, true) + '" style="--n: ' + Math.max(1, panes.length) + "; --i: " + pl.i + ';">\n'
 + panes.map(function (q, j) {
 return '<div class="bd-ly-pane' + (j === pl.i ? " is-on" : "") + '"' + "" + ' data-page="' + q.id + '" data-slug="' + esc(q.slug) + '" data-title="' + esc(q.title) + '">\n<div class="bd-ly-paper">\n' + layerBody(q, ctx) + "\n</div>\n</div>";
@@ -3771,6 +3773,16 @@ o[e] += parseFloat(phone ? k.peekM : k.peek) || 0;
 return o;
 }
 /* WHAT THE PINNED STRIPS ABOVE A SHEET TAKE FROM EACH EDGE, AS DRAWN (PX). A PAPER SHEET UNDER A PINNED STRIP STARTS BELOW IT: ITS PAPER MARGIN ON THAT EDGE IS THE STRIP'S REAL SIZE (MEASURED BY THE RUNTIME AS --bd-pin-<side>) PLUS ITS OWN MARGIN, AND ITS PAGES DON'T ADD THE STRIP AGAIN AS PADDING, SO THEIR CONTENT STARTS WHERE A PAGE UNDERNEATH STARTS (Walid, 1 Nov) */
+/* WHAT AN OPEN SHEET LEAVES SHOWING WHEN IT STEPS BACK: ITS OWN STRIP PAST THE STRIPS ABOVE IT ON THAT EDGE. A PINNED STRIP COUNTS AT ITS REAL (MEASURED) SIZE, SO THE STRIP NEVER HIDES UNDER IT */
+function sliverLen(k, n, phone) {
+if (k.out === "hide") return "-12px";
+var own = parseFloat(phone ? k.sliverM : k.sliver) || 0;
+if (k.rest === "peek") return own + "px";
+var e = (phone ? k.edgeM : k.edge) || "left";
+var all = sheetInsets(n, phone)[e] || 0;
+var pin = sheetPinAbove(n, phone)[e] || 0;
+return pin ? "calc(" + (own + all - pin) + "px + " + pinEdgeLen(e, pin) + ")" : (own + all) + "px";
+}
 function sheetPinAbove(upto, phone) {
 var o = { left: 0, right: 0, top: 0, bottom: 0 };
 sheetList().forEach(function (k, n) {
@@ -4059,7 +4071,7 @@ var sel = '.bd-ly-k[data-k="' + k.id + '"]';
 var peek = parseFloat(phone ? k.peekM : k.peek) || 0;
 var kmt = sheetStrip(k) ? boxLen(boxVal(k.box || {}, "mt", phone), "t") : null;
 var kbase = sheetBoxIns(k, n, phone).top;
-var d = [kmt != null ? "--k-mt: " + kmt + ";" : "", "top: " + (kmt != null ? "calc(" + kbase + "px + var(--k-mt) - var(--k-up, 0px))" : ins.top) + ";", "right: " + ins.right + ";", "bottom: " + ins.bottom + ";", "left: " + ins.left + ";", "--k-peek: " + peek + "px;", "--k-sliver: " + (k.out === "hide" ? -12 : (parseFloat(phone ? k.sliverM : k.sliver) || 0) + (k.rest === "peek" ? 0 : sheetInsets(n, phone)[(phone ? k.edgeM : k.edge) || "left"])) + "px;", "--k-strip: " + (sheetStrip(k) ? peek : 0) + "px;", "--k-nudge: " + (k.hover === "nudge" ? parseFloat(k.nudge) || 14 : parseFloat(k.nudge) || 0) + "px;", "box-shadow: " + (sheetStrip(k) ? sheetLine(k, phone) : "none") + ";"];
+var d = [kmt != null ? "--k-mt: " + kmt + ";" : "", "top: " + (kmt != null ? "calc(" + kbase + "px + var(--k-mt) - var(--k-up, 0px))" : ins.top) + ";", "right: " + ins.right + ";", "bottom: " + ins.bottom + ";", "left: " + ins.left + ";", "--k-peek: " + peek + "px;", "--k-sliver: " + sliverLen(k, n, phone) + ";", "--k-strip: " + (sheetStrip(k) ? peek : 0) + "px;", "--k-nudge: " + (k.hover === "nudge" ? parseFloat(k.nudge) || 14 : parseFloat(k.nudge) || 0) + "px;", "box-shadow: " + (sheetStrip(k) ? sheetLine(k, phone) : "none") + ";"];
 d = d.filter(Boolean);
 if (!phone) d = d.concat(["z-index: " + (2 + K.length - 1 - n) + ";"]);
 if (!phone && sheetStrip(k)) d = d.concat(["-webkit-backdrop-filter: blur(" + sheetBlur(k) + "px);", "backdrop-filter: blur(" + sheetBlur(k) + "px);"]);
@@ -4296,7 +4308,7 @@ var before = home;
 var model = els.map(function (k) {
 var c = k.getAttribute("data-covers");
 var st = k.querySelector(".bd-ly-strip > .bd-panel");
-return { el: k, e0: k.getAttribute("data-edge") || "left", em0: k.getAttribute("data-edge-m") || "top", pe: k.getAttribute("data-pe") || "", peM: k.getAttribute("data-pe-m") || "", blogs: (k.getAttribute("data-blogs") || "").split(" ").filter(Boolean), rest: k.getAttribute("data-rest") || "open", main: parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-main-m") ? "data-main-m" : "data-main"), 10) || 0, pin: isNaN(parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-pin-m") ? "data-pin-m" : "data-pin"), 10)) ? -1 : parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-pin-m") ? "data-pin-m" : "data-pin"), 10), rev: k.hasAttribute("data-rev-m"), covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
+return { el: k, e0: k.getAttribute("data-edge") || "left", em0: k.getAttribute("data-edge-m") || "top", pe: k.getAttribute("data-pe") || "", peM: k.getAttribute("data-pe-m") || "", blogs: (k.getAttribute("data-blogs") || "").split(" ").filter(Boolean), out: k.getAttribute("data-out") || "", bl: (k.getAttribute("data-bl") || "").split(" ").filter(Boolean), rest: k.getAttribute("data-rest") || "open", main: parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-main-m") ? "data-main-m" : "data-main"), 10) || 0, pin: isNaN(parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-pin-m") ? "data-pin-m" : "data-pin"), 10)) ? -1 : parseInt(k.getAttribute(window.matchMedia("(max-width: 760px)").matches && k.hasAttribute("data-pin-m") ? "data-pin-m" : "data-pin"), 10), rev: k.hasAttribute("data-rev-m"), covers: c && c !== "all" ? c.split(",") : null, panes: Array.prototype.map.call(k.querySelectorAll(".bd-ly-pane"), function (p) { return p.getAttribute("data-page"); }), track: k.querySelector(".bd-ly-track"), strip: st ? (st.className.match(/\bbd-pg-(\S+)/) || [])[1] || "" : "" };
 });
 /* THE PHONE'S OWN PAGE ORDER: --i COUNTS PAGES AS THEY LIE (CSS order), THE PLAN COUNTS THEM IN THE MARKUP */
 var vis = function (m, i) { return m.rev && window.matchMedia("(max-width: 760px)").matches ? m.panes.length - 1 - i : i; };
@@ -4758,6 +4770,16 @@ if (window.bdLayerOpen(a.href)) ev.preventDefault();
 doc.addEventListener("keydown", function (ev) {
 if (ev.key === "Escape") back();
 });
+/* TAP A SHEET'S STRIP (IT STEPPED BACK FOR A PAGE UNDERNEATH OR ONE OF ITS POSTS) → IT COMES BACK ON ITS PAGE */
+root.addEventListener("click", function (ev) {
+var k = ev.target.closest && ev.target.closest(".bd-ly-k.is-st-tuck");
+if (!k) return;
+var n = els.indexOf(k);
+if (n < 0 || !cur[n]) return;
+ev.preventDefault();
+ev.stopPropagation();
+go(model[n].panes[cur[n].i] || model[n].panes[0]);
+}, true);
 if (!preview) {
 window.addEventListener("popstate", function () {
 go(bySlug(location.pathname) || home, true);
@@ -5675,7 +5697,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#7c2d12";
+var BD_BUILD = "#65a30d";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -8132,9 +8154,10 @@ return skinWrap(sheetEditHTML(n));
 /* WHEN A PAGE UNDERNEATH OPENS (Walid, 1 Nov: back after the 27 Oct review): THE SHEET SLIDES FULLY AWAY (k.out "hide") OR LEAVES A STRIP (k.out "peek", k.sliver / k.sliverM px, measured from its edge past any strips above it). THE BLUR OF A SHEET THAT HAS STEPPED BACK IS SITE-WIDE: Master · Site → Sheet motion */
 function sheetAwayHTML(k, P) {
 var out = k.out || "peek";
-var h = seg(P + "out", out, [["hide", "Slides fully away"], ["peek", "Leaves a strip"]]);
-if (out === "peek") h += two(numIn("Strip · desktop px", P + "sliver", k.sliver, "int"), numIn("Strip · phone px", P + "sliverM", k.sliverM, "int"));
-return h + '<div class="bd-ed-hint">' + (out === "peek" ? "The strip shows at the edge the sheet leaves towards, past any pinned strip above it; tap it to bring the sheet back. How much it blurs: Master · Site → Sheet motion." : "Resume, Biography and other pages not on a sheet get the whole window.") + "</div>";
+var hasBlog = sheetBlogs(k).length > 0;
+var h = seg(P + "out", out, [["hide", "Slides fully away"], ["peek", "Leaves a strip"]].concat(hasBlog ? [["posts", "Strip for its posts"]] : []));
+if (out === "peek" || out === "posts") h += two(numIn("Strip · desktop px", P + "sliver", k.sliver, "int"), numIn("Strip · phone px", P + "sliverM", k.sliverM, "int"));
+return h + '<div class="bd-ed-hint">' + (out === "posts" ? "A post of this sheet\u2019s blog opens: the sheet leaves a strip you can tap to come back. Any other page: it slides fully away. " : "") + (out === "peek" || out === "posts" ? "The strip shows at the edge the sheet leaves towards, past any pinned strip above it; tap it to bring the sheet back. How much it blurs: Master · Site → Sheet motion." : "Resume, Biography and other pages not on a sheet get the whole window.") + "</div>";
 }
 function sheetEditHTML(n) {
 var k = sheetList()[n];
