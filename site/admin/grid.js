@@ -3591,8 +3591,8 @@ var pane = p ? p.i : k.main || 0;
 var cov = !k.covers || k.covers.indexOf(f.id) > -1 || k.panes.indexOf(f.id) > -1;
 if (f.k === n) return { st: "open", i: f.i };
 if (k.pin > -1) return { st: "open", i: k.main };
-/* "STRIP ONLY FOR ITS POSTS" (Walid, 1 Nov): A POST OF THIS SHEET'S BLOG OPENS → THE SHEET LEAVES A STRIP YOU CAN TAP TO COME BACK; ANY OTHER PAGE UNDERNEATH → IT SLIDES FULLY AWAY */
-if (k.out === "posts" && f.k < 0 && k.rest !== "still") return { st: f.par && (k.bl || []).indexOf(f.par) > -1 ? "tuck" : "hidden", i: pane };
+/* "STRIP ONLY FOR ITS POSTS" (Walid, 1 Nov): A POST OF THIS SHEET'S BLOG OPENS → THE SHEET LEAVES A STRIP YOU CAN TAP TO COME BACK; ANY OTHER PAGE UNDERNEATH, OR A PAGE ON A SHEET BELOW IT (e.g. Commentary under Art) → IT SLIDES FULLY AWAY */
+if (k.out === "posts" && (f.k < 0 || n < f.k) && k.rest !== "still") return { st: f.par && (k.bl || []).indexOf(f.par) > -1 ? "tuck" : "hidden", i: pane };
 /* THE BLOG ANIMATION TOOL: A POST OF THIS SHEET'S BLOG OPENS UNDERNEATH, SO THE SHEET LEAVES TO THE CHOSEN SIDE */
 if (k.pe && f.k < 0 && f.par && (k.blogs || []).indexOf(f.par) > -1) return { st: "hidden", i: pane };
 /* A STILL SHEET BELOW THE PAGE THAT OPENS STAYS WHERE IT IS: THAT PAGE ALREADY LIES OVER IT */
@@ -5737,7 +5737,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#0369a1";
+var BD_BUILD = "#be185d";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
