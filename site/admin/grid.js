@@ -3770,6 +3770,19 @@ o[e] += parseFloat(phone ? k.peekM : k.peek) || 0;
 });
 return o;
 }
+/* WHAT THE PINNED STRIPS ABOVE A SHEET TAKE FROM EACH EDGE, AS DRAWN (PX). A PAPER SHEET UNDER A PINNED STRIP STARTS BELOW IT: ITS PAPER MARGIN ON THAT EDGE IS THE STRIP'S REAL SIZE (MEASURED BY THE RUNTIME AS --bd-pin-<side>) PLUS ITS OWN MARGIN, AND ITS PAGES DON'T ADD THE STRIP AGAIN AS PADDING, SO THEIR CONTENT STARTS WHERE A PAGE UNDERNEATH STARTS (Walid, 1 Nov) */
+function sheetPinAbove(upto, phone) {
+var o = { left: 0, right: 0, top: 0, bottom: 0 };
+sheetList().forEach(function (k, n) {
+if (n >= upto || k.rest === "peek") return;
+var pp = sheetPinPx(k, phone);
+if (pp) o[pp.edge] += pp.px;
+});
+return o;
+}
+function pinEdgeLen(side, px) {
+return "max(" + px + "px, var(--bd-pin-" + side + ", 0px))";
+}
 /* EVERY STATE OF A SHEET, PER EDGE AND PER WAY OF GETTING OUT OF THE WAY; EACH RULE SETS EVERY VALUE SO PHONE RULES REPLACE DESKTOP ONES */
 function sheetStateCSS(pfx, edges) {
 var TR = LAYER_TRANS.map(function (t) { return t[0]; });
@@ -4115,6 +4128,14 @@ var st = sheetStrip(k);
 var sel = st && st.id === q.id ? '.bd-ly-k[data-k="' + k.id + '"] > .bd-ly-strip' : '.bd-ly-pane[data-page="' + q.id + '"] > .bd-ly-paper';
 if (!st) {
 var pm = sheetPaperMargins(k, q, phone);
+var pa = sheetPinAbove(n, phone);
+var psd = sheetPaperSides(k, q, phone);
+var took = {};
+[["t", "top"], ["r", "right"], ["b", "bottom"], ["l", "left"]].forEach(function (x) {
+if (!pa[x[1]] || !psd[x[0]]) return;
+pm[x[0]] = "calc(" + pinEdgeLen(x[1], pa[x[1]]) + " + " + pm[x[0]] + ")";
+took[x[1]] = pa[x[1]];
+});
 /* ON A PINNED SHEET THE SIDE MARGINS BELONG TO THE PANE (SO ITS HIT AREA IS THE PAPER, NO CLIP-PATH, AND THE BLUR STILL SEES WHAT LIES UNDER IT) */
 var kpin = sheetPin(k, phone);
 var hitPane = !!kpin && kpin !== String(q.id);
@@ -4125,7 +4146,12 @@ out.push('.bd-ly-pane[data-page="' + q.id + '"] {\n--pm-b: ' + pm.b + ';\n' + (h
 }
 if (!phone) out.push(sel + " {\nbackground: " + (st && st.id === q.id ? sheetPaper(k, sheetSolid(k)) : sheetPaper(cardPaperK(k, q), sheetSolid(k), panesK.indexOf(q), panesK.length)) + ";\n}");
 if (!phone && q.sheetBg) out.push(sel + " {\nbackground: " + bgVal(q.sheetBg) + ";\n}");
-var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", st && st.id === q.id ? null : padIns, true);
+var qIns = padIns;
+if (!st && typeof took === "object" && Object.keys(took).length) {
+qIns = Object.assign({}, padIns);
+Object.keys(took).forEach(function (sd) { qIns[sd] = Math.max(0, (qIns[sd] || 0) - took[sd]); });
+}
+var bx = pageBoxCSS(q, phone, sel + " > .bd-panel", st && st.id === q.id ? null : qIns, true);
 if (bx) out.push(bx);
 if (!st) { var cp = cardPatternCSS(k, q, sel + " > .bd-panel", phone); if (cp) out.push(cp); }
 if (!st && pageMode(q) === "card") {
@@ -5649,7 +5675,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#ea580c";
+var BD_BUILD = "#7c2d12";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
