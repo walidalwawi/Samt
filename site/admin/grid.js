@@ -3118,7 +3118,7 @@ var nx = seq[at + 1] || (p.loop ? seq[0] : null);
 if (pv === cp) pv = null;
 if (nx === cp) nx = null;
 if (p.look === "text") {
-var tl = function (q, lab, cls) { return '<a class="' + cls + '" href="/' + esc(q.slug || "") + '">' + esc(lab) + esc(q.h1 || q.title) + "</a>"; };
+var tl = function (q, lab, cls) { return '<a class="' + cls + '" href="/' + esc(q.slug || "") + '">' + esc(lab) + esc(q.title || q.h1) + "</a>"; };
 var parts = [];
 if (pv && p.prevLabel) parts.push(tl(pv, p.prevLabel, "bd-pagerbar-prev"));
 if (nx && p.nextLabel !== "") parts.push(tl(nx, p.nextLabel || "", "bd-pagerbar-next"));
@@ -5649,7 +5649,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#db2777";
+var BD_BUILD = "#0d9488";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
