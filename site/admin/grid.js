@@ -3118,7 +3118,7 @@ var nx = seq[at + 1] || (p.loop ? seq[0] : null);
 if (pv === cp) pv = null;
 if (nx === cp) nx = null;
 if (p.look === "text") {
-var tl = function (q, lab, cls) { return '<a class="' + cls + '" href="/' + esc(q.slug || "") + '">' + esc(lab) + esc(q.title || q.h1) + "</a>"; };
+var tl = function (q, lab, cls) { return '<a class="' + cls + '" href="/' + esc(q.slug || "") + '">' + esc(lab) + esc(q.h1 || q.title) + "</a>"; };
 var parts = [];
 if (pv && p.prevLabel) parts.push(tl(pv, p.prevLabel, "bd-pagerbar-prev"));
 if (nx && p.nextLabel !== "") parts.push(tl(nx, p.nextLabel || "", "bd-pagerbar-next"));
@@ -4215,7 +4215,7 @@ var out = [
 ".bd-ly-sheet {\nposition: absolute;\n--lx: 0px;\n--ly: 0px;\n--lr: 0deg;\ntransform: translate3d(var(--lx), var(--ly), 0) rotate(var(--lr));\ntransition: transform var(--ly-dur) var(--ly-ease), box-shadow var(--ly-dur) var(--ly-ease), filter var(--ly-dur) var(--ly-ease);\nwill-change: transform;\n}",
 ".bd-ly-sheet.is-moving {\n--lr: var(--ly-tilt);\n}",
 ".bd-ly-sheet .bd-panel {\nmin-height: 0;\nbackground: transparent;\n}",
-".bd-ly-pane > .bd-ly-paper {\ndisplay: flex;\nflex-direction: column;\nmin-height: 100%;\nbox-sizing: border-box;\n}",
+".bd-ly-pane > .bd-ly-paper {\ndisplay: flex;\nflex-direction: column;\nflex: 1 0 auto;\nmin-height: 100%;\nbox-sizing: border-box;\n}",
 ".bd-ly-paper > .bd-panel {\nflex: 1 0 auto;\nbox-sizing: border-box;\n}",
 ".bd-ly-pane::after {\ncontent: \"\";\ndisplay: block;\nflex: none;\nheight: var(--pm-b, 0px);\n}",
 ".bd-ly-content {\ninset: 0;\nz-index: 1;\noverflow-y: auto;\n-webkit-overflow-scrolling: touch;\noverscroll-behavior: contain;\nbackground: var(--bd-page);\n}",
@@ -4240,7 +4240,7 @@ Ls.lift ? ".bd-ly-k.is-moving {\nbox-shadow: 8px 8px 0 rgba(0, 0, 0, 0.06);\n}\n
 ".bd-ly-track.is-ax-y {\nflex-direction: column;\nwidth: 100%;\nheight: calc(var(--n) * 100%);\ntransform: translate3d(0, calc(var(--i) * -100% / var(--n)), 0);\n}",
 ".bd-ly-track.is-ax-x {\nflex-direction: row;\nwidth: calc(var(--n) * 100%);\nheight: 100%;\ntransform: translate3d(calc(var(--i) * -100% / var(--n)), 0, 0);\n}",
 ".bd-ly-track.is-snap {\ntransition: none;\n}",
-".bd-ly-pane {\nflex: 0 0 calc(100% / var(--n));\nmin-width: 0;\nmin-height: 0;\noverflow-y: auto;\n-webkit-overflow-scrolling: touch;\noverscroll-behavior: contain;\n}",
+".bd-ly-pane {\nflex: 0 0 calc(100% / var(--n));\ndisplay: flex;\nflex-direction: column;\nmin-width: 0;\nmin-height: 0;\noverflow-y: auto;\n-webkit-overflow-scrolling: touch;\noverscroll-behavior: contain;\n}",
 sheetBoxCSS(false),
 sheetPinCSS(false),
 sheetStateCSS("is-e-", sheetEdges(false)),
@@ -5649,7 +5649,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#0d9488";
+var BD_BUILD = "#ea580c";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
@@ -8103,6 +8103,13 @@ var k = sheetList()[n];
 if (!k) return "";
 return skinWrap(sheetEditHTML(n));
 }
+/* WHEN A PAGE UNDERNEATH OPENS (Walid, 1 Nov: back after the 27 Oct review): THE SHEET SLIDES FULLY AWAY (k.out "hide") OR LEAVES A STRIP (k.out "peek", k.sliver / k.sliverM px, measured from its edge past any strips above it). THE BLUR OF A SHEET THAT HAS STEPPED BACK IS SITE-WIDE: Master · Site → Sheet motion */
+function sheetAwayHTML(k, P) {
+var out = k.out || "peek";
+var h = seg(P + "out", out, [["hide", "Slides fully away"], ["peek", "Leaves a strip"]]);
+if (out === "peek") h += two(numIn("Strip · desktop px", P + "sliver", k.sliver, "int"), numIn("Strip · phone px", P + "sliverM", k.sliverM, "int"));
+return h + '<div class="bd-ed-hint">' + (out === "peek" ? "The strip shows at the edge the sheet leaves towards, past any pinned strip above it; tap it to bring the sheet back. How much it blurs: Master · Site → Sheet motion." : "Resume, Biography and other pages not on a sheet get the whole window.") + "</div>";
+}
 function sheetEditHTML(n) {
 var k = sheetList()[n];
 if (!k) return "";
@@ -8116,6 +8123,7 @@ return pages.length > 1 ? '<button class="bd-ed-pinpill' + (on ? " is-on" : "") 
 var h = skin("Details", SK.det, field("Name", input(P + "name", k.name || "")));
 h += skin("Layout", SK.lay, two(seg(P + (S.mode === "phone" ? "axisM" : "axis"), sheetAx(k, S.mode === "phone"), [["y", "Vertical"], ["x", "Horizontal"]]), '<div class="bd-ed-pins">' + pins + "</div>") + sheetLayoutHTML(n, true));
 h += skin("Style", SK.sty, ovrNote("sheet", k, n) + blendNote() + '<span class="bd-ed-label">Background</span>' + fillIn("", P + "color", k.color, "#E4E1DA") + two(numIn("See-through %", P + "alpha", k.alpha), numIn("Blur", P + "blur", k.blur)) + '<span class="bd-ed-label">Decoration</span>' + patThumbs(P + "pattern", k.pattern || "") + numIn("Grain %", P + "grain", k.grain || "", "blank", 0) + (k.pattern ? row(field("Lines", '<input type="color" class="bd-ed-input" data-bind="' + P + 'patColor" value="' + esc(k.patColor || "#000000") + '">'), numIn("Spacing px", P + "patSize", k.patSize), numIn("Strength %", P + "patAlpha", k.patAlpha)) : "") + numIn("Corners", P + "radius", k.radius == null ? "" : k.radius, "blank") + rimPanel(P, k, false));
+if (!sheetPin(k) && !sheetPin(k, true)) h += skin("When a page underneath opens", SK.lay, sheetAwayHTML(k, P));
 h += inhDelBar("sheet", n, '<button class="bd-ed-btn is-danger" data-act="sheet-del" data-i="' + n + '">' + I.trash + "Dissolve</button>");
 return h;
 }
@@ -8181,6 +8189,8 @@ h += field("Towards · desktop", motionSeg("edge", d, MOTION_SIDES)) + field("To
 h += '<div class="bd-ed-hint">Right now a sheet ' + esc(said) + " the window and moves <b>" + esc(out(d)) + "</b> on a desktop, <b>" + esc(out(m)) + "</b> on a phone" + (own ? " · " + own + " sheet" + (own === 1 ? " has" : "s have") + " its own way of leaving; choosing above resets them" : "") + ". A pinned sheet never leaves.</div>";
 h += field("When a sheet appears, it", motionSeg("arrive", ap, [["slide", "Slides in"], ["fade", "Fades in"], ["cut", "Is just there"]]));
 h += row(numIn("Speed (ms)", "site.layers.dur", L.dur, "int"), field("Feel", select("site.layers.ease", L.ease || "paper", Object.keys(LAYER_EASE).map(function (k) { return [k, LAYER_EASE[k][0]]; }))));
+h += row(numIn("Blur of a sheet that stepped back (px)", "site.layers.focusBlur", L.focusBlur, "int"));
+h += '<div class="bd-ed-hint">A sheet that leaves a strip goes soft by this much until it opens again. 0 = stays sharp. Each sheet chooses strip or fully away in its own panel.</div>';
 h += '<div class="bd-ed-hint">Opening a post can send its blog’s sheet its own way: Master · Blog → Opening a post.</div>';
 return h + "</div>";
 }

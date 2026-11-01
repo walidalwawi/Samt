@@ -1,4 +1,4 @@
-/* PUBLISHED mvvfbsc3 */
+/* PUBLISHED mvxh1zn3 */
 /* FONTS */
 @import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;1,400&family=Courier+Prime:ital,wght@0,400;1,400&display=swap");
 
@@ -2221,6 +2221,7 @@ background: transparent;
 .bd-ly-pane > .bd-ly-paper {
 display: flex;
 flex-direction: column;
+flex: 1 0 auto;
 min-height: 100%;
 box-sizing: border-box;
 }
@@ -2349,6 +2350,8 @@ transition: none;
 }
 .bd-ly-pane {
 flex: 0 0 calc(100% / var(--n));
+display: flex;
+flex-direction: column;
 min-width: 0;
 min-height: 0;
 overflow-y: auto;
