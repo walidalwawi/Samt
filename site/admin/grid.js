@@ -4645,6 +4645,21 @@ content.scrollTop = 0;
 }
 }
 var next = bdSheetPlan(model, f, cur);
+/* SCROLL A PANE TO y OVER ONE SLIDE, ON THE SAME EASE-OUT AS THE PAPER */
+var glide = function (pn, y) {
+var y0 = pn.scrollTop;
+var t0 = null;
+var len = reduce ? 0 : dur;
+cancelAnimationFrame(pn.bdGlide);
+var step = function (t) {
+if (t0 == null) t0 = t;
+var k = len ? Math.min(1, (t - t0) / len) : 1;
+var e = 1 - Math.pow(1 - k, 3);
+pn.scrollTop = y0 + (y - y0) * e;
+if (k < 1) pn.bdGlide = requestAnimationFrame(step);
+};
+pn.bdGlide = requestAnimationFrame(step);
+};
 /* ONE SHEET NEVER SPLITS: A PAGE LEAVING A PINNED SHEET SCROLLS BACK TO ITS TOP WHILE IT SLIDES, AND THE PINNED PAGE KEEPS FOLLOWING IT, SO THE PAPER STAYS ONE PIECE */
 next.forEach(function (n, x) {
 var m = model[x];
@@ -4697,6 +4712,18 @@ clearTimeout(m.el.bdSb);
 m.el.bdSb = setTimeout(function () { m.el.classList.remove("is-snapbox"); }, dur + 80);
 m.el.classList.remove("is-st-" + c.st);
 m.el.classList.add("is-st-" + n.st);
+/* THE WHOLE PAGE MOVES: A SHEET THAT STEPS BACK UPWARDS SCROLLS TO ITS END WHILE IT SLIDES, SO THE STRIP THAT STAYS IS THE BOTTOM OF THE PAGE (DOWNWARDS: ITS TOP). COMING BACK, IT SCROLLS TO WHERE IT WAS */
+var side = window.matchMedia("(max-width: 760px)").matches ? (useP ? m.peM : m.em0) : (useP ? m.pe : m.e0);
+var pnS = m.track.children[n.i];
+if (pnS && m.pin < 0) {
+if (n.st === "tuck" && (side === "top" || side === "bottom")) {
+if (pnS.bdKeep == null) pnS.bdKeep = pnS.scrollTop;
+glide(pnS, side === "top" ? pnS.scrollHeight - pnS.clientHeight : 0);
+} else if (n.st === "open" && pnS.bdKeep != null) {
+glide(pnS, pnS.bdKeep);
+pnS.bdKeep = null;
+}
+}
 moving(m);
 } else if (n.i !== c.i) moving(m);
 if (n.st !== c.st || n.i !== c.i) onPage(m, n.st, n.i);
@@ -4786,6 +4813,19 @@ go(bySlug(location.pathname) || home, true);
 });
 }
 mark();
+/* OPENED STRAIGHT ON A POST: A SHEET ALREADY STEPPED BACK UPWARDS SHOWS THE END OF ITS PAGE */
+var endUp = function () {
+model.forEach(function (m, x) {
+if (!cur[x] || cur[x].st !== "tuck" || m.pin > -1) return;
+var ph = window.matchMedia("(max-width: 760px)").matches;
+var cls = m.el.className.match(ph ? /\bis-em-([a-z]+)/ : /\bis-e-([a-z]+)/);
+var pn = m.track.children[cur[x].i];
+if (!pn || !cls) return;
+if (cls[1] === "top") { pn.scrollTop = pn.scrollHeight - pn.clientHeight; pn.bdKeep = 0; }
+});
+};
+endUp();
+window.addEventListener("load", endUp);
 }
 /* CANVAS IN LAYERS MODE — THE PAGE ON ITS SHEET, WITH THE PEEKING SHEETS ABOVE IT DRAWN AT THEIR EDGES (STATIC) */
 function layerEditCSS(page, phone) {
@@ -5697,7 +5737,7 @@ m.classList.add("is-warn");
 
 /* SAVING — DRAFT LIVES IN THIS BROWSER UNTIL YOU PUBLISH */
 /* THE COLOUR OF THIS BUILD — CHANGES WITH EVERY RELEASE, SO A REFRESH SHOWS WHETHER THE NEWEST EDITOR LOADED */
-var BD_BUILD = "#65a30d";
+var BD_BUILD = "#0369a1";
 function setStatus(text, warn) {
 S.status = text;
 S.statusWarn = !!warn;
